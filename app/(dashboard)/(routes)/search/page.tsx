@@ -9,7 +9,8 @@ import { Categories } from "./_components/categories";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@radix-ui/react-separator";
-import { currentUser } from "@clerk/nextjs/server";
+import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
+// import { currentUser } from "@clerk/nextjs/server";
 
 interface SearchPageProps {
   searchParams: {
@@ -19,7 +20,7 @@ interface SearchPageProps {
 }
 
 const SearchPage = async ({ searchParams }: any) => {
-  const user = await currentUser();
+  const user = (await getUserDataServer())?.user;
 
   if (!user?.id) {
     return redirect("/app/(auth)");

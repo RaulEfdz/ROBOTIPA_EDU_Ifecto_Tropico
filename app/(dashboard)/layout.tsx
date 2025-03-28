@@ -3,58 +3,60 @@
 import React, { useEffect, useState } from 'react';
 import { Sidebar } from "./_components/sidebar";
 import { MenuIcon } from 'lucide-react';
-import { useUser } from '@clerk/nextjs';
-import { isTeacher } from './(routes)/admin/teacher';
+import { getUserData } from '../(auth)/auth/userCurrent';
 
-const DashboardLayout = ({
-  children
-}: {
+interface DashboardLayoutProps {
   children: React.ReactNode;
-}) => {
+}
+
+const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isUserTeacher, setIsUserTeacher] = useState(false);
 
   const toggleSidebar = (state?: boolean) => {
-    if (state !== undefined) {
-      setIsSidebarOpen(state);
-    } else {
-      setIsSidebarOpen(!isSidebarOpen);
-    }
+    setIsSidebarOpen(state !== undefined ? state : !isSidebarOpen);
   };
 
-    const { user } = useUser();
-    const [isUserTeacher, setIsUserTeacher] = useState(false);
-  
-    useEffect(() => {
-      const checkTeacherStatus = async () => {
-        if (user?.id) {
-          const result = await isTeacher(user.id); // Asegúrate de que isTeacher devuelve una promesa.
-          setIsUserTeacher(result);
-        }
-      };
-      checkTeacherStatus();
-    }, [user]);
+  useEffect(() => {
+    (async () => {
+      // Obtenemos el rol personalizado del usuario
+      const userData = await getUserData();
+      const role = userData?.user.identities[0].identity_data.custom_role;
+      console.log("customRole:", role);
+      if (!role) return;
+      const hasAccess = ["teacher", "admin", "developer"].includes(role);
+      console.log("Rol verificado:", role, hasAccess);
+      setIsUserTeacher(hasAccess);
+    })();
+  }, []);
 
   return (
     <div className="h-full bg-gradient">
       {/* Sidebar */}
-      <div className={`${isSidebarOpen ? 'w-56' : 'w-0'} h-full flex-col fixed inset-y-0 z-30 transition-all duration-300 overflow-hidden`}>
+      <div
+        className={`${
+          isSidebarOpen ? 'w-56' : 'w-0'
+        } h-full flex-col fixed inset-y-0 z-30 transition-all duration-300 overflow-hidden`}
+      >
         <Sidebar toggleSidebar={toggleSidebar} />
       </div>
 
-      {/* Floating Button for Sidebar */}
+      {/* Botón flotante para mostrar el Sidebar */}
       {!isSidebarOpen && (
         <button
           onClick={() => toggleSidebar(true)}
           className={`fixed bottom-5 left-3 z-40 p-3 rounded-full shadow-lg ${
-            isUserTeacher ? "bg-orange-500 text-white" : "bg-[#386329] text-white"
+            isUserTeacher ? 'bg-orange-500 text-white' : 'bg-[#386329] text-white'
           }`}
         >
-          <MenuIcon/>
+          <MenuIcon />
         </button>
       )}
 
-      {/* Main Content */}
-      <main className={`${isSidebarOpen ? 'md:pl-56' : ''}  h-full overflow-y-auto transition-all duration-300`}>
+      {/* Contenido principal */}
+      <main
+        className={`${isSidebarOpen ? 'md:pl-56' : ''} h-full overflow-y-auto transition-all duration-300`}
+      >
         {children}
       </main>
     </div>

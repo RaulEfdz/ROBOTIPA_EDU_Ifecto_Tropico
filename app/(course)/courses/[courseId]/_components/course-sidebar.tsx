@@ -6,6 +6,7 @@ import { CourseProgress } from "@/components/course-progress";
 
 import { CourseSidebarItem } from "./course-sidebar-item";
 import { currentUser } from "@clerk/nextjs/server";
+import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
 
 interface CourseSidebarProps {
   course: Course & {
@@ -20,7 +21,8 @@ export const CourseSidebar = async ({
   course,
   progressCount,
 }: CourseSidebarProps) => {
-  const user = await currentUser();
+    const user = (await getUserDataServer())?.user;
+  
 
   if (!user?.id) {
     return redirect("/app/(auth)");

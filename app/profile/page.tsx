@@ -1,205 +1,285 @@
 "use client";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { getUserData, SupabaseSession } from "../(auth)/auth/userCurrent";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import {
+  UserCircle2,
+  Mail,
+  Clock,
+  CalendarCheck,
+  ShieldCheck,
+  KeyRound,
+  Shield,
+  Phone,
+  CheckCircle,
+  ListChecks,
+  Fingerprint,
+  Globe,
+  ArrowLeft,
+  User
+} from "lucide-react";
 
-import React, { useState, useEffect } from "react";
-import { Sidebar } from "../(dashboard)/_components/sidebar";
-import { UserProfile } from "@/prisma/types";
-import { getCurrentUser } from "../(auth)/handler/getCurrentUser";
-import toast from "react-hot-toast";
+export default function UserProfileDashboard() {
+  // Paleta de colores
+  const brandPrimary = "#FFFCF8"; // Fondo de tarjetas
+  const brandSecondaryDark = "#47724B"; // Color principal para textos y detalles
+  const brandSecondary = "#ACBC64"; // Acento en iconos y textos secundarios
+  const brandTertiaryDark = "#386329"; // Titulares y estados activos
+  const brandTertiary = "#C8E065"; // Toques de resalte
 
-const EXCLUDED_KEYS = ["id", "deviceType", "role", "createdAt", "updatedAt", "avatar"]; // Lista de claves a excluir
-
-const FIELD_LABELS: { [key: string]: string } = {
-  acceptsTerms: "Acepta los Términos",
-  age: "Edad",
-  available: "Disponible",
-  communicationPreferences: "Preferencias de Comunicación",
-  countryOfResidence: "País de Residencia",
-  delete: "Eliminar",
-  educationLevel: "Nivel Educativo",
-  emailAddress: "Correo Electrónico",
-  fullName: "Nombre Completo",
-  gender: "Género",
-  isAdminVerified: "Verificación de Administrador",
-  isEmailVerified: "Correo Verificado",
-  learningObjectives: "Objetivos de Aprendizaje",
-  major: "Carrera Principal",
-  otherMajor: "Otra Carrera",
-  otherObjective: "Otro Objetivo",
-  phoneNumber: "Número de Teléfono",
-  specializationArea: "Área de Especialización",
-  university: "Universidad",
-};
-
-// Opciones para campos select
-const FIELD_OPTIONS: { [key: string]: { value: string; label: string }[] } = {
-  gender: [
-    { value: "male", label: "Masculino" },
-    { value: "female", label: "Femenino" },
-    { value: "other", label: "Otro" },
-  ],
-  educationLevel: [
-    { value: "highschool", label: "Secundaria" },
-    { value: "bachelor", label: "Licenciatura" },
-    { value: "master", label: "Maestría" },
-    { value: "phd", label: "Doctorado" },
-    { value: "ingenieria", label: "Ingenieria" },
-  ],
-  countryOfResidence: [
-    { value: "panama", label: "Panamá" },
-    { value: "colombia", label: "Colombia" },
-    { value: "mexico", label: "México" },
-    { value: "usa", label: "Estados Unidos" },
-    { value: "otro", label: "otro" },
-  ],
-};
-
-const ProfilePage: React.FC = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [userData, setUserData] = useState<UserProfile | null>(null);
-  const [originalData, setOriginalData] = useState<UserProfile | null>(null); // Mantiene todos los datos originales
-  const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserData] = useState<SupabaseSession | null>(null);
+  const [activeSection, setActiveSection] = useState<'profile' | 'settings'>('profile');
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const result = await getCurrentUser();
-        if (!result.success) {
-          toast.error("Error al obtener los datos del usuario");
-          return;
-        }
-        setUserData(result.dbUser); // Guarda todos los datos en `userData`
-        setOriginalData(result.dbUser); // Guarda una copia para asegurarte de que nada se pierda
-      } catch (error) {
-        console.error("Error al obtener datos del usuario:", error);
-        toast.error("Error inesperado al obtener datos del usuario");
-      }
+    const fetchData = async () => {
+      const data = await getUserData();
+      setUserData(data);
     };
-    fetchUserData();
+    fetchData();
   }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value, type } = e.target;
-    const isCheckbox = type === "checkbox";
-    const checked = isCheckbox
-      ? (e.target as HTMLInputElement).checked
-      : undefined;
-
-    setUserData((prev) =>
-      prev
-        ? {
-            ...prev,
-            [name]: isCheckbox ? checked : value,
-          }
-        : null
+  if (!userData) {
+    return (
+      <div
+        className="flex min-h-screen justify-center items-center"
+        style={{ backgroundColor: brandPrimary }}
+      >
+        <div className="text-center flex flex-col justify-center items-center">
+          <div className="animate-pulse w-16 h-16 mb-4 bg-gray-300 rounded-full"></div>
+          <span className="text-lg font-semibold" style={{ color: brandSecondaryDark }}>
+            Cargando perfil...
+          </span>
+        </div>
+      </div>
     );
-  };
+  }
 
-  const handleSave = async () => {
-    if (!userData || !originalData) return;
-    setIsLoading(true);
-    try {
-      // Combina los datos actualizados con los datos originales
-      const updatedData = { ...originalData, ...userData, age: Number(userData.age) };
+  const { user } = userData;
+  const metadata = user.user_metadata;
+  const identity = user.identities[0];
 
-
-      const response = await fetch("/api/auth/profile/update", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData), // Enviar todo el objeto completo
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update user data");
-      }
-
-      const result = await response.json();
-      toast.success("Datos del usuario actualizados correctamente");
-    } catch (error) {
-      console.error("Error updating user data:", error);
-      toast.error("Error al actualizar los datos del usuario");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const profileSections = [
+    {
+      icon: <UserCircle2 className="mr-3" style={{ color: brandSecondaryDark }} />,
+      label: 'Nombre de usuario',
+      value: metadata.username
+    },
+    {
+      icon: <Mail className="mr-3" style={{ color: brandSecondary }} />,
+      label: 'Correo electrónico',
+      value: user.email
+    },
+    {
+      icon: <CheckCircle className="mr-3" style={{ color: brandTertiaryDark }} />,
+      label: 'Correo verificado',
+      value: user.email_confirmed_at ? 'Verificado' : 'No verificado'
+    },
+    {
+      icon: <Phone className="mr-3" style={{ color: brandTertiary }} />,
+      label: 'Teléfono',
+      value: user.phone || 'No proporcionado'
+    },
+    {
+      icon: <CheckCircle className="mr-3" style={{ color: brandTertiaryDark }} />,
+      label: 'Teléfono verificado',
+      value: metadata.phone_verified ? 'Verificado' : 'No verificado'
+    },
+    {
+      icon: <Clock className="mr-3" style={{ color: brandSecondary }} />,
+      label: 'Último login',
+      value: user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : 'Nunca'
+    },
+    {
+      icon: <CalendarCheck className="mr-3" style={{ color: brandSecondaryDark }} />,
+      label: 'Cuenta creada',
+      value: new Date(user.created_at).toLocaleString()
+    },
+    {
+      icon: <Fingerprint className="mr-3" style={{ color: brandSecondary }} />,
+      label: 'ID de usuario',
+      value: user.id
+    },
+    {
+      icon: <Globe className="mr-3" style={{ color: brandTertiaryDark }} />,
+      label: 'Proveedor',
+      value: identity?.provider || 'Desconocido'
+    },
+    {
+      icon: <ListChecks className="mr-3" style={{ color: brandTertiary }} />,
+      label: 'Proveedores',
+      value: user.app_metadata?.providers?.join(', ') || 'Ninguno'
+    },
+    {
+      icon: <Shield className="mr-3" style={{ color: brandSecondaryDark }} />,
+      label: 'Rol',
+      value: user.role
+    },
+    {
+      icon: <CheckCircle className="mr-3" style={{ color: brandTertiaryDark }} />,
+      label: 'Confirmación enviada',
+      value: user.confirmation_sent_at ? new Date(user.confirmation_sent_at).toLocaleString() : 'No enviado'
+    },
+    {
+      icon: <CheckCircle className="mr-3" style={{ color: brandTertiaryDark }} />,
+      label: 'Confirmado en',
+      value: user.confirmed_at ? new Date(user.confirmed_at).toLocaleString() : 'No confirmado'
+    },
+    {
+      icon: <Shield className="mr-3" style={{ color: brandSecondary }} />,
+      label: 'Anónimo',
+      value: user.is_anonymous ? 'Sí' : 'No'
+    },
+  ];
 
   return (
-    <div className="h-full bg-gradient">
-      <div
-        className={`${
-          isSidebarOpen ? "w-56" : "w-0"
-        } h-full flex-col fixed inset-y-0 z-30 transition-all duration-300 overflow-hidden`}
-      >
-        <Sidebar
-          toggleSidebar={(state?: boolean) =>
-            setIsSidebarOpen(state ?? !isSidebarOpen)
-          }
-        />
+    <div
+      className="min-h-screen py-10 flex flex-col items-center"
+      style={{ backgroundColor: brandPrimary }}
+    >
+      {/* Barra de navegación superior */}
+      <nav className="w-full max-w-4xl px-4 mb-8">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center space-x-3">
+          <User
+            size={24} 
+            color={brandSecondaryDark} 
+            className="mr-2" 
+          />
+          <h1 
+            className="text-2xl font-bold" 
+            style={{ color: brandSecondaryDark }}
+          >
+            Perfil de Usuario
+          </h1>
+        </div>
+        <Link href="/">
+          <button
+            type="button"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors hover:bg-gray-100"
+            style={{ 
+              backgroundColor: brandSecondaryDark, 
+              color: brandPrimary 
+            }}
+          >
+            <ArrowLeft size={20} />
+            <span>Volver a Inicio</span>
+          </button>
+        </Link>
       </div>
+    </nav>
 
-      <div className="ml-60 p-6 w-[40rem]">
-        {userData && (
-          <form className="mt-6 space-y-4 bg-[#FFFCF8] p-6 rounded shadow">
-            <h2 className="text-xl font-semibold mb-4">Edit Profile</h2>
-
-            {Object.entries(userData).map(([key, value]) => {
-              // Excluir campos definidos en EXCLUDED_KEYS
-              if (EXCLUDED_KEYS.includes(key)) return null;
-              if (typeof value === "boolean" || Array.isArray(value)) return null;
-
-              const isSelectField = FIELD_OPTIONS[key]; // Verifica si la clave tiene opciones predefinidas
-
-              return (
-                <div key={key}>
-                  <label className="block text-sm font-medium mb-1 capitalize">
-                    {FIELD_LABELS[key] || key.replace(/([A-Z])/g, " $1")}
-                  </label>
-                  {isSelectField ? (
-                    <select
-                      name={key}
-                      value={value || ""}
-                      onChange={handleChange}
-                      className="w-full border border-gray-300 rounded px-3 py-2"
-                    >
-                      <option value="">Seleccione una opción</option>
-                      {FIELD_OPTIONS[key].map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type={typeof value}
-                      name={key}
-                      value={value || ""}
-                      onChange={handleChange}
-                      className="w-full border border-gray-300 rounded px-3 py-2"
-                      readOnly={key === "emailAddress"} // Deshabilitar campos no editables
-                    />
-                  )}
+      <div className="max-w-4xl w-full space-y-8 px-4">
+        <Card className="shadow-lg hover:shadow-2xl transition-shadow duration-300 rounded-lg">
+          <CardHeader className="rounded-t-lg pb-4" style={{ backgroundColor: brandPrimary }}>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-24 w-24 border-4 border-white shadow-md">
+                  <AvatarImage
+                    src={metadata.full_name || "/placeholder-user.png"}
+                    alt={metadata.full_name}
+                  />
+                  <AvatarFallback className="text-3xl" style={{ color: brandSecondaryDark }}>
+                    {metadata.full_name?.[0] || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <CardTitle className="text-3xl font-bold" style={{ color: brandSecondaryDark }}>
+                    {metadata.full_name}
+                  </CardTitle>
+                  <p className="text-sm" style={{ color: brandSecondary }}>
+                    {user.email}
+                  </p>
+                  <Badge className="mt-2" variant="secondary">
+                    <Shield className="w-4 h-4 mr-1" /> {user.role}
+                  </Badge>
                 </div>
-              );
-            })}
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setActiveSection('profile')}
+                  style={{
+                    backgroundColor: activeSection === 'profile' ? brandSecondaryDark : brandPrimary,
+                    color: activeSection === 'profile' ? brandPrimary : brandSecondaryDark,
+                  }}
+                  className="px-4 py-2 rounded-lg border border-transparent transition-colors hover:bg-gray-100"
+                >
+                  Perfil
+                </button>
+                <button
+                  onClick={() => setActiveSection('settings')}
+                  style={{
+                    backgroundColor: activeSection === 'settings' ? brandSecondaryDark : brandPrimary,
+                    color: activeSection === 'settings' ? brandPrimary : brandSecondaryDark,
+                  }}
+                  className="px-4 py-2 rounded-lg border border-transparent transition-colors hover:bg-gray-100"
+                >
+                  Configuración
+                </button>
+              </div>
+            </div>
+          </CardHeader>
 
-            <button
-              type="button"
-              onClick={handleSave}
-              className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 disabled:opacity-50"
-              disabled={isLoading}
-            >
-              {isLoading ? "Guardando..." : "Guardar cambios"}
-            </button>
-          </form>
-        )}
+          <Separator className="my-4" />
+
+          {activeSection === 'profile' && (
+            <CardContent className="space-y-4">
+              {profileSections.map((section, index) => (
+                <div
+                  key={index}
+                  className="flex items-center rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+                  style={{ backgroundColor: brandPrimary }}
+                >
+                  {section.icon}
+                  <div>
+                    <p className="text-sm" style={{ color: brandSecondary }}>
+                      {section.label}
+                    </p>
+                    <p className="font-semibold" style={{ color: brandSecondaryDark }}>
+                      {section.value}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          )}
+
+          {activeSection === 'settings' && (
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  className="p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                  style={{ backgroundColor: brandPrimary }}
+                >
+                  <KeyRound className="w-6 h-6 mb-2" style={{ color: brandSecondaryDark }} />
+                  <h3 className="font-semibold mb-1" style={{ color: brandSecondaryDark }}>
+                    Seguridad
+                  </h3>
+                  <p className="text-sm" style={{ color: brandSecondary }}>
+                    Gestiona tu contraseña y autenticación.
+                  </p>
+                </div>
+                <div
+                  className="p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                  style={{ backgroundColor: brandPrimary }}
+                >
+                  <ShieldCheck className="w-6 h-6 mb-2" style={{ color: brandSecondary }} />
+                  <h3 className="font-semibold mb-1" style={{ color: brandSecondary }}>
+                    Privacidad
+                  </h3>
+                  <p className="text-sm" style={{ color: brandSecondary }}>
+                    Controla tus datos y configuraciones.
+                  </p>
+                </div>
+                {/* Puedes agregar más opciones de configuración aquí */}
+              </div>
+            </CardContent>
+          )}
+        </Card>
       </div>
     </div>
   );
-};
-
-export default ProfilePage;
+}

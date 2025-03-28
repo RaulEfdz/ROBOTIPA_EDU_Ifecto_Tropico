@@ -2,21 +2,19 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { usePathname, useRouter } from "next/navigation";
-import { Book, Brain, LogOut, Outdent, Settings, User } from "lucide-react";
+import { Book, Brain, LogOut, Settings, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "./ui/select";
-
-import { isTeacher } from "@/app/(dashboard)/(routes)/admin/teacher";
+import { getUserData } from "@/app/(auth)/auth/userCurrent";
 
 export const Administrative = () => {
-  const route = useRouter();
-  const { userId, signOut} = useAuth();
+  const router = useRouter();
+  const { userId, signOut } = useAuth();
   const pathname = usePathname() || "";
 
   const [isTeacherUser, setIsTeacherUser] = useState(false);
@@ -25,8 +23,11 @@ export const Administrative = () => {
   useEffect(() => {
     const checkRole = async () => {
       if (userId) {
-        const result = await isTeacher(userId);
-        setIsTeacherUser(result);
+        const userData = await getUserData();
+        const role = userData?.user.identities[0].identity_data.custom_role;
+        if (!role) return;
+        const hasAccess = ["teacher", "admin", "developer"].includes(role);
+        setIsTeacherUser(hasAccess);
       }
     };
     checkRole();
@@ -39,17 +40,17 @@ export const Administrative = () => {
   const handleChange = (value: string) => {
     switch (value) {
       case "areaTeachers":
-        route.push("/teacher");
+        router.push("/teacher");
         break;
       case "areaStudents":
-        route.push("/students");
+        router.push("/students");
         break;
       case "areaProfile":
-        route.push("/profile");
+        router.push("/profile");
         break;
       case "logout":
-        signOut()
-        break
+        signOut();
+        break;
       default:
         break;
     }
@@ -68,8 +69,8 @@ export const Administrative = () => {
           {isTeacherUser && !isTeacherPage && (
             <SelectItem value="areaTeachers" className="hover:bg-slate-100 pointer">
               <div className="text-black flex items-center w-full">
-                <Book className="h-full w-1/6 text-gray-600 mx-2"  />
-                <span className=" w-5/6">Profesores</span>
+                <Book className="h-full w-1/6 text-gray-600 mx-2" />
+                <span className="w-5/6">Profesores</span>
               </div>
             </SelectItem>
           )}
@@ -77,24 +78,24 @@ export const Administrative = () => {
             <SelectItem value="areaStudents" className="hover:bg-slate-100 pointer">
               <div className="text-black flex items-center w-full">
                 <Brain className="h-full w-1/6 text-gray-600 mx-2" />
-                <span className=" w-5/6">Estudiante</span>
+                <span className="w-5/6">Estudiante</span>
               </div>
             </SelectItem>
           )}
           {!isProfilePage && (
             <SelectItem value="areaProfile" className="hover:bg-slate-100 pointer">
               <div className="text-black flex items-center w-full">
-                <User className="h-full w-1/6 text-gray-600 mx-2"  />
-                <span className=" w-5/6">Mis Datos</span>
+                <User className="h-full w-1/6 text-gray-600 mx-2" />
+                <span className="w-5/6">Mis Datos</span>
               </div>
             </SelectItem>
           )}
           <SelectItem value="logout" className="hover:bg-slate-100 pointer">
-              <div className="text-black flex items-center w-full">
-                <LogOut className="h-full w-1/6 text-gray-600 mx-2"  />
-                <span className=" w-5/6">Cerrar sesion</span>
-              </div>
-            </SelectItem>
+            <div className="text-black flex items-center w-full">
+              <LogOut className="h-full w-1/6 text-gray-600 mx-2" />
+              <span className="w-5/6">Cerrar sesión</span>
+            </div>
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>

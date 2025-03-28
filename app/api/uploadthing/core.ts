@@ -1,12 +1,13 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { isTeacher } from "@/app/(dashboard)/(routes)/admin/teacher";
 import { currentUser } from "@clerk/nextjs/server";
+import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
 
 const f = createUploadthing();
 
 // Autenticación utilizando Clerk y verificación adicional
 const handleAuth = async (req: Request) => {
-    const user = await currentUser();
+  const user = (await getUserDataServer())?.user;
   
     if (!user?.id) {
     throw new Error("Unauthorized: No user ID found");

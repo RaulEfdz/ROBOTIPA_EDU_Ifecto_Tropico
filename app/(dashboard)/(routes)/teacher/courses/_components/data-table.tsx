@@ -27,6 +27,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip } from "@/components/ui/tooltip";
 
+// Paleta de colores de la marca
+const brandPrimary = "#FFFCF8";
+const brandSecondaryDark = "#47724B";
+const brandSecondary = "#ACBC64";
+const brandTertiaryDark = "#386329";
+const brandTertiary = "#C8E065";
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -37,9 +44,7 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
   const numberedColumns: ColumnDef<TData, TValue>[] = [
     {
@@ -67,20 +72,39 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full mx-auto bg-[#FFFCF8] rounded-lg shadow-lg p-6">
-      {/* Barra de herramientas */}
-      <div className="flex items-center justify-between bg-gradient-to-r from-emerald-400 to-teal-500 p-4 rounded-lg shadow-lg">
+    <div
+      className="w-full mx-auto rounded-xl shadow-md p-6 transition bg-white"
+      style={{ background: brandPrimary }}
+    >
+      {/* Barra superior */}
+      <div
+        className="flex items-center justify-between p-4 rounded-lg shadow-inner mb-4"
+        style={{
+          background: `linear-gradient(to right, ${brandSecondary}, ${brandTertiary})`,
+        }}
+      >
         <Input
           placeholder="Buscar cursos..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
           }
-          className="w-full max-w-md border border-white placeholder-white bg-transparent text-white"
+          className="w-full max-w-md bg-white placeholder:text-gray-500 focus:ring-2 focus:ring-offset-2 focus:ring-[#ACBC64] transition"
+          style={{
+            border: `1px solid ${brandSecondaryDark}`,
+            color: "#000",
+          }}
         />
         <Link href="/teacher/create">
           <Tooltip>
-            <Button className="flex items-center bg-[#FFFCF8] text-teal-600 hover:bg-teal-100 ml-4">
+            <Button
+              className="flex items-center ml-4 hover:scale-[1.02] transition"
+              style={{
+                background: brandPrimary,
+                color: brandTertiaryDark,
+                border: `1px solid ${brandSecondaryDark}`,
+              }}
+            >
               <PlusCircle className="h-5 w-5 mr-2" />
               Nuevo curso
             </Button>
@@ -88,14 +112,17 @@ export function DataTable<TData, TValue>({
         </Link>
       </div>
 
-      {/* Tabla de contenido */}
-      <div className="rounded-lg border border-gray-200 mt-6 overflow-x-auto">
+      {/* Tabla */}
+      <div className="rounded-xl border overflow-x-auto">
         <Table className="table-auto w-full text-sm">
-          <TableHeader className="bg-teal-500 text-white sticky top-0 z-10">
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="bg-[#f0f0f0] text-black">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="px-4 py-3 text-left">
+                  <TableHead
+                    key={header.id}
+                    className="px-4 py-3 text-left text-sm font-semibold uppercase tracking-wide"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -112,12 +139,17 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row, idx) => (
                 <TableRow
                   key={row.id}
-                  className={`${
-                    idx % 2 === 0 ? "bg-[#FFFCF8]" : "bg-gray-50"
-                  } hover:bg-emerald-50 transition duration-200`}
+                  className="transition hover:bg-[#f3fdf4] hover:shadow-sm"
+                  style={{
+                    background: idx % 2 === 0 ? brandPrimary : "#fdfdfd",
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-4 py-3">
+                    <TableCell
+                      key={cell.id}
+                      className="px-4 py-3"
+                      style={{ color: "#000" }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -141,27 +173,35 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Paginación */}
-      <div className="flex items-center justify-between py-4">
-        <div className="text-sm text-gray-500">
+      <div className="flex items-center justify-between py-6 px-2">
+        <div className="text-sm" style={{ color: brandSecondaryDark }}>
           Página {table.getState().pagination.pageIndex + 1} de{" "}
           {table.getPageCount()}
         </div>
         <div className="flex items-center gap-2">
           <Button
-            variant="outline"
             size="sm"
-            className="bg-teal-50 text-teal-700 border-teal-300 hover:bg-teal-100"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
+            className="rounded-md transition"
+            style={{
+              background: brandPrimary,
+              color: brandSecondaryDark,
+              border: `1px solid ${brandSecondaryDark}`,
+            }}
           >
             Anterior
           </Button>
           <Button
-            variant="outline"
             size="sm"
-            className="bg-teal-50 text-teal-700 border-teal-300 hover:bg-teal-100"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
+            className="rounded-md transition"
+            style={{
+              background: brandPrimary,
+              color: brandSecondaryDark,
+              border: `1px solid ${brandSecondaryDark}`,
+            }}
           >
             Siguiente
           </Button>

@@ -5,9 +5,11 @@ import { getAnalytics } from "@/actions/get-analytics";
 import { DataCard } from "./_components/data-card";
 import { Chart } from "./_components/chart";
 import { currentUser } from "@clerk/nextjs/server";
+import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
 
 const AnalyticsPage = async () => {
-  const user = await currentUser();
+    const user = (await getUserDataServer())?.user;
+  
 
   if (!user?.id) {
     return redirect("/app/(auth)");

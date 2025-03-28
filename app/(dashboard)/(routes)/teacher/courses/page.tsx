@@ -6,9 +6,10 @@ import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { currentUser } from "@clerk/nextjs/server";
+import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
 
 const CoursesPage = async () => {
-  const user = await currentUser();
+  const user = (await getUserDataServer())?.user;
 
   if (!user?.id) {
     return redirect("/app/(auth)");
