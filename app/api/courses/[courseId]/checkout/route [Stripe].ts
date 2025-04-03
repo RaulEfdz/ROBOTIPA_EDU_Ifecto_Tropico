@@ -2,15 +2,15 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
-import { currentUser } from "@clerk/nextjs/server";
-import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
+
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 export async function POST(
   req: Request,
   { params }: any
 ) {
   try {
-    const user = (await getUserDataServer())?.user;
-    if (!user || !user.id || !user.emailAddresses?.[0]?.emailAddress) {
+    const user = (await getUserDataServerAuth())?.user;
+    if (!user || !user.id || !user.email) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const course = await db.course.findUnique({
@@ -57,7 +57,7 @@ export async function POST(
     });
     if (!stripeCustomer) {
       const customer = await stripe.customers.create({
-        email: user.emailAddresses[0].emailAddress,
+        email: user.email,
       });
       stripeCustomer = await db.stripeCustomer.create({
         data: {

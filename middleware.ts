@@ -10,10 +10,10 @@ export async function middleware(request: NextRequest) {
   // Recuperar la sesión de Supabase
   const { data: { session } } = await supabase.auth.getSession();
 
-  console.log("medd session: ", session)
+  // console.log("medd session: ", session)
 
   // Definir rutas protegidas
-  const rutasProtegidas = ['/modules'];
+  const rutasProtegidas = ['/(dashboard)'];
   const esRutaProtegida = rutasProtegidas.some((ruta) =>
     request.nextUrl.pathname.startsWith(ruta)
   );

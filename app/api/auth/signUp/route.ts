@@ -1,48 +1,53 @@
 import { db } from "@/lib/db";
+import { getVisitorId } from "@/utils/roles/translate";
 import { NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
-    // Parsear el cuerpo de la solicitud
-    const { emailAddress, emailVerified, id, deviceType } = await req.json();
+    const body = await req.json();
+    const { emailAddress, emailVerified, id, deviceType } = body;
 
-    // Validación de campos requeridos
+    console.debug("[DEBUG] Datos recibidos en el body:", body);
+
     if (!id || !emailAddress || emailVerified === undefined || !deviceType) {
+      console.warn("[DEBUG] Campos faltantes o inválidos:", {
+        id,
+        emailAddress,
+        emailVerified,
+        deviceType,
+      });
       return NextResponse.json(
         { error: "Faltan datos obligatorios o datos no válidos" },
         { status: 400 }
       );
     }
 
-    // Construcción del objeto de datos del usuario
-    const userData: Prisma.UserCreateInput = {
+    const visitorRoleId = getVisitorId();
+    console.debug("[DEBUG] visitorRoleId obtenido:", visitorRoleId);
+
+    const userPayload = {
       id,
-      emailAddress,
+      email: emailAddress,
       fullName: "",
-      phoneNumber: "",
-      countryOfResidence: "",
-      age: 0, // Se ajusta para que sea opcional
-      gender: "",
-      university: "",
-      educationLevel: "",
-      major: "",
-      otherMajor: "",
-      specializationArea: "",
-      learningObjectives: [],
-      otherObjective: "",
-      communicationPreferences: [],
-      acceptsTerms: true,
-      role: "visitor",
-      available: false,
-      avatar: "",
-      isEmailVerified: emailVerified,
-      isAdminVerified: false,
-      deviceType,
+      username: emailAddress.split("@")[0],
+      customRole: visitorRoleId,
+      provider: "custom",
+      lastSignInAt: new Date(),
+      isActive: true,
+      isDeleted: false,
+      isBanned: false,
+      additionalStatus: "pending",
+      metadata: {
+        isEmailVerified: emailVerified,
+        deviceType,
+      },
     };
 
-    // Creación del usuario en la base de datos
-    const createdUser = await db.user.create({ data: userData });
+    console.debug("[DEBUG] Payload de creación de usuario:", userPayload);
+
+    const createdUser = await db.user.create({ data: userPayload });
+
+    console.info("[INFO] Usuario creado exitosamente:", createdUser);
 
     return NextResponse.json({ success: true, user: createdUser });
   } catch (error) {

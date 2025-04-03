@@ -4,11 +4,12 @@ import { getAnalytics } from "@/actions/get-analytics";
 
 import { DataCard } from "./_components/data-card";
 import { Chart } from "./_components/chart";
-import { currentUser } from "@clerk/nextjs/server";
-import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
+
+import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
 
 const AnalyticsPage = async () => {
-    const user = (await getUserDataServer())?.user;
+  const user = await getCurrentUserFromDBServer(); // ✅ Correcto
+
   
 
   if (!user?.id) {

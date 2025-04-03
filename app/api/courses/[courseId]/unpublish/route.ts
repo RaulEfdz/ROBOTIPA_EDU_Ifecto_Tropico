@@ -1,26 +1,23 @@
 import { NextResponse } from "next/server";
-
 import { db } from "@/lib/db";
-import { currentUser } from "@clerk/nextjs/server";
-import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
 export async function PUT(
   req: Request,
-  { params }: any
+  { params }: { params: { courseId: string } }
 ) {
   try {
-    const user = (await getUserDataServer())?.user;
-        
-    if (!user?.id) {
+    const session = await getUserDataServerAuth();
+    const user = session?.user;
 
- 
+    if (!user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const course = await db.course.findUnique({
       where: {
         id: params.courseId,
-        userId:user?.id,
+        userId: user.id,
         delete: false,
       },
     });
@@ -32,16 +29,16 @@ export async function PUT(
     const unpublishedCourse = await db.course.update({
       where: {
         id: params.courseId,
-        userId:user?.id,
+        userId: user.id,
       },
       data: {
         isPublished: false,
-      }
+      },
     });
 
     return NextResponse.json(unpublishedCourse);
   } catch (error) {
     console.error("[COURSE_ID_UNPUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
-  } 
+  }
 }

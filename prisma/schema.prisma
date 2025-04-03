@@ -130,35 +130,55 @@ model StripeCustomer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-model User {
-  id                      String   @id @default(uuid())
-  emailAddress            String   @unique
-  fullName                String
-  phoneNumber             String
-  countryOfResidence      String
-  age                    Int?
-  gender                  String
-  university             String
-  educationLevel         String
-  major                   String
-  otherMajor              String
-  specializationArea     String
-  learningObjectives     String[]
-  otherObjective         String
-  communicationPreferences String[]
-  acceptsTerms           Boolean
-  role                    String   @default("visitor")
-  available               Boolean  @default(false)
-  avatar                  String   @default("")
-  isEmailVerified         Boolean  @default(false)
-  isAdminVerified         Boolean  @default(false)
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-  deviceType              String   // Field to store the device type
 
-  courses        Course[]
-  purchases      Purchase[]
-  userProgresses UserProgress[]
-  stripeCustomer StripeCustomer?
-  delete      Boolean?  @default(false) // Nuevo campo agregado con valor por defecto
+
+
+model User {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  fullName          String
+  username          String
+  phone             String?
+  customRole        String
+  provider          String
+  lastSignInAt      DateTime?
+  metadata          Json                           // Datos personalizados por usuario
+
+  isActive          Boolean  @default(true)        // Usuario habilitado o no
+  isBanned          Boolean  @default(false)       // Baneado por conducta
+  isDeleted         Boolean  @default(false)       // Eliminado lógicamente (soft delete)
+  additionalStatus  String   @default("active")    // 'active', 'pending', 'suspended', etc.
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relaciones
+  courses           Course[]
+  purchases         Purchase[]
+  userProgress      UserProgress[]
+  stripeCustomer    StripeCustomer?
+  invoices          Invoice[]                      // Relación con facturas
+
+  @@map("users")
 }
+
+model Invoice {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  concept   String
+  amount    Float
+  currency  String
+  status    String
+  issuedAt  DateTime
+  paidAt    DateTime?
+  data      Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+

@@ -1,0 +1,162 @@
+type ThemeMode = "light" | "dark" | "custom";
+
+// Estilos por tema visual (colores de fondo, textos, botones)
+interface StyleTheme {
+  backgrounds: {
+    page: string;     // Color de fondo general de la pantalla
+    panel: string;    // Color del panel/formulario (lado derecho)
+    banner: string;   // Color del banner de evento si está presente
+  };
+  texts: {
+    primary: string;   // Color de texto principal
+    secondary: string; // Color de texto secundario (subtítulos, descripciones)
+    link: string;      // Color de enlaces interactivos
+  };
+  borders: {
+    default: string;   // Color por defecto de bordes (input, card, banner)
+  };
+  buttons: {
+    primary: string;      // Color de fondo del botón principal
+    primaryText: string;  // Color del texto dentro del botón
+  };
+}
+
+// Estructura de estilos completa, con soporte para múltiples modos
+interface LoginStyles {
+  mode: ThemeMode;       // Tema actual a usar (ej. "light", "dark")
+  light: StyleTheme;     // Definición del tema claro
+  dark: StyleTheme;      // Definición del tema oscuro
+  custom?: StyleTheme;   // Tema opcional personalizado
+}
+
+// Configuración general exportada del login
+export const loginConfig = {
+  layout: {
+    backgroundImage: "/images/background.jpg", // Imagen de fondo (panel izquierdo)
+    backgroundColor: "#f3f4f6",                // Color de fondo (fallback si no hay imagen)
+  },
+
+  logo: {
+    show: true,                        // Mostrar logo arriba del panel izquierdo
+    src: "/images/logo-infectotropico.png", // Ruta local al logo (en /public)
+    alt: "InfectoTrópico",            // Alt text para accesibilidad
+    width: 160,                       // Ancho del logo
+  },
+
+  leftPanel: {
+    show: true,                       // Mostrar panel izquierdo con info institucional
+    taglineTitle: "Enfermedades Infecciosas Tropicales", // Título destacado
+    taglineSubtitle: "Comprometidos con la salud global desde un enfoque One Health.",
+    backToWebsite: {
+      show: true,                     // Mostrar botón para volver al sitio institucional
+      text: "← Volver al sitio web", // Texto del botón
+      url: "https://www.infectotropico.com", // URL del sitio principal
+    },
+  },
+
+  rightPanel: {
+    createAccount: {
+      show: true,                   // Mostrar formulario de registro
+      title: "Registro en la plataforma",  // Título principal
+      subtitle: {
+        text: "¿Ya tienes una cuenta?",     // Texto al pie
+        linkText: "Inicia sesión",          // Texto del link para cambiar a login
+      },
+      form: {
+        fullNamePlaceholder: "Nombre completo",
+        usernamePlaceholder: "Nombre de usuario",
+        emailPlaceholder: "Correo institucional",
+        passwordPlaceholder: "Contraseña segura",
+        confirmPasswordPlaceholder: "Confirmar contraseña",
+        createButtonText: "Crear cuenta",
+      },
+    },
+    login: {
+      show: true,                    // Mostrar formulario de login
+      title: "Acceso a la Plataforma",
+      subtitle: {
+        text: "¿Aún no estás registrado?",  // Texto al pie
+        linkText: "Crear cuenta",           // Texto del link para cambiar a registro
+      },
+      form: {
+        emailPlaceholder: "usuario@infectotropico.com",
+        passwordPlaceholder: "••••••••",
+        loginButtonText: "Iniciar sesión",
+        forgotPasswordLinkText: "¿Olvidaste tu contraseña?",
+      },
+    },
+  },
+
+  eventBanner: {
+    show: true,                      // Mostrar banner de evento activo
+    title: "Taller: Arbovirus y Salud Global",
+    description: "4 y 5 de abril · Universidad de Panamá - Chiriquí",
+    ctaText: "Más información",
+    ctaUrl: "/eventos/arbovirus-chiriqui", // URL interna
+  },
+
+  // Estilos globales para cada tema visual
+  styles: {
+    mode: "light", // Cambiar a "dark" o "custom" según configuración deseada
+
+    light: {
+      backgrounds: {
+        page: "#f3f4f6",
+        panel: "#ffffff",
+        banner: "#ffffff",
+      },
+      texts: {
+        primary: "#1f2937",
+        secondary: "#6b7280",
+        link: "#2e4c92",
+      },
+      borders: {
+        default: "#e5e7eb",
+      },
+      buttons: {
+        primary: "#2e4c92",
+        primaryText: "#ffffff",
+      },
+    },
+
+    dark: {
+      backgrounds: {
+        page: "#1E1E2F",
+        panel: "#2C2C3A",
+        banner: "#33334D",
+      },
+      texts: {
+        primary: "#ffffff",
+        secondary: "#a7a7b5",
+        link: "#90cdf4",
+      },
+      borders: {
+        default: "#3d3d55",
+      },
+      buttons: {
+        primary: "#90cdf4",
+        primaryText: "#1E1E2F",
+      },
+    },
+
+    custom: {
+      backgrounds: {
+        page: "#fefce8",
+        panel: "#ffffff",
+        banner: "#fef9c3",
+      },
+      texts: {
+        primary: "#292524",
+        secondary: "#78716c",
+        link: "#ca8a04",
+      },
+      borders: {
+        default: "#eab308",
+      },
+      buttons: {
+        primary: "#ca8a04",
+        primaryText: "#ffffff",
+      },
+    },
+  } as LoginStyles,
+};

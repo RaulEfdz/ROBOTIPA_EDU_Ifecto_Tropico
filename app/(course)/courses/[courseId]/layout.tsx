@@ -2,11 +2,9 @@ import { redirect } from "next/navigation";
 
 import { db } from "@/lib/db";
 import { getProgress } from "@/actions/get-progress";
-
 import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseNavbar } from "./_components/course-navbar";
-import { currentUser } from "@clerk/nextjs/server";
-import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
+import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 
 const CourseLayout = async ({
   children,
@@ -15,7 +13,7 @@ const CourseLayout = async ({
   children: React.ReactNode;
   params:any
 }) => {
-    const user = (await getUserDataServer())?.user;
+    const user = (await getCurrentUserFromDB());
   
  
    if (!user?.id) {

@@ -1,36 +1,51 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { printDebug } from "@/utils/debug/log";
+import { createClient } from "@/utils/supabase/server";
 
-// Handler para obtener el rol del usuario según el ID
-export async function POST(req: Request) {
+// Función para obtener el usuario desde la BD por ID
+export const getUserById = async (userId: string) => {
+  const route = "getUserById";
+
   try {
-    const { userId } = await req.json();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "ID de usuario no proporcionado." },
-        { status: 400 }
-      );
-    }
+    printDebug(`${route} > Buscando usuario con ID: ${userId}`);
 
     const user = await db.user.findUnique({
       where: { id: userId },
-      select: { role: true, fullName: true }, // Solo trae el campo `role` para optimización.
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: `Usuario con ID ${userId} no encontrado.` },
-        { status: 404 }
-      );
+      printDebug(`${route} > ❌ Usuario no encontrado`);
+      return null;
     }
 
-    return NextResponse.json({ success: true, role: user.role });
+    printDebug(`${route} > ✅ Usuario encontrado`);
+    return user;
   } catch (error) {
-    console.error("[ERROR IN GET USER ROLE]", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    printDebug(`${route} > ❌ Error: ${(error as Error).message}`);
+    console.error("❌ Error al buscar usuario:", error);
+    return null;
   }
+};
+
+// Handler de la ruta GET
+export async function GET() {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+    error,
+  } = await (await supabase).auth.getUser();
+
+  if (error || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const userData = await getUserById(user.id);
+
+  if (!userData) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  return NextResponse.json(userData, { status: 200 });
 }

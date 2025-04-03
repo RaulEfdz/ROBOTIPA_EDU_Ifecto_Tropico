@@ -1,7 +1,10 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { printDebug } from '../debug/log'
 export async function createClient() {
   const cookieStore = await cookies()
+  printDebug(
+    "createClientserverClient",)
   // Create a server's supabase client with newly configured cookie,
   // which could be used to maintain user's session
   return createServerClient(

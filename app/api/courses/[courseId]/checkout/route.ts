@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { generateRandomId } from "@/tools/generateRandomId";
-import { currentUser } from "@clerk/nextjs/server";
-import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
 // Esta función maneja las solicitudes HTTP POST
 export async function POST(req: Request, { params }: any) {
   try {
     // Obtiene el usuario actual
-    const user = (await getUserDataServer())?.user;
+    const user = (await getUserDataServerAuth())?.user;
 
     // Comprueba si el usuario existe y tiene la información necesaria
     if (!user || !user.id || !user.email) {

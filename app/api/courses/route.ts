@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
 export async function POST(
   req: Request,
@@ -9,7 +9,7 @@ export async function POST(
   try {
   
     const { title } = await req.json();
-  const user = (await getUserDataServer())?.user;
+  const user = (await getUserDataServerAuth())?.user;
         
     if (!user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });

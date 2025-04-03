@@ -3,8 +3,6 @@ import { Quiz } from "@/app/(dashboard)/(routes)/teacher/quizzes/types";
 import { getQuiz } from "@/app/(dashboard)/(routes)/teacher/quizzes/handler/getQuiz";
 import { COLLECTION_QUIZZES } from "@/app/(dashboard)/(routes)/teacher/quizzes/context/QuizContext";
 import { handleSubmitQuiz } from "./handleSubmitQuiz";
-import { getCurrentUser } from "@/app/(auth)/handler/getCurrentUser";
-import { UserResponse } from "@/prisma/types";
 import {
   Card,
   CardContent,
@@ -35,6 +33,7 @@ import {
 } from "@/utils/formatTextMS";
 import QuizResults from "./QuizResults";
 import ExpiredQuizResults from "./ExpiredQuizResults";
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
 interface Props {
   id: string;
@@ -67,17 +66,20 @@ const QuizModalResponse: React.FC<Props> = ({ id, onClose }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const user: UserResponse = await getCurrentUser();
-        if (user) {
-          setUserId(user.clerkUser.id);
+        const session = await getUserDataServerAuth();
+        if (session?.user) {
+          setUserId(session.user.id);
+        } else {
+          setError("Sesión de usuario no disponible.");
         }
       } catch (err: any) {
-        setError(err.message || "Error al cargar el Usuario.");
+        setError(err.message || "Error al cargar el usuario.");
       }
     };
-
+  
     fetchUser();
   }, []);
+  
 
   useEffect(() => {
     const fetchQuiz = async () => {

@@ -1,13 +1,11 @@
-// "use client"
 import { redirect } from "next/navigation";
 
 import { getAnalytics } from "@/actions/get-analytics";
 import { TableMaterialAttach } from "./TableMaterialAttach";
-import { currentUser } from "@clerk/nextjs/server";
-import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
+import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
 
 const Materialattach = async () => {
-  const user = (await getUserDataServer())?.user;
+  const user = await getCurrentUserFromDBServer(); // ✅ Correcto
 
   if (!user?.id) {
     return redirect("/app/(auth)");

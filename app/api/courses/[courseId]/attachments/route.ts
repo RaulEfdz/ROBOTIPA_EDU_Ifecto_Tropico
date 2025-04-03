@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-import { currentUser } from "@clerk/nextjs/server";
-import { getUserDataServer } from "@/app/(auth)/auth/userCurrentServer";
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
 export async function POST(
   req: Request,
@@ -14,7 +13,7 @@ export async function POST(
     
   
 
-    const user = (await getUserDataServer())?.user;
+    const user = (await getUserDataServerAuth())?.user;
     
       if (!user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });

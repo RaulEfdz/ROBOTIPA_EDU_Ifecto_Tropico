@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
 import { usePathname, useRouter } from "next/navigation";
 import { Book, Brain, LogOut, Settings, User } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -10,34 +9,44 @@ import {
   SelectItem,
   SelectTrigger,
 } from "./ui/select";
-import { getUserData } from "@/app/(auth)/auth/userCurrent";
+import {
+  getTeacherId,
+  getAdminId,
+} from "@/utils/roles/translate";
+import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
+import { createClient } from "@/utils/supabase/client";
 
 export const Administrative = () => {
   const router = useRouter();
-  const { userId, signOut } = useAuth();
   const pathname = usePathname() || "";
+  const supabase = createClient();
 
   const [isTeacherUser, setIsTeacherUser] = useState(false);
 
-  // Validación del rol del usuario
   useEffect(() => {
     const checkRole = async () => {
-      if (userId) {
-        const userData = await getUserData();
-        const role = userData?.user.identities[0].identity_data.custom_role;
-        if (!role) return;
-        const hasAccess = ["teacher", "admin", "developer"].includes(role);
-        setIsTeacherUser(hasAccess);
-      }
+      const user = await getCurrentUserFromDB();
+      const role = user?.customRole;
+
+      console.log("role:", role);
+
+      if (!role) return;
+
+      const allowedRoles = [getTeacherId(), getAdminId()];
+      console.log("allowedRoles:", allowedRoles);
+      const hasAccess = allowedRoles.includes(role);
+      console.log("hasAccess:", hasAccess);
+      setIsTeacherUser(hasAccess);
     };
+
     checkRole();
-  }, [userId]);
+  }, []);
 
   const isTeacherPage = pathname.startsWith("/teacher");
   const isProfilePage = pathname.includes("/profile");
   const isStudentsPage = pathname === "/students";
 
-  const handleChange = (value: string) => {
+  const handleChange = async (value: string) => {
     switch (value) {
       case "areaTeachers":
         router.push("/teacher");
@@ -49,7 +58,8 @@ export const Administrative = () => {
         router.push("/profile");
         break;
       case "logout":
-        signOut();
+        await supabase.auth.signOut();
+        router.push("/auth");
         break;
       default:
         break;
