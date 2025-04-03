@@ -54,7 +54,7 @@ export const Sidebar = ({ toggleSidebar }: { toggleSidebar: (state?: boolean) =>
       </div>
 
       <span className="px-2 text-xs font-light py-2">
-        ROBOTIPA_EDU {process.env.NEXT_PUBLIC_APP_VERSION}
+        ROBOTIPA_LMS {process.env.NEXT_PUBLIC_APP_VERSION}
       </span>
     </div>
   );

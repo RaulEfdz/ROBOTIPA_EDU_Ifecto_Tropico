@@ -13,7 +13,7 @@ const handleAuth = async (req: Request) => {
     throw new Error("Unauthorized: No user ID found");
   }
 
-  const isAuthorized = isTeacher(user?.id);
+  const isAuthorized = isTeacher(user.id);
   if (!isAuthorized) {
     throw new Error("Forbidden: User is not authorized");
   }

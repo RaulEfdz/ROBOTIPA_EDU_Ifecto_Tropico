@@ -1,21 +1,25 @@
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
-interface FetchDataParams {
-  values?: any; // Reemplaza 'any' con un tipo más específico según tus necesidades
+interface FetchDataParams<T> {
+  values?: any;
   courseId?: string;
   path: string;
-	callback?: any; // Reemplaza 'any' con el tipo de datos esperado
+  callback?: (data: T) => void;
   method?: string;
-  finallyFunction?: any
+  finallyFunction?: () => void;
 }
 
-export const fetchData = async ({ values, courseId, path, callback, method='PUT', finallyFunction }: FetchDataParams): Promise<void> => {
- 
+export const fetchData = async <T = any>({
+  values,
+  courseId,
+  path,
+  callback,
+  method = 'PUT',
+  finallyFunction,
+}: FetchDataParams<T>): Promise<T | undefined> => {
   try {
-
-
     const response = await fetch(path, {
-      method: method? method : 'PUT',
+      method,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -23,27 +27,25 @@ export const fetchData = async ({ values, courseId, path, callback, method='PUT'
     });
 
     if (!response.ok) {
-      const errorMsg = `HTTP error! Status: ${response.status}`;
-      // console.error(errorMsg);
+      const errorMsg = `Error ${response.status}: ${response.statusText}`;
       toast.error(errorMsg);
-      return; // Exit the function if the response is not OK.
+      return;
     }
 
-    const data = await response.json();
+    const data: T = await response.json();
 
     if (callback) {
       callback(data);
     }
 
     return data;
-  } catch (error:any) {
-    console.error('Fetch error:', error);
-    toast.error("Ocurrió un error");
-    return error
+  } catch (error: any) {
+    console.error("Fetch error:", error);
+    toast.error("Ocurrió un error al procesar la solicitud");
+    return;
   } finally {
-    if (typeof finallyFunction === 'function') {
+    if (typeof finallyFunction === "function") {
       finallyFunction();
-    } else {
     }
   }
 };

@@ -1,47 +1,36 @@
 import { NextResponse } from "next/server";
-
 import { db } from "@/lib/db";
-
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
 export async function PUT(
   req: Request,
-  { params }: any
+  { params }: { params: { courseId: string } }
 ) {
   try {
-       const user = (await getUserDataServerAuth())?.user;
+    const user = (await getUserDataServerAuth())?.user;
+    if (!user?.id) return new NextResponse("Unauthorized", { status: 401 });
 
-        
-          if (!user?.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const { list, courseId } = await req.json();
-
-    const ownCourse = await db.course.findUnique({
-      where: {
-        id: courseId,
-        delete: false,
-        userId: user?.id
-      }
+    const course = await db.course.findUnique({
+      where: { id: params.courseId, userId: user.id, delete: false },
     });
 
-    if (!ownCourse) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    if (!course) return new NextResponse("Unauthorized", { status: 401 });
 
-    for (let item of list) {
-      await db.chapter.update({
-        where: { id: item.id, delete: false,        },
-        data: { position: item.position }
-      });
-    }
+    const { list } = await req.json(); // array: [{ id, position }]
+    if (!Array.isArray(list)) return new NextResponse("Invalid data", { status: 400 });
 
-    // return new NextResponse("Success", { status: 200 });
-    // return new NextResponse()
-    return NextResponse.json(ownCourse);
+    const updatePromises = list.map((item: { id: string; position: number }) =>
+      db.chapter.update({
+        where: { id: item.id },
+        data: { position: item.position },
+      })
+    );
+
+    await Promise.all(updatePromises);
+
+    return NextResponse.json({ message: "Capítulos reordenados" });
   } catch (error) {
-    console.error("[REORDER]", error);
-    return new NextResponse("Internal Error", { status: 500 }); 
+    console.error("[CHAPTER_REORDER]", error);
+    return new NextResponse("Error interno", { status: 500 });
   }
 }

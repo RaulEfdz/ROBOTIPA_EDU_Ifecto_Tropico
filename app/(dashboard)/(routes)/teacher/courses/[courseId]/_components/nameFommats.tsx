@@ -1,13 +1,19 @@
-import React from 'react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { AlertCircleIcon, CheckCircle2 } from 'lucide-react';
+"use client";
 
-// Textos en español e inglés
+import React from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { AlertCircleIcon, CheckCircle2 } from "lucide-react";
+
 const texts = {
   es: {
     title: "¿Qué formatos de nombres están permitidos?",
-    noteNoDots: "Nota: No se deben usar puntos en los nombres de archivo.",
-    noteSpacesAllowed: "Nota: Los espacios están permitidos.",
+    noteNoDots: "No se deben usar puntos en los nombres de archivo.",
+    noteSpacesAllowed: "Los espacios están permitidos.",
     allowedExamplesTitle: "Ejemplos de nombres de archivo permitidos:",
     allowedExample1: "1 - documento_sin_puntos.txt",
     allowedExample2: "A - imagen_sin_puntos.jpg",
@@ -17,8 +23,8 @@ const texts = {
   },
   en: {
     title: "What name formats are allowed?",
-    noteNoDots: "Note: Dots should not be used in file names.",
-    noteSpacesAllowed: "Note: Spaces are allowed.",
+    noteNoDots: "Dots should not be used in file names.",
+    noteSpacesAllowed: "Spaces are allowed.",
     allowedExamplesTitle: "Examples of allowed file names:",
     allowedExample1: "1 - document_without_dots.txt",
     allowedExample2: "A - image_without_dots.jpg",
@@ -35,44 +41,56 @@ interface NameFormatsProps {
 }
 
 const NameFormats: React.FC<NameFormatsProps> = ({ lang = "es" }) => {
+  const t = texts[lang];
+
   return (
-    <Accordion type="single" collapsible>
-      <AccordionItem value="item-1">
-        <AccordionTrigger>
-          <span className="text-Sky801">{texts[lang].title}</span>
-        </AccordionTrigger>
-        <AccordionContent>
-          <p className="text-red-500">
-            <AlertCircleIcon className="inline-block h-5 w-5 mr-2" /> {texts[lang].noteNoDots}
-          </p>
-          <p className="text-success">
-            <CheckCircle2 className="inline-block h-5 w-5 mr-2" /> {texts[lang].noteSpacesAllowed}
-          </p>
-          <h3 className="text-md font-semibold mt-4">{texts[lang].allowedExamplesTitle}</h3>
-          <ul className="flex-col ml-6">
-            <li className="flex items-center">
-              <CheckCircle2 className='mx-1 text-success' />
-              <p className='font-light'>{texts[lang].allowedExample1}</p>
-            </li>
-            <li className="flex items-center">
-              <CheckCircle2 className='mx-1 text-success' />
-              <p className='font-light'>{texts[lang].allowedExample2}</p>
-            </li>
-          </ul>
-          <h3 className="text-md font-semibold mt-4">{texts[lang].notAllowedExamplesTitle}</h3>
-          <ul className="flex-col ml-6">
-            <li className="flex items-center">
-              <AlertCircleIcon className='mx-1 text-red-500' />
-              <p className='font-light'>{texts[lang].notAllowedExample1}</p>
-            </li>
-            <li className="flex items-center">
-              <AlertCircleIcon className='mx-1 text-red-500' />
-              <p className='font-light'>{texts[lang].notAllowedExample2}</p>
-            </li>
-          </ul>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <div className="mt-6">
+      <Accordion type="single" collapsible className="rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-850">
+        <AccordionItem value="name-formats">
+          <AccordionTrigger className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300 hover:no-underline">
+            {t.title}
+          </AccordionTrigger>
+          <AccordionContent className="px-4 pb-4 text-sm text-gray-600 dark:text-gray-400 space-y-3">
+            <p className="flex items-center text-red-500 dark:text-red-400">
+              <AlertCircleIcon className="h-4 w-4 mr-2" />
+              {t.noteNoDots}
+            </p>
+            <p className="flex items-center text-green-600 dark:text-green-400">
+              <CheckCircle2 className="h-4 w-4 mr-2" />
+              {t.noteSpacesAllowed}
+            </p>
+
+            <div>
+              <h3 className="font-semibold mb-1">{t.allowedExamplesTitle}</h3>
+              <ul className="ml-4 space-y-1">
+                <li className="flex items-center">
+                  <CheckCircle2 className="h-4 w-4 mr-2 text-green-600 dark:text-green-400" />
+                  {t.allowedExample1}
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle2 className="h-4 w-4 mr-2 text-green-600 dark:text-green-400" />
+                  {t.allowedExample2}
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mt-4 mb-1">{t.notAllowedExamplesTitle}</h3>
+              <ul className="ml-4 space-y-1">
+                <li className="flex items-center">
+                  <AlertCircleIcon className="h-4 w-4 mr-2 text-red-500 dark:text-red-400" />
+                  {t.notAllowedExample1}
+                </li>
+                <li className="flex items-center">
+                  <AlertCircleIcon className="h-4 w-4 mr-2 text-red-500 dark:text-red-400" />
+                  {t.notAllowedExample2}
+                </li>
+              </ul>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
   );
 };
 

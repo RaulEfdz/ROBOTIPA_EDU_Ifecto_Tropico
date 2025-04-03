@@ -13,18 +13,37 @@ body,
 :root {
   height: 100%;
   /* font-family: 'RenogareSoft', sans-serif !important; */
-  --Blue533s:hsl(211, 61%, 21%);
 
-  --Blue533: #153557;
-  --Green808: #00a087;
-  --Sky801: #00b0d8;
-  --Orange804: #ff7c00;
-  --White: #F5F7F8;
+  /* Light Mode */
+  --Blue533s: #FFFCF8; /* Background Page */
+  --Blue533: #FFFFFF;  /* Panel */
+  --Green808: #FFFCF8; /* Banner */
+  --Sky801: #5A3E34;   /* Primary Text */
+  --Orange804: #386329; /* Secondary Text */
+  --White: #47724B;    /* Link Text */
 
-  --White-1: #F5F7F8;
-  --White-2: #F3F8FF;
-
+  --White-1: #ACBC64;  /* Border Default */
+  --White-2: #47724B;  /* Button Primary */
+  
+  /* Extra */
+  --ButtonPrimaryText: #FFFCF8;
 }
+
+/* Dark mode overrides (opcional si usas un tema dark activado por data-theme) */
+[data-theme="dark"] {
+  --Blue533s: #1E1E2F; /* Background Page */
+  --Blue533: #2C2C3A;  /* Panel */
+  --Green808: #33334D; /* Banner */
+  --Sky801: #ffffff;   /* Primary Text */
+  --Orange804: #a7a7b5; /* Secondary Text */
+  --White: #90cdf4;    /* Link Text */
+
+  --White-1: #3d3d55;  /* Border Default */
+  --White-2: #90cdf4;  /* Button Primary */
+
+  --ButtonPrimaryText: #1E1E2F;
+}
+
 
 
 html, body, :root {
