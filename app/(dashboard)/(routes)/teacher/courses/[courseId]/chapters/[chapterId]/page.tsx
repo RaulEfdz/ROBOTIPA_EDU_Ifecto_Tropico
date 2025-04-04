@@ -38,31 +38,52 @@ const texts = {
 
 const language = "es";
 
-const ChapterIdPage = async ({ params }: any) => {
-  const chapter = await db.chapter.findUnique({
-    where: { id: params.chapterId, courseId: params.courseId, delete: false },
-  });
+interface ChapterIdPageProps {
+  params: {
+    courseId: string;
+    chapterId: string;
+  };
+}
 
-  if (!chapter) {
-     return redirect("/app/(auth)");;
-  }
-
-  const courseAttachments = await db.course.findUnique({
-    where: { id: params.courseId, delete: false },
-    select: {
-      attachments: { orderBy: { createdAt: "desc" } },
+const ChapterIdPage = async ({ params }: ChapterIdPageProps) => {
+  const chapter = await db.chapter.findFirst({
+    where: {
+      id: params.chapterId,
+      courseId: params.courseId,
+      delete: false,
     },
   });
 
-  const listItemHandlerChecks: HandlerChecksItem[] = courseAttachments
-    ? courseAttachments.attachments
-    : [];
+  if (!chapter) {
+    return redirect("/app/(auth)");
+  }
+
+  const courseAttachments = await db.course.findUnique({
+    where: {
+      id: params.courseId,
+      delete: false,
+    },
+    select: {
+      attachments: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+    },
+  });
+
+  const listItemHandlerChecks: HandlerChecksItem[] =
+    courseAttachments?.attachments ?? [];
 
   return (
     <div className="h-full w-full bg-Sky833">
       {!chapter.isPublished && (
-        <Banner variant="warning" label={texts[language].unpublishedWarning} />
+        <Banner
+          variant="warning"
+          label={texts[language].unpublishedWarning}
+        />
       )}
+
       <div className="p-6">
         <div className="flex items-center justify-between">
           <Link
@@ -75,13 +96,14 @@ const ChapterIdPage = async ({ params }: any) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+          {/* Columna izquierda */}
           <div className="space-y-4">
             <div>
-              <div className="flex items-center gap-x-2">
+              <div className="flex items-center gap-x-2 mb-2">
                 <IconBadge icon={LayoutDashboard} />
                 <h2 className="text-xl">{texts[language].customizeChapter}</h2>
               </div>
-              <ChapterTitleForm
+              <ChapterTitleForm // actulizado
                 initialData={chapter}
                 courseId={params.courseId}
                 chapterId={params.chapterId}
@@ -92,12 +114,12 @@ const ChapterIdPage = async ({ params }: any) => {
                 courseId={params.courseId}
                 chapterId={params.chapterId}
                 items={listItemHandlerChecks}
-                lang="es" // Puedes cambiar el idioma si es necesario
+                lang="es"
               />
             </div>
 
             <div>
-              <div className="flex items-center gap-x-2">
+              <div className="flex items-center gap-x-2 mb-2">
                 <IconBadge icon={Eye} />
                 <h2 className="text-xl">{texts[language].accessSettings}</h2>
               </div>
@@ -109,8 +131,9 @@ const ChapterIdPage = async ({ params }: any) => {
             </div>
           </div>
 
+          {/* Columna derecha */}
           <div>
-            <div className="flex items-center gap-x-2">
+            <div className="flex items-center gap-x-2 mb-2">
               <IconBadge icon={Video} />
               <h2 className="text-xl">{texts[language].addVideo}</h2>
             </div>
@@ -123,7 +146,7 @@ const ChapterIdPage = async ({ params }: any) => {
             <div className="flex items-center justify-end w-auto h-10 mt-20">
               <Link
                 href={`/teacher/courses/${params.courseId}`}
-                className="flex items-center text-sm hover:opacity-75 mb-6 bg-[green] p-2 rounded"
+                className="flex items-center text-sm hover:opacity-75 mb-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {texts[language].saveAndExit}
