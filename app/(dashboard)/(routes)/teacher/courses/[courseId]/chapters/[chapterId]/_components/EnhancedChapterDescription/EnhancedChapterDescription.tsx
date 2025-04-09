@@ -72,7 +72,7 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
   const handleSave = async () => {
     setIsSaving(true);
 
-    const path = `/api/courses/${courseId}/chapters/${chapterId}/update`;
+    const path = `/api/courses/${courseId}/chapters/${chapterId}/edit`;
 
     try {
       await fetchData({

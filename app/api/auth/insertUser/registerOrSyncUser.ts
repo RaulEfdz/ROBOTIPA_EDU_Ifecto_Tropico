@@ -59,18 +59,21 @@ export const registerOrSyncUser = async (
         const existingValue = existingUser[key as keyof typeof newUserData];
         return JSON.stringify(existingValue) !== JSON.stringify(value);
       });
-
+      //codigo sirve para detectar coambios en la info de auth y la user y igualar la tabal user a la auth
       if (hasChanges) {
         printDebug(`${route} > 🔄 Diferencias encontradas, actualizando usuario`);
-
+      
+        // Excluir el campo `customRole` de la sincronización
+        const { customRole: _, ...newUserDataWithoutCustomRole } = newUserData;
+      
         await db.user.update({
           where: { id: user.id },
           data: {
-            ...newUserData,
+            ...newUserDataWithoutCustomRole,
             updatedAt: new Date(),
           },
         });
-
+      
         printDebug(`${route} > ✅ Usuario actualizado correctamente`);
         callback();
         return "updated";
@@ -79,6 +82,7 @@ export const registerOrSyncUser = async (
         callback();
         return "unchanged";
       }
+      
     }
   } catch (error) {
     printDebug(`${route} > ❌ Error: ${(error as Error).message}`);

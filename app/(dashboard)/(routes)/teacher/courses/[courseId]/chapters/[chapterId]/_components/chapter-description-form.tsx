@@ -83,7 +83,7 @@ export const ChapterDescriptionForm = ({
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const path = `/api/courses/${courseId}/chapters/${chapterId}`;
+    const path = `/api/courses/${courseId}/chapters/${chapterId}/edit`;
 
     const callback = () => {
       toast.success(texts[lang].successMessage);

@@ -92,7 +92,7 @@ export const ChapterAccessForm = ({
         method: "PUT",
         values,
         courseId,
-        path: `/api/courses/${courseId}/chapters/${chapterId}`,
+        path: `/api/courses/${courseId}/chapters/${chapterId}/edit`,
         callback: (res: any) => {
           if (typeof res?.data?.isFree !== "undefined") {
             setAccessStatus(res.data.isFree);

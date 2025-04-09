@@ -147,3 +147,20 @@ export interface StripeCustomer {
   createdAt: Date;
   updatedAt: Date;
 }
+
+
+export interface muxVideoTypes {
+  id: string;
+  type: 'mux';
+  url: string;
+  assetId: string;
+  playbackId: string;
+  status: 'ready' | 'processing' | 'errored'; // puedes ajustar si hay más estados posibles
+  duration: number;
+  resolution: string;
+  aspectRatio: string;
+  createdAt: string; // o Date, si vas a convertirlo al objeto Date
+  updatedAt: string; // o Date, igual que arriba
+  chapterId: string;
+}
+

@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const bannerVariants = cva(
-  "sticky top-0 z-50 border-none text-sm flex items-center px-4 py-3 rounded-none w-full shadow-sm",
+  "sticky top-0 z-1border-none text-sm flex items-center px-4 py-3 rounded-none w-full shadow-sm",
   {
     variants: {
       variant: {

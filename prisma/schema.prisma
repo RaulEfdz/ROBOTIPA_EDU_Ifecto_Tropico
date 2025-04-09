@@ -16,7 +16,7 @@ model Course {
   imageUrl    String?
   price       Float?
   isPublished Boolean  @default(false)
-  delete      Boolean?  @default(false) // Nuevo campo agregado con valor por defecto
+  delete      Boolean? @default(false)
 
   categoryId String?
   category   Category? @relation(fields: [categoryId], references: [id])
@@ -57,13 +57,12 @@ model Chapter {
   id          String   @id @default(uuid())
   title       String
   description String?
-  videoUrl    String?
   position    Int
   isPublished Boolean  @default(false)
   isFree      Boolean  @default(false)
-  delete      Boolean?  @default(false) // Nuevo campo agregado con valor por defecto
+  delete      Boolean? @default(false)
 
-  muxData MuxData?
+  video       Video?
 
   courseId String
   course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -76,14 +75,26 @@ model Chapter {
   @@index([courseId])
 }
 
+model Video {
+  id           String   @id @default(uuid())
+  type         VideoType
+  url          String?
+  assetId      String?
+  playbackId   String?
+  status       String?
+  duration     Float?
+  resolution   String?
+  aspectRatio  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-model MuxData {
-  id         String   @id @default(uuid())
-  assetId    String
-  playbackId String?
+  chapterId    String   @unique
+  chapter      Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+}
 
-  chapterId String   @unique
-  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+enum VideoType {
+  external
+  mux
 }
 
 model UserProgress {
@@ -120,19 +131,6 @@ model Purchase {
   @@index([courseId])
 }
 
-model StripeCustomer {
-  id               String   @id @default(uuid())
-  userId           String   @unique
-  stripeCustomerId String   @unique
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-
-
 model User {
   id                String   @id @default(uuid())
   email             String   @unique
@@ -142,43 +140,126 @@ model User {
   customRole        String
   provider          String
   lastSignInAt      DateTime?
-  metadata          Json                           // Datos personalizados por usuario
+  metadata          Json
 
-  isActive          Boolean  @default(true)        // Usuario habilitado o no
-  isBanned          Boolean  @default(false)       // Baneado por conducta
-  isDeleted         Boolean  @default(false)       // Eliminado lógicamente (soft delete)
-  additionalStatus  String   @default("active")    // 'active', 'pending', 'suspended', etc.
+  isActive          Boolean  @default(true)
+  isBanned          Boolean  @default(false)
+  isDeleted         Boolean  @default(false)
+  additionalStatus  String   @default("active")
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  // Relaciones
   courses           Course[]
   purchases         Purchase[]
   userProgress      UserProgress[]
-  stripeCustomer    StripeCustomer?
-  invoices          Invoice[]                      // Relación con facturas
+  invoices          Invoice[]
+  examAttempts      ExamAttempt[]       // 🔧 Campo agregado
 
   @@map("users")
 }
 
+
 model Invoice {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  concept   String
-  amount    Float
-  currency  String
-  status    String
-  issuedAt  DateTime
-  paidAt    DateTime?
-  data      Json
+  concept        String
+  amount         Float
+  currency       String
+  status         String              // e.g. 'pending', 'paid', 'failed', etc.
+  paymentMethod  String              // e.g. 'yappy', 'paypal', 'transfer'
+  issuedAt       DateTime
+  paidAt         DateTime?
+  data           Json                // datos adicionales según método
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([userId])
 }
 
+// ----------------- EXAM TABLE -----------------
 
+model Exam {
+  id          String   @id @default(uuid())
+  title       String                       // Título del examen
+  description String?                      // Descripción opcional
+  duration    Int?                         // Duración en minutos
+  isPublished Boolean  @default(false)     // Si está disponible públicamente
+
+  questions   Question[]                   // Preguntas asociadas al examen
+  attempts    ExamAttempt[]                // Intentos realizados por usuarios
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Question {
+  id             String   @id @default(uuid())
+  examId         String
+  exam           Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  text           String                        // Texto de la pregunta
+  type           QuestionType                  // Tipo de pregunta
+  options        Option[]                      // Opciones disponibles (si aplica)
+  correctAnswers String[]                      // IDs de opciones correctas (para single o multiple)
+  points         Float     @default(1.0)       // Puntos que vale la pregunta
+
+  answers        Answer[]                      // 🔧 Campo inverso agregado
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([examId])
+}
+
+
+model Option {
+  id         String   @id @default(uuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  text       String                         // Texto de la opción
+  createdAt  DateTime @default(now())
+}
+
+model ExamAttempt {
+  id          String   @id @default(uuid())
+  userId      String
+  examId      String
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam        Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+  startedAt   DateTime @default(now())          // Cuándo empezó el intento
+  submittedAt DateTime?                         // Cuándo fue enviado (opcional)
+  score       Float?                            // Puntuación total obtenida
+  status      String   @default("in_progress")  // Estado del intento
+
+  answers     Answer[]
+
+  @@index([userId, examId])
+}
+
+model Answer {
+  id               String   @id @default(uuid())
+  attemptId        String
+  questionId       String
+
+  attempt          ExamAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question         Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  selectedOptionIds String[]               // IDs de las opciones seleccionadas
+  textResponse      String?                // Texto libre si la pregunta es de tipo texto
+  isCorrect         Boolean?               // Evaluación automática o manual
+
+  createdAt         DateTime @default(now())
+}
+
+enum QuestionType {
+  single      // Una sola respuesta correcta
+  multiple    // Varias respuestas correctas
+  text        // Respuesta abierta escrita
+}

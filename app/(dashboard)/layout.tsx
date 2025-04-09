@@ -42,6 +42,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       printDebug(`🧑 Usuario desde BD: ${JSON.stringify(user)}`);
 
       if (!user) {
+
+        
+
         console.warn("❌ Usuario no autenticado o no encontrado");
         const confirmed = confirm("Tu sesión ha expirado. ¿Deseas iniciar sesión?");
         if (confirmed) router.push("/auth");

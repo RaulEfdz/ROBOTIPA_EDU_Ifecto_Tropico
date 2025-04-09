@@ -29,28 +29,32 @@ export async function DELETE(
     const chapter = await db.chapter.findUnique({
       where: {
         id: params.chapterId,
-        courseId: params.courseId,
-        delete: false,
+      },
+      include: {
+        video: true, // 👈 Incluimos el video relacionado
       },
     });
 
     if (!chapter) return new NextResponse("Not Found", { status: 404 });
 
-    if (chapter.videoUrl) {
-      const muxData = await db.muxData.findFirst({
-        where: { chapterId: params.chapterId },
-      });
-
-      if (muxData) {
-        await Video.Assets.del(muxData.assetId);
-        await db.muxData.delete({ where: { id: muxData.id } });
-      }
+    // ✅ Si el capítulo tiene video con asset en Mux, eliminarlo
+    if (chapter.video?.assetId) {
+      await Video.Assets.del(chapter.video.assetId);
     }
 
+    // ✅ Eliminar el registro de Video en la base de datos (si existe)
+    if (chapter.video) {
+      await db.video.delete({
+        where: { chapterId: chapter.id },
+      });
+    }
+
+    // ✅ Eliminar el capítulo
     const deleted = await db.chapter.delete({
       where: { id: params.chapterId },
     });
 
+    // ✅ Si no quedan capítulos publicados, despublicar el curso
     const publishedChapters = await db.chapter.findMany({
       where: { courseId: params.courseId, isPublished: true },
     });

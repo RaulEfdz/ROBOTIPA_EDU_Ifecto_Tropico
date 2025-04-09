@@ -8,8 +8,8 @@ import { Banner } from "@/components/banner";
 
 import { ChapterTitleForm } from "./_components/chapter-title-form";
 import { ChapterAccessForm } from "./_components/chapter-access-form";
-import { ChapterVideoForm } from "./_components/chapter-video-form";
 import { EnhancedChapterDescription } from "./_components/EnhancedChapterDescription/EnhancedChapterDescription";
+import { ChapterVideoForm } from "./_components/videos/components/ChapterVideoForm";
 
 export type HandlerChecksItem = {
   id: string;
@@ -52,6 +52,9 @@ const ChapterIdPage = async ({ params }: ChapterIdPageProps) => {
       courseId: params.courseId,
       delete: false,
     },
+    include: {
+      video: true,
+    },
   });
 
   if (!chapter) {
@@ -77,6 +80,7 @@ const ChapterIdPage = async ({ params }: ChapterIdPageProps) => {
 
   return (
     <div className="h-full w-full bg-Sky833">
+      {/* Warning banner - full width */}
       {!chapter.isPublished && (
         <Banner
           variant="warning"
@@ -84,69 +88,83 @@ const ChapterIdPage = async ({ params }: ChapterIdPageProps) => {
         />
       )}
 
-      <div className="p-6">
-        <div className="flex items-center justify-between">
+      {/* Main content container with responsive padding */}
+      <div className="px-4 py-4 sm:p-6 max-w-7xl mx-auto">
+        {/* Navigation header */}
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
           <Link
             href={`/teacher/courses/${params.courseId}`}
-            className="flex items-center text-sm hover:opacity-75 transition mb-6"
+            className="flex items-center text-sm hover:opacity-75 transition"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             {texts[language].backToCourseConfig}
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
-          {/* Columna izquierda */}
-          <div className="space-y-4">
-            <div>
-              <div className="flex items-center gap-x-2 mb-2">
+        {/* Main content grid - responsive from 1 to 2 columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mt-6 sm:mt-10">
+          {/* Left column */}
+          <div className="space-y-6 sm:space-y-8">
+            {/* Chapter customization section */}
+            <section className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+              <div className="flex items-center gap-x-2 mb-4">
                 <IconBadge icon={LayoutDashboard} />
-                <h2 className="text-xl">{texts[language].customizeChapter}</h2>
+                <h2 className="text-lg sm:text-xl font-medium">{texts[language].customizeChapter}</h2>
               </div>
-              <ChapterTitleForm // actulizado
-                initialData={chapter}
-                courseId={params.courseId}
-                chapterId={params.chapterId}
-              />
+              
+              <div className="space-y-6">
+                <ChapterTitleForm
+                  initialData={chapter}
+                  courseId={params.courseId}
+                  chapterId={params.chapterId}
+                />
 
-              <EnhancedChapterDescription
-                initialData={chapter}
-                courseId={params.courseId}
-                chapterId={params.chapterId}
-                items={listItemHandlerChecks}
-                lang="es"
-              />
-            </div>
+                <EnhancedChapterDescription
+                  initialData={chapter}
+                  courseId={params.courseId}
+                  chapterId={params.chapterId}
+                  items={listItemHandlerChecks}
+                  lang="es"
+                />
+              </div>
+            </section>
 
-            <div>
-              <div className="flex items-center gap-x-2 mb-2">
+            {/* Access settings section */}
+            <section className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+              <div className="flex items-center gap-x-2 mb-4">
                 <IconBadge icon={Eye} />
-                <h2 className="text-xl">{texts[language].accessSettings}</h2>
+                <h2 className="text-lg sm:text-xl font-medium">{texts[language].accessSettings}</h2>
               </div>
+              
               <ChapterAccessForm
                 initialData={chapter}
                 courseId={params.courseId}
                 chapterId={params.chapterId}
               />
-            </div>
+            </section>
           </div>
 
-          {/* Columna derecha */}
-          <div>
-            <div className="flex items-center gap-x-2 mb-2">
-              <IconBadge icon={Video} />
-              <h2 className="text-xl">{texts[language].addVideo}</h2>
-            </div>
-            <ChapterVideoForm
-              initialData={chapter}
-              chapterId={params.chapterId}
-              courseId={params.courseId}
-            />
+          {/* Right column */}
+          <div className="space-y-6 sm:space-y-8">
+            {/* Video section */}
+            <section className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+              <div className="flex items-center gap-x-2 mb-4">
+                <IconBadge icon={Video} />
+                <h2 className="text-lg sm:text-xl font-medium">{texts[language].addVideo}</h2>
+              </div>
+              
+              <ChapterVideoForm
+                initialData={chapter}
+                chapterId={params.chapterId}
+                courseId={params.courseId}
+              />
+            </section>
 
-            <div className="flex items-center justify-end w-auto h-10 mt-20">
+            {/* Save button - right aligned on larger screens, full width on mobile */}
+            <div className="flex mt-4 sm:mt-6">
               <Link
                 href={`/teacher/courses/${params.courseId}`}
-                className="flex items-center text-sm hover:opacity-75 mb-6 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                className="w-full sm:w-auto ml-auto flex items-center justify-center text-sm bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md transition-colors"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {texts[language].saveAndExit}

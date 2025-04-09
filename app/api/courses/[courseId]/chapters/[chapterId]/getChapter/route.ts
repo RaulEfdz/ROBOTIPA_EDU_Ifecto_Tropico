@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { Attachment, Chapter } from "@prisma/client";
+import { Attachment, Chapter, Video } from "@prisma/client";
 
 interface GetChapterProps {
   userId: string;
@@ -34,23 +34,23 @@ export async function POST(request: Request) {
       },
       select: {
         price: true,
-        imageUrl: true
+        imageUrl: true,
       },
     });
 
     const chapter = await db.chapter.findUnique({
       where: {
-        delete: false,
         id: chapterId,
-        isPublished: true,
+      },
+      include: {
+        video: true, // ✅ Se incluye el video relacionado
       },
     });
 
-    if (!chapter || !course) {
+    if (!chapter || !course || chapter.delete || !chapter.isPublished) {
       return NextResponse.json({ message: "Chapter or course not found" }, { status: 404 });
     }
 
-    let muxData = null;
     let attachments: Attachment[] = [];
     let nextChapter: Chapter | null = null;
 
@@ -63,19 +63,13 @@ export async function POST(request: Request) {
     }
 
     if (chapter.isFree || purchase) {
-      muxData = await db.muxData.findUnique({
-        where: {
-          chapterId: chapterId,
-        },
-      });
-
       nextChapter = await db.chapter.findFirst({
         where: {
           delete: false,
           courseId: courseId,
           isPublished: true,
           position: {
-            gt: chapter?.position,
+            gt: chapter.position,
           },
         },
         orderBy: {
@@ -96,7 +90,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       chapter,
       course,
-      muxData,
+      video: chapter.video ?? null, // ✅ Enviamos el video directamente
       attachments,
       nextChapter,
       userProgress,
@@ -110,7 +104,7 @@ export async function POST(request: Request) {
         error: error instanceof Error ? error.message : "Unknown error",
         chapter: null,
         course: null,
-        muxData: null,
+        video: null,
         attachments: [],
         nextChapter: null,
         userProgress: null,

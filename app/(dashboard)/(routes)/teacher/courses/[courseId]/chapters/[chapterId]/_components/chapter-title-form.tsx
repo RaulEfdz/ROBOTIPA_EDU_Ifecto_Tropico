@@ -96,7 +96,7 @@ export const ChapterTitleForm = ({
     if (values.title === title) return toggleEdit();
 
     setIsSaving(true);
-    const path = `/api/courses/${courseId}/chapters/${chapterId}/update`;
+    const path = `/api/courses/${courseId}/chapters/${chapterId}/edit`;
 
     try {
       await fetchData({
