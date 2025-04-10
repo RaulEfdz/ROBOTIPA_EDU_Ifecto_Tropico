@@ -3,7 +3,10 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
-export async function PUT(req: Request, { params }: any) {
+export async function PUT(
+  req: Request,
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> })  {
+  const { courseId, chapterId } = await params;
   try {
     const user = (await getUserDataServerAuth())?.user;
 
@@ -13,7 +16,7 @@ export async function PUT(req: Request, { params }: any) {
 
     const ownCourse = await db.course.findUnique({
       where: {
-        id: params.courseId,
+        id: courseId,
         userId:user?.id,
       },
     });
@@ -25,8 +28,8 @@ export async function PUT(req: Request, { params }: any) {
     const unpublishedChapter = await db.chapter.update({
       where: {
         delete: false,
-        id: params.chapterId,
-        courseId: params.courseId,
+        id: chapterId,
+        courseId: courseId,
       },
       data: {
         isPublished: false,
@@ -35,7 +38,7 @@ export async function PUT(req: Request, { params }: any) {
 
     const publishedChaptersInCourse = await db.chapter.findMany({
       where: {
-        courseId: params.courseId,
+        courseId: courseId,
         isPublished: true,
       },
     });
@@ -43,7 +46,7 @@ export async function PUT(req: Request, { params }: any) {
     if (!publishedChaptersInCourse.length) {
       await db.course.update({
         where: {
-          id: params.courseId,
+          id: courseId,
           delete: false,
         },
         data: {

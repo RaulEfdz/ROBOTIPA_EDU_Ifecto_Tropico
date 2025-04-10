@@ -4,14 +4,15 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function PUT(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
+  const { courseId } = await params;
   try {
     const user = (await getUserDataServerAuth())?.user;
     if (!user?.id) return new NextResponse("Unauthorized", { status: 401 });
 
     const course = await db.course.findUnique({
-      where: { id: params.courseId, userId: user.id, delete: false },
+      where: { id: courseId, userId: user.id, delete: false },
     });
 
     if (!course) return new NextResponse("Unauthorized", { status: 401 });

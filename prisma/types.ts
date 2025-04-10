@@ -1,116 +1,40 @@
-export interface UserResponse {
-  success: boolean;
-  clerkUser: ClerkUserData;
-  dbUser: UserProfile | null;
-  error?: string;
+// Enums
+export enum VideoType {
+  external = "external",
+  mux = "mux"
 }
 
-export interface ClerkUserData {
-  id: string;
-  firstName?: string;
-  lastName?: string;
-  email: string;
-  username?: string;
-  profileImageUrl?: string;
-  phoneNumber?: string;
-  publicMetadata?: Record<string, unknown>;
-  privateMetadata?: Record<string, unknown>;
+export enum QuestionType {
+  single = "single",    // Una sola respuesta correcta
+  multiple = "multiple",// Varias respuestas correctas
+  text = "text"         // Respuesta abierta escrita
 }
-export interface UserProfile {
-    id: string; // ID único del usuario
-    emailAddress: string; // Dirección de correo electrónico
-    fullName: string; // Nombre completo
-    phoneNumber: string; // Número de teléfono
-    countryOfResidence: string; // País de residencia
-    age: number; // Edad
-    gender: string; // Género
-    university: string; // Universidad
-    educationLevel: string; // Nivel educativo
-    major: string; // Carrera principal
-    otherMajor: string; // Otra carrera
-    specializationArea: string; // Área de especialización
-    learningObjectives: string[]; // Objetivos de aprendizaje
-    otherObjective: string; // Otro objetivo de aprendizaje adicional
-    communicationPreferences: string[]; // Preferencias de comunicación
-    acceptsTerms: boolean; // Indica si el usuario acepta los términos
-    role: 'developer' | 'admin' | 'user'; // Rol del usuario
-    available: boolean; // Indica si el usuario está disponible
-    avatar: string; // URL de avatar
-    isEmailVerified: boolean; // Indica si el correo ha sido verificado
-    isAdminVerified: boolean; // Indica si ha sido verificado por un administrador
-    createdAt: Date; // Fecha de creación
-    updatedAt: Date; // Fecha de actualización
-    deviceType: string; // Tipo de dispositivo desde donde se conecta
-  }
 
-
-export interface User {
-  id: string;
-  emailAddress: string;
-  fullName: string;
-  phoneNumber: string;
-  countryOfResidence: string;
-  age?: number | null;
-  gender: string;
-  university: string;
-  educationLevel: string;
-  major: string;
-  otherMajor: string;
-  specializationArea: string;
-  learningObjectives: string[];
-  otherObjective: string;
-  communicationPreferences: string[];
-  acceptsTerms: boolean;
-  role: string;
-  available: boolean;
-  avatar: string;
-  isEmailVerified: boolean;
-  isAdminVerified: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deviceType: string;
-  courses: Course[];
-  purchases?: Purchase[];
-  userProgresses?: UserProgress[];
-  stripeCustomer?: StripeCustomer | null;
-}
+// Interfaces de modelos
 
 export interface Course {
   id: string;
   userId: string;
   title: string;
-  description?: string | null;
-  imageUrl?: string | null;
-  price?: number | null;
+  description?: string;
+  imageUrl?: string;
+  price?: number;
   isPublished: boolean;
-  categoryId?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  delete?: boolean;
+  categoryId?: string;
+  category?: Category;
   chapters: Chapter[];
   attachments: Attachment[];
   purchases: Purchase[];
+  createdAt: Date;
+  updatedAt: Date;
   user: User;
 }
 
-export interface Chapter {
+export interface Category {
   id: string;
-  title: string;
-  description?: string | null;
-  videoUrl?: string | null;
-  position: number;
-  isPublished: boolean;
-  isFree: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  muxData?: MuxData | null;
-  userProgress: UserProgress[];
-}
-
-export interface MuxData {
-  id: string;
-  assetId: string;
-  playbackId?: string | null;
-  chapterId: string;
+  name: string;
+  courses: Course[];
 }
 
 export interface Attachment {
@@ -118,49 +42,158 @@ export interface Attachment {
   name: string;
   url: string;
   courseId: string;
+  course: Course;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface Purchase {
+export interface Chapter {
   id: string;
-  userId: string;
+  title: string;
+  description?: string;
+  position: number;
+  isPublished: boolean;
+  isFree: boolean;
+  delete?: boolean;
+  video?: Video;
   courseId: string;
+  course: Course;
+  userProgress: UserProgress[];
   createdAt: Date;
   updatedAt: Date;
-  course: Course;
+}
+
+export interface Video {
+  id: string;
+  type: VideoType;
+  url?: string;
+  assetId?: string;
+  playbackId?: string;
+  status?: string;
+  duration?: number;
+  resolution?: string;
+  aspectRatio?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  chapterId: string;
+  chapter: Chapter;
 }
 
 export interface UserProgress {
   id: string;
   userId: string;
   chapterId: string;
+  chapter: Chapter;
   isCompleted: boolean;
   createdAt: Date;
   updatedAt: Date;
+  user: User;
 }
 
-export interface StripeCustomer {
+export interface Purchase {
   id: string;
   userId: string;
-  stripeCustomerId: string;
+  courseId: string;
+  course: Course;
+  createdAt: Date;
+  updatedAt: Date;
+  user: User;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  fullName: string;
+  username: string;
+  phone?: string;
+  customRole: string;
+  provider: string;
+  lastSignInAt?: Date;
+  metadata: any; // se podría especificar más el tipo si se conoce la estructura del JSON
+  isActive: boolean;
+  isBanned: boolean;
+  isDeleted: boolean;
+  additionalStatus: string;
+  createdAt: Date;
+  updatedAt: Date;
+  courses: Course[];
+  purchases: Purchase[];
+  userProgress: UserProgress[];
+  invoices: Invoice[];
+  examAttempts: ExamAttempt[];
+}
+
+export interface Invoice {
+  id: string;
+  userId: string;
+  user: User;
+  concept: string;
+  amount: number;
+  currency: string;
+  status: string;         // Ej: 'pending', 'paid', 'failed', etc.
+  paymentMethod: string;  // Ej: 'yappy', 'paypal', 'transfer'
+  issuedAt: Date;
+  paidAt?: Date;
+  data: any;              // Datos adicionales según el método (tipo JSON)
   createdAt: Date;
   updatedAt: Date;
 }
 
-
-export interface muxVideoTypes {
+export interface Exam {
   id: string;
-  type: 'mux';
-  url: string;
-  assetId: string;
-  playbackId: string;
-  status: 'ready' | 'processing' | 'errored'; // puedes ajustar si hay más estados posibles
-  duration: number;
-  resolution: string;
-  aspectRatio: string;
-  createdAt: string; // o Date, si vas a convertirlo al objeto Date
-  updatedAt: string; // o Date, igual que arriba
-  chapterId: string;
+  title: string;
+  description?: string;
+  duration?: number;       // Duración en minutos
+  isPublished: boolean;
+  questions: Question[];
+  attempts: ExamAttempt[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+export interface Question {
+  id: string;
+  examId: string;
+  exam: Exam;
+  text: string;
+  type: QuestionType;
+  options: Option[];
+  correctAnswers: string[]; // IDs de las opciones correctas
+  points: number;
+  answers: Answer[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Option {
+  id: string;
+  questionId: string;
+  question: Question;
+  text: string;
+  createdAt: Date;
+}
+
+export interface ExamAttempt {
+  id: string;
+  userId: string;
+  examId: string;
+  user: User;
+  exam: Exam;
+  startedAt: Date;
+  submittedAt?: Date;
+  score?: number;
+  status: string;         // Ej: "in_progress"
+  answers: Answer[];
+}
+
+export interface Answer {
+  id: string;
+  attemptId: string;
+  questionId: string;
+  attempt: ExamAttempt;
+  question: Question;
+  selectedOptionIds: string[];
+  textResponse?: string;
+  isCorrect?: boolean;
+  createdAt: Date;
+}

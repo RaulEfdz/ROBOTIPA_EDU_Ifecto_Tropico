@@ -4,8 +4,9 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
 ) {
+  const { courseId, chapterId } = await params;
   try {
     const { isPublished, ...values } = await req.json();
     const user = (await getUserDataServerAuth())?.user;
@@ -14,7 +15,7 @@ export async function POST(
 
     const ownCourse = await db.course.findUnique({
       where: {
-        id: params.courseId,
+        id: courseId,
         userId: user.id,
         delete: false,
       },
@@ -24,8 +25,8 @@ export async function POST(
 
     const updated = await db.chapter.update({
       where: {
-        id: params.chapterId,
-        courseId: params.courseId,
+        id: chapterId,
+        courseId: courseId,
       },
       data: {
         ...values,

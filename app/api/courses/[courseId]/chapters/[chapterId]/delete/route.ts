@@ -10,15 +10,16 @@ const { Video } = new Mux(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  { params }: { params: Promise<{ courseId: string; chapterId: string }>}
 ) {
+  const { courseId, chapterId } = await params;
   try {
     const user = (await getUserDataServerAuth())?.user;
     if (!user?.id) return new NextResponse("Unauthorized", { status: 401 });
 
     const ownCourse = await db.course.findUnique({
       where: {
-        id: params.courseId,
+        id: courseId,
         userId: user.id,
         delete: false,
       },
@@ -28,7 +29,7 @@ export async function DELETE(
 
     const chapter = await db.chapter.findUnique({
       where: {
-        id: params.chapterId,
+        id: chapterId,
       },
       include: {
         video: true, // 👈 Incluimos el video relacionado
@@ -51,17 +52,17 @@ export async function DELETE(
 
     // ✅ Eliminar el capítulo
     const deleted = await db.chapter.delete({
-      where: { id: params.chapterId },
+      where: { id: chapterId },
     });
 
     // ✅ Si no quedan capítulos publicados, despublicar el curso
     const publishedChapters = await db.chapter.findMany({
-      where: { courseId: params.courseId, isPublished: true },
+      where: { courseId: courseId, isPublished: true },
     });
 
     if (!publishedChapters.length) {
       await db.course.update({
-        where: { id: params.courseId },
+        where: { id: courseId },
         data: { isPublished: false },
       });
     }

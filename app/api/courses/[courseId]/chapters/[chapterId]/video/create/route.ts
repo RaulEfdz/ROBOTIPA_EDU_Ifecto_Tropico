@@ -10,9 +10,9 @@ const { Video: MuxVideo } = new Mux(
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  { params }: { params: Promise<{ courseId: string; chapterId: string }>}
 ) {
-  const { courseId, chapterId } = params;
+  const { courseId, chapterId } = await params;
 
   try {
     const { uploadId } = await req.json();

@@ -3,7 +3,10 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
-export async function POST(req: Request, { params }: any) {
+export async function POST(req: Request,
+  { params }: { params: Promise<{ courseId: string }> }
+) {
+  const { courseId } = await params;
   try {
     const user = (await getUserDataServerAuth())?.user;
 
@@ -12,7 +15,6 @@ export async function POST(req: Request, { params }: any) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const courseId = await params.courseId;
 
     if (!courseId) {
       return new NextResponse("Bad Request: courseId is required", {

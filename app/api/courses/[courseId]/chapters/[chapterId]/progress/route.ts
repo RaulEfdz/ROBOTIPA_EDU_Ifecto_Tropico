@@ -6,9 +6,9 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function PUT(
   req: Request,
-  { params }: any
-) {
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }) {
   try {
+    const { chapterId } = await params;
     const { isCompleted } = await req.json();
 
     const user = (await getUserDataServerAuth())?.user;
@@ -21,7 +21,7 @@ export async function PUT(
       where: {
         userId_chapterId: {
           userId: user?.id,
-          chapterId: params.chapterId,
+          chapterId: chapterId,
         }
       },
       update: {
@@ -29,7 +29,7 @@ export async function PUT(
       },
       create: {
         userId:user?.id,
-        chapterId: params.chapterId,
+        chapterId: chapterId,
         isCompleted,
       }
     })

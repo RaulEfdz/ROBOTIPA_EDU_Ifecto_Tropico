@@ -77,10 +77,10 @@ export default function CourseIdContent({ course, categories, lang }: Props) {
             <CategoryForm
               initialData={course}
               courseId={course.id}
-              options={categories.map((category) => ({
-                label: category.name,
-                value: category.id,
-              }))}
+              // options={categories.map((category) => ({
+              //   label: category.name,
+              //   value: category.id,
+              // }))}
             />
           </div>
           <div className="space-y-6">

@@ -4,8 +4,9 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function PUT(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  { params }: { params:Promise<{ courseId: string; chapterId: string }>}
 ) {
+  const { courseId, chapterId } = await params;
   try {
     const user = (await getUserDataServerAuth())?.user;
 
@@ -15,7 +16,7 @@ export async function PUT(
 
     const ownCourse = await db.course.findUnique({
       where: {
-        id: params.courseId,
+        id: courseId,
         userId: user.id,
         delete: false,
       },
@@ -27,7 +28,7 @@ export async function PUT(
 
     const chapter = await db.chapter.findUnique({
       where: {
-        id: params.chapterId,
+        id: chapterId,
       },
       include: {
         video: true, // ✅ Incluir video
@@ -45,7 +46,7 @@ export async function PUT(
 
     const publishedChapter = await db.chapter.update({
       where: {
-        id: params.chapterId,
+        id: chapterId,
       },
       data: {
         isPublished: true,

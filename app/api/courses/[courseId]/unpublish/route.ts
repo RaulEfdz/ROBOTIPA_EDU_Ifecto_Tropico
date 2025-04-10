@@ -4,8 +4,9 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function PUT(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }>}
 ) {
+  const { courseId } = await params;
   try {
     const session = await getUserDataServerAuth();
     const user = session?.user;
@@ -16,7 +17,7 @@ export async function PUT(
 
     const course = await db.course.findUnique({
       where: {
-        id: params.courseId,
+        id: courseId,
         userId: user.id,
         delete: false,
       },
@@ -28,7 +29,7 @@ export async function PUT(
 
     const unpublishedCourse = await db.course.update({
       where: {
-        id: params.courseId,
+        id: courseId,
         userId: user.id,
       },
       data: {

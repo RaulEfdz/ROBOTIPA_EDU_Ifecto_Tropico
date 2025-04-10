@@ -4,8 +4,9 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params:Promise<{ courseId: string }>}
 ) {
+  const { courseId } = await params;
   try {
     const session = await getUserDataServerAuth();
     const user = session?.user;
@@ -24,7 +25,7 @@ export async function POST(
 
     const course = await db.course.findFirst({
       where: {
-        id: params.courseId,
+        id: courseId,
         userId: user.id,
         delete: false,
       },
@@ -35,7 +36,7 @@ export async function POST(
     }
 
     const updatedCourse = await db.course.update({
-      where: { id: params.courseId },
+      where: { id: courseId },
       data: { imageUrl: imageUrl.trim() },
       select: {
         id: true,

@@ -19,7 +19,7 @@ const ENDPOINTS = {
     uploadAttachment: (courseId: string) =>
       `/api/courses/${courseId}/attachments/create`,
     deleteAttachment: (courseId: string, attachmentId: string) =>
-      `/api/courses/${courseId}/attachments/${attachmentId}/delete`,
+      `/api/courses/${courseId}/attachments/trash/${attachmentId}`,
   },
 };
 

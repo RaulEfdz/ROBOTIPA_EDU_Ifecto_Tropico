@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
 
+
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
+  const { courseId } = await params;
+  if (!courseId) {
   try {
     const { url, res } = await req.json();
 
@@ -43,6 +46,7 @@ export async function POST(
     console.error("[ATTACHMENT_CREATE]", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
+}
 }
 
 function replaceSpecialCharacters(text: string): string {
