@@ -1,69 +1,48 @@
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-// Handler to update an existing user
-export async function POST(req: Request) {
+// Handler para actualizar un usuario existente
+export async function POST(req: NextRequest) {
   try {
-    // Parse request body y asignar valores por defecto
+    // Parsear el body de la petición y asignar valores por defecto
     const {
       id = "",
-      emailAddress = "",
+      email = "",
       fullName = "",
-      phoneNumber = "",
-      countryOfResidence = "",
-      age = 0,
-      gender = "",
-      university = "",
-      educationLevel = "",
-      major = "",
-      otherMajor = "",
-      specializationArea = "",
-      learningObjectives = [],
-      otherObjective = "",
-      communicationPreferences = [],
-      acceptsTerms = false,
-      role = "visitor",
-      available = false,
-      avatar = "",
-      isEmailVerified: emailVerified = false, // Mapeo de nombre
-      isAdminVerified = false,
-      deviceType = "",
+      username = "",
+      phone = "",
+      customRole = "visitor",
+      provider = "",
+      metadata = {},
+      isActive = true,
+      isBanned = false,
+      isDeleted = false,
+      additionalStatus = "active",
     } = await req.json();
 
     // Validación de campos obligatorios
-    if (!id || !emailAddress || emailVerified === undefined || !deviceType) {
+    if (!id || !email || !username) {
       return NextResponse.json(
-        { error: "Faltan datos obligatorios o datos no válidos" },
+        { error: "Faltan datos obligatorios: id, email o username" },
         { status: 400 }
       );
     }
 
-  
     // Actualizar los datos del usuario en la base de datos
     const updatedUser = await db.user.update({
       where: { id },
       data: {
-        emailAddress,
+        email,
         fullName,
-        phoneNumber,
-        countryOfResidence,
-        age,
-        gender,
-        university,
-        educationLevel,
-        major,
-        otherMajor,
-        specializationArea,
-        learningObjectives,
-        otherObjective,
-        communicationPreferences,
-        acceptsTerms,
-        role,
-        available,
-        avatar,
-        isEmailVerified: emailVerified, // Almacenar con el nombre correcto
-        isAdminVerified,
-        deviceType,
+        username,
+        phone,
+        customRole,
+        provider,
+        metadata,
+        isActive,
+        isBanned,
+        isDeleted,
+        additionalStatus,
       },
     });
 

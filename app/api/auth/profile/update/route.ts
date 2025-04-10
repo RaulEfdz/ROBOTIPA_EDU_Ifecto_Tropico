@@ -1,17 +1,21 @@
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-// Handler to update or insert a user
-export async function POST(req: Request) {
+// Handler para actualizar o insertar un usuario
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // Desestructuración con valores predeterminados
+    // Desestructuración con valores predeterminados, mapeando los campos al modelo
     const {
       id = "",
-      emailAddress = "",
+      email = "", // se esperaba "emailAddress", ahora se usa "email"
       fullName = "",
-      phoneNumber = "",
+      username = "",
+      phone = "", // se esperaba "phoneNumber", ahora se usa "phone"
+      customRole = "visitor", // se esperaba "role", se renombra a "customRole"
+      provider = "",
+      // Los siguientes campos se almacenarán en metadata:
       countryOfResidence = "",
       age = 0,
       gender = "",
@@ -24,21 +28,20 @@ export async function POST(req: Request) {
       otherObjective = "",
       communicationPreferences = [],
       acceptsTerms = false,
-      role = "visitor",
       available = false,
       avatar = "",
-      isEmailVerified: emailVerified = false, // Renombrar para consistencia
+      isEmailVerified = false,
       isAdminVerified = false,
       deviceType = "",
-      delete: isDeleted = false, // Campo adicional con valor por defecto
+      isDeleted = false, // se renombra de "delete" a "isDeleted"
     } = body;
 
     // Validación de campos obligatorios
     const errors: string[] = [];
     if (!id) errors.push("El campo 'id' es obligatorio.");
-    if (!emailAddress) errors.push("El campo 'emailAddress' es obligatorio.");
-    if (emailVerified === undefined) errors.push("El campo 'emailVerified' no puede ser indefinido.");
-    if (!deviceType) errors.push("El campo 'deviceType' es obligatorio.");
+    if (!email) errors.push("El campo 'email' es obligatorio.");
+    if (!username) errors.push("El campo 'username' es obligatorio.");
+    // Puedes incluir la validación de otros campos si fueran obligatorios
 
     if (errors.length > 0) {
       return NextResponse.json(
@@ -47,58 +50,50 @@ export async function POST(req: Request) {
       );
     }
 
- 
+    // Construir el objeto metadata con los campos adicionales
+    const metadata = {
+      countryOfResidence,
+      age,
+      gender,
+      university,
+      educationLevel,
+      major,
+      otherMajor,
+      specializationArea,
+      learningObjectives,
+      otherObjective,
+      communicationPreferences,
+      acceptsTerms,
+      available,
+      avatar,
+      isEmailVerified,
+      isAdminVerified,
+      deviceType,
+    };
+
     // Actualizar o insertar los datos del usuario en la base de datos
     const updatedUser = await db.user.upsert({
       where: { id },
       update: {
-        emailAddress,
+        email,
         fullName,
-        phoneNumber,
-        countryOfResidence,
-        age,
-        gender,
-        university,
-        educationLevel,
-        major,
-        otherMajor,
-        specializationArea,
-        learningObjectives,
-        otherObjective,
-        communicationPreferences,
-        acceptsTerms,
-        role,
-        available,
-        avatar,
-        isEmailVerified: emailVerified,
-        isAdminVerified,
-        deviceType,
-        delete: isDeleted,
+        username,
+        phone,
+        customRole,
+        provider,
+        metadata,
+        isDeleted,
       },
       create: {
         id,
-        emailAddress,
+        email,
         fullName,
-        phoneNumber,
-        countryOfResidence,
-        age,
-        gender,
-        university,
-        educationLevel,
-        major,
-        otherMajor,
-        specializationArea,
-        learningObjectives,
-        otherObjective,
-        communicationPreferences,
-        acceptsTerms,
-        role,
-        available,
-        avatar,
-        isEmailVerified: emailVerified,
-        isAdminVerified,
-        deviceType,
-        delete: isDeleted,
+        username,
+        phone,
+        customRole,
+        provider,
+        metadata,
+        isDeleted,
       },
     });
 

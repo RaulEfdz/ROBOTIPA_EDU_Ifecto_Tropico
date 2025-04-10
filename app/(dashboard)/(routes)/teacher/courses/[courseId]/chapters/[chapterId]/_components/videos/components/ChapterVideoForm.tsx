@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, PlusCircle, X, Loader2 } from "lucide-react";
-import { Chapter, Video } from "@prisma/client";
+import { Pencil, PlusCircle, X } from "lucide-react"; // Se elimina Loader2 por no usarse
+import { Chapter } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -13,13 +13,14 @@ import { VideoDisplay } from "../components/VideoDisplay";
 import { UploadOptions } from "../components/UploadOptions";
 import { YouTubeInput } from "../components/YouTubeInput";
 import { VideoUploaderMux } from "./UploaderMux/VideoUploaderMux";
+import { ChapterVideo } from "@/prisma/types";
 
 interface ChapterWithVideo extends Chapter {
-  video?: Video | null;
+  video?: ChapterVideo | null | undefined;
 }
 
 interface ChapterVideoFormProps {
-  initialData: ChapterWithVideo;
+  initialData: ChapterWithVideo | undefined;
   courseId: string;
   chapterId: string;
   lang?: "es" | "en";
@@ -34,14 +35,17 @@ export const ChapterVideoForm = ({
   const t = translations[lang];
   const router = useRouter();
 
+  // Se usa el encadenamiento opcional en caso de que initialData esté indefinido.
+  const [videoUrl, setVideoUrl] = useState(initialData?.video?.url || "");
   const [isEditing, setIsEditing] = useState(false);
   const [isReplacing, setIsReplacing] = useState(false);
   const [isSubmittingYouTube, setIsSubmittingYouTube] = useState(false);
-  const [videoUrl, setVideoUrl] = useState(initialData.video?.url || "");
   const [mode, setMode] = useState<"youtube" | "file" | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const getInitialVideoType = (url: string | undefined | null): "youtube" | "file" | null => {
+  const getInitialVideoType = (
+    url: string | undefined | null
+  ): "youtube" | "file" | null => {
     if (!url) return null;
     return getYouTubeVideoId(url) ? "youtube" : "file";
   };
@@ -58,7 +62,7 @@ export const ChapterVideoForm = ({
     setIsReplacing(false);
 
     if (next) {
-      const currentVideoUrl = videoUrl || initialData.video?.url || "";
+      const currentVideoUrl = videoUrl || initialData?.video?.url || "";
       setVideoUrl(currentVideoUrl);
       setMode(getInitialVideoType(currentVideoUrl));
     } else {
@@ -71,7 +75,7 @@ export const ChapterVideoForm = ({
     setApiError(null);
     setIsReplacing(false);
     setMode(null);
-    setVideoUrl(initialData.video?.url || "");
+    setVideoUrl(initialData?.video?.url || "");
   };
 
   const validateYouTubeUrl = (url: string): boolean => {
@@ -79,11 +83,15 @@ export const ChapterVideoForm = ({
   };
 
   const postYouTubeVideoData = async (urlToSave: string) => {
-    const res = await fetch(`/api/courses/${courseId}/chapters/${chapterId}/video/youtube`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ videoUrl: urlToSave }),
-    });
+    const res = await fetch(
+      `/api/courses/${courseId}/chapters/${chapterId}/video/youtube`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoUrl: urlToSave }),
+      }
+    );
+
     if (!res.ok) {
       const error = await res.json().catch(() => ({ message: t.errorMessage }));
       throw new Error(error.message || t.errorMessage);
@@ -92,15 +100,20 @@ export const ChapterVideoForm = ({
   };
 
   const postMuxVideoData = async (uploadId: string): Promise<{ url: string }> => {
-    const res = await fetch(`/api/courses/${courseId}/chapters/${chapterId}/video/create`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ uploadId }),
-    });
+    const res = await fetch(
+      `/api/courses/${courseId}/chapters/${chapterId}/video/create`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uploadId }),
+      }
+    );
+
     if (!res.ok) {
       const error = await res.json().catch(() => ({ message: t.errorMessage }));
       throw new Error(error.message || t.errorMessage);
     }
+
     const data = await res.json();
     if (!data.url) {
       throw new Error(t.errorMessage + " (Missing URL in response)");
@@ -147,9 +160,17 @@ export const ChapterVideoForm = ({
       toast.error(msg);
       setIsEditing(false);
       setMode(null);
-      setVideoUrl(initialData.video?.url || "");
+      setVideoUrl(initialData?.video?.url || "");
     }
   };
+
+  if (!initialData) {
+    return (
+      <div className="mb-6 bg-white dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-all duration-300">
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t.loading}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-6 bg-white dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-all duration-300">
@@ -198,10 +219,13 @@ export const ChapterVideoForm = ({
         <div className="space-y-4">
           <VideoDisplay videoUrl={videoUrl} noVideoText={t.noVideo} />
           <div className="flex gap-4">
-            <Button onClick={() => {
-              setMode(null)
-              setIsReplacing(true)
-            }} variant="outline">
+            <Button
+              onClick={() => {
+                setMode(null);
+                setIsReplacing(true);
+              }}
+              variant="outline"
+            >
               {t.replaceButton || "Reemplazar video"}
             </Button>
           </div>

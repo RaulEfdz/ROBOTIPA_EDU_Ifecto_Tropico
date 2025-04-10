@@ -55,7 +55,7 @@ export interface Chapter {
   isPublished: boolean;
   isFree: boolean;
   delete?: boolean;
-  video?: Video;
+  video?: ChapterVideo;
   courseId: string;
   course: Course;
   userProgress: UserProgress[];
@@ -63,7 +63,7 @@ export interface Chapter {
   updatedAt: Date;
 }
 
-export interface Video {
+export interface ChapterVideo {
   id: string;
   type: VideoType;
   url?: string;

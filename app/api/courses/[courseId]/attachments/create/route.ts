@@ -19,7 +19,7 @@ export async function POST(
 
     const courseOwner = await db.course.findUnique({
       where: {
-        id: params.courseId,
+        id: courseId,
         userId: user.id,
         delete: false,
       },
@@ -37,7 +37,7 @@ export async function POST(
             "__" +
             getFileExtension(res.fileName)
         ),
-        courseId: params.courseId,
+        courseId: courseId,
       },
     });
 

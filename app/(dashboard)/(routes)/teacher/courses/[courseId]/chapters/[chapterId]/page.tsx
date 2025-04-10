@@ -11,6 +11,15 @@ import { ChapterTitleForm } from './_components/chapter-title-form';
 import { ChapterAccessForm } from './_components/chapter-access-form';
 import { EnhancedChapterDescription } from './_components/EnhancedChapterDescription/EnhancedChapterDescription';
 import { ChapterVideoForm } from './_components/videos/components/ChapterVideoForm';
+// Importamos el tipo Chapter desde Prisma y lo renombramos para evitar conflictos
+import { Chapter as PrismaChapter } from '@prisma/client';
+// Importamos el tipo que representa el video asociado al Chapter
+import { ChapterVideo } from '@/prisma/types';
+
+// Creamos un tipo que extiende al tipo de Prisma, agregando la relación con video
+export type ChapterWithVideo = PrismaChapter & {
+  video?: ChapterVideo | null;
+};
 
 export type HandlerChecksItem = {
   id: string;
@@ -21,6 +30,11 @@ export type HandlerChecksItem = {
   updatedAt: Date;
   checked?: boolean;
 };
+
+interface ChapterDetailsResponse {
+  chapter: ChapterWithVideo;
+  attachments: HandlerChecksItem[];
+}
 
 const texts = {
   es: {
@@ -43,9 +57,9 @@ export default function ChapterIdPage() {
   const params = useParams<{ courseId: string; chapterId: string }>();
   const router = useRouter();
 
-  const [chapter, setChapter] = useState<any>(null);
+  const [chapter, setChapter] = useState<ChapterWithVideo | null>(null);
   const [attachments, setAttachments] = useState<HandlerChecksItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchChapterData = async () => {
@@ -65,7 +79,7 @@ export default function ChapterIdPage() {
           return;
         }
 
-        const data = await res.json();
+        const data: ChapterDetailsResponse = await res.json();
         setChapter(data.chapter);
         setAttachments(data.attachments ?? []);
       } catch (error) {
@@ -103,12 +117,14 @@ export default function ChapterIdPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mt-6 sm:mt-10">
-          {/* Left column */}
+          {/* Columna izquierda */}
           <div className="space-y-6 sm:space-y-8">
             <section className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
               <div className="flex items-center gap-x-2 mb-4">
                 <IconBadge icon={LayoutDashboard} />
-                <h2 className="text-lg sm:text-xl font-medium">{texts[language].customizeChapter}</h2>
+                <h2 className="text-lg sm:text-xl font-medium">
+                  {texts[language].customizeChapter}
+                </h2>
               </div>
 
               <div className="space-y-6">
@@ -130,7 +146,9 @@ export default function ChapterIdPage() {
             <section className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
               <div className="flex items-center gap-x-2 mb-4">
                 <IconBadge icon={Eye} />
-                <h2 className="text-lg sm:text-xl font-medium">{texts[language].accessSettings}</h2>
+                <h2 className="text-lg sm:text-xl font-medium">
+                  {texts[language].accessSettings}
+                </h2>
               </div>
 
               <ChapterAccessForm
@@ -141,12 +159,14 @@ export default function ChapterIdPage() {
             </section>
           </div>
 
-          {/* Right column */}
+          {/* Columna derecha */}
           <div className="space-y-6 sm:space-y-8">
             <section className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
               <div className="flex items-center gap-x-2 mb-4">
                 <IconBadge icon={Video} />
-                <h2 className="text-lg sm:text-xl font-medium">{texts[language].addVideo}</h2>
+                <h2 className="text-lg sm:text-xl font-medium">
+                  {texts[language].addVideo}
+                </h2>
               </div>
 
               <ChapterVideoForm

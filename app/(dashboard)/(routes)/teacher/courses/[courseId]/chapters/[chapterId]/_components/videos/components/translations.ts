@@ -18,7 +18,8 @@ export const translations = {
     readyStatus: "Video listo",
     noVideo: "Sin video",
     goBack: "Volver",
-    replaceButton: "Reemplazar video", // ✅ Añadido
+    replaceButton: "Reemplazar video",
+    loading: "Cargando video...",
   },
   en: {
     title: "4 - Chapter Video",
@@ -37,6 +38,7 @@ export const translations = {
     readyStatus: "Video ready",
     noVideo: "No video",
     goBack: "Go back",
-    replaceButton: "Replace video", // ✅ Añadido
+    replaceButton: "Replace video",
+    loading: "Loading video...",
   },
 };
