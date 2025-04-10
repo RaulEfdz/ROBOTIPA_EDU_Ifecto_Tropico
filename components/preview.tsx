@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import ModalViewer from "./ModalViewer";
-import { Dot, GitCommit, GitCommitIcon, LucideGitCommit, Pocket } from "lucide-react";
+import { Dot} from "lucide-react";
 
 interface TextTransformerProps {
   text: string;

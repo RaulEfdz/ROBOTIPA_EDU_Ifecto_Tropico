@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+
 // Tipos
 export interface IdentityData {
   email: string;
@@ -64,6 +65,8 @@ export async function getUserDataServerAuth(): Promise<SupabaseSession | null> {
     data: { user },
     error,
   } = await (await supabase).auth.getUser();
+
+  console.log("User data:", user);
 
   if (error || !user) return null;
 

@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect } from "react";
 import { Quiz } from "@/app/(dashboard)/(routes)/teacher/quizzes/types";
 import { getQuiz } from "@/app/(dashboard)/(routes)/teacher/quizzes/handler/getQuiz";
@@ -33,7 +34,7 @@ import {
 } from "@/utils/formatTextMS";
 import QuizResults from "./QuizResults";
 import ExpiredQuizResults from "./ExpiredQuizResults";
-import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
+import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
 
 interface Props {
   id: string;
@@ -66,9 +67,9 @@ const QuizModalResponse: React.FC<Props> = ({ id, onClose }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const session = await getUserDataServerAuth();
-        if (session?.user) {
-          setUserId(session.user.id);
+        const user = await getCurrentUserFromDBServer();
+        if (user && user.id) {
+          setUserId(user.id);
         } else {
           setError("Sesión de usuario no disponible.");
         }

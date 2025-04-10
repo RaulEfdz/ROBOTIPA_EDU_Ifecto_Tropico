@@ -1,6 +1,6 @@
+'use client'
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Badge } from "./ui/badge";
 import QuizModalResponse from "./modalViewer/QuizModalResponse";
 import PdfViewer from "./PdfViewer";

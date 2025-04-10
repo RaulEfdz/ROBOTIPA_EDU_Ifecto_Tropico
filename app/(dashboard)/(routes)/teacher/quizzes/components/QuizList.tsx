@@ -11,18 +11,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Edit,
   Trash2,
   BookOpenCheck,
   Clock,
   PlusCircle,
-  View,
 } from "lucide-react";
 import { Quiz } from "../types";
 import { ScheduleQuizModal } from "./ModalScheduleQuiz";
-import { updateQuiz } from "../handler/updateQuiz";
 import { cn } from "@/lib/utils";
 import ModalViewer from "@/components/ModalViewer";
 

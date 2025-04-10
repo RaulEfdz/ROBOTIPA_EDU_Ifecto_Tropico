@@ -5,6 +5,8 @@ import { getUserById } from "./getUserById";
 
 export async function GET() {
   const session = await getUserDataServerAuth();
+  console.log("Session data:", session);
+  if (session) {
   const user = session?.user;
 
   if (!user) {
@@ -28,4 +30,9 @@ export async function GET() {
   }
 
   return NextResponse.json(userData, { status: 200 });
+}else{
+  console.log("Session not found");
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 }
+}
+ 
