@@ -34,7 +34,7 @@ import {
 } from "@/utils/formatTextMS";
 import QuizResults from "./QuizResults";
 import ExpiredQuizResults from "./ExpiredQuizResults";
-import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
+import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 
 interface Props {
   id: string;
@@ -67,7 +67,7 @@ const QuizModalResponse: React.FC<Props> = ({ id, onClose }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const user = await getCurrentUserFromDBServer();
+        const user = await getCurrentUserFromDB();
         if (user && user.id) {
           setUserId(user.id);
         } else {
