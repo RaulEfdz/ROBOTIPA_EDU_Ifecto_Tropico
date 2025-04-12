@@ -1,25 +1,21 @@
-import { Quiz } from '../types';
+// handler/addQuiz.ts
+import { Quiz } from "../types";
 
-export async function AddQuiz(nameCollection: string, quizData: Quiz): Promise<any> {
+export const AddQuiz = async (collection: string, quiz: Quiz): Promise<any> => {
   try {
-    const response = await fetch("/api/firebase/add", {
+    const response = await fetch(`/api/quizzes`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        nameCollection,
-        data: quizData,
-      }),
+      body: JSON.stringify(quiz)
     });
-
     if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
+      throw new Error("Error al crear quiz");
     }
-
     return await response.json();
   } catch (error) {
-    console.error('Error adding quiz:', error);
+    console.error("Error en handler/addQuiz:", error);
     throw error;
   }
-}
+};

@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useRef } from "react";
+
+import React, { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -7,14 +8,23 @@ import { Card } from "@/components/ui/card";
 import { Quiz } from "../types";
 import { useQuizContext } from "../context/QuizContext";
 import toast from "react-hot-toast";
-import { useAuth } from "@clerk/nextjs";
 import { v4 as uuidv4 } from "uuid";
-
+import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 
 export default function QuizForm() {
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getCurrentUserFromDB();
+      setUserId(user?.id || null);
+    };
+    fetchUser();
+  }, []);
+
   const { createNewQuiz } = useQuizContext();
   const cardContainerRef = useRef<HTMLDivElement>(null);
-  const { userId } = useAuth();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -24,20 +34,21 @@ export default function QuizForm() {
       return;
     }
 
-    if(!userId){
-      toast.error("Error con User ID")
-      return
+    if (!userId) {
+      toast.error("Error con User ID");
+      return;
     }
+
     const newQuiz: Quiz = {
-      id: uuidv4(), // Generar ID único
+      id: uuidv4(), // Genera un ID único
       title,
       description,
       questions: [],
-      idCreator: userId
+      idCreator: userId,
     };
 
     try {
-      await createNewQuiz(newQuiz); // Llamada asíncrona para guardar el quiz
+      await createNewQuiz(newQuiz); // Se llama a la función del contexto para guardar el quiz
     } catch (error) {
       console.error("Error al enviar el quiz:", error);
     }

@@ -1,4 +1,3 @@
-// QuizResponsesModal.tsx
 "use client";
 
 import React from "react";
@@ -17,7 +16,7 @@ type QuizResponsesModalProps = {
   countCorrectAnswers: (answers: AnswerModel, questions: Question[]) => number;
 };
 
-function QuizResponsesModal({
+const QuizResponsesModal: React.FC<QuizResponsesModalProps> = ({
   isOpen,
   closeModal,
   selectedAnswer,
@@ -26,7 +25,7 @@ function QuizResponsesModal({
   responses,
   questions,
   countCorrectAnswers,
-}: QuizResponsesModalProps) {
+}) => {
   return (
     <Dialog open={isOpen} onOpenChange={closeModal}>
       <DialogContent className="w-full max-w-4xl p-6">
@@ -44,6 +43,6 @@ function QuizResponsesModal({
       </DialogContent>
     </Dialog>
   );
-}
+};
 
 export default QuizResponsesModal;

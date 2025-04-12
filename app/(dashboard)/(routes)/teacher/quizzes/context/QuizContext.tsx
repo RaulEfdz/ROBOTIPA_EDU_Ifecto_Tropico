@@ -1,18 +1,12 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { Quiz } from "../types";
 import { AddQuiz } from "../handler/addQuiz";
 import { getQuizzes } from "../handler/getQuizzes";
 import { deleteQuiz } from "../handler/deleteQuiz";
-import toast from "react-hot-toast";
 import { updateQuiz } from "../handler/updateQuiz";
+import toast from "react-hot-toast";
 
 interface QuizContextType {
   quizzes: Quiz[];
@@ -26,8 +20,7 @@ interface QuizContextType {
   setViewQuizResponses: (quiz: Quiz | null) => void;
   createNewQuiz: (quiz: Quiz) => Promise<void>;
   deleteAQuiz: (quizId: string) => Promise<void>;
-  refreshQuizzes: () => Promise<void>; // New function to refresh quizzes
-
+  refreshQuizzes: () => Promise<void>;
   isModalOpenViewResp: boolean;
   openModalViewResp: () => void;
   closeModalViewResp: () => void;
@@ -50,33 +43,27 @@ interface QuizProviderProps {
 
 export const COLLECTION_QUIZZES = "Quizzes";
 
-// Function to fetch quizzes with proper error handling
-// Function to fetch quizzes with proper error handling
+// Función para obtener todos los quizzes con manejo de error
 export const getAllQuizzes = async (setQuizzes: (quizzes: Quiz[]) => void) => {
   let toastId;
-
   try {
-    // Llamada al servicio para obtener los quizzes
     toastId = toast.loading("Loading quizzes...");
     const data = await getQuizzes(COLLECTION_QUIZZES);
-
     if (!Array.isArray(data)) {
-      toast.dismiss(toastId); // Cierra el `toast` automáticamente
+      toast.dismiss(toastId);
       throw new Error("Invalid data format");
     }
-
-    setQuizzes(data); // Actualiza el estado con los datos
-    toast.dismiss(toastId); // Cierra el `toast` automáticamente
+    setQuizzes(data);
+    toast.dismiss(toastId);
     toast.success("Quizzes loaded successfully!", { id: toastId });
     return data;
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     toast.error(`Error loading quizzes: ${errorMessage}`, { id: toastId });
     console.error("Error in getAllQuizzes:", error);
-    return []; // Devuelve un array vacío para evitar errores aguas abajo
+    return [];
   } finally {
-    toast.dismiss(toastId); // Cierra el `toast` automáticamente
+    toast.dismiss(toastId);
   }
 };
 
@@ -84,13 +71,12 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [viewQuizResponses, setViewQuizResponses] = useState<Quiz | null>(null);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenViewResp, setIsModalOpenViewResp] = useState(false);
 
   const refreshQuizzes = async () => {
     try {
-      await getAllQuizzes(setQuizzes); // Llama y espera la función asíncrona
+      await getAllQuizzes(setQuizzes);
     } catch (error) {
       console.error("Error refreshing quizzes:", error);
     }
@@ -100,19 +86,11 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
     const toastId = toast.loading("Deleting quiz...");
     try {
       const response = await deleteQuiz(COLLECTION_QUIZZES, quizId);
-
       if (response.confirm) {
-        setQuizzes((prevQuizzes) =>
-          prevQuizzes.filter((quiz) => quiz.id !== quizId)
-        );
-
-        // Clean up related states
+        setQuizzes((prev) => prev.filter((quiz) => quiz.id !== quizId));
         if (quiz?.id === quizId) setQuiz(null);
         if (viewQuizResponses?.id === quizId) setViewQuizResponses(null);
-
         toast.success("Quiz deleted successfully", { id: toastId });
-
-        // Refresh the quiz list to ensure synchronization
         await refreshQuizzes();
       } else {
         toast.error("Failed to delete quiz", { id: toastId });
@@ -123,16 +101,12 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
     }
   };
 
-  // Create new quiz with automatic refresh
   const createNewQuiz = async (newQuiz: Quiz) => {
     const toastId = toast.loading("Creating quiz...");
     try {
-      const result = await AddQuiz(COLLECTION_QUIZZES, newQuiz);
+      await AddQuiz(COLLECTION_QUIZZES, newQuiz);
       toast.dismiss(toastId);
-
-      // Refresh the quiz list instead of manually updating state
       await refreshQuizzes();
-
       toast.success("Quiz created successfully!", { id: toastId });
       closeModal();
     } catch (error) {
@@ -142,16 +116,10 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
   };
 
   const SetCloseDate = async (timestamp: number, currentQuiz: Quiz) => {
-    const toastId = toast.loading("Progrmando quiz...");
+    const toastId = toast.loading("Programando quiz...");
     try {
       const nameKey = "closeDate";
-      const result = await updateQuiz(
-        COLLECTION_QUIZZES,
-        currentQuiz.id,
-        nameKey,
-        { timestamp },
-        true
-      );
+      const result = await updateQuiz(COLLECTION_QUIZZES, currentQuiz.id, nameKey, { timestamp }, true);
       if (result) {
         await refreshQuizzes();
       }
@@ -164,14 +132,12 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
     }
   };
 
-  // Load initial quizzes
   useEffect(() => {
     refreshQuizzes();
   }, []);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-
   const openModalViewResp = () => setIsModalOpenViewResp(true);
   const closeModalViewResp = () => setIsModalOpenViewResp(false);
 

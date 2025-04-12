@@ -1,25 +1,18 @@
-export async function deleteQuiz(nameCollection: string, IdQuiz: string): Promise<any> {
-    try {
-      const response = await fetch("/api/firebase/delete", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            nameCollection,
-            id: IdQuiz
-          }),
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+// handler/deleteQuiz.ts
+export const deleteQuiz = async (collection: string, quizId: string): Promise<any> => {
+  try {
+    const response = await fetch(`/api/quizzes/${quizId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
       }
-  
-      const result = await response.json();
-      return result; // Retorna solo los datos de los quizzes
-    } catch (error) {
-      console.error("confirm:", error);
-      throw error;
+    });
+    if (!response.ok) {
+      throw new Error("Error al eliminar quiz");
     }
+    return await response.json();
+  } catch (error) {
+    console.error("Error en handler/deleteQuiz:", error);
+    throw error;
   }
-  
+};

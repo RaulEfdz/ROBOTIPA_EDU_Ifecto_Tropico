@@ -1,0 +1,115 @@
+// app/api/courses/[courseId]/chapters/[chapterId]/description/route.ts
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+
+// GET → Obtener descripción
+export async function GET(
+  _req: Request,
+  { params }: { params: { courseId: string; chapterId: string } }
+) {
+  const { courseId, chapterId } = params;
+
+  if (!courseId || !chapterId) {
+    return NextResponse.json({ message: "Missing params" }, { status: 400 });
+  }
+
+  try {
+    const chapter = await db.chapter.findUnique({
+      where: {
+        id: chapterId,
+        courseId,
+        delete: false, // si usas borrado lógico
+      },
+      select: { description: true },
+    });
+
+    if (!chapter) {
+      return NextResponse.json({ message: "Chapter not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ description: chapter.description ?? "" });
+  } catch (error) {
+    console.error("[GET_CHAPTER_DESCRIPTION_ERROR]", error);
+    return NextResponse.json(
+      { message: "Error fetching chapter description" },
+      { status: 500 }
+    );
+  }
+}
+
+// PATCH → Editar descripción
+export async function PATCH(
+  request: Request,
+  { params }: { params: { courseId: string; chapterId: string } }
+) {
+  const { courseId, chapterId } = params;
+
+  if (!courseId || !chapterId) {
+    return NextResponse.json({ message: "Missing params" }, { status: 400 });
+  }
+
+  try {
+    const { description } = await request.json();
+
+    if (typeof description !== "string") {
+      return NextResponse.json(
+        { message: "Missing or invalid 'description'" },
+        { status: 400 }
+      );
+    }
+
+    const chapter = await db.chapter.update({
+      where: {
+        id: chapterId,
+        courseId,
+      },
+      data: { description },
+      select: { description: true },
+    });
+
+    return NextResponse.json({
+      message: "Description updated successfully",
+      description: chapter.description,
+    });
+  } catch (error) {
+    console.error("[PATCH_CHAPTER_DESCRIPTION_ERROR]", error);
+    return NextResponse.json(
+      { message: "Error updating chapter description" },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE → Resetear descripción
+export async function DELETE(
+  _request: Request,
+  { params }: { params: { courseId: string; chapterId: string } }
+) {
+  const { courseId, chapterId } = params;
+
+  if (!courseId || !chapterId) {
+    return NextResponse.json({ message: "Missing params" }, { status: 400 });
+  }
+
+  try {
+    const chapter = await db.chapter.update({
+      where: {
+        id: chapterId,
+        courseId,
+      },
+      data: { description: null }, // o "" si prefieres
+      select: { description: true },
+    });
+
+    return NextResponse.json({
+      message: "Description reset successfully",
+      description: chapter.description,
+    });
+  } catch (error) {
+    console.error("[DELETE_CHAPTER_DESCRIPTION_ERROR]", error);
+    return NextResponse.json(
+      { message: "Error resetting chapter description" },
+      { status: 500 }
+    );
+  }
+}

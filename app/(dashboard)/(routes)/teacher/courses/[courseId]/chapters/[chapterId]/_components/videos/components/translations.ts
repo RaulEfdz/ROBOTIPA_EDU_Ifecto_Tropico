@@ -2,7 +2,7 @@
 
 export const translations = {
   es: {
-    title: "4 - Video del capítulo",
+    title: "3 - Video del capítulo",
     choose: "¿Cómo deseas subir tu video?",
     youtube: "Pegar enlace de YouTube",
     file: "Subir archivo de video",
@@ -22,7 +22,7 @@ export const translations = {
     loading: "Cargando video...",
   },
   en: {
-    title: "4 - Chapter Video",
+    title: "3 - Chapter Video",
     choose: "How do you want to upload your video?",
     youtube: "Paste YouTube link",
     file: "Upload video file",

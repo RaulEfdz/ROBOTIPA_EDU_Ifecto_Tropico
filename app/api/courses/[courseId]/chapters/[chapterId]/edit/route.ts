@@ -39,4 +39,4 @@ export async function POST(
     console.error("[CHAPTER_EDIT]", error);
     return new NextResponse("Error interno", { status: 500 });
   }
-}
+} 

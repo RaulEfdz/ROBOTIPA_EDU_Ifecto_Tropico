@@ -13,28 +13,35 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
-import { Question, Quiz } from "../types";
-import { v4 as uuidv4 } from "uuid";
-import { addQuestions } from "../handler/addQuestions";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Save, Edit2, Trash2 } from "lucide-react";
-import { useAuth } from "@clerk/nextjs";
 import toast from "react-hot-toast";
+import { v4 as uuidv4 } from "uuid";
+import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
+import { Question, Quiz } from "../types";
+import { addQuestions } from "../handler/addQuestions";
 
 export function AddQuestionsModal() {
-  const { isModalOpen, closeModal, quiz, setQuiz, refreshQuizzes } =
-    useQuizContext();
+  const { isModalOpen, closeModal, quiz, setQuiz, refreshQuizzes } = useQuizContext();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [newQuestion, setNewQuestion] = useState<string>("");
   const [newCorrectAnswer, setNewCorrectAnswer] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(
-    null
-  );
-  const { userId } = useAuth();
+  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
+  // Obtener el usuario actual
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getCurrentUserFromDB();
+      setUserId(user?.id || null);
+    };
+    fetchUser();
+  }, []);
+
+  // Si se edita o actualiza el quiz, actualizamos los campos correspondientes
   useEffect(() => {
     if (quiz) {
       setQuestions(quiz.questions || []);
@@ -75,11 +82,7 @@ export function AddQuestionsModal() {
     setQuestions((prev) =>
       prev.map((q) =>
         q.id === editingQuestionId
-          ? {
-              ...q,
-              question: newQuestion.trim(),
-              correctAnswers: newCorrectAnswer,
-            }
+          ? { ...q, question: newQuestion.trim(), correctAnswers: newCorrectAnswer }
           : q
       )
     );
@@ -125,6 +128,7 @@ export function AddQuestionsModal() {
         };
 
     try {
+      // Llamada al handler que se comunica con el endpoint para guardar las preguntas/quiz
       await addQuestions(updatedQuiz);
       setQuiz(updatedQuiz);
       await refreshQuizzes();
@@ -141,7 +145,7 @@ export function AddQuestionsModal() {
         <ScrollArea className="max-h-[90vh] w-full pt-10">
           <div className="p-6 space-y-6">
             <DialogHeader className="bg-gradient-to-r from-emerald-400 to-teal-500 text-white rounded-t-lg p-4 shadow-lg">
-              <DialogTitle className="text-2xl font-bold"> 
+              <DialogTitle className="text-2xl font-bold">
                 {quiz ? "Editar Quiz" : "Crear Quiz"}
               </DialogTitle>
             </DialogHeader>
@@ -204,9 +208,7 @@ export function AddQuestionsModal() {
                                     <span>Falso</span>
                                     <Switch
                                       checked={newCorrectAnswer}
-                                      onCheckedChange={(checked) =>
-                                        setNewCorrectAnswer(checked)
-                                      }
+                                      onCheckedChange={(checked) => setNewCorrectAnswer(checked)}
                                     />
                                     <span>Verdadero</span>
                                   </div>
@@ -254,7 +256,9 @@ export function AddQuestionsModal() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-center text-gray-500">No hay preguntas aún. ¡Agrega una nueva pregunta!</p>
+                    <p className="text-center text-gray-500">
+                      No hay preguntas aún. ¡Agrega una nueva pregunta!
+                    </p>
                   )}
                 </ScrollArea>
               </CardContent>
@@ -295,7 +299,11 @@ export function AddQuestionsModal() {
               </CardContent>
             </Card>
 
-            <Button onClick={handleSaveQuiz} className="w-full bg-teal-600 hover:bg-teal-700 text-white" size="lg">
+            <Button
+              onClick={handleSaveQuiz}
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+              size="lg"
+            >
               <Save className="w-4 h-4 mr-2" />
               {quiz ? "Actualizar Quiz" : "Guardar Quiz"}
             </Button>

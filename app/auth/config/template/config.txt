@@ -65,7 +65,7 @@ export const loginConfig = {
       form: {
         fullNamePlaceholder: "Nombre completo",
         usernamePlaceholder: "Nombre de usuario",
-        emailPlaceholder: "Correo institucional",
+        emailPlaceholder: "Correo",
         passwordPlaceholder: "Contraseña segura",
         confirmPasswordPlaceholder: "Confirmar contraseña",
         createButtonText: "Crear cuenta",

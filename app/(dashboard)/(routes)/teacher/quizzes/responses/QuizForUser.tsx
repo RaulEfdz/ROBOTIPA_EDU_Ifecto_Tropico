@@ -12,11 +12,16 @@ type QuizForUserProps = {
   countCorrectAnswers: (answers: AnswerModel, questions: Question[]) => number;
 };
 
-function QuizForUser({ responses, userNames, questions, countCorrectAnswers }: QuizForUserProps) {
+const QuizForUser: React.FC<QuizForUserProps> = ({
+  responses,
+  userNames,
+  questions,
+  countCorrectAnswers,
+}) => {
   const [selectedAnswer, setSelectedAnswer] = useState<Answer | null>(null);
 
   return (
-    <div className="flex justify-center items-center h-full text-xl font-bold">
+    <div className="flex flex-col items-center h-full text-xl font-bold">
       {responses.length === 0 ? (
         <p>No hay respuestas disponibles</p>
       ) : (
@@ -25,14 +30,16 @@ function QuizForUser({ responses, userNames, questions, countCorrectAnswers }: Q
             .sort((a, b) => b.score - a.score)
             .map((response, index) => (
               <div
-                key={response.userId}
+                key={`${response.userId}-${index}`}
                 onClick={() => setSelectedAnswer(response)}
                 className="bg-[#FFFCF8] p-6 rounded-xl border border-gray-200 hover:border-blue-400 transition-all duration-200 cursor-pointer"
               >
                 {index === 0 && <span className="text-yellow-400">🏆</span>}
                 <div className="flex items-center gap-3 mb-4">
                   <User className="w-8 h-8 text-gray-400" />
-                  <h4 className="font-medium text-gray-900">{userNames[response.userId] || "Cargando..."}</h4>
+                  <h4 className="font-medium text-gray-900">
+                    {userNames[response.userId] || "Cargando..."}
+                  </h4>
                 </div>
                 <p>
                   <strong>Puntaje:</strong>{" "}
@@ -63,8 +70,16 @@ function QuizForUser({ responses, userNames, questions, countCorrectAnswers }: Q
               <div className="bg-[#FFFCF8] p-6 rounded-xl border border-gray-200">
                 <div className="mb-6">
                   <h4 className="text-xl font-bold text-gray-900 mb-2">Información</h4>
-                  <p><strong>Nombre:</strong> {userNames[selectedAnswer.userId] || "Usuario desconocido"}</p>
-                  <p><strong>Puntaje total:</strong> {(100 / questions.length) * countCorrectAnswers(selectedAnswer.answers, questions)} / 100</p>
+                  <p>
+                    <strong>Nombre:</strong>{" "}
+                    {userNames[selectedAnswer.userId] || "Usuario desconocido"}
+                  </p>
+                  <p>
+                    <strong>Puntaje total:</strong>{" "}
+                    {((100 / questions.length) *
+                      countCorrectAnswers(selectedAnswer.answers, questions)).toFixed(0)}{" "}
+                    / 100
+                  </p>
                 </div>
                 <h5 className="text-lg font-semibold text-gray-900">Respuestas:</h5>
                 <div className="space-y-4">
@@ -72,13 +87,26 @@ function QuizForUser({ responses, userNames, questions, countCorrectAnswers }: Q
                     const userAnswer = selectedAnswer.answers[question.id];
                     const isCorrect = userAnswer === question.correctAnswers;
                     return (
-                      <div key={question.id} className={`p-4 rounded-lg border ${isCorrect ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}>
+                      <div
+                        key={question.id}
+                        className={`p-4 rounded-lg border ${
+                          isCorrect ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
+                        }`}
+                      >
                         <div className="flex items-start gap-3">
-                          {isCorrect ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <XCircle className="w-5 h-5 text-red-500" />}
+                          {isCorrect ? (
+                            <CheckCircle2 className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-red-500" />
+                          )}
                           <div>
                             <p className="text-gray-900 font-medium">{question.question}</p>
-                            <p className="text-sm text-gray-500">Respuesta dada: <strong>{String(userAnswer)}</strong></p>
-                            <p className="text-sm text-gray-500">Respuesta esperada: <strong>{String(question.correctAnswers)}</strong></p>
+                            <p className="text-sm text-gray-500">
+                              Respuesta dada: <strong>{String(userAnswer)}</strong>
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              Respuesta esperada: <strong>{String(question.correctAnswers)}</strong>
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -92,6 +120,6 @@ function QuizForUser({ responses, userNames, questions, countCorrectAnswers }: Q
       </Dialog>
     </div>
   );
-}
+};
 
 export default QuizForUser;

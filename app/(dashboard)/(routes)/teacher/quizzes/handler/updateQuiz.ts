@@ -1,33 +1,27 @@
-export async function updateQuiz(
-  nameCollection: string,
-  id: string,
-  arrayName: string,
-  dataToAdd: any,
-  replaceExisting: boolean = false // Variable opcional para indicar si se debe reemplazar
-): Promise<any> {
-  const config = {
-    nameCollection,
-    id, // ID del documento a actualizar
-    arrayName, // Nombre del array en el documento
-    dataToAdd, // Datos que se deben agregar al array
-    replaceExisting,
-  };
+// handler/updateQuiz.ts
+export const updateQuiz = async (
+  collection: string,
+  quizId: string,
+  nameKey: string,
+  updateData: any,
+  isField: boolean = false
+): Promise<any> => {
   try {
-    const response = await fetch("/api/firebase/updateSingle", {
-      method: "POST",
+    // Construir el cuerpo de la solicitud; si isField es true, se entiende que se actualiza un campo en específico
+    const body = isField ? { [nameKey]: updateData } : updateData;
+    const response = await fetch(`/api/quizzes/${quizId}`, {
+      method: 'PUT',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(config),
+      body: JSON.stringify(body)
     });
-
     if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
+      throw new Error("Error al actualizar quiz");
     }
-    const result = await response.json();
-    return result; // Retorna la respuesta de la API
+    return await response.json();
   } catch (error) {
-    console.error("Error al actualizar el documento:", error);
+    console.error("Error en handler/updateQuiz:", error);
     throw error;
   }
-}
+};

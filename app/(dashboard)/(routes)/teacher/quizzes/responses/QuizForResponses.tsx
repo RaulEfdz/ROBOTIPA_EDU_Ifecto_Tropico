@@ -12,7 +12,7 @@ type QuizForResponsesProps = {
   userNames: Record<string, string>;
 };
 
-function QuizForResponses({ userNames }: QuizForResponsesProps) {
+const QuizForResponses: React.FC<QuizForResponsesProps> = ({ userNames }) => {
   const { quiz } = useQuizContext();
 
   if (!quiz) {
@@ -41,19 +41,26 @@ function QuizForResponses({ userNames }: QuizForResponsesProps) {
       <ScrollArea className="h-auto">
         <div className="space-y-4">
           {quiz.questions.map((question, index) => (
-            <Card key={question.id} className="bg-card" >
+            <Card key={question.id} className="bg-card">
               <CardHeader>
-                <CardTitle className="text-lg"><label className="font-extralight">{index+1}.{" "}</label>{question.question}</CardTitle>
+                <CardTitle className="text-lg">
+                  <span className="font-extralight">{index + 1}. </span>
+                  {question.question}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
                   {quiz.responses?.map((response, subIndex) => {
                     const answered = response.answers[question.id] !== undefined;
-                    const isCorrect = response.answers[question.id];
-
+                    const isCorrect = response.answers[question.id] === question.correctAnswers;
                     return (
-                      <li key={response.userId} className="flex items-center gap-3 border bg-slate-100 p-2">
-                        <label className="font-extralight">Resp: {index+1}.{subIndex+1}.{" "}</label>
+                      <li
+                        key={`${response.userId}-${subIndex}`}
+                        className="flex items-center gap-3 border bg-slate-100 p-2"
+                      >
+                        <label className="font-extralight">
+                          Resp: {index + 1}.{subIndex + 1}.
+                        </label>
                         <Badge variant="outline" className="whitespace-nowrap">
                           {formatTimestamp(response.date)}
                         </Badge>
@@ -66,7 +73,10 @@ function QuizForResponses({ userNames }: QuizForResponsesProps) {
                             <span>No respondió</span>
                           </Badge>
                         ) : isCorrect ? (
-                          <Badge variant="secondary" className="flex items-center gap-1 bg-green-500 text-white">
+                          <Badge
+                            variant="secondary"
+                            className="flex items-center gap-1 bg-green-500 text-white"
+                          >
                             <Check className="h-3 w-3" />
                             <span>Correcto</span>
                           </Badge>
@@ -87,6 +97,6 @@ function QuizForResponses({ userNames }: QuizForResponsesProps) {
       </ScrollArea>
     </div>
   );
-}
+};
 
 export default QuizForResponses;

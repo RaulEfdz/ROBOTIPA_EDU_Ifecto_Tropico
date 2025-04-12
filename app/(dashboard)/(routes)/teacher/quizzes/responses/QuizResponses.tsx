@@ -1,25 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useQuizContext } from "../context/QuizContext";
 import { Answer, AnswerModel, Question } from "../types";
-import { ArrowLeft, Award, CheckCircle2, XCircle, User } from "lucide-react";
 import QuizResponsesModal from "./QuizResponsesModal";
 
-type QuizResponsesModalProps = {
-  isOpen: boolean;
-  closeModal: () => void;
-  selectedAnswer: Answer | null;
-  setSelectedAnswer: (answer: Answer | null) => void;
-  userNames: Record<string, string>;
-  responses: Answer[];
-  questions: Question[];
-  countCorrectAnswers: (answers: AnswerModel, questions: Question[]) => number;
-};
-
-function QuizResponses() {
-  const { viewQuizResponses, closeModalViewResp, isModalOpenViewResp} = useQuizContext();
+const QuizResponses: React.FC = () => {
+  const { viewQuizResponses, closeModalViewResp, isModalOpenViewResp } = useQuizContext();
   const [userNames, setUserNames] = useState<Record<string, string>>({});
   const [selectedAnswer, setSelectedAnswer] = useState<Answer | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -66,8 +53,6 @@ function QuizResponses() {
     }, 0);
   };
 
-  const handleUserClick = (response: Answer) => setSelectedAnswer(response);
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -88,7 +73,6 @@ function QuizResponses() {
       countCorrectAnswers={countCorrectAnswers}
     />
   );
-}
+};
 
-
-export default QuizResponses
+export default QuizResponses;

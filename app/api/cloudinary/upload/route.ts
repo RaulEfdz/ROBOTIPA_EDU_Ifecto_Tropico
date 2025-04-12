@@ -1,3 +1,4 @@
+// app/api/cloudinary/upload/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { v2 as cloudinary, UploadApiOptions } from 'cloudinary';
 import { v4 as uuidv4 } from 'uuid';
