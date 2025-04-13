@@ -55,6 +55,22 @@ export const ourFileRouter = {
       console.log("✅ Archivo adjunto subido:", file.url);
     }),
 
+  // Subida de archivos desde el editor
+  editorFileUpload: f({
+    "application/pdf": { maxFileSize: "16MB" },
+    "application/vnd.ms-powerpoint": { maxFileSize: "16MB" },
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": { maxFileSize: "16MB" },
+    "application/vnd.ms-excel": { maxFileSize: "16MB" },
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": { maxFileSize: "16MB" },
+  })
+    .middleware(async ({ req }) => {
+      const { userId } = await handleAuth(req);
+      return { userId };
+    })
+    .onUploadComplete(async ({ file }) => {
+      console.log("📄 Archivo del editor subido:", file.url);
+    }),
+
   // Subida de un único video por capítulo
   chapterVideo: f({
     video: {
