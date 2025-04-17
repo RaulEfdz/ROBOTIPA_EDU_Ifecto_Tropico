@@ -1,42 +1,42 @@
+// app/(course)/courses/[courseId]/chapters/[chapterId]/_components/course-enroll-button.tsx
 "use client";
 
 import { useState } from "react";
+import { useParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 
 interface CourseEnrollButtonProps {
   price: number;
-  courseId: string;
 }
 
-export const CourseEnrollButton = ({
+export const CourseEnrollButton: React.FC<CourseEnrollButtonProps> = ({
   price,
-  courseId,
-}: CourseEnrollButtonProps) => {
+}) => {
+  // useParams() te devuelve { courseId, chapterId }
+  const { courseId } = useParams() as { courseId: string };
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = async () => {
-    try {
-      setIsLoading(true);
+    if (!courseId) {
+      console.error("No courseId encontrado en useParams()");
+      return toast.error("Error interno: falta courseId");
+    }
 
+    setIsLoading(true);
+    try {
       const res = await fetch(`/api/courses/${courseId}/enroll`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
-
-      if (!res.ok) throw new Error("Error al procesar la inscripción");
-
+      if (!res.ok) throw new Error(`Error ${res.status}`);
       const data = await res.json();
 
-      if (data?.url) {
-        // Redirige a link de pago
+      if (data.url) {
         window.location.assign(data.url);
       } else {
-        // Éxito directo
         toast.success("¡Inscripción completada!");
-        window.location.reload(); // o redirige al curso si lo prefieres
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error en inscripción:", error);
@@ -46,6 +46,12 @@ export const CourseEnrollButton = ({
     }
   };
 
+  const buttonLabel = isLoading
+    ? "Procesando..."
+    : price > 0
+    ? `Comprar por $${price}`
+    : "Inscríbete Gratis";
+
   return (
     <Button
       onClick={onClick}
@@ -53,7 +59,7 @@ export const CourseEnrollButton = ({
       size="sm"
       className="w-full md:w-auto"
     >
-      {isLoading ? "Procesando..." : "Inscríbete"}
+      {buttonLabel}
     </Button>
   );
 };

@@ -1,3 +1,4 @@
+// app/api/courses/[courseId]/enroll/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
