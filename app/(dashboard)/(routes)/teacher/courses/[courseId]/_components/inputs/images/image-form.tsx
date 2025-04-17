@@ -113,7 +113,7 @@ export const ImageForm = ({ initialData, courseId, lang = "es" }: ImageFormProps
         <>
           {!imageUrl ? (
             <div className="flex flex-col items-center justify-center h-48 bg-gray-50 dark:bg-gray-800 rounded-lg border border-dashed">
-              <ImageIcon className="h-12 w-12 text-gray-300 mb-2" />
+              <ImageIcon className="h-12 w-12 text-gray-300 mb-2 z-0" />
               <p className="text-sm text-gray-500">{t.noImage}</p>
               <Button onClick={toggleEdit} variant="outline" size="sm" className="mt-4">
                 <PlusCircle className="h-4 w-4 mr-2" />

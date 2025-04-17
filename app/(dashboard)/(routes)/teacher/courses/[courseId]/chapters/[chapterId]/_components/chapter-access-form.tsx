@@ -18,8 +18,8 @@ const texts = {
   es: {
     title: "Configuración de acceso",
     subtitle: "Acceso al capítulo",
-    publicLabel: "Capítulo público",
-    privateLabel: "Capítulo privado",
+    publicLabel: "Capítulo Gratis",
+    privateLabel: "Capítulo De Pago",
     publicDescription: "Los usuarios pueden ver este capítulo sin comprar el curso",
     privateDescription: "Los usuarios necesitan comprar el curso para ver este capítulo",
     saveButton: "Guardar cambios",

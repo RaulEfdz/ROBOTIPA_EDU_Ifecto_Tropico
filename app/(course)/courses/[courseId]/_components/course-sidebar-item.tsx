@@ -1,10 +1,8 @@
 "use client";
 
-import { CheckCircle, Lock, PlayCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-
 import { cn } from "@/lib/utils";
-import { FcApproval, FcNext, FcOk } from "react-icons/fc";
+import { FcOk, FcNext, FcLock } from "react-icons/fc";
 
 interface CourseSidebarItemProps {
   label: string;
@@ -12,7 +10,7 @@ interface CourseSidebarItemProps {
   isCompleted: boolean;
   courseId: string;
   isLocked: boolean;
-};
+}
 
 export const CourseSidebarItem = ({
   label,
@@ -24,40 +22,35 @@ export const CourseSidebarItem = ({
   const pathname = usePathname();
   const router = useRouter();
 
-  const Icon = isLocked ? Lock : (isCompleted ? FcOk : FcNext);
   const isActive = pathname?.includes(id);
+  const Icon = isLocked ? FcLock : isCompleted ? FcOk : FcNext;
 
-  const onClick = () => {
-    router.push(`/courses/${courseId}/chapters/${id}`);
-  }
+  const handleClick = () => {
+    if (!isLocked) {
+      router.push(`/courses/${courseId}/chapters/${id}`);
+    }
+  };
 
   return (
     <button
-      onClick={onClick}
-      type="button"
+      onClick={handleClick}
+      disabled={isLocked}
       className={cn(
-        "flex items-center gap-x-2 text-slate-500 text-sm font-[500] pl-6 transition-all hover:text-slate-600 hover:bg-slate-300/20",
-        isActive && "text-slate-700 bg-slate-200/20 hover:bg-slate-200/20 hover:text-slate-700",
-        isCompleted && "text-emerald-700 hover:text-emerald-700",
-        isCompleted && isActive && "bg-emerald-200/20",
+        "flex items-center justify-between px-4 py-3 text-sm transition-all group",
+        "hover:bg-accent hover:text-accent-foreground",
+        isActive && "bg-accent text-accent-foreground font-semibold",
+        isCompleted && "text-emerald-600",
+        isLocked && "opacity-60 cursor-not-allowed"
       )}
     >
-      <div className="flex items-center gap-x-2 py-4">
-        <Icon
-          size={20}
-          className={cn(
-            "text-slate-500",
-            isActive && "text-slate-700",
-            isCompleted && "text-emerald-700"
-          )}
-        />
-        <p className="w-[12rem] text-left ml-3">{label}</p>
+      <div className="flex items-center gap-x-3">
+        <Icon className="text-xl" />
+        <span className="text-left">{label}</span>
       </div>
-      <div className={cn(
-        "ml-auto opacity-0 border-2 border-slate-700 h-full transition-all",
-        isActive && "opacity-100",
-        isCompleted && "border-emerald-700"
-      )} />
+
+      {isActive && (
+        <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+      )}
     </button>
-  )
-}
+  );
+};

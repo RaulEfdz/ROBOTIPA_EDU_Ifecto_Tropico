@@ -21,48 +21,47 @@ import { Button } from "@/components/ui/button";
 import { ChaptersList } from "../chapters-list";
 import { fetchData } from "../../../custom/fetchData";
 
-// 🔵 Constantes de endpoints
+// API endpoints constants
 const ENDPOINTS = {
   api: {
-    createChapter: (courseId: string) =>
-      `/api/courses/${courseId}/chapters/create`,
-    reorderChapters: (courseId: string) =>
-      `/api/courses/${courseId}/chapters/reorder`,
-    updateChapter: (courseId: string, chapterId: string) =>
-      `/api/courses/${courseId}/chapters/update/${chapterId}/edit`,
-    deleteChapter: (courseId: string, chapterId: string) =>
-      `/api/courses/${courseId}/chapters/update/${chapterId}/delete`,
+    createChapter: (courseId: string) => `/api/courses/${courseId}/chapters/create`,
+    reorderChapters: (courseId: string) => `/api/courses/${courseId}/chapters/reorder`,
+    updateChapter: (courseId: string, chapterId: string) => `/api/courses/${courseId}/chapters/update/${chapterId}/edit`,
+    deleteChapter: (courseId: string, chapterId: string) => `/api/courses/${courseId}/chapters/update/${chapterId}/delete`,
   },
   ui: {
-    editChapterPage: (courseId: string, chapterId: string) =>
-      `/teacher/courses/${courseId}/chapters/${chapterId}`,
+    editChapterPage: (courseId: string, chapterId: string) => `/teacher/courses/${courseId}/chapters/${chapterId}`,
   },
 };
 
 const texts = {
   es: {
-    title: "5 - Capítulos del curso",
-    addButton: "Agregar",
+    title: "Capítulos del curso",
+    addButton: "Agregar capítulo",
     cancelButton: "Cancelar",
     saveButton: "Guardar",
     reorderInfo: "Arrastra y suelta para reordenar los capítulos",
-    noChapters: "Sin capítulos",
-    successCreate: "Capítulo creado",
+    noChapters: "No hay capítulos creados",
+    successCreate: "Capítulo creado exitosamente",
     successReorder: "Capítulos reordenados",
     error: "Ocurrió un error",
     validationMessage: "Se requiere un título",
+    chaptersCount: "capítulos",
+    idLabel: "ID",
   },
   en: {
-    title: "5 - Course chapters",
-    addButton: "Add",
+    title: "Course chapters",
+    addButton: "Add chapter",
     cancelButton: "Cancel",
     saveButton: "Save",
     reorderInfo: "Drag and drop to reorder the chapters",
-    noChapters: "No chapters",
-    successCreate: "Chapter created",
+    noChapters: "No chapters created",
+    successCreate: "Chapter created successfully",
     successReorder: "Chapters reordered",
     error: "Something went wrong",
     validationMessage: "Title is required",
+    chaptersCount: "chapters",
+    idLabel: "ID",
   },
 };
 
@@ -73,7 +72,7 @@ interface ChaptersFormProps {
 }
 
 const formSchema = z.object({
-  title: z.string().min(1, { message: texts.es.validationMessage }),
+  title: z.string().min(1),
 });
 
 export const ChaptersForm = ({
@@ -162,15 +161,17 @@ export const ChaptersForm = ({
   };
 
   return (
-    <div className="mb-6 relative bg-white dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+    <div className="relative bg-white dark:bg-gray-850 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
+      {/* Loading overlay */}
       {isUpdating && (
         <div className="absolute inset-0 bg-white/60 dark:bg-black/50 flex items-center justify-center z-10 rounded-xl">
           <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+      {/* Header section */}
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="font-medium text-gray-800 dark:text-gray-200">
           {t.title}
         </h3>
 
@@ -179,92 +180,104 @@ export const ChaptersForm = ({
             onClick={toggleCreating}
             variant="ghost"
             size="sm"
-            className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg h-8"
+            className="text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
           >
-            <PlusCircle className="h-4 w-4 mr-1" />
+            <PlusCircle className="h-4 w-4 mr-2" />
             {t.addButton}
           </Button>
         )}
       </div>
 
-      {isCreating ? (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      disabled={isSubmitting}
-                      placeholder="e.g., 'Introduction to the course'"
-                      className="text-sm border-gray-200 dark:border-gray-700"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-            <div className="flex items-center space-x-2">
-              <Button
-                type="button"
-                onClick={toggleCreating}
-                variant="outline"
-                size="icon"
-                className="h-10 w-10 rounded-lg border-gray-200 dark:border-gray-700"
-              >
-                <X className="h-4 w-4 text-gray-500" />
-              </Button>
-
-              <Button
-                disabled={!isValid || isSubmitting || !isDirty}
-                type="submit"
-                size="icon"
-                className="h-10 w-10 rounded-lg bg-blue-600 hover:bg-blue-700"
-              >
-                {isSaving ? (
-                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Check className="h-4 w-4 text-white" />
+      {/* Add new chapter form */}
+      {isCreating && (
+        <div className="mb-6 bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        disabled={isSubmitting}
+                        placeholder="e.g., 'Introduction to the course'"
+                        className="text-sm border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
                 )}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      ) : (
-        <>
-          {chapters.length ? (
-            <ChaptersList
-              onEdit={onEdit}
-              onReorder={onReorder}
-              items={chapters}
-            />
-          ) : (
-            <div className="text-sm text-gray-500 italic">{t.noChapters}</div>
-          )}
+              />
+              <div className="flex items-center gap-2 justify-end">
+                <Button
+                  type="button"
+                  onClick={toggleCreating}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg border-gray-200 dark:border-gray-700"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  {t.cancelButton}
+                </Button>
 
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
-            {t.reorderInfo}
-          </p>
-        </>
+                <Button
+                  disabled={!isValid || isSubmitting || !isDirty}
+                  type="submit"
+                  size="sm"
+                  className="rounded-lg bg-blue-600 hover:bg-blue-700"
+                >
+                  {isSaving ? (
+                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  ) : (
+                    <Check className="h-4 w-4 mr-1" />
+                  )}
+                  {t.saveButton}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       )}
 
-      {!isCreating && (
-        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-          <div className="flex items-center text-sm text-gray-500">
-            <div className="flex items-center mr-4">
-              <div className="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
-              <span>{chapters.length} capítulos</span>
+      {/* Chapters list */}
+      <div className="min-h-[100px]">
+        {!isCreating && (
+          <>
+            {chapters.length ? (
+              <ChaptersList
+                onEdit={onEdit}
+                onReorder={onReorder}
+                items={chapters}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-24 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                <p className="text-gray-500 dark:text-gray-400">{t.noChapters}</p>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Footer info */}
+      <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {t.reorderInfo}
+          </p>
+          
+          <div className="flex items-center text-xs text-gray-500">
+            <div className="flex items-center mr-3">
+              <div className="w-2 h-2 rounded-full bg-green-400 mr-1"></div>
+              <span>{chapters.length} {t.chaptersCount}</span>
             </div>
-            <div className="flex items-center">
-              <ArrowRight className="h-3 w-3 mr-2" />
-              <span>ID: {courseId.substring(0, 8)}</span>
+            <div className="flex items-center text-gray-400">
+              <span>{t.idLabel}: {courseId.substring(0, 8)}</span>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -1,5 +1,4 @@
-"use client";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 export type DocumentType = {
   id: string;
@@ -9,48 +8,86 @@ export type DocumentType = {
   key: string;
 };
 
-export const useMaterialAttach = () => {
-  const [documents, setDocuments] = useState<DocumentType[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [fetchStatus, setFetchStatus] = useState<string>("Loading...");
+interface FetchParams {
+  limit: number;
+  offset: number;
+}
 
-  const fetchDocuments = useCallback(async () => {
-    async function fetchFiles() {
-      const response = await fetch("/api/attachment/getAll", {
-        method: "POST",
-        body: JSON.stringify({}), // Cuerpo vacío según la documentación
-      });
-      return response.json();
+export const useMaterialAttach = (initialParams?: FetchParams & { initialFetch?: boolean }) => {
+  const [documents, setDocuments] = useState<DocumentType[]>([]);
+  const [storageInfo, setStorageInfo] = useState<{ totalSizeMB: number } | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [pagination, setPagination] = useState<{
+    limit: number;
+    offset: number;
+    currentPage: number;
+    totalPages: number;
+  } | null>(null);
+
+  const lastParamsRef = useRef<FetchParams | null>(null);
+
+  const fetchFiles = useCallback(async (params: FetchParams) => {
+    if (
+      lastParamsRef.current &&
+      lastParamsRef.current.offset === params.offset &&
+      lastParamsRef.current.limit === params.limit
+    ) {
+      return;
     }
 
+    lastParamsRef.current = params;
+
+    setLoading(true);
     try {
-      setLoading(true);
-      setFetchStatus("Fetching documents...");
-      const data = await fetchFiles();
-      if (!data.files || data.files.length === 0) {
-        setFetchStatus("No documents found.");
-        setDocuments([]);
+      const res = await fetch("/api/attachment/getAll", {
+        method: "POST",
+        body: JSON.stringify(params),
+      });
+
+      const data = await res.json();
+
+      if (!data || data.error) {
+        console.error("Error fetching documents:", data.error);
         return;
       }
-      const documentsData = data.files.map((file: any) => ({
-        id: file.id,
-        nombre: file.name,
-        fechaCreacion: new Date(file.uploadedAt).toLocaleDateString(),
-        status: file.status,
-        key: file.key,
+
+      const mappedDocs: DocumentType[] = (data.files || []).map((file: any, index: number) => ({
+        id: file.id ?? file.key ?? `doc-${index}`,
+        nombre: file.name ?? "Archivo sin nombre",
+        fechaCreacion: file.createdAt ?? file.uploadedAt ?? new Date().toISOString(),
+        status: file.status ?? "Uploaded",
+        key: file.key ?? "",
       }));
-      setDocuments(documentsData);
-      setFetchStatus("Documents fetched successfully.");
-    } catch (error) {
-      setFetchStatus("Failed to fetch documents.");
+
+      setDocuments(mappedDocs);
+      setStorageInfo({ totalSizeMB: data.totalSizeMB || 0 });
+
+      if (data.pagination) {
+        setPagination(data.pagination);
+      }
+    } catch (err) {
+      console.error("Error fetching materials:", err);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    fetchDocuments();
-  }, [fetchDocuments]);
+  const refetch = useCallback((params: FetchParams) => {
+    fetchFiles(params);
+  }, [fetchFiles]);
 
-  return { documents, loading, fetchStatus, refetch: fetchDocuments };
+  // useEffect para realizar la primera carga si initialFetch es true
+  useEffect(() => {
+    if (initialParams?.initialFetch) {
+      fetchFiles({ offset: initialParams.offset, limit: initialParams.limit });
+    }
+  }, [initialParams, fetchFiles]);
+
+  return {
+    documents,
+    loading,
+    storageInfo,
+    pagination,
+    refetch,
+  };
 };

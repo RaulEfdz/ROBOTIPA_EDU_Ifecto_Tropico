@@ -71,7 +71,7 @@ const texts = {
     publish: "Publicar capítulo",
     unpublish: "Despublicar",
     freeAccess: "Acceso gratuito",
-    premiumAccess: "Acceso premium",
+    premiumAccess: "Acceso De Pago",
     editChapter: "Editando capítulo",
   },
   en: {
@@ -95,7 +95,7 @@ const texts = {
     publish: "Publish chapter",
     unpublish: "Unpublish",
     freeAccess: "Free access",
-    premiumAccess: "Premium access",
+    premiumAccess: "De Pago access",
     editChapter: "Editing chapter",
   },
 };
@@ -162,7 +162,7 @@ export default function ChapterIdPage() {
       const response = await fetch(
         `/api/courses/${params.courseId}/chapters/${params.chapterId}/publish`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ isPublished: !chapter.isPublished }),
         }

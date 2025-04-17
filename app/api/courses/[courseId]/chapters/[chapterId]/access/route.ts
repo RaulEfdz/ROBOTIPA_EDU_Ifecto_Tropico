@@ -1,23 +1,15 @@
+// app/api/courses/[courseId]/chapters/[chapterId]/access/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { z } from "zod";
 
-// Definimos un esquema para validar que recibimos los campos necesarios
-const requestSchema = z.object({
-  userId: z.string(),
-  courseId: z.string(),
-  chapterId: z.string(),
-});
 
 export async function POST(
-    request: Request,
-    { params }: { params: { courseId: string; chapterId: string } }
-  ) {
-    const { courseId, chapterId } = params;
-  
-    // Se parsea el body y se validan los datos recibidos
+  req: Request,
+  { params }: { params: Promise<{ chapterId: string }> }
+) {
+  const { chapterId } = await params;
 
-try {
+  try {
     // Consultamos la base de datos para obtener solo el estado de acceso (isFree)
     const chapter = await db.chapter.findUnique({
       where: { id: chapterId },

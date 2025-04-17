@@ -8,7 +8,14 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import { Grip, Pencil } from "lucide-react";
+import { 
+  Grip, 
+  Pencil, 
+  Lock, 
+  Unlock, 
+  Eye, 
+  EyeOff 
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -63,7 +70,7 @@ export const ChaptersList = ({
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="chapters">
         {(provided) => (
-          <div {...provided.droppableProps} ref={provided.innerRef}>
+          <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
             {chapters.map((chapter, index) => {
               if (!chapter || !chapter.id) return null;
 
@@ -76,40 +83,67 @@ export const ChaptersList = ({
                   {(provided) => (
                     <div
                       className={cn(
-                        "flex items-center gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm",
-                        chapter.isPublished &&
-                          "bg-sky-100 border-sky-200 text-sky-700"
+                        "flex items-center gap-x-2 bg-white border border-gray-200 text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow",
+                        chapter.isPublished && "border-l-4 border-l-green-500"
                       )}
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                     >
                       <div
                         className={cn(
-                          "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition",
-                          chapter.isPublished &&
-                            "border-r-sky-200 hover:bg-sky-200"
+                          "px-2 py-3 hover:bg-gray-100 rounded-l-lg transition flex items-center justify-center",
+                          chapter.isPublished && "rounded-l-none"
                         )}
                         {...provided.dragHandleProps}
                       >
-                        <Grip className="h-5 w-5" />
+                        <Grip className="h-5 w-5 text-gray-500" />
                       </div>
-                      {chapter.title}
-                      <div className="ml-auto pr-2 flex items-center gap-x-2">
-                        {chapter.isFree && (
-                          <Badge className="bg-Sky801">Libre</Badge>
-                        )}
-                        <Badge
-                          className={cn(
-                            "bg-slate-500",
-                            chapter.isPublished && "bg-Orange804"
-                          )}
-                        >
-                          {chapter.isPublished ? "Publicado" : "Oculto"}
-                        </Badge>
-                        <Pencil
+                      
+                      <div className="flex-grow py-3 font-medium">
+                        {chapter.title}
+                      </div>
+                      
+                      <div className="pr-3 flex items-center gap-x-3">
+                        {/* Status indicators */}
+                        <div className="flex items-center">
+                          {/* Free or Paid indicator */}
+                          <div className="flex items-center mr-2">
+                            {chapter.isFree ? (
+                              <Badge className="bg-blue-100 text-green-700 hover:bg-green-200 flex items-center gap-1 px-2">
+                                <Unlock className="h-3 w-3" />
+                                <span>Gratis</span>
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-200 flex items-center gap-1 px-2">
+                                <Lock className="h-3 w-3" />
+                                <span>De pago</span>
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          {/* Published or Hidden indicator */}
+                          <div>
+                            {chapter.isPublished ? (
+                              <Badge className="bg-green-100 text-green-700 hover:bg-green-200 flex items-center gap-1 px-2">
+                                <Eye className="h-3 w-3" />
+                                <span>Publicado</span>
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-200 flex items-center gap-1 px-2">
+                                <EyeOff className="h-3 w-3" />
+                                <span>Oculto</span>
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Edit button */}
+                        <button
                           onClick={() => onEdit(chapter.id)}
-                          className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
-                        />
+                          className="h-8 w-8 rounded-full flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors"
+                        >
+                          <Pencil className="w-4 h-4 text-gray-600" />
+                        </button>
                       </div>
                     </div>
                   )}

@@ -1,11 +1,8 @@
 "use client";
 
-import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
-
 import { Button } from "@/components/ui/button";
-import { formatPrice } from "@/lib/format";
 
 interface CourseEnrollButtonProps {
   price: number;
@@ -22,15 +19,32 @@ export const CourseEnrollButton = ({
     try {
       setIsLoading(true);
 
-      const response = await axios.post(`/api/courses/${courseId}/checkout`)
+      const res = await fetch(`/api/courses/${courseId}/enroll`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      window.location.assign(response.data.url);
-    } catch {
-      toast.error("Something went wrong");
+      if (!res.ok) throw new Error("Error al procesar la inscripción");
+
+      const data = await res.json();
+
+      if (data?.url) {
+        // Redirige a link de pago
+        window.location.assign(data.url);
+      } else {
+        // Éxito directo
+        toast.success("¡Inscripción completada!");
+        window.location.reload(); // o redirige al curso si lo prefieres
+      }
+    } catch (error) {
+      console.error("Error en inscripción:", error);
+      toast.error("No se pudo completar la inscripción.");
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Button
@@ -39,9 +53,7 @@ export const CourseEnrollButton = ({
       size="sm"
       className="w-full md:w-auto"
     >
-
-      Inscríbete
-      {/* {formatPrice(price)} */}
+      {isLoading ? "Procesando..." : "Inscríbete"}
     </Button>
-  )
-}
+  );
+};

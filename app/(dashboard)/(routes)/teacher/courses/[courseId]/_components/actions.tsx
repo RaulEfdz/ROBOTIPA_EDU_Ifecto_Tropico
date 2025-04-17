@@ -38,7 +38,7 @@ export const Actions = ({ disabled, courseId, isPublished }: ActionsProps) => {
     if (published === null) {
       fetchPublicationStatus();
     }
-  }, []);
+  }, [courseId, published]);
 
   const handleTogglePublish = async () => {
     if (published === null) return;

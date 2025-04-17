@@ -4,10 +4,10 @@ import { db } from "@/lib/db";
 
 // GET → Obtener descripción
 export async function GET(
-  _req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  req: Request,
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
 ) {
-  const { courseId, chapterId } = params;
+  const { courseId, chapterId } = await params;
 
   if (!courseId || !chapterId) {
     return NextResponse.json({ message: "Missing params" }, { status: 400 });
@@ -39,17 +39,17 @@ export async function GET(
 
 // PATCH → Editar descripción
 export async function PATCH(
-  request: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  req: Request,
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
 ) {
-  const { courseId, chapterId } = params;
+  const { courseId, chapterId } = await params;
 
   if (!courseId || !chapterId) {
     return NextResponse.json({ message: "Missing params" }, { status: 400 });
   }
 
   try {
-    const { description } = await request.json();
+    const { description } = await req.json();
 
     if (typeof description !== "string") {
       return NextResponse.json(
@@ -82,10 +82,10 @@ export async function PATCH(
 
 // DELETE → Resetear descripción
 export async function DELETE(
-  _request: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  req: Request,
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
 ) {
-  const { courseId, chapterId } = params;
+  const { courseId, chapterId } = await params;
 
   if (!courseId || !chapterId) {
     return NextResponse.json({ message: "Missing params" }, { status: 400 });

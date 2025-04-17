@@ -1,7 +1,6 @@
 'use client'
 import React, { useState, useEffect } from "react";
 import { Quiz } from "@/app/(dashboard)/(routes)/teacher/quizzes/types";
-import { getQuiz } from "@/app/(dashboard)/(routes)/teacher/quizzes/handler/getQuiz";
 import { COLLECTION_QUIZZES } from "@/app/(dashboard)/(routes)/teacher/quizzes/context/QuizContext";
 import { handleSubmitQuiz } from "./handleSubmitQuiz";
 import {
@@ -35,6 +34,7 @@ import {
 import QuizResults from "./QuizResults";
 import ExpiredQuizResults from "./ExpiredQuizResults";
 import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
+import { getQuizzes } from "@/app/(dashboard)/(routes)/teacher/quizzes/handler/getQuizzes";
 
 interface Props {
   id: string;
@@ -87,7 +87,7 @@ const QuizModalResponse: React.FC<Props> = ({ id, onClose }) => {
       try {
         setLoading(true);
         const idSplit = id.split("_&!")[1];
-        const quiz: Quiz = await getQuiz(COLLECTION_QUIZZES, idSplit);
+        const quiz: Quiz = await getQuizzes(COLLECTION_QUIZZES);
         setQuizData(quiz);
         setExist(
           quiz.closeDate?.timestamp

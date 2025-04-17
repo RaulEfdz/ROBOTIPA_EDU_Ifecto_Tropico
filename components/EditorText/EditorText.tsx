@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { toast } from "sonner";
@@ -64,8 +64,8 @@ const EditorText: React.FC<EditorTextProps> = ({
   }, [onChange]);
 
   const didLoadInitialContent = useRef(false);
+  const [saveAsHtml, setSaveAsHtml] = useState(true);
 
-  // Image handler (Cloudinary)
   const imageHandler = useCallback(() => {
     if (!quill) return;
     const input = document.createElement("input");
@@ -128,7 +128,6 @@ const EditorText: React.FC<EditorTextProps> = ({
     };
   }, [quill, cloudinaryFolderName]);
 
-  // File handler (UploadThing)
   const fileHandler = useCallback(() => {
     if (!quill) return;
     const input = document.createElement("input");
@@ -155,19 +154,12 @@ const EditorText: React.FC<EditorTextProps> = ({
 
         const fileUrl = response[0].url;
         const fileName = file.name;
-        
-        // Create a proper file link with icon
+
         quill.enable(true);
-        
-        // Insert the file icon and name
-        const fileIcon = `[ 📘 ${fileName}] `;
-        quill.insertText(cursorIndex, fileIcon, 'bold', true);
-        
-        // Format the text as a link
+        const fileIcon = `[ 📘 ${fileName} ] `;
+        quill.insertText(cursorIndex, fileIcon, "bold", true);
         quill.setSelection(cursorIndex, fileIcon.length);
-        quill.format('link', fileUrl);
-        
-        // Move cursor to the end
+        quill.format("link", fileUrl);
         quill.setSelection(cursorIndex + fileIcon.length + 1);
 
         const html = quill.root.innerHTML;
@@ -181,30 +173,26 @@ const EditorText: React.FC<EditorTextProps> = ({
     };
   }, [quill, startUpload]);
 
-  // Link handler
   const linkHandler = useCallback(() => {
     if (!quill) return;
-    
+
     const range = quill.getSelection();
     if (!range) return;
-    
-    const value = prompt('Enter link URL:');
+
+    const value = prompt("Enter link URL:");
     if (!value) return;
-    
+
     if (range.length > 0) {
-      // If text is selected, format it as a link
-      quill.format('link', value);
+      quill.format("link", value);
     } else {
-      // If no text selected, insert the URL as a link
-      quill.insertText(range.index, value, { 'link': value });
+      quill.insertText(range.index, value, { link: value });
       quill.setSelection(range.index + value.length);
     }
-    
+
     const html = quill.root.innerHTML;
     onChangeRef.current(html === "<p><br></p>" ? "" : html);
   }, [quill]);
 
-  // Configure handlers and load initial content
   useEffect(() => {
     if (!quill || !QuillInstance) return;
 
@@ -215,7 +203,6 @@ const EditorText: React.FC<EditorTextProps> = ({
       toolbar.addHandler("link", linkHandler);
     }
 
-    // Load initial content if exists
     if (!didLoadInitialContent.current && initialText) {
       try {
         quill.root.innerHTML = initialText;
@@ -226,23 +213,38 @@ const EditorText: React.FC<EditorTextProps> = ({
       }
     }
 
-    // Handle text changes
     const handleTextChange = () => {
-      let html = quill.root.innerHTML;
-      if (html === "<p><br></p>") html = "";
-      onChangeRef.current(html);
+      const content = saveAsHtml ? quill.root.innerHTML : quill.root.innerText;
+      onChangeRef.current(
+        content === "<p><br></p>" || content.trim() === "" ? "" : content
+      );
     };
-    
+
     quill.on("text-change", handleTextChange);
-    
     return () => {
       quill.off("text-change", handleTextChange);
     };
-  }, [quill, imageHandler, fileHandler, linkHandler, initialText, QuillInstance]);
+  }, [quill, imageHandler, fileHandler, linkHandler, initialText, QuillInstance, saveAsHtml]);
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm quill-editor-container">
-      <div ref={quillRef} style={{ minHeight }} className="prose dark:prose-invert max-w-none" />
+      {/* <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <span className="text-xs text-muted-foreground">
+          Modo de guardado:{" "}
+          <strong>{saveAsHtml ? "HTML enriquecido" : "Texto plano"}</strong>
+        </span>
+        <button
+          onClick={() => setSaveAsHtml((prev) => !prev)}
+          className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          Cambiar a {saveAsHtml ? "texto plano" : "HTML"}
+        </button>
+      </div> */}
+      <div
+        ref={quillRef}
+        style={{ minHeight }}
+        className="prose dark:prose-invert max-w-none"
+      />
     </div>
   );
 };

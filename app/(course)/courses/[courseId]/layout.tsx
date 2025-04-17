@@ -4,20 +4,25 @@ import { db } from "@/lib/db";
 import { getProgress } from "@/actions/get-progress";
 import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseNavbar } from "./_components/course-navbar";
-import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
+import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
 
 const CourseLayout = async ({
   children,
-  params
+  params,
 }: {
   children: React.ReactNode;
-  params:any
+  params: { courseId: string };
 }) => {
-    const user = (await getCurrentUserFromDB());
-  
- 
-   if (!user?.id) {
-     return redirect("/app/(auth)");
+  const user = await getCurrentUserFromDBServer(); // ✅ Solo un await
+  console.log(
+    "-------------------- user CourseLayout --------------------",
+    user,
+    "parmas: ",
+    params
+  );
+
+  if (!user?.id) {
+    return redirect("/app/(auth)");
   }
 
   const course = await db.course.findUnique({
@@ -33,43 +38,39 @@ const CourseLayout = async ({
         include: {
           userProgress: {
             where: {
-              userId: user?.id,
-            }
-          }
+              userId: user.id,
+            },
+          },
         },
         orderBy: {
-          position: "asc"
-        }
+          position: "asc",
+        },
       },
     },
   });
 
+  console.log(
+    "-------------------- course CourseLayout rrrr: : :  --------------------",
+    course
+  );
+
   if (!course) {
-     return redirect("/app/(auth)");;
+    return redirect("/app/(auth)");
   }
 
-  const progressCount = await getProgress(user?.id, course.id);
+  const progressCount = await getProgress(user.id, course.id);
 
   return (
     <div className="h-full">
-      
       <div className="h-[80px] md:pl-80 fixed inset-y-0 w-full z-50">
-        <CourseNavbar
-          course={course}
-          progressCount={progressCount}
-        />
+        <CourseNavbar course={course} progressCount={progressCount} />
       </div>
       <div className="hidden md:flex h-full w-80 flex-col fixed inset-y-0 z-50">
-        <CourseSidebar
-          course={course}
-          progressCount={progressCount}
-        />
+        <CourseSidebar course={course} progressCount={progressCount} />
       </div>
-      <main className="md:pl-80 pt-[80px] h-full">
-        {children}
-      </main>
+      <main className="md:pl-80 pt-[80px] h-full">{children}</main>
     </div>
-  )
-}
+  );
+};
 
-export default CourseLayout
+export default CourseLayout;

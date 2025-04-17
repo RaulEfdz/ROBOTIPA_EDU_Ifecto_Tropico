@@ -1,13 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
-
+import { BookOpen, Clock } from "lucide-react";
 import { IconBadge } from "@/components/icon-badge";
-import { formatPrice } from "@/lib/format";
 import { CourseProgress } from "@/components/course-progress";
 import { Badge } from "./ui/badge";
-import { useState } from "react";
-import LoaderWait from "./ui/Loader";
 
 interface CourseCardProps {
   id: string;
@@ -19,6 +15,7 @@ interface CourseCardProps {
   category: string;
   isPublished?: boolean;
   setLoading(value: boolean): void;
+  estimatedTime?: string; // Nueva propiedad opcional para tiempo estimado
 };
 
 export const CourseCard = ({
@@ -30,68 +27,114 @@ export const CourseCard = ({
   progress,
   category,
   isPublished,
-  setLoading
+  setLoading,
+  estimatedTime
 }: CourseCardProps) => {
+  // Componente de insignia de categoría
+  const CategoryBadge = () => (
+    <Badge className="absolute top-2 right-2 bg-white/80 text-slate-800 hover:bg-white/90 transition-all text-xs font-medium">
+      {category}
+    </Badge>
+  );
 
-  return isPublished ? (
-    <Link href={`/courses/${id}`} onClick={() => setLoading(true)}>
-      <div className="group hover:shadow-sm transition overflow-hidden hover  h-full bg-[#FFFCF8]">
-        <div className="relative w-full aspect-video overflow-hidden">
+  if (!isPublished) {
+    return (
+      <div className="group relative rounded-lg overflow-hidden border border-slate-200 bg-white shadow-sm h-full transition-all">
+        <div className="relative w-full aspect-video overflow-hidden rounded-t-lg bg-slate-100">
+          <Image 
+            fill 
+            className="object-cover opacity-30 grayscale" 
+            alt={title} 
+            src={imageUrl} 
+          />
+          <div className="absolute inset-0 bg-slate-200/40 backdrop-blur-[1px]"></div>
+        </div>
+        
+        <div className="flex flex-col p-4 opacity-60">
+          <h3 className="text-lg font-semibold text-slate-800 line-clamp-2 mb-1">
+            {title}
+          </h3>
+          <p className="text-xs text-slate-500 mb-3">
+            {category}
+          </p>
+          
+          <Badge className="self-start bg-slate-200 text-slate-700 hover:bg-slate-300">
+            No disponible
+          </Badge>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Link 
+      href={`/courses/${id}`} 
+      onClick={() => setLoading(true)}
+      className="block h-full"
+    >
+      <div className="group relative rounded-lg overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-300 h-full transform hover:-translate-y-1">
+        <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
           <Image
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
             alt={title}
             src={imageUrl}
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <CategoryBadge />
         </div>
-        <div className="flex flex-col pt-3 p-3">
-          <div className="text-lg md:text-base font-medium group-hover:text-sky-700 transition line-clamp-2">
+        
+        <div className="flex flex-col p-4">
+          <h3 className="text-lg font-semibold text-slate-800 group-hover:text-sky-700 transition-colors duration-300 line-clamp-2 mb-1">
             {title}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {category}
-          </p>
-          <div className="my-3 flex items-center gap-x-2 text-sm md:text-xs">
-            <div className="flex items-center gap-x-1 text-slate-500">
+          </h3>
+          
+          <div className="flex flex-wrap items-center gap-3 mt-3 mb-4">
+            <div className="flex items-center gap-x-1 text-slate-600 text-sm">
               <IconBadge size="sm" icon={BookOpen} />
-              <span>
-                {chaptersLength} {chaptersLength === 1 ? "Capitulo" : "Capitulos"}
-              </span>
+              <span>{chaptersLength} {chaptersLength === 1 ? "Capítulo" : "Capítulos"}</span>
             </div>
+            
+            {estimatedTime && (
+              <div className="flex items-center gap-x-1 text-slate-600 text-sm">
+                <IconBadge size="sm" icon={Clock} />
+                <span>{estimatedTime}</span>
+              </div>
+            )}
           </div>
+          
           {progress !== null ? (
-            <CourseProgress
-              variant={progress === 100 ? "success" : "default"}
-              size="sm"
-              value={progress}
-            />
+            <div className="mt-auto">
+              <p className="text-xs text-slate-500 mb-1">Tu progreso</p>
+              <CourseProgress
+                variant={progress === 100 ? "success" : "default"}
+                size="sm"
+                value={progress}
+              />
+              {progress === 100 && (
+                <Badge className="mt-2 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border-0">
+                  Completado
+                </Badge>
+              )}
+            </div>
           ) : (
-            <p className="text-md md:text-sm font-medium text-slate-700">
-              {/* {formatPrice(price)} */}
-
-            </p>
+            price > 0 ? (
+              <div className="mt-auto">
+                <Badge className="bg-sky-100 text-sky-800 hover:bg-sky-200 border-0">
+                  {new Intl.NumberFormat('es-MX', { 
+                    style: 'currency', 
+                    currency: 'MXN' 
+                  }).format(price)}
+                </Badge>
+              </div>
+            ) : (
+              <Badge className="mt-auto bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border-0">
+                Gratis
+              </Badge>
+            )
           )}
         </div>
       </div>
     </Link>
-  ) : (
-    <div className="group transition overflow-hidden   bg-[#FFFCF8]">
-      <div className="relative w-full aspect-video overflow-hidden">
-        <Image fill className="object-cover opacity-25" alt={title} src={imageUrl} />
-      </div>
-
-      <div className="flex flex-col pt-3 p-3 opacity-25">
-        <div className="text-lg md:text-base font-medium group-hover:text-sky-700 transition line-clamp-2">
-          {title}
-        </div>
-        <p className="text-xs text-muted-foreground">
-          {category}
-        </p>
-      </div>
-
-      <Badge className="mt-3 bg-[#FFFCF8]-2 text-black">Deshabilitado</Badge>
-    </div>
-  )
-
-
-}
+  );
+};

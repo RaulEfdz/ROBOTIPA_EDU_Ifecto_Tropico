@@ -11,7 +11,7 @@ interface VideoDisplayProps {
 export const VideoDisplay = ({
   videoUrl,
   videoId,
-  noVideoText,
+  noVideoText, 
   userId,
 }: VideoDisplayProps) => {
   const isYouTube = /youtube\.com|youtu\.be/.test(videoUrl);
