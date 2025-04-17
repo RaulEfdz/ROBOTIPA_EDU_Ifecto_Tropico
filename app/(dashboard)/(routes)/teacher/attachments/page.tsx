@@ -8,7 +8,7 @@ const Materialattach = async () => {
   const user = await getCurrentUserFromDBServer(); // ✅ Correcto
 
   if (!user?.id) {
-    return redirect("/app/(auth)");
+    return redirect("/");
   }
   const {
     data,

@@ -25,7 +25,7 @@ export async function GET(
   });
 
   if (!course || course.chapters.length === 0) {
-    return NextResponse.redirect(new URL("/app/(auth)", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   const firstChapterId = course.chapters[0].id;

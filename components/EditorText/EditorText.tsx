@@ -5,7 +5,8 @@ import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { toast } from "sonner";
 import { useUploadThing } from "@/utils/uploadthing";
-import { getFileBlockHtml } from "./htmlBlocks";
+import { getQuillSafeFileBlockHtml } from "./htmlBlocks";
+import 'quill-paste-smart';
 
 interface CloudinaryUploadResponse {
   success: boolean;
@@ -56,6 +57,12 @@ const EditorText: React.FC<EditorTextProps> = ({
           link: () => {},
           file: () => {},
         },
+        clipboard: {
+          allowed: {
+            tags: ['a'],
+            attributes: ['href', 'target', 'rel', 'style', 'class']
+          }
+        }
       },
       history: {
         delay: 2000,
@@ -143,6 +150,12 @@ const EditorText: React.FC<EditorTextProps> = ({
     };
   }, [quill, cloudinaryFolderName]);
 
+
+
+
+
+  
+
   const fileHandler = useCallback(() => {
     if (!quill) return;
     const input = document.createElement("input");
@@ -174,9 +187,10 @@ const EditorText: React.FC<EditorTextProps> = ({
         quill.enable(true);
 
         // Aquí defines cómo se verá el bloque insertado
-        const fileBlockHtml = getFileBlockHtml(fileUrl, fileName);
+        const fileBlockHtml = getQuillSafeFileBlockHtml(fileUrl, fileName);
 
         quill.clipboard.dangerouslyPasteHTML(cursorIndex, fileBlockHtml);
+        
         quill.setSelection(cursorIndex + 1);
 
         const html = quill.root.innerHTML;
@@ -324,3 +338,6 @@ const EditorText: React.FC<EditorTextProps> = ({
 };
 
 export default EditorText;
+
+
+// el toolbar de la herrmaienta , en actulizacion debe estar fltante 

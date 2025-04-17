@@ -93,8 +93,10 @@ model Video {
 }
 
 enum VideoType {
-  external
+  external // puedes conservarlo si quieres algo genérico
   mux
+  youtube
+  vimeo
 }
 
 model UserProgress {

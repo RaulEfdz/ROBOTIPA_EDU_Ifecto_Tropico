@@ -4,31 +4,32 @@ import type { NextRequest } from 'next/server';
 import { createClient } from './utils/supabase/server';
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
   const response = NextResponse.next();
+
   const supabase = await createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  // Recuperar la sesión de Supabase
-  const { data: { session } } = await supabase.auth.getSession();
+  const esRutaAuth = pathname.startsWith('/auth');
 
-  // console.log("medd session: ", session)
+  // Protege /dashboard, /courses, y /profile
+  const rutasProtegidas = ['/','/dashboard', '/courses', '/profile'];
 
-  // Definir rutas protegidas
-  const rutasProtegidas = ['/(dashboard)'];
   const esRutaProtegida = rutasProtegidas.some((ruta) =>
-    request.nextUrl.pathname.startsWith(ruta)
+    pathname.startsWith(ruta)
   );
 
-  // Redirigir al usuario a la página de inicio de sesión si no está autenticado
-  if (esRutaProtegida && !session) {
+  if (esRutaProtegida && !session && !esRutaAuth) {
     return NextResponse.redirect(new URL('/auth', request.url));
   }
 
   return response;
 }
 
-// Configurar las rutas que utilizarán este middleware
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|auth).*)',
   ],
 };

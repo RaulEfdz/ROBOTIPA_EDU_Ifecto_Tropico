@@ -24,7 +24,7 @@ export const CourseSidebar = async ({
   const user = await getCurrentUserFromDBServer();
 
   if (!user?.id) {
-    return redirect("/app/(auth)");
+    return redirect("/");
   }
 
   const purchase = await db.purchase.findUnique({

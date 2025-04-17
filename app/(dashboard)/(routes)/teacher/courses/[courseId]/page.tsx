@@ -31,21 +31,21 @@ export default function ClientCourseWrapper() {
         });
 
         if (!res.ok) {
-          router.push('/app/(auth)');
+          router.push('/');
           return;
         }
 
         const json = await res.json();
 
         if (!json.course) {
-          router.push('/app/(auth)');
+          router.push('/');
           return;
         }
 
         setData(json);
       } catch (error) {
         console.error("Error fetching course data", error);
-        router.push('/app/(auth)');
+        router.push('/');
       } finally {
         setLoading(false);
       }

@@ -13,7 +13,7 @@ const AnalyticsPage = async () => {
   
 
   if (!user?.id) {
-    return redirect("/app/(auth)");
+    return redirect("/");
   }
 
   const {

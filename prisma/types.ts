@@ -1,6 +1,8 @@
 // Enums
 export enum VideoType {
-  external = "external",
+  external= "external",
+  youtube = "youtube",
+  vimeo = "vimeo",
   mux = "mux"
 }
 

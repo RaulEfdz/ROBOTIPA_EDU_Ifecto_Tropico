@@ -31,7 +31,7 @@ const SearchContent = () => {
       });
 
       if (!res.ok) {
-        router.push("/app/(auth)");
+        router.push("/");
         return;
       }
 

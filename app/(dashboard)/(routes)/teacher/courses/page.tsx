@@ -11,7 +11,7 @@ const CoursesPage = async () => {
   const user = await getCurrentUserFromDBServer(); // ✅ Correcto
 
   if (!user?.id) {
-    return redirect("/app/(auth)");
+    return redirect("/");
   }
 
   const courses = await db.course.findMany({

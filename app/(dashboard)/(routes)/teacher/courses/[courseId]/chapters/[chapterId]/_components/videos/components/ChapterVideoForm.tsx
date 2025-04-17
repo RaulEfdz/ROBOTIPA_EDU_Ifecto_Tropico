@@ -14,6 +14,7 @@ import { UploadOptions } from "../components/UploadOptions";
 import { YouTubeInput } from "../components/YouTubeInput";
 import { VideoUploaderMux } from "./UploaderMux/VideoUploaderMux";
 import { ChapterVideo } from "@/prisma/types";
+import { VimeoInput } from "./VimeoInput";
 
 interface ChapterWithVideo extends Chapter {
   video?: ChapterVideo | null | undefined;
@@ -40,7 +41,9 @@ export const ChapterVideoForm = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isReplacing, setIsReplacing] = useState(false);
   const [isSubmittingYouTube, setIsSubmittingYouTube] = useState(false);
-  const [mode, setMode] = useState<"youtube" | "file" | null>(null);
+  // const [mode, setMode] = useState<"youtube" | "file" | null>(null);
+  const [mode, setMode] = useState<"youtube" | "file" | "vimeo" | null>(null);
+
   const [apiError, setApiError] = useState<string | null>(null);
 
   const getInitialVideoType = (
@@ -99,9 +102,11 @@ export const ChapterVideoForm = ({
     return res.json();
   };
 
-  const postMuxVideoData = async (uploadId: string): Promise<{ url: string }> => {
+  const postMuxVideoData = async (
+    uploadId: string
+  ): Promise<{ url: string }> => {
     const res = await fetch(
-      `/api/courses/${courseId}/chapters/${chapterId}/video/create`,
+      `/api/courses/${courseId}/chapters/${chapterId}/video/mux`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -120,6 +125,54 @@ export const ChapterVideoForm = ({
     }
     return data;
   };
+
+
+  const validateVimeoUrl = (url: string): boolean => {
+    return /vimeo\.com\/(?:video\/)?\d+/.test(url);
+  };
+  
+  const postVimeoVideoData = async (urlToSave: string) => {
+    const res = await fetch(
+      `/api/courses/${courseId}/chapters/${chapterId}/video/vimeo`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoUrl: urlToSave }),
+      }
+    );
+  
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ message: t.errorMessage }));
+      throw new Error(error.message || t.errorMessage);
+    }
+    return res.json();
+  };
+  
+  const handleVimeoSubmit = async () => {
+    if (!validateVimeoUrl(videoUrl)) {
+      setApiError("URL de Vimeo inválida");
+      return;
+    }
+  
+    setIsSubmittingYouTube(true); // reutiliza este estado o crea otro si prefieres
+    setApiError(null);
+  
+    try {
+      await postVimeoVideoData(videoUrl);
+      toast.success(t.successMessage);
+      setIsEditing(false);
+      setIsReplacing(false);
+      setMode(null);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : t.errorMessage;
+      setApiError(msg);
+      toast.error(msg);
+    } finally {
+      setIsSubmittingYouTube(false);
+    }
+  };
+  
+
 
   const handleYouTubeSubmit = async () => {
     if (!validateYouTubeUrl(videoUrl)) {
@@ -238,9 +291,11 @@ export const ChapterVideoForm = ({
             <UploadOptions
               onSelectYouTube={() => setMode("youtube")}
               onSelectFile={() => setMode("file")}
+              onSelectVimeo={() => setMode("vimeo")}
               chooseText={t.choose}
               youtubeText={t.youtube}
               fileText={t.file}
+              vimeoText={"Desde Vimeo"} // o usa i18n
             />
           )}
 
@@ -264,6 +319,22 @@ export const ChapterVideoForm = ({
             <VideoUploaderMux
               onUploadSuccess={handleMuxUploadSuccess}
               lang={lang}
+            />
+          )}
+
+          {mode === "vimeo" && (
+            <VimeoInput
+              videoUrl={videoUrl}
+              setVideoUrl={handleSetVideoUrl}
+              validateUrl={validateVimeoUrl}
+              onBack={() => setMode(null)}
+              onSubmit={handleVimeoSubmit}
+              isSaving={isSubmittingYouTube}
+              placeholder={"Pega el enlace del video de Vimeo"}
+              invalidFormatText={"URL de Vimeo inválida"}
+              errorText={apiError}
+              backText={t.goBack}
+              saveText={t.saveButton}
             />
           )}
         </div>

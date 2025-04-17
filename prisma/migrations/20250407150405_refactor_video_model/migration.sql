@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "VideoType" AS ENUM ('external', 'mux');
+CREATE TYPE "VideoType" AS ENUM ('external', 'mux', 'vimeo', 'youtube');
 
 -- CreateTable
 CREATE TABLE "Course" (

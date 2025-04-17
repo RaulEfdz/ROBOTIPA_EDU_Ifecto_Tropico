@@ -354,10 +354,52 @@ body>div.h-full.flex.items-center.justify-center>div>div>div.cl-main.🔒️ for
 .ql-video {
   width: 20rem !important;
 }
-
-ql-toolbar.ql-snow{
-  height: 3rem !important;
+body > div.h-full.bg-gradient > main > div > div > div.px-4.py-4.sm\:p-6.max-w-7xl.mx-auto > section:nth-child(6) > div > div.p-5.flex-grow > div > div > div{
+/* background-color: #5A3E34; */
+height: 70vh;
+overflow-y: auto;
 }
+
+body > div.h-full.bg-gradient > main > div > div > div.px-4.py-4.sm\:p-6.max-w-7xl.mx-auto > section:nth-child(6) > div > div.p-5.flex-grow > div > div > div.ql-toolbar.ql-snow{
+height: 3rem;
+}
+
+body > div.h-full.bg-gradient > main > div > div > div.px-4.py-4.sm\:p-6.max-w-7xl.mx-auto > section:nth-child(6) > div > div.p-5.flex-grow > div > div > div.ql-toolbar.ql-snow > span:nth-child(7) > button{
+  .ql-file {
+    background-color: #1f2937; /* gris oscuro elegante */
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 0 4px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .ql-file svg {
+    width: 18px;
+    height: 18px;
+    stroke: white;
+    fill: none;
+  }
+  
+  .ql-file:hover {
+    background-color: #374151; /* tono un poco más claro en hover */
+    border-color: #6366f1; /* morado elegante */
+  }
+  
+  .ql-file:focus,
+  .ql-file:active {
+    outline: none;
+    box-shadow: 0 0 0 2px #6366f1;
+    background-color: #4f46e5;
+    border-color: #4f46e5;
+  }
+}
+
+
 /* div{
   border-radius: 5px;
 } */

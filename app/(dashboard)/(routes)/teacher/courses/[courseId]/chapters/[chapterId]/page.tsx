@@ -126,7 +126,7 @@ export default function ChapterIdPage() {
         );
 
         if (!res.ok) {
-          router.push("/app/(auth)");
+          router.push("/");
           return;
         }
 
@@ -145,7 +145,7 @@ export default function ChapterIdPage() {
         }
       } catch (error) {
         console.error("Error al cargar el capítulo:", error);
-        router.push("/app/(auth)");
+        router.push("/");
       } finally {
         setLoading(false);
       }

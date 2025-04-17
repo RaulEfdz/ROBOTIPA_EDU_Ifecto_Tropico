@@ -9,7 +9,7 @@ const TeacherLayout = ({
 }) => {
 
   if (!isTeacher()) {
-     return redirect("/app/(auth)");;
+     return redirect("/");;
   }
 
   return <div className="h-full  overflow-y-auto overflow-x-hidden">{children}</div>
