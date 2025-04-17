@@ -8,6 +8,8 @@
 }
  */
 
+
+
 html,
 body,
 :root {
@@ -353,6 +355,9 @@ body>div.h-full.flex.items-center.justify-center>div>div>div.cl-main.🔒️ for
   width: 20rem !important;
 }
 
+ql-toolbar.ql-snow{
+  height: 3rem !important;
+}
 /* div{
   border-radius: 5px;
 } */

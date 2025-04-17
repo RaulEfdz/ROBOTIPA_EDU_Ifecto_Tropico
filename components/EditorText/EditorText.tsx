@@ -5,6 +5,7 @@ import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { toast } from "sonner";
 import { useUploadThing } from "@/utils/uploadthing";
+import { getFileBlockHtml } from "./htmlBlocks";
 
 interface CloudinaryUploadResponse {
   success: boolean;
@@ -27,14 +28,23 @@ const EditorText: React.FC<EditorTextProps> = ({
   minHeight = "200px",
   placeholder = "Write something...",
 }) => {
-  const { quill, quillRef, Quill: QuillInstance } = useQuill({
+  const {
+    quill,
+    quillRef,
+    Quill: QuillInstance,
+  } = useQuill({
     modules: {
       toolbar: {
         container: [
           [{ header: [1, 2, 3, 4, false] }],
           ["bold", "italic", "underline", "strike"],
           [{ color: [] }, { background: [] }],
-          [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+          [
+            { list: "ordered" },
+            { list: "bullet" },
+            { indent: "-1" },
+            { indent: "+1" },
+          ],
           [{ script: "sub" }, { script: "super" }],
           [{ align: [] }],
           ["link", "image", "file"],
@@ -96,7 +106,10 @@ const EditorText: React.FC<EditorTextProps> = ({
             const response = await fetch("/api/cloudinary/upload", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ image: base64Image, folder: cloudinaryFolderName }),
+              body: JSON.stringify({
+                image: base64Image,
+                folder: cloudinaryFolderName,
+              }),
             });
             const data: CloudinaryUploadResponse = await response.json();
             if (!response.ok || !data.success || !data.result?.secure_url) {
@@ -111,7 +124,9 @@ const EditorText: React.FC<EditorTextProps> = ({
             toast.success("Image uploaded", { id: uploadToastId });
           } catch (error: any) {
             console.error("Upload error:", error);
-            toast.error(`Upload failed: ${error.message}`, { id: uploadToastId });
+            toast.error(`Upload failed: ${error.message}`, {
+              id: uploadToastId,
+            });
             quill.enable(true);
           }
         };
@@ -145,29 +160,33 @@ const EditorText: React.FC<EditorTextProps> = ({
       const cursorIndex = quill.getSelection()?.index ?? quill.getLength();
       const uploadToastId = "upload-file-toast-" + Date.now();
 
-      toast.loading(`Uploading ${file.name}...`, { id: uploadToastId });
+      toast.loading(`Subiendo ${file.name}...`, { id: uploadToastId });
       quill.enable(false);
 
       try {
         const response = await startUpload([file]);
-        if (!response || response.length === 0) throw new Error("Upload failed");
+        if (!response || response.length === 0)
+          throw new Error("Error al subir archivo");
 
         const fileUrl = response[0].url;
         const fileName = file.name;
 
         quill.enable(true);
-        const fileIcon = `[ 📘 ${fileName} ] `;
-        quill.insertText(cursorIndex, fileIcon, "bold", true);
-        quill.setSelection(cursorIndex, fileIcon.length);
-        quill.format("link", fileUrl);
-        quill.setSelection(cursorIndex + fileIcon.length + 1);
+
+        // Aquí defines cómo se verá el bloque insertado
+        const fileBlockHtml = getFileBlockHtml(fileUrl, fileName);
+
+        quill.clipboard.dangerouslyPasteHTML(cursorIndex, fileBlockHtml);
+        quill.setSelection(cursorIndex + 1);
 
         const html = quill.root.innerHTML;
         onChangeRef.current(html === "<p><br></p>" ? "" : html);
-        toast.success(`File "${fileName}" uploaded`, { id: uploadToastId });
+        toast.success(`Archivo "${fileName}" subido`, { id: uploadToastId });
       } catch (err: any) {
-        console.error("File upload error:", err);
-        toast.error("Upload failed: " + (err.message || "Unknown error"), { id: uploadToastId });
+        console.error("Error en subida de archivo:", err);
+        toast.error("Fallo al subir: " + (err.message || "Error desconocido"), {
+          id: uploadToastId,
+        });
         quill.enable(true);
       }
     };
@@ -193,6 +212,39 @@ const EditorText: React.FC<EditorTextProps> = ({
     onChangeRef.current(html === "<p><br></p>" ? "" : html);
   }, [quill]);
 
+  // useEffect(() => {
+  //   if (!quill || !QuillInstance) return;
+
+  //   const toolbar = quill.getModule("toolbar") as any;
+  //   if (toolbar?.addHandler) {
+  //     toolbar.addHandler("image", imageHandler);
+  //     toolbar.addHandler("file", fileHandler);
+  //     toolbar.addHandler("link", linkHandler);
+  //   }
+
+  //   if (!didLoadInitialContent.current && initialText) {
+  //     try {
+  //       quill.root.innerHTML = initialText;
+  //       quill.history.clear();
+  //       didLoadInitialContent.current = true;
+  //     } catch (error) {
+  //       console.error("Error setting initial content:", error);
+  //     }
+  //   }
+
+  //   const handleTextChange = () => {
+  //     const content = saveAsHtml ? quill.root.innerHTML : quill.root.innerText;
+  //     onChangeRef.current(
+  //       content === "<p><br></p>" || content.trim() === "" ? "" : content
+  //     );
+  //   };
+
+  //   quill.on("text-change", handleTextChange);
+  //   return () => {
+  //     quill.off("text-change", handleTextChange);
+  //   };
+  // }, [quill, imageHandler, fileHandler, linkHandler, initialText, QuillInstance, saveAsHtml]);
+
   useEffect(() => {
     if (!quill || !QuillInstance) return;
 
@@ -203,6 +255,18 @@ const EditorText: React.FC<EditorTextProps> = ({
       toolbar.addHandler("link", linkHandler);
     }
 
+    // ✅ Agregar ícono manual al botón ql-file
+    const fileButton = document.querySelector(".ql-file");
+    if (fileButton && fileButton.innerHTML.trim() === "") {
+      fileButton.innerHTML = `
+        <svg viewBox="0 0 18 18">
+          <path class="ql-stroke" d="M6 2H12V6H16V16H2V2H6Z" />
+          <line class="ql-stroke" x1="6" x2="12" y1="12" y2="12" />
+        </svg>
+      `;
+    }
+
+    // ✅ Set initial content si aplica
     if (!didLoadInitialContent.current && initialText) {
       try {
         quill.root.innerHTML = initialText;
@@ -224,7 +288,15 @@ const EditorText: React.FC<EditorTextProps> = ({
     return () => {
       quill.off("text-change", handleTextChange);
     };
-  }, [quill, imageHandler, fileHandler, linkHandler, initialText, QuillInstance, saveAsHtml]);
+  }, [
+    quill,
+    imageHandler,
+    fileHandler,
+    linkHandler,
+    initialText,
+    QuillInstance,
+    saveAsHtml,
+  ]);
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm quill-editor-container">
@@ -240,11 +312,13 @@ const EditorText: React.FC<EditorTextProps> = ({
           Cambiar a {saveAsHtml ? "texto plano" : "HTML"}
         </button>
       </div> */}
-      <div
-        ref={quillRef}
-        style={{ minHeight }}
-        className="prose dark:prose-invert max-w-none"
-      />
+      <div className="quill-editor-container">
+        <div
+          ref={quillRef}
+          style={{ minHeight }}
+          className="prose dark:prose-invert max-w-none"
+        />
+      </div>
     </div>
   );
 };
