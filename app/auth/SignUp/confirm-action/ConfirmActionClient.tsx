@@ -16,7 +16,7 @@ const ConfirmActionClient = () => {
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <div className="bg-white p-6 rounded-lg shadow-md">
+      <div className="bg-TextCustom p-6 rounded-lg shadow-md">
         <h2 className="text-lg font-semibold mb-4">Redirigiendo...</h2>
         <p className="text-gray-600">Estamos verificando tu solicitud, por favor espera un momento.</p>
       </div>

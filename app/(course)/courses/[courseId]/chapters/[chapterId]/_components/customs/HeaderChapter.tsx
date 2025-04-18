@@ -27,7 +27,7 @@ const HeaderChapter: React.FC<PropHeaderChapter> = ({ title, attachments }) => {
     return (
         <header className="text-gray-600 body-font w-full bg-red-950">
             <div className=" mx-full flex flex-wrap items-center justify-between p-5 bg-black">
-                <a className="flex title-font font-medium items-center text-white mb-4 md:mb-0">
+                <a className="flex title-font font-medium items-center text-TextCustom mb-4 md:mb-0">
                     <FileTextIcon className='' />
                     <span className="ml-2 text-xl">{title}</span>
                 </a>

@@ -127,7 +127,7 @@ export const ChapterTitleForm = ({
   };
 
   return (
-    <div className="mb-6 bg-white dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+    <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
           {t.titleLabel}
@@ -182,9 +182,9 @@ export const ChapterTitleForm = ({
                         className="h-10 w-10 rounded-lg bg-blue-600 hover:bg-blue-700"
                       >
                         {isSaving ? (
-                          <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin"></div>
                         ) : (
-                          <Check className="h-4 w-4 text-white" />
+                          <Check className="h-4 w-4 text-TextCustom" />
                         )}
                       </Button>
                     </div>

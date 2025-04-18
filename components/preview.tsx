@@ -21,7 +21,7 @@ const EditorTextPreview: React.FC<EditorTextPreviewProps> = ({
   }, [htmlContent]);
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+    <div className="bg-TextCustom dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
       <div
         ref={containerRef}
         style={{ minHeight }}

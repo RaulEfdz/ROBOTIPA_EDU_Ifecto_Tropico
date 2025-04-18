@@ -32,7 +32,7 @@ const ChapterVideoSection: React.FC<ChapterVideoSectionProps> = ({
   const hasValidVideo = validateURLVideo(videoUrl);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6 border border-slate-200">
+    <div className="bg-TextCustom rounded-xl shadow-lg overflow-hidden mb-6 border border-slate-200">
       {hasValidVideo ? (
         <VideoPlayer
           chapterId={chapterId}
@@ -47,8 +47,8 @@ const ChapterVideoSection: React.FC<ChapterVideoSectionProps> = ({
         <div className="w-full aspect-video relative bg-slate-100">
           {isLocked && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/75 backdrop-blur-sm">
-              <Lock className="h-14 w-14 mb-3 text-white opacity-80" />
-              <h3 className="text-xl font-medium mb-2 text-white">
+              <Lock className="h-14 w-14 mb-3 text-TextCustom opacity-80" />
+              <h3 className="text-xl font-medium mb-2 text-TextCustom">
                 Contenido bloqueado
               </h3>
               <p className="text-slate-200 max-w-xs text-center mb-4">
@@ -64,7 +64,7 @@ const ChapterVideoSection: React.FC<ChapterVideoSectionProps> = ({
           />
           {!isLocked && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white/80 backdrop-blur-sm p-4 rounded-full shadow-lg">
+              <div className="bg-TextCustom/80 backdrop-blur-sm p-4 rounded-full shadow-lg">
                 <Play className="h-16 w-16 text-sky-600" />
               </div>
             </div>

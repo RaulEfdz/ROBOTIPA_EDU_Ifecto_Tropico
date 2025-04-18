@@ -254,18 +254,18 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
   }
 
   return (
-    <div className="mb-6 bg-white dark:bg-gray-850 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col">
+    <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col">
       <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 flex-shrink-0">
         <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300">{t.title}</h3>
         <div className="flex items-center space-x-3">
           <div className="h-5 w-24 flex items-center justify-end">{getStatusIndicator()}</div>
           {hasUnsavedChanges && (
             <Button variant="ghost" size="icon" onClick={handleReset} title={t.resetButton}>
-              <RotateCcw className="h-4 w-4 text-orange-500" />
+              <RotateCcw className="h-4 w-4 text-primaryCustom2" />
             </Button>
           )}
           <span className={`px-2 py-1 rounded text-xs font-medium ${
-            autoSaveEnabled ? "bg-green-500 text-white" : "bg-red-500 text-white"
+            autoSaveEnabled ? "bg-green-500 text-TextCustom" : "bg-red-500 text-TextCustom"
           }`}>
             {autoSaveEnabled ? "Auto Guardado Activado" : "Auto Guardado Desactivado"}
           </span>

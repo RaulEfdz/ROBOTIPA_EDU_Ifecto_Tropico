@@ -38,7 +38,7 @@ export const DropdownsResource: React.FC<listResources> = ({ listOptions }) => {
       {elementosSinJson.length > 0 &&
         <>
           <div>
-            <button onClick={() => { setIsOpen(!isOpen) }} type="button" className="bg-Orange804  inline-flex w-full justify-center gap-x-1.5 rounded-md text-white px-3 py-2 border-none " id="menu-button" aria-expanded="true" aria-haspopup="true">
+            <button onClick={() => { setIsOpen(!isOpen) }} type="button" className="bg-primaryCustom  inline-flex w-full justify-center gap-x-1.5 rounded-md text-TextCustom px-3 py-2 border-none " id="menu-button" aria-expanded="true" aria-haspopup="true">
               <FilesIcon />
               <span>Recursos</span>
               <svg className="-mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="#ffffff" aria-hidden="true">

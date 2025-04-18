@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -18,42 +19,40 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Settings2 } from "lucide-react";
-import { TableUsersProps, User } from "./type";
 import EditUserForm from "./modalEditUser";
 import { UpdateUser } from "./handler/update";
 import toast from "react-hot-toast";
+import { User } from "@/prisma/types";
+import { translateRole } from "@/utils/roles/translate";
 
 type VisibleColumns = Record<keyof User, boolean>;
 
+export interface TableUsersProps {
+  users: User[];
+}
+
 const TableUsers = ({ users }: TableUsersProps) => {
   const [visibleColumns, setVisibleColumns] = useState<VisibleColumns>({
-    id: false,
-    emailAddress: true,
+    id: true,
+    email: true,
     fullName: true,
-    phoneNumber: true,
-    countryOfResidence: false,
-    age: true,
-    gender: false,
-    university: true,
-    educationLevel: true,
-    major: false,
-    otherMajor: false,
-    specializationArea: true,
-    learningObjectives: false,
-    otherObjective: false,
-    communicationPreferences: false,
-    acceptsTerms: true,
-    role: true,
-    available: true,
-    avatar: false,
-    isEmailVerified: true,
-    isAdminVerified: false,
+    username: true,
+    phone: true,
+    customRole: true,
+    provider: true,
+    lastSignInAt: true,
+    metadata: true,
+    isActive: true,
+    isBanned: true,
+    isDeleted: true,
+    additionalStatus: true,
     createdAt: true,
-    updatedAt: false,
-    deviceType: true,
-    courses: false,
-    purchases: false,
-    userProgresses: false,
+    updatedAt: true,
+    courses: true,
+    purchases: true,
+    userProgress: true,
+    invoices: true,
+    examAttempts: true,
   });
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -65,19 +64,18 @@ const TableUsers = ({ users }: TableUsersProps) => {
     }));
   };
 
-  const handleSave = async (updatedUserData: Pick<User, "role" | "available">) => {
+  const handleSave = async (updatedUserData: Pick<User, "customRole" | "isActive">) => {
     if (selectedUser) {
       const updatedUser: User = {
         ...selectedUser,
         ...updatedUserData,
-        updatedAt: new Date(), // Actualiza la fecha de última modificación
+        updatedAt: new Date(),
       };
-  
-  
+
       try {
-        const response = await UpdateUser(updatedUser);
+        await UpdateUser(updatedUser);
         toast.success("Usuario actualizado con éxito.");
-        setSelectedUser(null); // Cierra el modal
+        setSelectedUser(null);
       } catch (error: unknown) {
         toast.error(
           error instanceof Error
@@ -87,6 +85,7 @@ const TableUsers = ({ users }: TableUsersProps) => {
       }
     }
   };
+
   const handleCancel = () => setSelectedUser(null);
 
   return (
@@ -123,14 +122,10 @@ const TableUsers = ({ users }: TableUsersProps) => {
             <Table>
               <TableHeader className="sticky top-0 bg-background z-10">
                 <TableRow>
-                  {visibleColumns.fullName && (
-                    <TableHead>Nombre Completo</TableHead>
-                  )}
-                  {visibleColumns.emailAddress && <TableHead>Email</TableHead>}
-                  {visibleColumns.role && <TableHead>Rol</TableHead>}
-                  {visibleColumns.countryOfResidence && (
-                    <TableHead>País</TableHead>
-                  )}
+                  {visibleColumns.fullName && <TableHead>Nombre Completo</TableHead>}
+                  {visibleColumns.email && <TableHead>Email</TableHead>}
+                  {visibleColumns.customRole && <TableHead>Rol</TableHead>}
+                  {visibleColumns.phone && <TableHead>Teléfono</TableHead>}
                   <TableHead>Acciones</TableHead>
                 </TableRow>
               </TableHeader>
@@ -144,18 +139,12 @@ const TableUsers = ({ users }: TableUsersProps) => {
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.3 }}
                     >
-                      {visibleColumns.fullName && (
-                        <TableCell>{user.fullName}</TableCell>
+                      {visibleColumns.fullName && <TableCell>{user.fullName}</TableCell>}
+                      {visibleColumns.email && <TableCell>{user.email}</TableCell>}
+                      {visibleColumns.customRole && (
+                        <TableCell>{translateRole(user.customRole)}</TableCell>
                       )}
-                      {visibleColumns.emailAddress && (
-                        <TableCell>{user.emailAddress}</TableCell>
-                      )}
-                      {visibleColumns.role && (
-                        <TableCell>{user.role}</TableCell>
-                      )}
-                      {visibleColumns.countryOfResidence && (
-                        <TableCell>{user.countryOfResidence}</TableCell>
-                      )}
+                      {visibleColumns.phone && <TableCell>{user.phone}</TableCell>}
                       <TableCell>
                         <Button
                           variant="secondary"
@@ -185,6 +174,7 @@ const TableUsers = ({ users }: TableUsersProps) => {
           open={!!selectedUser}
           onSave={handleSave}
           onCancel={handleCancel}
+          visibleColumns={visibleColumns}
         />
       )}
     </motion.div>

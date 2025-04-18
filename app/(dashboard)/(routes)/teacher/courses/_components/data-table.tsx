@@ -73,7 +73,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div
-      className="w-full mx-auto rounded-xl shadow-md p-6 transition bg-white"
+      className="w-full mx-auto rounded-xl shadow-md p-6 transition bg-TextCustom"
       style={{ background: brandPrimary }}
     >
       {/* Barra superior */}
@@ -89,7 +89,7 @@ export function DataTable<TData, TValue>({
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
           }
-          className="w-full max-w-md bg-white placeholder:text-gray-500 focus:ring-2 focus:ring-offset-2 focus:ring-[#ACBC64] transition"
+          className="w-full max-w-md bg-TextCustom placeholder:text-gray-500 focus:ring-2 focus:ring-offset-2 focus:ring-[#ACBC64] transition"
           style={{
             border: `1px solid ${brandSecondaryDark}`,
             color: "#000",

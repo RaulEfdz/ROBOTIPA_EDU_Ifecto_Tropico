@@ -127,7 +127,7 @@ const ChapterIdPage: React.FC = () => {
         className={`min-h-screen pb-16 ${
           isCompleted
             ? "bg-sky-50/50"
-            : "bg-gradient-to-b from-slate-50 to-white"
+            : "bg-gradient-to-b from-slate-50 to-TextCustom"
         }`}
       >
         {/* Banners */}

@@ -10,7 +10,7 @@ const NavbarQuiz: React.FC = () => {
   return (
     <div className="bg-gradient-to-r from-emerald-400 to-emerald-400 shadow-md p-5 rounded-lg">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white hover:text-gray-200 transition-colors duration-300 cursor-pointer">
+        <h2 className="text-2xl font-bold text-TextCustom hover:text-gray-200 transition-colors duration-300 cursor-pointer">
           Quizes
         </h2>
         <Button

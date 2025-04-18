@@ -65,7 +65,7 @@ const CustomUserPage = () => {
             />
             <button 
               type="submit" 
-              className={`bg-[#386329] text-white px-2 py-1 rounded ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`bg-[#386329] text-TextCustom px-2 py-1 rounded ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={isUpdating}
             >
               {isUpdating ? 'Guardando...' : 'Guardar'}

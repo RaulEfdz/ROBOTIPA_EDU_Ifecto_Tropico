@@ -143,7 +143,7 @@ const SearchContent: React.FC = () => {
             <BookOpen className="h-5 w-5 mr-2 text-slate-500" />
             Categorías
           </h2>
-          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+          <div className="bg-TextCustom rounded-lg shadow-sm border border-slate-200 p-4">
             <Categories items={categories} />
           </div>
         </div>
@@ -163,7 +163,7 @@ const SearchContent: React.FC = () => {
               <span className="text-sm text-slate-500">Ordenar por:</span>
               <select
                 id="order-select"
-                className="text-sm border rounded-md px-2 py-1 bg-white"
+                className="text-sm border rounded-md px-2 py-1 bg-TextCustom"
                 aria-label="Ordenar resultados"
               >
                 <option value="recent">Más recientes</option>

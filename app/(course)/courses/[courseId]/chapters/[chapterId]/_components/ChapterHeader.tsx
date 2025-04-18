@@ -81,7 +81,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = ({
           <Button
             size="sm"
             onClick={() => router.push(`/courses/${courseId}/chapters/${nextChapterId}`)}
-            className="text-sm flex items-center gap-1 shadow-sm hover:shadow bg-sky-600 hover:bg-sky-700 text-white transition-colors"
+            className="text-sm flex items-center gap-1 shadow-sm hover:shadow bg-sky-600 hover:bg-sky-700 text-TextCustom transition-colors"
           >
             Siguiente <ChevronRight className="h-4 w-4" />
           </Button>

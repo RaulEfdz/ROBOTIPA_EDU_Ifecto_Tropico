@@ -219,14 +219,14 @@ export const ChapterVideoForm = ({
 
   if (!initialData) {
     return (
-      <div className="mb-6 bg-white dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-all duration-300">
+      <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-all duration-300">
         <p className="text-sm text-gray-500 dark:text-gray-400">{t.loading}</p>
       </div>
     );
   }
 
   return (
-    <div className="mb-6 bg-white dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-all duration-300">
+    <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-all duration-300">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
           {t.title}

@@ -144,7 +144,7 @@ export function AddQuestionsModal() {
       <DialogContent className="max-w-3xl max-h-[90vh] p-0">
         <ScrollArea className="max-h-[90vh] w-full pt-10">
           <div className="p-6 space-y-6">
-            <DialogHeader className="bg-gradient-to-r from-emerald-400 to-teal-500 text-white rounded-t-lg p-4 shadow-lg">
+            <DialogHeader className="bg-gradient-to-r from-emerald-400 to-teal-500 text-TextCustom rounded-t-lg p-4 shadow-lg">
               <DialogTitle className="text-2xl font-bold">
                 {quiz ? "Editar Quiz" : "Crear Quiz"}
               </DialogTitle>
@@ -215,7 +215,7 @@ export function AddQuestionsModal() {
                                 </div>
                                 <Button
                                   onClick={handleSaveEditedQuestion}
-                                  className="w-full bg-teal-500 hover:bg-teal-600 text-white"
+                                  className="w-full bg-teal-500 hover:bg-teal-600 text-TextCustom"
                                 >
                                   <Save className="w-4 h-4 mr-2" />
                                   Guardar cambios
@@ -289,7 +289,7 @@ export function AddQuestionsModal() {
                   </div>
                   <Button
                     onClick={handleAddQuestion}
-                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-TextCustom"
                     disabled={!newQuestion.trim()}
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -301,7 +301,7 @@ export function AddQuestionsModal() {
 
             <Button
               onClick={handleSaveQuiz}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+              className="w-full bg-teal-600 hover:bg-teal-700 text-TextCustom"
               size="lg"
             >
               <Save className="w-4 h-4 mr-2" />

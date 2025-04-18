@@ -76,7 +76,7 @@ function createDataVariation(originalData: any[], totalSales: number) {
     const randomAddition = Math.floor(Math.random() * 10); // Número aleatorio entre 0 y 9
     const uniqueName = `Name-${Math.random().toString(36).substr(2, 5)}-${i}`; // Genera un string aleatorio único con el índice del bucle
     const excludedColors = ['White_1', 'White_2', 'White']; // Colores base a excluir
-    const additionalExclusions = Math.random() > 0.5 ? ['Blue533'] : []; // 50% de probabilidad de excluir 'Blue533'
+    const additionalExclusions = Math.random() > 0.5 ? ['PanelCustom'] : []; // 50% de probabilidad de excluir 'PanelCustom'
     datas.push({
       total: originalData[0].total + randomAddition,
       name: uniqueName,

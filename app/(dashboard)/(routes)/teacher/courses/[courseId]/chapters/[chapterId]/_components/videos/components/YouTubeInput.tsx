@@ -140,7 +140,7 @@ export const YouTubeInput = ({
           </div>
           
           {/* Información del video */}
-          <div className="p-3 bg-white dark:bg-gray-800 flex items-center justify-between">
+          <div className="p-3 bg-TextCustom dark:bg-gray-800 flex items-center justify-between">
             <div className="flex items-center">
               <Youtube className="w-4 h-4 mr-2 text-red-600" />
               <div>
@@ -174,7 +174,7 @@ export const YouTubeInput = ({
   };
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm space-y-6">
+    <div className="p-6 bg-TextCustom dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm space-y-6">
       {/* Encabezado */}
       <div className="flex items-center">
         <Youtube className="w-5 h-5 mr-2 text-red-600" />
@@ -276,7 +276,7 @@ export const YouTubeInput = ({
           onClick={handleSubmit}
           disabled={!videoUrl.trim() || isValid !== true || isSaving}
           size="sm"
-          className="h-10 bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors" 
+          className="h-10 bg-blue-600 hover:bg-blue-700 text-TextCustom disabled:opacity-60 disabled:cursor-not-allowed transition-colors" 
         >
           {isSaving ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />

@@ -82,9 +82,9 @@ const TableContent: React.FC<{ lang: "es" | "en" }> = ({ lang }) => {
   const t = texts[lang];
 
   return (
-    <Card className="bg-white dark:bg-gray-850 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm">
+    <Card className="bg-TextCustom dark:bg-gray-850 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base text-gray-800 dark:text-white">
+        <CardTitle className="text-base text-gray-800 dark:text-TextCustom">
           {t.caption}
         </CardTitle>
       </CardHeader>
@@ -107,7 +107,7 @@ const TableContent: React.FC<{ lang: "es" | "en" }> = ({ lang }) => {
                 <TableCell className="text-sm">
                   <Badge
                     variant="outline"
-                    className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md"
+                    className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-TextCustom rounded-md"
                   >
                     {displayName}
                   </Badge>

@@ -111,8 +111,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       {/* Overlay de bloqueo */}
       {isLocked && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
-          <Lock className="h-10 w-10 text-white mb-2 animate-pulse" />
-          <span className="text-white text-sm">Contenido bloqueado. Suscripción requerida.</span>
+          <Lock className="h-10 w-10 text-TextCustom mb-2 animate-pulse" />
+          <span className="text-TextCustom text-sm">Contenido bloqueado. Suscripción requerida.</span>
         </div>
       )}
     </div>

@@ -75,7 +75,7 @@ const QuizSidebar: React.FC<QuizSidebarProps> = ({
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetTrigger asChild>
           <Button
-            className="bg-green-500 flex items-center gap-2 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:ring focus:ring-green-300 shadow-md transition duration-200"
+            className="bg-green-500 flex items-center gap-2 text-TextCustom px-4 py-2 rounded-md hover:bg-green-600 focus:ring focus:ring-green-300 shadow-md transition duration-200"
             aria-label={texts[lang].openQuizzes}
           >
             <BookOpen className="w-5 h-5" /> {/* Ícono de un libro abierto */}

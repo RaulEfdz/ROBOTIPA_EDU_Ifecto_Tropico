@@ -52,8 +52,8 @@ export default function CourseIdContent({ course, categories, lang }: Props) {
 
   // Color de fondo según estado de publicación
   const bgColorClass = course.isPublished
-  ? "bg-gradient-to-b from-green-50 to-white dark:from-green-900/20 dark:to-gray-900"
-  : "bg-gradient-to-b from-sky-50 to-white dark:from-sky-900/20 dark:to-gray-900";
+  ? "bg-gradient-to-b from-green-50 to-TextCustom dark:from-green-900/20 dark:to-gray-900"
+  : "bg-gradient-to-b from-sky-50 to-TextCustom dark:from-sky-900/20 dark:to-gray-900";
 
   return (
     <div className={`min-h-screen ${bgColorClass} transition-colors duration-300 mb-24`}>
@@ -65,7 +65,7 @@ export default function CourseIdContent({ course, categories, lang }: Props) {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
           <Link
             href="/teacher/courses"
-            className="flex items-center text-sm hover:opacity-75 transition bg-white dark:bg-gray-800 px-3 py-2 rounded-md shadow-sm mb-4 sm:mb-0"
+            className="flex items-center text-sm hover:opacity-75 transition bg-TextCustom dark:bg-gray-800 px-3 py-2 rounded-md shadow-sm mb-4 sm:mb-0"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             {texts[lang].back}
@@ -80,7 +80,7 @@ export default function CourseIdContent({ course, categories, lang }: Props) {
 
         {/* Customization section */}
         <section className="mb-6 space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+          <div className="bg-TextCustom dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
             <div className="flex items-center gap-x-2 mb-6">
               <IconBadge icon={LayoutDashboard} />
               <h2 className="text-lg sm:text-xl font-medium">{texts[lang].customizeCourse}</h2>
@@ -98,7 +98,7 @@ export default function CourseIdContent({ course, categories, lang }: Props) {
 
         {/* Chapters section */}
         <section className="mb-6 space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+          <div className="bg-TextCustom dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
             <div className="flex items-center gap-x-2 mb-6">
               <IconBadge icon={ListChecks} />
               <h2 className="text-lg sm:text-xl font-medium">{texts[lang].courseChapters}</h2>

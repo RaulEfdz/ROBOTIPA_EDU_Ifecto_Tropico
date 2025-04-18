@@ -313,7 +313,7 @@ const EditorText: React.FC<EditorTextProps> = ({
   ]);
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm quill-editor-container">
+    <div className="bg-TextCustom dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm quill-editor-container">
       {/* <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <span className="text-xs text-muted-foreground">
           Modo de guardado:{" "}

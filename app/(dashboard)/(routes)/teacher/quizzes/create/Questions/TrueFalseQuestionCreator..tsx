@@ -37,7 +37,7 @@ export const TrueFalseQuestionCreator: React.FC<TrueFalseQuestionProps> = ({ que
           return (
             <button
               key={option}
-              className={`px-4 py-2 rounded-md text-white ${
+              className={`px-4 py-2 rounded-md text-TextCustom ${
                 selectedAnswer === isAnswerTrue ? 'bg-[#386329] hover:bg-blue-600' : 'bg-gray-300'
               }`}
               onClick={() => handleUpdate(isAnswerTrue)}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Book,
@@ -12,11 +13,9 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { SidebarItem } from "./sidebar-item";
-import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { Separator } from "@/components/ui/separator";
 
-// Type definitions
 interface Badge {
   color?: string;
   viewLabel?: boolean;
@@ -25,136 +24,108 @@ interface Badge {
 }
 
 interface Route {
-  icon: React.ComponentType;
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
   href: string;
   badge?: Badge;
   superAdmin?: boolean;
 }
 
-// Routes for guests
 export const guestRoutes: Route[] = [
-  {
-    icon: Layout,
-    label: "Tablero",
-    href: "/",
-  },
-  {
-    icon: Compass,
-    label: "Explorar",
-    href: "/search",
-  },
+  { icon: Layout, label: "Tablero", href: "/" },
+  { icon: Compass, label: "Explorar", href: "/search" },
 ];
 
-// Routes for teachers
 export const teacherRoutes: Route[] = [
-  {
-    icon: List,
-    label: "Cursos",
-    href: "/teacher/courses",
-  },
+  { icon: List, label: "Cursos", href: "/teacher/courses" },
   {
     icon: Users,
-    label: "Usuarios", // Fixed typo in "Estudientes"
+    label: "Usuarios",
     href: "/teacher/accounts",
-    badge: {
-      viewLabel: false,
-      until: new Date("2025-10-01"),
-      textLabel: "Actualizado",
-      color: "text-slate-700", // Changed to a more appropriate color
-    },
+    badge: { viewLabel: true, until: new Date("2025-10-01"), textLabel: "Actualizado", color: "text-amber-400" },
   },
   {
     icon: Folder,
     label: "Recursos",
     href: "/teacher/attachments",
-    badge: {
-      viewLabel: false,
-      until: new Date("2025-10-01"),
-      textLabel: "Nuevo",
-      color: "text-slate-700",
-    },
+    badge: { viewLabel: true, until: new Date("2025-10-01"), textLabel: "Nuevo", color: "text-green-400" },
   },
   {
     icon: Brain,
-    label: "Quizes", // Added proper accent mark
+    label: "Quizzes",
     href: "/teacher/quizzes",
-    badge: {
-      viewLabel: false,
-      until: new Date("2025-10-01"),
-      textLabel: "Nuevo",
-      color: "text-slate-700",
-    },
+    badge: { viewLabel: true, until: new Date("2025-10-01"), textLabel: "Nuevo", color: "text-blue-400" },
   },
   {
     icon: Book,
-    label: "Profesores", // Added proper accent mark
+    label: "Profesores",
     href: "/teacher/TeacherCreators",
-    badge: {
-      viewLabel: false,
-      until: new Date("2025-10-01"),
-      textLabel: "Nuevo",
-      color: "text-slate-700",
-    },
+    badge: { viewLabel: true, until: new Date("2025-10-01"), textLabel: "Nuevo", color: "text-purple-400" },
     superAdmin: true,
   },
   {
     icon: BarChart,
-    label: "Analitica",
+    label: "Analítica",
     href: "/teacher/analytics",
-    badge: {
-      viewLabel: false,
-      until: new Date("2025-10-01"),
-      textLabel: "Actualizado",
-      color: "text-slate-700",
-    },
+    badge: { viewLabel: true, until: new Date("2025-10-01"), textLabel: "Actualizado", color: "text-rose-400" },
     superAdmin: true,
   },
 ];
 
 export const SidebarRoutes = () => {
-  const pathname = usePathname();
-  const isTeacherPage = pathname?.startsWith("/teacher");
+  const pathname = usePathname() || "/";
+  const isTeacherPage = pathname.startsWith("/teacher");
   const routes = isTeacherPage ? teacherRoutes : guestRoutes;
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [animatedItems, setAnimatedItems] = useState<string[]>([]);
+  const [showBadges, setShowBadges] = useState(true);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowBadges(false);
+    }, 10000); // Oculta los badges después de 10 segundos
 
-  const isNewFeatureVisible = (until?: Date): boolean => {
-    if (!until) return false;
-    return new Date() <= until;
-  };
-  
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      routes.forEach((route, index) => {
+        setTimeout(() => setAnimatedItems(prev => [...prev, route.href]), index * 100);
+      });
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [routes]);
+
+  const isNewFeatureVisible = (until?: Date) => until ? new Date() <= until : false;
 
   return (
-    <div className="flex flex-col w-full bg-transparent">
-      <Label className=" text-gray-100 w-full pl-5 mb-3 bg-opacity-10 bg-black py-2">
-        Herramientas
-      </Label>
-      {routes.map((route) => (
-        <SidebarItem
-          key={route.href}
-          icon={route.icon}
-          label={
-            <div className="flex items-center">
-              {route.label}
-              {route.badge?.viewLabel &&
-                isNewFeatureVisible(route.badge.until) && (
-                  <span
-                    className={cn(
-                      "ml-2 text-xs font-light rounded-full bg-[#FFFCF8]/90 px-2 py-0.5",
-                      route.badge.color
-                    )}
-                  >
-                    {route.badge.textLabel}
-                  </span>
-                )}
-            </div>
-          }
-          href={route.href}
-        />
-      ))}
+    <div className="px-4 py-2">
+      <Separator className="mb-4" />
+      <Label className="uppercase text-white text-xs tracking-wide mb-3">Herramientas</Label>
+      <nav className="space-y-2">
+        {routes.map(route => {
+          const isAnimated = animatedItems.includes(route.href);
 
-    
+          return (
+            <SidebarItem
+              key={route.href}
+              href={route.href}
+              icon={route.icon}
+              isAnimated={isAnimated}
+              label={
+                <div className="flex items-center space-x-3 w-full">
+                  <span className="flex-1 text-sm font-medium truncate hover:bg-opacity-80">{route.label}</span>
+                  {showBadges && route.badge?.viewLabel && isNewFeatureVisible(route.badge.until) && (
+                    <span className={`ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/10 ${route.badge.color}`}>
+                      {route.badge.textLabel}
+                    </span>
+                  )}
+                </div>
+              }
+            />
+          );
+        })}
+      </nav>
     </div>
   );
 };

@@ -92,7 +92,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <button
           onClick={() => toggleSidebar(true)}
           className={`fixed bottom-5 left-3 z-40 p-3 rounded-full shadow-lg ${
-            isUserTeacher ? "bg-orange-500 text-white" : "bg-[#386329] text-white"
+            isUserTeacher ? "bg-primaryCustom2 text-TextCustom" : "bg-[#386329] text-TextCustom"
           }`}
         >
           <MenuIcon />

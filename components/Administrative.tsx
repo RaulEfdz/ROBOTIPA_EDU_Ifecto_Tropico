@@ -27,16 +27,8 @@ export const Administrative = () => {
     const checkRole = async () => {
       const user = await getCurrentUserFromDB();
       const role = user?.customRole;
-
-      console.log("role:", role);
-
-      if (!role) return;
-
       const allowedRoles = [getTeacherId(), getAdminId()];
-      console.log("allowedRoles:", allowedRoles);
-      const hasAccess = allowedRoles.includes(role);
-      console.log("hasAccess:", hasAccess);
-      setIsTeacherUser(hasAccess);
+      setIsTeacherUser(role ? allowedRoles.includes(role) : false);
     };
 
     checkRole();
@@ -67,43 +59,44 @@ export const Administrative = () => {
   };
 
   return (
-    <div className="w-full text-black">
+    <div className="w-full text-white">
       <Select onValueChange={handleChange}>
-        <SelectTrigger className="text-black bg-opacity-75 bg-[#FFFCF8] border-none rounded-none w-full focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        <SelectTrigger className="bg-white/10 text-white hover:bg-white/20 transition-colors duration-200 w-full px-4 py-2 rounded-md text-sm font-medium">
           <div className="flex items-center gap-2">
-            <Settings />
+            <Settings size={18} />
             <span>Administrar</span>
           </div>
         </SelectTrigger>
-        <SelectContent>
+
+        <SelectContent className="bg-white text-black rounded-md shadow-md">
           {isTeacherUser && !isTeacherPage && (
-            <SelectItem value="areaTeachers" className="hover:bg-slate-100 pointer">
-              <div className="text-black flex items-center w-full">
-                <Book className="h-full w-1/6 text-gray-600 mx-2" />
-                <span className="w-5/6">Profesores</span>
+            <SelectItem value="areaTeachers">
+              <div className="flex items-center gap-3">
+                <Book size={18} className="text-gray-700" />
+                <span>Profesores</span>
               </div>
             </SelectItem>
           )}
           {!isStudentsPage && (
-            <SelectItem value="areaStudents" className="hover:bg-slate-100 pointer">
-              <div className="text-black flex items-center w-full">
-                <Brain className="h-full w-1/6 text-gray-600 mx-2" />
-                <span className="w-5/6">Estudiante</span>
+            <SelectItem value="areaStudents">
+              <div className="flex items-center gap-3">
+                <Brain size={18} className="text-gray-700" />
+                <span>Estudiantes</span>
               </div>
             </SelectItem>
           )}
           {!isProfilePage && (
-            <SelectItem value="areaProfile" className="hover:bg-slate-100 pointer">
-              <div className="text-black flex items-center w-full">
-                <User className="h-full w-1/6 text-gray-600 mx-2" />
-                <span className="w-5/6">Mis Datos</span>
+            <SelectItem value="areaProfile">
+              <div className="flex items-center gap-3">
+                <User size={18} className="text-gray-700" />
+                <span>Mis Datos</span>
               </div>
             </SelectItem>
           )}
-          <SelectItem value="logout" className="hover:bg-slate-100 pointer">
-            <div className="text-black flex items-center w-full">
-              <LogOut className="h-full w-1/6 text-gray-600 mx-2" />
-              <span className="w-5/6">Cerrar sesión</span>
+          <SelectItem value="logout">
+            <div className="flex items-center gap-3">
+              <LogOut size={18} className="text-gray-700" />
+              <span>Cerrar sesión</span>
             </div>
           </SelectItem>
         </SelectContent>

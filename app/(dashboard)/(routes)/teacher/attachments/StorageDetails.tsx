@@ -20,7 +20,7 @@ export function StorageDetails({ report, onRefresh }: { report: StorageReport; o
   const percentage = Math.min((totalSizeMB / 2048) * 100, 100);
 
   return (
-    <div className="mt-6 mx-4 p-6 border rounded-lg bg-white shadow-sm">
+    <div className="mt-6 mx-4 p-6 border rounded-lg bg-TextCustom shadow-sm">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-800">Detalles de almacenamiento</h2>
         {onRefresh && (

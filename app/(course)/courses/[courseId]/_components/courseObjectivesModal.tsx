@@ -12,7 +12,7 @@ const CourseObjectivesModal = ({ title, description, imageUrl, course }:any) => 
   return (
     <div>
       <button
-        className="px-4 py-2 bg-green-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-300"
+        className="px-4 py-2 bg-green-500 text-TextCustom text-base font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-300"
         onClick={toggleModal}
       >
         Mostrar Objetivos del Curso
@@ -32,7 +32,7 @@ const CourseObjectivesModal = ({ title, description, imageUrl, course }:any) => 
               </div>
               <div className="items-center px-4 py-3">
                 <button
-                  className="px-4 py-2 bg-[#386329] text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="px-4 py-2 bg-[#386329] text-TextCustom text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
                   onClick={toggleModal}
                 >
                   Cerrar

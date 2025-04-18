@@ -5,57 +5,70 @@ import { isTeacher } from "@/app/(dashboard)/(routes)/admin/teacher";
 import { Logo } from "./logo";
 import { SidebarRoutes } from "./SidebarRoutes";
 import Administrative from "@/components/Administrative";
-import { SidebarClose } from "lucide-react";
-import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
+import { ChevronLeft } from "lucide-react";
+import { getCurrentUserFromDB, UserDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 
 export const Sidebar = ({ toggleSidebar }: { toggleSidebar: (state?: boolean) => void }) => {
   const [isUserTeacher, setIsUserTeacher] = useState(false);
-  const [user, setUser] = useState<any>(null); // si tienes tipado mejor, usa UserDB
+  const [user, setUser] = useState<UserDB | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const fetchUserAndCheckRole = async () => {
       const currentUser = await getCurrentUserFromDB();
       setUser(currentUser);
-
       if (currentUser?.id) {
         const result = await isTeacher(currentUser.id);
         setIsUserTeacher(result);
       }
     };
-
     fetchUserAndCheckRole();
   }, []);
 
+  // Dark gradient tones
+  const gradientClasses = isUserTeacher
+    ? "from-gray-900 to-gray-800"
+    : "from-gray-800 to-gray-700";
+
   return (
-    <div
-      className={`border-r flex flex-col h-screen shadow-sm ${
-        isUserTeacher ? "bg-orange-500 text-white" : "bg-[#386329] text-white"
-      }`}
+    <aside
+      className={`w-auto h-full flex flex-col bg-gradient-to-b ${gradientClasses} text-white shadow-xl transition-colors duration-300`}
     >
-      {/* Header con el logo y botón de cerrar */}
-      <div className="flex justify-between items-center h-[10%] p-5">
-        <Logo />
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4">
+        <div className="flex items-center space-x-3">
+          <Logo />
+        </div>
+
         <button
           onClick={() => toggleSidebar(false)}
-          className="mt-5 text-white rounded-full shadow-md hover:text-gray-50"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-200 md:flex hidden items-center justify-center"
+          aria-label="Toggle sidebar"
         >
-          <SidebarClose />
+          <ChevronLeft
+            size={22}
+            className={`transition-transform duration-200 ${isHovered ? "-translate-x-1 scale-110" : "translate-x-0"}`}
+          />
         </button>
       </div>
 
-      {/* Rutas principales */}
-      <div className="flex flex-col h-[80%] p-3">
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto px-4 py-3 space-y-1 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-transparent">
         <SidebarRoutes />
-      </div>
+      </nav>
 
-      {/* Pie de administración */}
-      <div className="flex items-center justify-center h-[10%] p-3 mt-auto">
-        <Administrative />
+      {/* Footer */}
+      <div className="mt-auto">
+        <div className="px-4 py-4 border-t border-white/20">
+          <Administrative />
+        </div>
+        <div className="flex items-center justify-between px-4 py-2 text-sm font-light bg-white/10">
+          <span>ROBOTIPA_LMS</span>
+          <span>v17.4.25</span>
+        </div>
       </div>
-
-      <span className="px-2 text-xs font-light py-2">
-        ROBOTIPA_LMS {process.env.NEXT_PUBLIC_APP_VERSION}
-      </span>
-    </div>
+    </aside>
   );
 };

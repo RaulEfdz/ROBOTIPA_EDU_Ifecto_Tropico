@@ -33,7 +33,7 @@ function QuizNavbar({ setCurrentView }: QuizNavbarProps) {
                 className={cn(
                   "flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all duration-200",
                   activeView === "QuizForResponses"
-                    ? "bg-green-500 text-white shadow-sm hover:bg-green-600"
+                    ? "bg-green-500 text-TextCustom shadow-sm hover:bg-green-600"
                     : "bg-green-200 text-green-900 hover:bg-green-200"
                 )}
               >
@@ -46,7 +46,7 @@ function QuizNavbar({ setCurrentView }: QuizNavbarProps) {
                 className={cn(
                   "flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all duration-200",
                   activeView === "QuizForUser"
-                    ? "bg-green-500 text-white shadow-sm hover:bg-green-600"
+                    ? "bg-green-500 text-TextCustom shadow-sm hover:bg-green-600"
                     : "bg-green-200 text-green-900 hover:bg-green-200"
                 )}
               >

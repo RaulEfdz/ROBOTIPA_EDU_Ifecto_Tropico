@@ -77,7 +77,7 @@ const CreatePage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-gradient-to-b from-[#FFFCF8] to-[#C8E065]/20">
-      <Card className="w-full max-w-2xl bg-white dark:bg-gray-850 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+      <Card className="w-full max-w-2xl bg-TextCustom dark:bg-gray-850 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between mb-4">
             <Button
@@ -92,7 +92,7 @@ const CreatePage = () => {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Pencil className="h-5 w-5 text-green-700 dark:text-green-400" />
-              <h1 className="text-xl font-semibold text-gray-800 dark:text-white">
+              <h1 className="text-xl font-semibold text-gray-800 dark:text-TextCustom">
                 {t.pageTitle}
               </h1>
             </div>
@@ -146,7 +146,7 @@ const CreatePage = () => {
             type="submit"
             disabled={!isValid || isSubmitting}
             onClick={form.handleSubmit(onSubmit)}
-            className="w-32 bg-green-600 hover:bg-green-700 text-white"
+            className="w-32 bg-green-600 hover:bg-green-700 text-TextCustom"
           >
             {t.continueButton}
           </Button>

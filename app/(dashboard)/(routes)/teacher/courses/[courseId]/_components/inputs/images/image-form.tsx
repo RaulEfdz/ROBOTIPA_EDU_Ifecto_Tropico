@@ -96,7 +96,7 @@ export const ImageForm = ({ initialData, courseId, lang = "es" }: ImageFormProps
   };
 
   return (
-    <div className="mb-6 bg-white dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+    <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
           {t.title}
@@ -130,7 +130,7 @@ export const ImageForm = ({ initialData, courseId, lang = "es" }: ImageFormProps
                   src={imageUrl}
                 />
                 <div className="absolute bottom-0 right-0 p-2">
-                  <Button onClick={toggleEdit} variant="secondary" size="sm" className="bg-white/80 backdrop-blur-sm">
+                  <Button onClick={toggleEdit} variant="secondary" size="sm" className="bg-TextCustom/80 backdrop-blur-sm">
                     <Camera className="h-4 w-4 mr-1" />
                     {t.editButton}
                   </Button>

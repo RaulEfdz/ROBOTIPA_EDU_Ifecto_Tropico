@@ -58,16 +58,16 @@ const ListItem: React.FC<ListItemProps> = ({ index, name, lang }) => {
       onMouseLeave={() => setShowTooltip(false)}
       onClick={copyToClipboard}
     >
-      <p className="text-md font-light text-gray-900 dark:text-white mr-2">{index}.</p>
-      <p className="text-md font-semibold text-gray-900 dark:text-white">{name}</p>
+      <p className="text-md font-light text-gray-900 dark:text-TextCustom mr-2">{index}.</p>
+      <p className="text-md font-semibold text-gray-900 dark:text-TextCustom">{name}</p>
 
       {showTooltip && (
-        <div className="fixed z-10 p-2 w-72 text-sm text-white bg-[green] rounded shadow-md transform -translate-y-10">
+        <div className="fixed z-10 p-2 w-72 text-sm text-TextCustom bg-[green] rounded shadow-md transform -translate-y-10">
           {texts[lang].copyTooltip}
         </div>
       )}
       {showCopiedMessage && (
-        <div className="fixed bottom-10 right-10 z-20 p-2 text-sm text-white bg-green-500 rounded shadow-md">
+        <div className="fixed bottom-10 right-10 z-20 p-2 text-sm text-TextCustom bg-green-500 rounded shadow-md">
           {texts[lang].copiedMessage}
         </div>
       )}

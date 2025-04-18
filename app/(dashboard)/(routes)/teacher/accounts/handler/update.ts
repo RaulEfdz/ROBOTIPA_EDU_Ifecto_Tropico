@@ -1,4 +1,4 @@
-import { User } from "../type";
+import { User } from "@/prisma/types";
 
 
 

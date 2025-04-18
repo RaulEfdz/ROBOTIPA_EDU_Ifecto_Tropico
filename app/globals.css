@@ -17,15 +17,15 @@ body,
   /* font-family: 'RenogareSoft', sans-serif !important; */
 
   /* Light Mode */
-  --Blue533s: #FFFCF8; /* Background Page */
-  --Blue533: #FFFFFF;  /* Panel */
-  --Green808: #FFFCF8; /* Banner */
-  --Sky801: #5A3E34;   /* Primary Text */
-  --Orange804: #386329; /* Secondary Text */
-  --White: #47724B;    /* Link Text */
+  --bagroundPage: #FFFCF8; /* Background Page */
+  --PanelCustom: #FFFFFF;  /* Panel */
+  --BannerCustom: #FFFCF8; /* Banner */
+  --primaryCustom2: #5A3E34;   /* Primary Text */
+  --primaryCustom: #386329; /* Secondary Text */
+  --TextCustom: #47724B;    /* Link Text */
 
-  --White-1: #ACBC64;  /* Border Default */
-  --White-2: #47724B;  /* Button Primary */
+  --TextCustom-1: #ACBC64;  /* Border Default */
+  --TextCustom-2: #47724B;  /* Button Primary */
   
   /* Extra */
   --ButtonPrimaryText: #FFFCF8;
@@ -33,15 +33,15 @@ body,
 
 /* Dark mode overrides (opcional si usas un tema dark activado por data-theme) */
 [data-theme="dark"] {
-  --Blue533s: #1E1E2F; /* Background Page */
-  --Blue533: #2C2C3A;  /* Panel */
-  --Green808: #33334D; /* Banner */
-  --Sky801: #ffffff;   /* Primary Text */
-  --Orange804: #a7a7b5; /* Secondary Text */
-  --White: #90cdf4;    /* Link Text */
+  --bagroundPage: #1E1E2F; /* Background Page */
+  --PanelCustom: #2C2C3A;  /* Panel */
+  --BannerCustom: #33334D; /* Banner */
+  --primaryCustom2: #ffffff;   /* Primary Text */
+  --primaryCustom: #a7a7b5; /* Secondary Text */
+  --TextCustom: #90cdf4;    /* Link Text */
 
-  --White-1: #3d3d55;  /* Border Default */
-  --White-2: #90cdf4;  /* Button Primary */
+  --TextCustom-1: #3d3d55;  /* Border Default */
+  --TextCustom-2: #90cdf4;  /* Button Primary */
 
   --ButtonPrimaryText: #1E1E2F;
 }
@@ -63,40 +63,40 @@ html, body, :root {
     @apply cursor-pointer;
   }
 
-  .bg-Blue533 {
-    @apply bg-[var(--Blue533)];
+  .bg-PanelCustom {
+    @apply bg-[var(--PanelCustom)];
   }
 
-  .bg-Green808 {
-    @apply bg-[var(--Green808)];
+  .bg-BannerCustom {
+    @apply bg-[var(--BannerCustom)];
   }
 
-  .bg-Sky801 {
-    @apply bg-[var(--Sky801)];
+  .bg-primaryCustom2 {
+    @apply bg-[var(--primaryCustom2)];
   }
 
-  .bg-Orange804 {
-    @apply bg-[var(--Orange804)] !important;
+  .bg-primaryCustom {
+    @apply bg-[var(--primaryCustom)] !important;
   }
 
   .bg-[#FFFCF8] {
-    @apply bg-[var(--White)];
+    @apply bg-[var(--TextCustom)];
   }
 
   .bg-[#FFFCF8]-1 {
-    @apply bg-[var(--White-1)];
+    @apply bg-[var(--TextCustom-1)];
   }
 
   .bg-[#FFFCF8]-2 {
-    @apply bg-[var(--White-2)];
+    @apply bg-[var(--TextCustom-2)];
   }
 
   .text-success {
-    @apply text-[var(--Green808)] !important;
+    @apply text-[var(--BannerCustom)] !important;
   }
 
   .bg-success {
-    @apply bg-[var(--Green808)] !important;
+    @apply bg-[var(--BannerCustom)] !important;
   }
 
   .bg-lectureWhite {
@@ -113,7 +113,7 @@ html, body, :root {
 }
 
 body > div.h-full.flex.items-center.justify-center {
-  @apply bg-gradient-to-r from-[var(--White-2)] to-[var(--White-1)] bg-cover bg-center bg-no-repeat;
+  @apply bg-gradient-to-r from-[var(--TextCustom-2)] to-[var(--TextCustom-1)] bg-cover bg-center bg-no-repeat;
 }
 
 .cl-main {
@@ -121,11 +121,11 @@ body > div.h-full.flex.items-center.justify-center {
 }
 
 body>div.h-full.flex.items-center.justify-center>div>div>div.cl-internal-b3fm6y {
-  background-color: var(--Blue533) !important;
+  background-color: var(--PanelCustom) !important;
 }
 
 body>div.h-full.flex.items-center.justify-center>div>div>div.cl-footer.🔒️.cl-internal-18aek0g>div.cl-footerAction.cl-footerAction__signIn.🔒️.cl-internal-n0ak4e>a {
-  color: var(--Orange804);
+  color: var(--primaryCustom);
 }
 
 body>div.h-full.flex.items-center.justify-center>div>div>div.cl-logoBox.🔒️ a {
@@ -135,7 +135,7 @@ body>div.h-full.flex.items-center.justify-center>div>div>div.cl-logoBox.🔒️ 
 }
 
 body>div.h-full.flex.items-center.justify-center>div>div>div.cl-main.🔒️ form>button.cl-formButtonPrimary.🔒️.cl-internal-1fsg6zy {
-  background-color: var(--Blue533) !important;
+  background-color: var(--PanelCustom) !important;
 }
 
 .hover:hover {
@@ -405,3 +405,35 @@ body > div.h-full.bg-gradient > main > div > div > div.px-4.py-4.sm\:p-6.max-w-7
 } */
 
 @import "~@uploadthing/react/styles.css"
+
+
+/* Add these to your global CSS or tailwind.config.js */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* For scrollbar styling if you use a custom scrollbar library */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thumb-TextCustom\/20::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background-color: transparent;
+}

@@ -243,10 +243,10 @@ export const ChapterAccessForm = ({
                 <Button
                   type="submit"
                   disabled={isSubmitting || !isDirty}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-blue-600 hover:bg-blue-700 text-TextCustom"
                 >
                   {isSaving ? (
-                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin mr-2" />
                   ) : null}
                   {t.saveButton}
                 </Button>

@@ -39,7 +39,7 @@ export const UploadOptions = ({
   };
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+    <div className="p-6 bg-TextCustom dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="flex items-center mb-4">
         <Video className="w-5 h-5 mr-2 text-blue-500" />
         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{chooseText}</h3>
@@ -148,7 +148,7 @@ export const UploadOptions = ({
           <Button onClick={() => setSelectedOption(null)} variant="ghost" className="mr-2">
             Cancelar
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-TextCustom">
             Continuar
           </Button>
         </div>

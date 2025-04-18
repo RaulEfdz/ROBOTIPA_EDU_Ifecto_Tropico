@@ -198,8 +198,8 @@ export default function ChapterIdPage() {
 
   // Color de fondo según el estado de publicación
   const bgColorClass = chapter.isPublished
-    ? "bg-gradient-to-b from-green-50 to-white dark:from-green-900/20 dark:to-gray-900"
-    : "bg-gradient-to-b from-amber-50 to-white dark:from-amber-900/20 dark:to-gray-900";
+    ? "bg-gradient-to-b from-green-50 to-TextCustom dark:from-green-900/20 dark:to-gray-900"
+    : "bg-gradient-to-b from-amber-50 to-TextCustom dark:from-amber-900/20 dark:to-gray-900";
 
   return (
     <div className={`min-h-screen ${bgColorClass} transition-colors duration-300 mb-24`}>
@@ -215,7 +215,7 @@ export default function ChapterIdPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
           <Link
             href={`/teacher/courses/${params.courseId}`}
-            className="flex items-center text-sm hover:opacity-75 transition bg-white dark:bg-gray-800 px-3 py-2 rounded-md shadow-sm mb-4 sm:mb-0"
+            className="flex items-center text-sm hover:opacity-75 transition bg-TextCustom dark:bg-gray-800 px-3 py-2 rounded-md shadow-sm mb-4 sm:mb-0"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             {texts[language].backToCourseConfig}
@@ -239,11 +239,11 @@ export default function ChapterIdPage() {
               disabled={publishingStatus || completionProgress < 75}
               className={`${
                 chapter.isPublished ? "bg-amber-600 hover:bg-amber-700" : "bg-green-600 hover:bg-green-700"
-              } text-white`}
+              } text-TextCustom`}
               size="sm"
             >
               {publishingStatus ? (
-                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin mr-2" />
               ) : chapter.isPublished ? (
                 <Lock className="h-4 w-4 mr-2" />
               ) : (
@@ -264,7 +264,7 @@ export default function ChapterIdPage() {
         </div>
 
         {/* Tarjeta de estado del capítulo */}
-        <Card className="mb-6 bg-white dark:bg-gray-800 shadow-sm">
+        <Card className="mb-6 bg-TextCustom dark:bg-gray-800 shadow-sm">
           <CardContent className="p-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
               <div>
@@ -349,7 +349,7 @@ export default function ChapterIdPage() {
 
         {/* Sección: Personaliza tu capítulo */}
         <section className="mb-6 space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+          <div className="bg-TextCustom dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
             <div className="flex items-center gap-x-2 mb-6">
               <IconBadge icon={LayoutDashboard} />
               <h2 className="text-lg sm:text-xl font-medium">{texts[language].customizeChapter}</h2>
@@ -366,7 +366,7 @@ export default function ChapterIdPage() {
 
         {/* Sección: Agregar vídeo */}
         <section className="mb-6 space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+          <div className="bg-TextCustom dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
             <div className="flex items-center gap-x-2 mb-6">
               <IconBadge icon={Video} />
               <h2 className="text-lg sm:text-xl font-medium">{texts[language].addVideo}</h2>
@@ -393,7 +393,7 @@ export default function ChapterIdPage() {
         <div className="flex mt-6 sm:mt-8">
           <Link
             href={`/teacher/courses/${params.courseId}/chapters/${params.chapterId}`}
-            className="w-full sm:w-auto ml-auto flex items-center justify-center text-sm bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md transition-colors"
+            className="w-full sm:w-auto ml-auto flex items-center justify-center text-sm bg-green-600 hover:bg-green-700 text-TextCustom px-6 py-3 rounded-md transition-colors"
           >
             <Save className="h-4 w-4 mr-2" />
             {texts[language].saveAndExit}

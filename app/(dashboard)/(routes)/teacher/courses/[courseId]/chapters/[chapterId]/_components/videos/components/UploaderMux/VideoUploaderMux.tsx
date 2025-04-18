@@ -259,7 +259,7 @@ export const VideoUploaderMux = ({
               />
               {/* Overlay de carga con barra de progreso */}
               {status === "uploading" && (
-                <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center rounded-md text-white p-4 space-y-2">
+                <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center rounded-md text-TextCustom p-4 space-y-2">
                   <Loader2 className="h-8 w-8 animate-spin mb-2" />
                   <span>{t.uploadingState}</span>
                   {uploadProgress !== null && (
@@ -275,7 +275,7 @@ export const VideoUploaderMux = ({
               )}
               {/* Overlay de error */}
               {status === "error" && (
-                <div className="absolute inset-0 bg-red-900 bg-opacity-70 flex flex-col items-center justify-center rounded-md text-white p-4 space-y-2">
+                <div className="absolute inset-0 bg-red-900 bg-opacity-70 flex flex-col items-center justify-center rounded-md text-TextCustom p-4 space-y-2">
                   <XCircle className="h-8 w-8 mb-1" />
                   <span className="text-center text-sm font-semibold">{t.error}</span>
                   {videoFile && (
@@ -287,7 +287,7 @@ export const VideoUploaderMux = ({
                       e.stopPropagation();
                       resetState();
                     }}
-                    className="mt-2 bg-white text-red-700 px-3 py-1 rounded text-sm hover:bg-gray-100"
+                    className="mt-2 bg-TextCustom text-red-700 px-3 py-1 rounded text-sm hover:bg-gray-100"
                   >
                     {t.tryAgain}
                   </button>
@@ -306,7 +306,7 @@ export const VideoUploaderMux = ({
                 e.stopPropagation();
                 resetState();
               }}
-              className="mt-2 bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+              className="mt-2 bg-red-600 text-TextCustom px-3 py-1 rounded text-sm hover:bg-red-700"
             >
               {t.tryAgain}
             </button>

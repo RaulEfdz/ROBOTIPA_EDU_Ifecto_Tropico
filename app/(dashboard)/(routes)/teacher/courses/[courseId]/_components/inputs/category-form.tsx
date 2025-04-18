@@ -221,7 +221,7 @@ export const CategoryForm = ({
   };
 
   return (
-    <div className="mb-6 bg-white dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+    <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
           {t.title}
@@ -254,7 +254,7 @@ export const CategoryForm = ({
                   className="pl-10 h-10 text-sm"
                 />
                 {showDropdown && (
-                  <div className="absolute mt-1 w-full max-h-60 overflow-y-auto rounded-md border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-md z-10">
+                  <div className="absolute mt-1 w-full max-h-60 overflow-y-auto rounded-md border bg-TextCustom dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-md z-10">
                     {filteredOptions.length > 0 ? (
                       filteredOptions.map(option => (
                         <div
@@ -305,9 +305,9 @@ export const CategoryForm = ({
               </Button>
               <Button type="submit" disabled={isSaving || isSubmitting} size="icon" className="h-10 w-10 bg-blue-600 hover:bg-blue-700">
                 {isSaving ? (
-                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <Check className="h-4 w-4 text-white" />
+                  <Check className="h-4 w-4 text-TextCustom" />
                 )}
               </Button>
             </div>
@@ -319,7 +319,7 @@ export const CategoryForm = ({
             {(form.watch("categoryId") || form.watch("newCategoryName")) && (
               <div className="text-xs text-gray-500 dark:text-gray-400 italic pt-1">
                 {t.title}:{" "}
-                <span className="font-semibold text-gray-800 dark:text-white">
+                <span className="font-semibold text-gray-800 dark:text-TextCustom">
                   {createNew
                     ? form.watch("newCategoryName")
                     : options.find(opt => opt.value === form.watch("categoryId"))?.label || ""}

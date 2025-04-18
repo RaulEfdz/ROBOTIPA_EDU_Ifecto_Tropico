@@ -75,7 +75,7 @@ const QuizForResponses: React.FC<QuizForResponsesProps> = ({ userNames }) => {
                         ) : isCorrect ? (
                           <Badge
                             variant="secondary"
-                            className="flex items-center gap-1 bg-green-500 text-white"
+                            className="flex items-center gap-1 bg-green-500 text-TextCustom"
                           >
                             <Check className="h-3 w-3" />
                             <span>Correcto</span>

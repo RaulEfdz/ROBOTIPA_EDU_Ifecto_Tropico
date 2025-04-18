@@ -161,7 +161,7 @@ export default function UserProfileDashboard() {
           <CardHeader className="rounded-t-lg pb-4" style={{ backgroundColor: brandPrimary }}>
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-4">
-                <Avatar className="h-24 w-24 border-4 border-white shadow-md">
+                <Avatar className="h-24 w-24 border-4 border-TextCustom shadow-md">
                   <AvatarImage
                     src={metadata.full_name || "/placeholder-user.png"}
                     alt={metadata.full_name || "User"}

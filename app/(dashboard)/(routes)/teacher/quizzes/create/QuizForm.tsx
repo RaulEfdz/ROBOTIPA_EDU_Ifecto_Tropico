@@ -92,7 +92,7 @@ export default function QuizForm() {
         <Button variant="ghost" onClick={handleCancel} className="text-gray-500">
           Cancelar
         </Button>
-        <Button onClick={handleSubmit} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-md">
+        <Button onClick={handleSubmit} className="bg-indigo-600 hover:bg-indigo-700 text-TextCustom rounded-md">
           Guardar
         </Button>
       </div>

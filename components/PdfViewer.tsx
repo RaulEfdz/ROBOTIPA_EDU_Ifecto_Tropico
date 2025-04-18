@@ -65,7 +65,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ pdfNameId, pdfLink }) => {
           <div className="mt-4 text-center w-full flex justify-center">
             <button
               onClick={() => window.open(pdfUrl, "_blank")}
-              className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-300 flex items-center space-x-2"
+              className="px-4 py-2 bg-black text-TextCustom rounded hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-300 flex items-center space-x-2"
             >
               <LucideMaximize />
               <span>Maximizar</span>

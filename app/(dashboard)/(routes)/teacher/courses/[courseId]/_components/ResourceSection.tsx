@@ -15,7 +15,7 @@ interface ResourceSectionProps {
 
 const ResourceSection: React.FC<ResourceSectionProps> = ({ course, lang }) => {
   return (
-    <div className="mb-6 bg-white dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+    <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
       <div className="flex items-center gap-x-3 mb-4">
         <IconBadge icon={File} />
       

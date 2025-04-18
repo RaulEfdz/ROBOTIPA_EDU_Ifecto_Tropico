@@ -161,10 +161,10 @@ export const ChaptersForm = ({
   };
 
   return (
-    <div className="relative bg-white dark:bg-gray-850 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
+    <div className="relative bg-TextCustom dark:bg-gray-850 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
       {/* Loading overlay */}
       {isUpdating && (
-        <div className="absolute inset-0 bg-white/60 dark:bg-black/50 flex items-center justify-center z-10 rounded-xl">
+        <div className="absolute inset-0 bg-TextCustom/60 dark:bg-black/50 flex items-center justify-center z-10 rounded-xl">
           <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
         </div>
       )}
@@ -202,7 +202,7 @@ export const ChaptersForm = ({
                       <Input
                         disabled={isSubmitting}
                         placeholder="e.g., 'Introduction to the course'"
-                        className="text-sm border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                        className="text-sm border-gray-200 dark:border-gray-700 bg-TextCustom dark:bg-gray-800"
                         {...field}
                       />
                     </FormControl>
@@ -229,7 +229,7 @@ export const ChaptersForm = ({
                   className="rounded-lg bg-blue-600 hover:bg-blue-700"
                 >
                   {isSaving ? (
-                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin mr-2" />
                   ) : (
                     <Check className="h-4 w-4 mr-1" />
                   )}

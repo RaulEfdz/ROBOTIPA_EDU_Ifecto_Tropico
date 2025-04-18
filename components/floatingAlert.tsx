@@ -21,7 +21,7 @@ const FloatingAlert = ({ message, setShowAlert, color }:any) => {
   const backgroundColorClass = colorClasses[color] || colorClasses.blue; // 'bg-[#386329]' como valor por defecto
 
   return (
-    <div className={`${backgroundColorClass} fixed top-5 left-2 text-white p-4 rounded-md shadow-lg z-50`}>
+    <div className={`${backgroundColorClass} fixed top-5 left-2 text-TextCustom p-4 rounded-md shadow-lg z-50`}>
       {message}
     </div>
   );

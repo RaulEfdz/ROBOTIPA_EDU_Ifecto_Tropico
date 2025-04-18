@@ -32,14 +32,14 @@ export const CourseCard = ({
 }: CourseCardProps) => {
   // Componente de insignia de categoría
   const CategoryBadge = () => (
-    <Badge className="absolute top-2 right-2 bg-white/80 text-slate-800 hover:bg-white/90 transition-all text-xs font-medium">
+    <Badge className="absolute top-2 right-2 bg-TextCustom/80 text-slate-800 hover:bg-TextCustom/90 transition-all text-xs font-medium">
       {category}
     </Badge>
   );
 
   if (!isPublished) {
     return (
-      <div className="group relative rounded-lg overflow-hidden border border-slate-200 bg-white shadow-sm h-full transition-all">
+      <div className="group relative rounded-lg overflow-hidden border border-slate-200 bg-TextCustom shadow-sm h-full transition-all">
         <div className="relative w-full aspect-video overflow-hidden rounded-t-lg bg-slate-100">
           <Image 
             fill 
@@ -72,7 +72,7 @@ export const CourseCard = ({
       onClick={() => setLoading(true)}
       className="block h-full"
     >
-      <div className="group relative rounded-lg overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-300 h-full transform hover:-translate-y-1">
+      <div className="group relative rounded-lg overflow-hidden border border-slate-200 bg-TextCustom shadow-sm hover:shadow-md transition-all duration-300 h-full transform hover:-translate-y-1">
         <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
           <Image
             fill

@@ -166,7 +166,7 @@ export default function AuthPage() {
               style={{ backgroundColor: layout?.coverColor, opacity: 0 }}
             />
           )}
-          <div className="relative z-10 text-center px-10 text-white">
+          <div className="relative z-10 text-center px-10 text-TextCustom">
             {logo?.show && (
               <Image
                 src={logo.src}

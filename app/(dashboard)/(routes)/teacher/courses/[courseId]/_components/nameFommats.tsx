@@ -45,7 +45,7 @@ const NameFormats: React.FC<NameFormatsProps> = ({ lang = "es" }) => {
 
   return (
     <div className="mt-6">
-      <Accordion type="single" collapsible className="rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-850">
+      <Accordion type="single" collapsible className="rounded-lg border border-gray-100 dark:border-gray-700 bg-TextCustom dark:bg-gray-850">
         <AccordionItem value="name-formats">
           <AccordionTrigger className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300 hover:no-underline">
             {t.title}

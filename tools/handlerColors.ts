@@ -1,10 +1,10 @@
 type ColorFunction = { [key: string]: string };
 
 export const getColors: ColorFunction = {
-  Blue533: "#153557",
-  Green808: "#00a087",
-  Sky801: "#00b0d8",
-  Orange804: "#ff7c00",
+  PanelCustom: "#153557",
+  BannerCustom: "#00a087",
+  primaryCustom2: "#00b0d8",
+  primaryCustom: "#ff7c00",
   White: "#F5F7F8",
   White_1: "#F5F7F8",
   White_2: "#F3F8FF",
