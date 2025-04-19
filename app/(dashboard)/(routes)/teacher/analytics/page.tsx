@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -19,6 +19,8 @@ import {
   Legend,
 } from "recharts";
 import { toast } from "sonner";
+// Import the texts and types
+import { texts, defaultLanguage, Language, TFunction } from "./locales/locales";
 
 interface AnalyticsData {
   users: { total: number };
@@ -36,128 +38,162 @@ interface AnalyticsResponse {
 type Tab = "overview" | "courses" | "revenue" | "exams";
 type TimeRange = "week" | "month" | "year";
 
-export default function AnalyticsDashboard() {
+const AnalyticsDashboard=()=> {
   const [data, setData] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [timeRange, setTimeRange] = useState<TimeRange>("month");
+  const [language, setLanguage] = useState<Language>(defaultLanguage);
 
+  const t: TFunction = (key) =>
+    texts[key][language] ?? texts[key][defaultLanguage];
+  
   useEffect(() => {
-    fetch("/api/analytics")
-      .then((res) => res.json() as Promise<AnalyticsResponse>)
-      .then((res) => {
-        setData(res.data);
-        toast.success("Analytics loaded successfully");
-      })
-      .catch(() => toast.error("Error loading analytics"))
-      .finally(() => setLoading(false));
+    const fetchAnalytics = async () => {
+      try {
+        const res = await fetch("/api/analytics");
+        const json: AnalyticsResponse = await res.json();
+        setData(json.data);
+        toast.success(texts.analyticsLoadedSuccess[language]); // evita dependencia de t
+      } catch (error) {
+        toast.error(texts.errorLoadingAnalytics[language]); // evita dependencia de t
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchAnalytics();
+    // solo corre una vez
   }, []);
+  
+
+  const { courseData, chapterData, barData, trendData, examChartData } = useMemo(() => {
+    if (!data) {
+      return {
+        courseData: [],
+        chapterData: [],
+        barData: [],
+        trendData: [],
+        examChartData: [],
+      };
+    }
+    const courseData = [
+      { name: t("published"), value: data.courses.published },
+      { name: t("unpublished"), value: data.courses.unpublished },
+    ];
+    const chapterData = [
+      { name: t("free"), value: data.chapters.free },
+      { name: t("premium"), value: data.chapters.premium },
+    ];
+    const barData = [
+      { name: t("users"), total: data.users.total, color: "#4F46E5" },
+      { name: t("courses"), total: data.courses.total, color: "#10B981" },
+      { name: t("chapters"), total: data.chapters.total, color: "#F59E0B" },
+      { name: t("purchases"), total: data.purchases.total, color: "#EF4444" },
+      { name: t("invoices"), total: data.revenue.invoicesIssued, color: "#8B5CF6" },
+      { name: t("exams"), total: data.exams.total, color: "#EC4899" },
+      { name: t("attempts"), total: data.exams.totalAttempts, color: "#06B6D4" },
+    ];
+    const trendData = [
+      { month: t("monthJan"), users: 650, revenue: 4200, courses: 12 },
+      { month: t("monthFeb"), users: 730, revenue: 5100, courses: 14 },
+      { month: t("monthMar"), users: 810, revenue: 6300, courses: 15 },
+      { month: t("monthApr"), users: 920, revenue: 7200, courses: 17 },
+      { month: t("monthMay"), users: 1050, revenue: 8400, courses: 22 },
+      { month: t("monthJun"), users: 1250, revenue: 10200, courses: 24 },
+    ];
+    const examChartData = [
+      { name: t("totalExams"), value: data.exams.total, color: "#8B5CF6" },
+      { name: t("publishedExams"), value: data.exams.published, color: "#EC4899" },
+      { name: t("totalAttempts"), value: data.exams.totalAttempts, color: "#06B6D4" },
+    ];
+    return { courseData, chapterData, barData, trendData, examChartData };
+  }, [data, t]);
+
+  const statsCards = useMemo(() => {
+    if (!data) return [];
+    return [
+      {
+        title: t("users"),
+        value: data.users.total,
+        icon: "👥",
+        change: "+12%",
+        changeColor: "text-green-500",
+        bgColor: "bg-indigo-50",
+      },
+      {
+        title: t("revenue"),
+        value: `$${data.revenue.totalPaidInvoices.toFixed(2)}`,
+        icon: "💰",
+        change: "+8.5%",
+        changeColor: "text-green-500",
+        bgColor: "bg-green-50",
+      },
+      {
+        title: t("courses"),
+        value: data.courses.total,
+        icon: "📚",
+        change: "+5%",
+        changeColor: "text-green-500",
+        bgColor: "bg-amber-50",
+      },
+      {
+        title: t("purchases"),
+        value: data.purchases.total,
+        icon: "🛒",
+        change: "+15%",
+        changeColor: "text-green-500",
+        bgColor: "bg-red-50",
+      },
+    ];
+  }, [data, t]);
+
+  const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8B5CF6", "#EC4899"];
 
   if (loading || !data) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-t-blue-500 border-b-blue-500 border-l-transparent border-r-transparent rounded-full animate-spin"></div>
+          <div className="w-16 h-16 border-4 border-t-blue-500 border-b-blue-500 border-l-transparent border-r-transparent rounded-full animate-spin" />
           <p className="mt-4 text-gray-600 dark:text-gray-300">
-            Loading dashboard data...
+            {t("loadingMessage")}
           </p>
         </div>
       </div>
     );
   }
 
-  // Prepare the data for different chart types
-  const courseData = [
-    { name: "Published", value: data.courses.published },
-    { name: "Unpublished", value: data.courses.unpublished },
-  ];
-
-  const chapterData = [
-    { name: "Free", value: data.chapters.free },
-    { name: "Premium", value: data.chapters.premium },
-  ];
-
-  const barData = [
-    { name: "Users", total: data.users.total, color: "#4F46E5" },
-    { name: "Courses", total: data.courses.total, color: "#10B981" },
-    { name: "Chapters", total: data.chapters.total, color: "#F59E0B" },
-    { name: "Purchases", total: data.purchases.total, color: "#EF4444" },
-    { name: "Invoices", total: data.revenue.invoicesIssued, color: "#8B5CF6" },
-    { name: "Exams", total: data.exams.total, color: "#EC4899" },
-    { name: "Attempts", total: data.exams.totalAttempts, color: "#06B6D4" },
-  ];
-
-  // Mock data for time-based trends
-  const trendData = [
-    { month: "Jan", users: 650, revenue: 4200, courses: 12 },
-    { month: "Feb", users: 730, revenue: 5100, courses: 14 },
-    { month: "Mar", users: 810, revenue: 6300, courses: 15 },
-    { month: "Apr", users: 920, revenue: 7200, courses: 17 },
-    { month: "May", users: 1050, revenue: 8400, courses: 22 },
-    { month: "Jun", users: 1250, revenue: 10200, courses: 24 },
-  ];
-
-  const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8B5CF6", "#EC4899"];
-
-  const statsCards = [
-    {
-      title: "Users",
-      value: data.users.total,
-      icon: "👥",
-      change: "+12%",
-      changeColor: "text-green-500",
-      bgColor: "bg-indigo-50",
-    },
-    {
-      title: "Revenue",
-      value: `$${data.revenue.totalPaidInvoices.toFixed(2)}`,
-      icon: "💰",
-      change: "+8.5%",
-      changeColor: "text-green-500",
-      bgColor: "bg-green-50",
-    },
-    {
-      title: "Courses",
-      value: data.courses.total,
-      icon: "📚",
-      change: "+5%",
-      changeColor: "text-green-500",
-      bgColor: "bg-amber-50",
-    },
-    {
-      title: "Purchases",
-      value: data.purchases.total,
-      icon: "🛒",
-      change: "+15%",
-      changeColor: "text-green-500",
-      bgColor: "bg-red-50",
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-            <div className="flex gap-2">
+            <h1 className="text-3xl font-bold">{t("dashboardTitle")}</h1>
+            <div className="flex items-center gap-4">
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as Language)}
+                className="rounded-md bg-gray-200 px-2 py-1 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+              >
+                <option value="es">Español</option>
+                <option value="en">English</option>
+              </select>
               {(["week", "month", "year"] as TimeRange[]).map((range) => (
                 <button
                   key={range}
                   onClick={() => setTimeRange(range)}
-                  className={`px-4 py-2 rounded-md ${
+                  className={`rounded-md px-4 py-2 ${
                     timeRange === range
                       ? "bg-blue-500 text-white"
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                      : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
                   }`}
                 >
-                  {range.charAt(0).toUpperCase() + range.slice(1)}
+                  {t(range as keyof typeof texts)}
                 </button>
               ))}
             </div>
           </div>
-          {/* Navigation Tabs */}
           <div className="mt-6 flex space-x-4 border-b border-gray-200 dark:border-gray-700">
             {(["overview", "courses", "revenue", "exams"] as Tab[]).map((tab) => (
               <button
@@ -169,34 +205,33 @@ export default function AnalyticsDashboard() {
                     : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                 }`}
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {t(tab as keyof typeof texts)}
               </button>
             ))}
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {statsCards.map((card, i) => (
+      {/* Main */}
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {statsCards.map((card, idx) => (
             <div
-              key={i}
+              key={idx}
               className={`${card.bgColor} dark:bg-gray-800 rounded-xl shadow-md p-6 transition-transform hover:scale-105`}
             >
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between">
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">
+                  <p className="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
                     {card.title}
                   </p>
                   <h3 className="text-2xl font-bold">{card.value}</h3>
-                  <div className="flex items-center mt-2">
+                  <div className="mt-2 flex items-center">
                     <span className={`text-sm ${card.changeColor}`}>
                       {card.change}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-400 text-xs ml-1">
-                      vs last period
+                    <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                      {t("vsLastPeriod")}
                     </span>
                   </div>
                 </div>
@@ -206,17 +241,17 @@ export default function AnalyticsDashboard() {
           ))}
         </div>
 
-        {/* Overview Tab */}
         {activeTab === "overview" && (
           <>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-              {/* Trends */}
-              <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-                <h2 className="text-xl font-semibold mb-4">Growth Trends</h2>
+            <div className="mb-8 grid gap-6 lg:grid-cols-3">
+              <div className="lg:col-span-2 rounded-xl bg-white p-6 shadow dark:bg-gray-800">
+                <h2 className="mb-4 text-xl font-semibold">
+                  {t("growthTrends")}
+                </h2>
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={trendData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                      <CartesianGrid stroke="#374151" strokeDasharray="3 3" />
                       <XAxis dataKey="month" stroke="#6B7280" />
                       <YAxis stroke="#6B7280" />
                       <Tooltip
@@ -228,22 +263,22 @@ export default function AnalyticsDashboard() {
                       />
                       <Legend />
                       <Line
-                        type="monotone"
                         dataKey="users"
+                        name={t("users")}
                         stroke="#4F46E5"
                         strokeWidth={2}
                         dot={{ r: 4 }}
                       />
                       <Line
-                        type="monotone"
                         dataKey="revenue"
+                        name={t("revenue")}
                         stroke="#10B981"
                         strokeWidth={2}
                         dot={{ r: 4 }}
                       />
                       <Line
-                        type="monotone"
                         dataKey="courses"
+                        name={t("courses")}
                         stroke="#F59E0B"
                         strokeWidth={2}
                         dot={{ r: 4 }}
@@ -252,11 +287,11 @@ export default function AnalyticsDashboard() {
                   </ResponsiveContainer>
                 </div>
               </div>
-
-              {/* Distribution */}
               <div className="flex flex-col gap-6">
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-                  <h2 className="text-xl font-semibold mb-4">Course Status</h2>
+                <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800">
+                  <h2 className="mb-4 text-xl font-semibold">
+                    {t("courseStatus")}
+                  </h2>
                   <div className="h-40">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -269,8 +304,11 @@ export default function AnalyticsDashboard() {
                             `${name} ${(percent * 100).toFixed(0)}%`
                           }
                         >
-                          {courseData.map((_, idx) => (
-                            <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+                          {courseData.map((_, i) => (
+                            <Cell
+                              key={i}
+                              fill={COLORS[i % COLORS.length]}
+                            />
                           ))}
                         </Pie>
                         <Tooltip />
@@ -278,8 +316,10 @@ export default function AnalyticsDashboard() {
                     </ResponsiveContainer>
                   </div>
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-                  <h2 className="text-xl font-semibold mb-4">Chapter Types</h2>
+                <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800">
+                  <h2 className="mb-4 text-xl font-semibold">
+                    {t("chapterTypes")}
+                  </h2>
                   <div className="h-40">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -292,8 +332,11 @@ export default function AnalyticsDashboard() {
                             `${name} ${(percent * 100).toFixed(0)}%`
                           }
                         >
-                          {chapterData.map((_, idx) => (
-                            <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+                          {chapterData.map((_, i) => (
+                            <Cell
+                              key={i}
+                              fill={COLORS[(i + 2) % COLORS.length]}
+                            />
                           ))}
                         </Pie>
                         <Tooltip />
@@ -303,14 +346,14 @@ export default function AnalyticsDashboard() {
                 </div>
               </div>
             </div>
-
-            {/* Bar Chart */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4">Summary by Category</h2>
+            <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800">
+              <h2 className="mb-4 text-xl font-semibold">
+                {t("summaryByCategory")}
+              </h2>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={barData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <CartesianGrid stroke="#374151" strokeDasharray="3 3" />
                     <XAxis dataKey="name" stroke="#6B7280" />
                     <YAxis stroke="#6B7280" />
                     <Tooltip
@@ -321,8 +364,8 @@ export default function AnalyticsDashboard() {
                       }}
                     />
                     <Bar dataKey="total">
-                      {barData.map((entry, idx) => (
-                        <Cell key={idx} fill={entry.color} />
+                      {barData.map((entry, i) => (
+                        <Cell key={i} fill={entry.color} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -332,21 +375,32 @@ export default function AnalyticsDashboard() {
           </>
         )}
 
-        {/* Courses Tab */}
         {activeTab === "courses" && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Course Analytics</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
-                <h3 className="text-lg font-medium mb-4">Course Status</h3>
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Published</p>
-                    <p className="text-2xl font-bold">{data.courses.published}</p>
+          <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800">
+            <h2 className="mb-4 text-xl font-semibold">
+              {t("courseAnalytics")}
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-700">
+                <h3 className="mb-4 text-lg font-medium">
+                  {t("courseStatus")}
+                </h3>
+                <div className="mb-6 grid grid-cols-2 gap-4">
+                  <div className="rounded-lg bg-white p-4 dark:bg-gray-800">
+                    <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                      {t("published")}
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {data.courses.published}
+                    </p>
                   </div>
-                  <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Unpublished</p>
-                    <p className="text-2xl font-bold">{data.courses.unpublished}</p>
+                  <div className="rounded-lg bg-white p-4 dark:bg-gray-800">
+                    <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                      {t("unpublished")}
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {data.courses.unpublished}
+                    </p>
                   </div>
                 </div>
                 <div className="h-60">
@@ -361,8 +415,8 @@ export default function AnalyticsDashboard() {
                         outerRadius={80}
                         label
                       >
-                        {courseData.map((_, idx) => (
-                          <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+                        {courseData.map((_, i) => (
+                          <Cell key={i} fill={COLORS[i % COLORS.length]} />
                         ))}
                       </Pie>
                       <Tooltip />
@@ -370,16 +424,26 @@ export default function AnalyticsDashboard() {
                   </ResponsiveContainer>
                 </div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
-                <h3 className="text-lg font-medium mb-4">Chapter Analytics</h3>
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Free</p>
-                    <p className="text-2xl font-bold">{data.chapters.free}</p>
+              <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-700">
+                <h3 className="mb-4 text-lg font-medium">
+                  {t("chapterAnalytics")}
+                </h3>
+                <div className="mb-6 grid grid-cols-2 gap-4">
+                  <div className="rounded-lg bg-white p-4 dark:bg-gray-800">
+                    <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                      {t("free")}
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {data.chapters.free}
+                    </p>
                   </div>
-                  <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Premium</p>
-                    <p className="text-2xl font-bold">{data.chapters.premium}</p>
+                  <div className="rounded-lg bg-white p-4 dark:bg-gray-800">
+                    <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                      {t("premium")}
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {data.chapters.premium}
+                    </p>
                   </div>
                 </div>
                 <div className="h-60">
@@ -394,8 +458,11 @@ export default function AnalyticsDashboard() {
                         outerRadius={80}
                         label
                       >
-                        {chapterData.map((_, idx) => (
-                          <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+                        {chapterData.map((_, i) => (
+                          <Cell
+                            key={i}
+                            fill={COLORS[(i + 2) % COLORS.length]}
+                          />
                         ))}
                       </Pie>
                       <Tooltip />
@@ -407,32 +474,39 @@ export default function AnalyticsDashboard() {
           </div>
         )}
 
-        {/* Revenue Tab */}
         {activeTab === "revenue" && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Revenue Analytics</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="bg-green-50 dark:bg-gray-700 p-6 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Total Revenue</h3>
+          <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800">
+            <h2 className="mb-4 text-xl font-semibold">
+              {t("revenueAnalytics")}
+            </h2>
+            <div className="mb-6 grid gap-6 md:grid-cols-2">
+              <div className="rounded-lg bg-green-50 p-6 dark:bg-gray-700">
+                <h3 className="mb-2 text-lg font-medium">
+                  {t("totalRevenue")}
+                </h3>
                 <p className="text-3xl font-bold">
                   ${data.revenue.totalPaidInvoices.toFixed(2)}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  +8.5% from last period
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  +8.5% {t("vsLastPeriod")}
                 </p>
               </div>
-              <div className="bg-blue-50 dark:bg-gray-700 p-6 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Invoices Issued</h3>
-                <p className="text-3xl font-bold">{data.revenue.invoicesIssued}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  +12% from last period
+              <div className="rounded-lg bg-blue-50 p-6 dark:bg-gray-700">
+                <h3 className="mb-2 text-lg font-medium">
+                  {t("invoicesIssued")}
+                </h3>
+                <p className="text-3xl font-bold">
+                  {data.revenue.invoicesIssued}
+                </p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  +12% {t("vsLastPeriod")}
                 </p>
               </div>
             </div>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={trendData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <CartesianGrid stroke="#374151" strokeDasharray="3 3" />
                   <XAxis dataKey="month" stroke="#6B7280" />
                   <YAxis stroke="#6B7280" />
                   <Tooltip
@@ -444,8 +518,8 @@ export default function AnalyticsDashboard() {
                   />
                   <Legend />
                   <Line
-                    type="monotone"
                     dataKey="revenue"
+                    name={t("revenue")}
                     stroke="#10B981"
                     strokeWidth={3}
                     dot={{ r: 6 }}
@@ -456,43 +530,46 @@ export default function AnalyticsDashboard() {
           </div>
         )}
 
-        {/* Exams Tab */}
         {activeTab === "exams" && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Exam Statistics</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div className="bg-purple-50 dark:bg-gray-700 p-6 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Total Exams</h3>
+          <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800">
+            <h2 className="mb-4 text-xl font-semibold">
+              {t("examStatistics")}
+            </h2>
+            <div className="mb-6 grid gap-6 md:grid-cols-3">
+              <div className="rounded-lg bg-purple-50 p-6 dark:bg-gray-700">
+                <h3 className="mb-2 text-lg font-medium">
+                  {t("totalExams")}
+                </h3>
                 <p className="text-3xl font-bold">{data.exams.total}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  All exams in the system
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  {t("allExamsInSystem")}
                 </p>
               </div>
-              <div className="bg-pink-50 dark:bg-gray-700 p-6 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Published Exams</h3>
+              <div className="rounded-lg bg-pink-50 p-6 dark:bg-gray-700">
+                <h3 className="mb-2 text-lg font-medium">
+                  {t("publishedExams")}
+                </h3>
                 <p className="text-3xl font-bold">{data.exams.published}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Available to students
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  {t("availableToStudents")}
                 </p>
               </div>
-              <div className="bg-cyan-50 dark:bg-gray-700 p-6 rounded-lg">
-                <h3 className="text-lg font-medium mb-2">Total Attempts</h3>
-                <p className="text-3xl font-bold">{data.exams.totalAttempts}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Exam submissions
+              <div className="rounded-lg bg-cyan-50 p-6 dark:bg-gray-700">
+                <h3 className="mb-2 text-lg font-medium">
+                  {t("totalAttempts")}
+                </h3>
+                <p className="text-3xl font-bold">
+                  {data.exams.totalAttempts}
+                </p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  {t("examSubmissions")}
                 </p>
               </div>
             </div>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={[
-                    { name: "Total", value: data.exams.total, color: "#8B5CF6" },
-                    { name: "Published", value: data.exams.published, color: "#EC4899" },
-                    { name: "Attempts", value: data.exams.totalAttempts, color: "#06B6D4" },
-                  ]}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <BarChart data={examChartData}>
+                  <CartesianGrid stroke="#374151" strokeDasharray="3 3" />
                   <XAxis dataKey="name" stroke="#6B7280" />
                   <YAxis stroke="#6B7280" />
                   <Tooltip
@@ -502,13 +579,9 @@ export default function AnalyticsDashboard() {
                       border: "none",
                     }}
                   />
-                  <Bar dataKey="value">
-                    {[
-                      { name: "Total", value: data.exams.total, color: "#8B5CF6" },
-                      { name: "Published", value: data.exams.published, color: "#EC4899" },
-                      { name: "Attempts", value: data.exams.totalAttempts, color: "#06B6D4" },
-                    ].map((entry, idx) => (
-                      <Cell key={idx} fill={entry.color} />
+                  <Bar dataKey="value" >
+                    {examChartData.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -519,13 +592,15 @@ export default function AnalyticsDashboard() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-gray-800 shadow-inner mt-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <footer className="mt-8 bg-white shadow-inner dark:bg-gray-800">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-            Last updated: {new Date().toLocaleString()}
+            {t("lastUpdated")}{" "}
+            {new Date().toLocaleString(language === "en" ? "en-US" : "es-PA")}
           </p>
         </div>
       </footer>
     </div>
   );
 }
+export default AnalyticsDashboard;

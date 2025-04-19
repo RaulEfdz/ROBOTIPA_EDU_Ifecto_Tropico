@@ -66,7 +66,7 @@ export const Sidebar = ({ toggleSidebar }: { toggleSidebar: (state?: boolean) =>
         </div>
         <div className="flex items-center justify-between px-4 py-2 text-sm font-light bg-white/10">
           <span>ROBOTIPA_LMS</span>
-          <span>v17.4.25</span>
+          <span>v19.4.25</span>
         </div>
       </div>
     </aside>
