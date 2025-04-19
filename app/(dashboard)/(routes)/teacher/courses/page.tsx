@@ -2,10 +2,10 @@ import { redirect } from "next/navigation";
 
 import { db } from "@/lib/db";
 
-import { DataTable } from "./_components/data-table";
-import { columns } from "./_components/columns";
+import { TeacherTable } from "./_components/data-table";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
+import { courseColumns } from "./_components/columns";
 
 const CoursesPage = async () => {
   const user = await getCurrentUserFromDBServer(); // ✅ Correcto
@@ -26,8 +26,8 @@ const CoursesPage = async () => {
 
   return (
       <TooltipProvider>
-        <DataTable columns={columns} data={courses} />
-      </TooltipProvider>
+        <TeacherTable columns={courseColumns} data={courses} />
+        </TooltipProvider>
   );
 };
 

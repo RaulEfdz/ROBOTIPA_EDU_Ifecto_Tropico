@@ -1,159 +1,172 @@
-"use client";
+'use client';
 
-import React from "react";
-import * as z from "zod";
-import axios from "axios";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { toast } from "sonner";
-import { ArrowLeft, Pencil } from "lucide-react";
-
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormLabel,
-  FormMessage,
-  FormItem,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import React, { useState, useMemo } from 'react';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { ArrowLeft, FileText, GraduationCap } from 'lucide-react';
 import {
   Card,
   CardHeader,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@/components/ui/card';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  FormDescription,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { texts, defaultLanguage, Language, TFunction } from './locales/course-create';
+import { useConfettiStore } from '@/hooks/use-confetti-store';
 
-const texts = {
-  es: {
-    pageTitle: "Crea tu curso",
-    pageDescription: "Dale un nombre atractivo a tu curso. Puedes cambiarlo más tarde.",
-    titleLabel: "Título del curso",
-    titlePlaceholder: "ej. 'Capacitación en habilidades avanzadas'",
-    titleDescription: "Describe lo que abordarás en este curso.",
-    cancelButton: "Cancelar",
-    continueButton: "Continuar",
-    successMessage: "Curso creado",
-    errorMessage: "Algo salió mal",
-  },
-};
-
-const formSchema = z.object({
-  title: z.string().min(1, {
-    message: "El título es obligatorio",
-  }),
-});
-
-const CreatePage = () => {
+const CreateCoursePage: React.FC = () => {
   const router = useRouter();
-  const lang = "es";
-  const t = texts[lang];
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [language] = useState<Language>(defaultLanguage);
+  const confetti = useConfettiStore();
+
+  // Translation function
+  const t: TFunction = useMemo(
+    () => (key) => texts[key]?.[language] ?? texts[key]?.[defaultLanguage] ?? key,
+    [language]
+  );
+
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        title: z
+          .string()
+          .min(3, { message: t('validationTitleRequired') })
+          .max(60, { message: t('validationTitleTooLong') }),
+      }),
+    [t]
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-    },
+    defaultValues: { title: '' },
+    mode: 'onChange',
   });
-
-  const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await axios.post("/api/courses", values);
-      router.push(`/teacher/courses/${response.data.id}`);
-      toast.success(t.successMessage, {
-        duration: 2000,
-        position: "bottom-right",
+      setIsSubmitting(true);
+      const response = await fetch('/api/courses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
       });
-    } catch {
-      toast.error(t.errorMessage);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Error creating course');
+      }
+      const data = await response.json();
+      toast.success(t('successMessage'), {
+        description: t('successDescription'),
+      });
+      confetti.onOpen();
+      router.push(`/teacher/courses/${data.id}`);
+    } catch (error) {
+      console.error('Error creating course:', error);
+      toast.error(t('errorMessage'), {
+        description: t('errorDescription'),
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-gradient-to-b from-[#FFFCF8] to-[#C8E065]/20">
-      <Card className="w-full max-w-2xl bg-TextCustom dark:bg-gray-850 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
-        <CardHeader>
-          <div className="flex items-center justify-between mb-4">
+    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-to-br from-stone-100 via-stone-200 to-stone-300">
+      <Card className="w-full max-w-lg rounded-2xl shadow-lg border-0">
+        <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => router.back()}
-              className="text-gray-500 hover:text-green-700 dark:hover:text-green-400"
+              aria-label={t('backButton')}
+              className="rounded-full hover:bg-green-50"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-5 w-5 text-green-700" />
             </Button>
-          </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Pencil className="h-5 w-5 text-green-700 dark:text-green-400" />
-              <h1 className="text-xl font-semibold text-gray-800 dark:text-TextCustom">
-                {t.pageTitle}
-              </h1>
-            </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {t.pageDescription}
-            </p>
+            <h1 className="text-xl font-semibold text-gray-800">
+              {t('pageTitle')}
+            </h1>
           </div>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-3 mb-6 p-3 bg-green-50 rounded-lg">
+            <GraduationCap className="h-6 w-6 text-green-600" />
+            <div>
+              <h2 className="font-medium text-green-800">{t('pageDescription')}</h2>
+              <p className="text-sm text-green-700/80 mt-1">
+                {t('pageSubDescription') ||
+                  'Get started by naming your course. You can change this later.'}
+              </p>
+            </div>
+          </div>
+
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
-                control={form.control}
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {t.titleLabel}
+                    <FormLabel className="text-base font-medium">
+                      {t('titleLabel')}
                     </FormLabel>
+                    <FormDescription>
+                      {t('titleDescription') ||
+                        'Choose a clear, descriptive title for your course.'}
+                    </FormDescription>
                     <FormControl>
                       <Input
                         {...field}
-                        disabled={isSubmitting}
-                        placeholder={t.titlePlaceholder}
-                        className="h-11 text-base border-gray-300 dark:border-gray-700 focus-visible:ring-green-500 dark:bg-gray-800"
+                        placeholder={t('titlePlaceholder')}
+                        className="h-12 text-base focus-visible:ring-green-600"
                       />
                     </FormControl>
-                    <FormDescription className="text-xs text-gray-500 dark:text-gray-400">
-                      {t.titleDescription}
-                    </FormDescription>
-                    <FormMessage className="text-xs" />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <CardFooter className="flex justify-between px-0 pt-6 pb-0">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.back()}
+                  className="border-gray-300"
+                >
+                  {t('cancelButton')}
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={!form.formState.isValid || isSubmitting}
+                  className="bg-green-600 hover:bg-green-700 gap-2"
+                >
+                  <FileText className="h-4 w-4" />
+                  {isSubmitting
+                    ? t('submittingButton') || 'Creating...'
+                    : t('continueButton')}
+                </Button>
+              </CardFooter>
             </form>
           </Form>
         </CardContent>
-
-        <CardFooter className="flex justify-between border-t border-gray-100 dark:border-gray-700 pt-6">
-          <Link href="/" passHref>
-            <Button
-              variant="outline"
-              type="button"
-              className="w-32 border-gray-200 dark:border-gray-700"
-            >
-              {t.cancelButton}
-            </Button>
-          </Link>
-          <Button
-            type="submit"
-            disabled={!isValid || isSubmitting}
-            onClick={form.handleSubmit(onSubmit)}
-            className="w-32 bg-green-600 hover:bg-green-700 text-TextCustom"
-          >
-            {t.continueButton}
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );
 };
 
-export default CreatePage;
+export default CreateCoursePage;

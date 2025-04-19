@@ -1,66 +1,50 @@
-"use client"
 
-import { Course } from "@prisma/client"
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Pencil } from "lucide-react"
-import Link from "next/link"
+// components/courseColumns.ts
 
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+'use client';
 
-export const columns: ColumnDef<Course>[] = [
+import { ColumnDef } from '@tanstack/react-table';
+import { ArrowUpDown, Pencil } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Course } from '@prisma/client';
+
+export const courseColumns: ColumnDef<Course>[] = [
   {
-    accessorKey: "title",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Titulo
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    accessorKey: 'title',
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        Título
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
   {
-    accessorKey: "isPublished",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Publicado
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    accessorKey: 'isPublished',
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        Estado
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
-      const isPublished = row.getValue("isPublished") || false;
-
+      const isPub = row.getValue('isPublished');
       return (
-        <Badge className={cn(
-          "bg-slate-500",
-          isPublished && "bg-primaryCustom"
-        )}>
-          {isPublished ? "Publicado" : "Oculto"}
+        <Badge variant={isPub ? 'default' : 'secondary'}>
+          {isPub ? 'Publicado' : 'Oculto'}
         </Badge>
-      )
-    }
+      );
+    },
   },
   {
-    id: "actions",
-    cell: ({ row }) => {
-      const { id } = row.original;
+    id: 'actions',
+    cell: ({ row }) => (
+      <Link href={`/teacher/courses/${row.original.id}`} className="flex items-center space-x-1 text-sm hover:text-gray-600">
+        <Pencil className="h-4 w-4" />
+        <span>Editar</span>
+      </Link>
+    ),
+  },
+];
 
-      return (
-        <Link href={`/teacher/courses/${id}`} className="hover:text-gray-400 flex">
-          <Pencil className="h-4 w-4 mr-2" />
-          Editar
-        </Link>
-      )
-    }
-  }
-]
