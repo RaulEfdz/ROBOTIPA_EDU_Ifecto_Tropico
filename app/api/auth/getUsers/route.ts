@@ -1,3 +1,4 @@
+// app / api / auth / getUsers / route.ts;
 import { db } from "@/lib/db";
 import { NextResponse, NextRequest } from "next/server";
 
@@ -15,11 +16,11 @@ export async function POST(req: NextRequest) {
 
     const users = await db.user.findMany({
       where: { id: { in: userIds } },
-      select: { 
-        id: true, 
-        customRole: true, 
-        fullName: true, 
-        email: true 
+      select: {
+        id: true,
+        customRole: true,
+        fullName: true,
+        email: true,
       },
     });
 

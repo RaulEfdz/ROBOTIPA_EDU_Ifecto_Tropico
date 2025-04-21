@@ -1,5 +1,8 @@
 interface Roles {
-  [roleName: string]: string;
+  teacher: string;
+  student: string;
+  admin: string;
+  visitor: string;
 }
 
 // Rol => UUID desde env
@@ -14,7 +17,7 @@ const roles: Roles = {
 export function translateRole(input: string): string {
   // Si input es el nombre del rol, devuelve el ID
   if (input in roles) {
-    return roles[input];
+    return roles[input as keyof Roles];
   }
 
   // Si input es un ID, devuelve el nombre del rol

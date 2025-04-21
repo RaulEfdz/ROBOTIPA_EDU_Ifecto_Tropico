@@ -6,9 +6,16 @@ import { Logo } from "./logo";
 import { SidebarRoutes } from "./SidebarRoutes";
 import Administrative from "@/components/Administrative";
 import { ChevronLeft } from "lucide-react";
-import { getCurrentUserFromDB, UserDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
+import {
+  getCurrentUserFromDB,
+  UserDB,
+} from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 
-export const Sidebar = ({ toggleSidebar }: { toggleSidebar: (state?: boolean) => void }) => {
+export const Sidebar = ({
+  toggleSidebar,
+}: {
+  toggleSidebar: (state?: boolean) => void;
+}) => {
   const [isUserTeacher, setIsUserTeacher] = useState(false);
   const [user, setUser] = useState<UserDB | null>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -49,13 +56,15 @@ export const Sidebar = ({ toggleSidebar }: { toggleSidebar: (state?: boolean) =>
         >
           <ChevronLeft
             size={22}
-            className={`transition-transform duration-200 ${isHovered ? "-translate-x-1 scale-110" : "translate-x-0"}`}
+            className={`transition-transform duration-200 ${
+              isHovered ? "-translate-x-1 scale-110" : "translate-x-0"
+            }`}
           />
         </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-4 py-3 space-y-1 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-transparent">
+      <nav className="flex-1 overflow-y-auto p-0 py-3 space-y-1 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-transparent">
         <SidebarRoutes />
       </nav>
 

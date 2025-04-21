@@ -1,11 +1,13 @@
+// components/TeacherNavigation.tsx
 "use client";
-import React from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { teacherRoutes } from "../../_components/SidebarRoutes";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
+import React from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { teacherRoutes } from "../../_components/routes";
+
+// Motion variants
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -16,11 +18,7 @@ const container = {
 
 const item = {
   hidden: { y: 30, opacity: 0 },
-  show: {
-    y: 0,
-    opacity: 1,
-    transition: { type: "spring", stiffness: 100 },
-  },
+  show: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
 };
 
 const hoverEffect = {
@@ -29,7 +27,9 @@ const hoverEffect = {
   transition: { type: "spring", stiffness: 300, damping: 12 },
 };
 
-const TeacherNavigation = () => {
+const TeacherNavigation: React.FC = () => {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-stone-100 via-stone-200 to-stone-300 flex flex-col items-center justify-center px-4 relative overflow-hidden">
       {/* Fondo decorativo */}
@@ -45,7 +45,8 @@ const TeacherNavigation = () => {
           Herramientas para Profesores
         </h1>
         <p className="text-lg max-w-2xl mx-auto text-slate-600">
-          Accede a todas las herramientas necesarias para gestionar tus cursos y estudiantes.
+          Accede a todas las herramientas necesarias para gestionar tus cursos y
+          estudiantes.
         </p>
       </motion.div>
 
@@ -57,43 +58,45 @@ const TeacherNavigation = () => {
       >
         {teacherRoutes.map((route) => {
           const IconComponent = route.icon;
+          const badge = route.badge;
+          // Solo mostramos badge si está definido, es visible y no ha expirado
           const showBadge =
-            route.badge?.viewLabel &&
-            new Date() < new Date(route?.badge?.until ?? 0);
+            badge?.viewLabel &&
+            badge.until &&
+            new Date() < new Date(badge.until);
 
           return (
             <motion.div
               key={route.href}
               variants={item}
               whileHover={hoverEffect}
-              className="group"
+              className="group cursor-pointer"
+              onClick={() => router.push(route.href || "/")}
             >
-              <Link href={route.href}>
-                <Card className="relative w-72 overflow-hidden border bg-white shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
-                  <CardContent className="flex flex-col items-center justify-center p-4 gap-3 relative z-10 min-h-[150px]">
-                    <motion.div
-                      className="p-3 bg-stone-100 rounded-full group-hover:bg-stone-200 text-stone-600 transition-all"
-                      whileHover={{ rotate: 3, scale: 1.05 }}
+              <Card className="relative w-72 overflow-hidden border bg-white shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
+                <CardContent className="flex flex-col items-center justify-center p-4 gap-3 relative z-10 min-h-[150px]">
+                  <motion.div
+                    className="p-3 bg-stone-100 rounded-full group-hover:bg-stone-200 text-stone-600 transition-all"
+                    whileHover={{ rotate: 3, scale: 1.05 }}
+                  >
+                    <IconComponent />
+                  </motion.div>
+
+                  <h3 className="text-base font-semibold text-center text-slate-800">
+                    {route.label}
+                  </h3>
+
+                  {showBadge && (
+                    <motion.span
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-medium border border-stone-300 bg-stone-100 text-stone-700 shadow"
                     >
-                      <IconComponent />
-                    </motion.div>
-
-                    <h3 className="text-base font-semibold text-center text-slate-800">
-                      {route.label}
-                    </h3>
-
-                    {showBadge && (
-                      <motion.span
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-medium border border-stone-300 bg-stone-100 text-stone-700 shadow"
-                      >
-                        {route.badge?.textLabel}
-                      </motion.span>
-                    )}
-                  </CardContent>
-                </Card>
-              </Link>
+                      {badge.textLabel}
+                    </motion.span>
+                  )}
+                </CardContent>
+              </Card>
             </motion.div>
           );
         })}
