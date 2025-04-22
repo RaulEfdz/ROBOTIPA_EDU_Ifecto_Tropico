@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 
 // 🔗 RUTAS API
 const USERS_API = "/api/users";
-const UPDATE_ROLE_API = "/api/users/update/roles/teacher/";
+const UPDATE_ROLE_API = "/api/users/update/roles/teachers";
 
 interface NewTeacherDialogProps {
   isOpen: boolean;

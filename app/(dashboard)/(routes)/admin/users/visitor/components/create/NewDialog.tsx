@@ -20,16 +20,16 @@ import { Input } from "@/components/ui/input";
 
 // 🔗 RUTAS API
 const USERS_API = "/api/users";
-const UPDATE_ROLE_API = "/api/users/update/roles/admins";
+const UPDATE_ROLE_API = "/api/users/update/roles/visitors";
 
-interface NewAdminDialogProps {
+interface NewVisitorDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdminCreated?: () => void;
+  onVisitorCreated?: () => void;
 }
 
 const roleColors: Record<string, string> = {
-  admin:
+  Visitor:
     "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700",
   teacher:
     "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700",
@@ -39,11 +39,11 @@ const roleColors: Record<string, string> = {
     "bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700",
 };
 
-export default function NewAdminDialog({
+export default function NewVisitorDialog({
   isOpen,
   onClose,
-  onAdminCreated,
-}: NewAdminDialogProps) {
+  onVisitorCreated,
+}: NewVisitorDialogProps) {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -81,9 +81,9 @@ export default function NewAdminDialog({
     const user = users.find((u) => u.id === userId);
     if (
       user &&
-      user.customRole?.toLowerCase() === translateRole("admin").toLowerCase()
+      user.customRole?.toLowerCase() === translateRole("visitor").toLowerCase()
     ) {
-      toast.error("Este usuario ya es un administrador", {
+      toast.error("Este usuario ya es un Visitante", {
         icon: <AlertCircle className="h-5 w-5 text-red-500" />,
       });
       return;
@@ -92,6 +92,7 @@ export default function NewAdminDialog({
   };
 
   const updateUserRole = async (id: string, role: string) => {
+    alert(role);
     try {
       const res = await fetch(UPDATE_ROLE_API, {
         method: "POST",
@@ -110,7 +111,7 @@ export default function NewAdminDialog({
       toast.success(data.message || `Rol actualizado correctamente`);
       onClose();
       setSelectedUserId("");
-      if (onAdminCreated) onAdminCreated();
+      if (onVisitorCreated) onVisitorCreated();
     } catch (err: any) {
       console.error("Error updating user role:", err);
       toast.error(err.message || "No se pudo actualizar el rol del usuario");
@@ -143,15 +144,15 @@ export default function NewAdminDialog({
     if (activeTab === "all") return matchesSearch;
     if (activeTab === "default") {
       return (
-        !["admin", "teacher", "student"].includes(userRole) && matchesSearch
+        !["visitor", "teacher", "student"].includes(userRole) && matchesSearch
       );
     }
 
     return userRole === activeTab && matchesSearch;
   });
 
-  const isUserAdmin = (user: User) => {
-    return translateRole(user.customRole || "").toLowerCase() === "admin";
+  const isUserVisitor = (user: User) => {
+    return translateRole(user.customRole || "").toLowerCase() === "visitor";
   };
 
   return (
@@ -159,7 +160,7 @@ export default function NewAdminDialog({
       <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            Seleccionar Nuevo Administrador
+            Seleccionar Nuevo Visitante
           </DialogTitle>
         </DialogHeader>
 
@@ -182,7 +183,7 @@ export default function NewAdminDialog({
           <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 mb-4">
             <TabsTrigger value="default">Usuarios</TabsTrigger>
             <TabsTrigger value="all">Todos</TabsTrigger>
-            <TabsTrigger value="admin">Administradores</TabsTrigger>
+            <TabsTrigger value="visitor">Visitantees</TabsTrigger>
             <TabsTrigger value="teacher">Profesores</TabsTrigger>
             <TabsTrigger value="student">Estudiantes</TabsTrigger>
           </TabsList>
@@ -198,7 +199,7 @@ export default function NewAdminDialog({
                   const userRole =
                     translateRole(user.customRole || "")?.toLowerCase() ||
                     "default";
-                  const isAdmin = isUserAdmin(user);
+                  const isVisitor = isUserVisitor(user);
 
                   return (
                     <div
@@ -206,12 +207,12 @@ export default function NewAdminDialog({
                       onClick={() => handleSelectUser(user.id)}
                       className={`p-4 border rounded-lg transition-all relative
                         ${
-                          isAdmin
+                          isVisitor
                             ? "opacity-60 cursor-not-allowed"
                             : "cursor-pointer hover:shadow-md"
                         }
                         ${
-                          selectedUserId === user.id && !isAdmin
+                          selectedUserId === user.id && !isVisitor
                             ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500"
                             : "border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800/50"
                         }`}
@@ -227,12 +228,12 @@ export default function NewAdminDialog({
                             height={68}
                             className="rounded-full object-cover"
                           />
-                          {selectedUserId === user.id && !isAdmin && (
+                          {selectedUserId === user.id && !isVisitor && (
                             <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white rounded-full p-1 border-2 border-white">
                               <Check className="w-3 h-3" strokeWidth={3} />
                             </div>
                           )}
-                          {isAdmin && (
+                          {isVisitor && (
                             <div className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 border-2 border-white">
                               <AlertCircle
                                 className="w-3 h-3"
@@ -251,9 +252,9 @@ export default function NewAdminDialog({
                         >
                           {translateRole(user.customRole || "") || "Otros"}
                         </Badge>
-                        {isAdmin && (
+                        {isVisitor && (
                           <span className="text-xs text-red-500 mt-1">
-                            Ya es administrador
+                            Ya es Visitante
                           </span>
                         )}
                       </div>

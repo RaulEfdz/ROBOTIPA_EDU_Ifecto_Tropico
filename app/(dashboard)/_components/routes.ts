@@ -79,7 +79,7 @@ export const teacherRoutes: Route[] = [
     icon: Users,
     label: "Usuarios",
     isCollapsible: true,
-    href: "/users",
+    href: "/admin/users",
     subRoutes: [
       {
         icon: UserCheck,

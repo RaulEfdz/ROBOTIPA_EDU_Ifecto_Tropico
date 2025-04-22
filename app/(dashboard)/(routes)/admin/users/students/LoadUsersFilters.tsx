@@ -9,7 +9,7 @@ import { PlusCircle, RefreshCw } from "lucide-react";
 import { columns } from "./components/Table/columns/Columns";
 import TeacherDataTable from "./components/Table/DataTable";
 import NewTeacherDialog from "./components/create/NewDialog";
-import NewadminDialog from "./components/create/NewDialog";
+import NewstudentDialog from "./components/create/NewDialog";
 
 export default function LoadUsersFilters() {
   const [data, setData] = useState<User[]>([]);
@@ -25,16 +25,16 @@ export default function LoadUsersFilters() {
   async function loadUsersFilters() {
     try {
       setLoading(true);
-      const response = await fetch("/api/users/admins", {
+      const response = await fetch("/api/users/students", {
         cache: "no-store",
       });
       if (!response.ok) {
         const err = await response.json();
-        throw new Error(err.error || "Error cargando Administrador");
+        throw new Error(err.error || "Error cargando Estudiantes");
       }
       const json = await response.json();
-      setData(json.admins);
-      setFilteredData(json.admins);
+      setData(json.students);
+      setFilteredData(json.students);
     } catch (error) {
       console.error(error);
       toast.error((error as Error).message);
@@ -81,13 +81,13 @@ export default function LoadUsersFilters() {
 
   // Función para manejar la creación de un profesor
   const handleTeacherCreated = async () => {
-    await loadUsersFilters(); // Refresca la lista de Administrador
+    await loadUsersFilters(); // Refresca la lista de Estudiantes
   };
 
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Gestión de Administrador</h1>
+        <h1 className="text-2xl font-bold">Gestión de Estudiantes</h1>
         <div className="flex gap-2">
           <Button
             onClick={handleRefresh}
@@ -111,27 +111,27 @@ export default function LoadUsersFilters() {
       {loading ? (
         <div className="text-center py-10">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-800 mb-4"></div>
-          <p>Cargando Administrador...</p>
+          <p>Cargando Estudiantes...</p>
         </div>
       ) : (
         <>
           <div className="mb-4 text-sm text-gray-500">
-            Mostrando {filteredData.length} de {data.length} Administrador
+            Mostrando {filteredData.length} de {data.length} Estudiantes
           </div>
           <TeacherDataTable columns={columns} data={filteredData} />
           {filteredData.length === 0 && (
             <div className="text-center py-10 text-gray-500">
-              No se encontraron Administrador con los filtros aplicados
+              No se encontraron Estudiantes con los filtros aplicados
             </div>
           )}
         </>
       )}
 
       {/* Diálogo para crear nuevo profesor */}
-      <NewadminDialog
+      <NewstudentDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        onAdminCreated={handleTeacherCreated}
+        onstudentCreated={handleTeacherCreated}
       />
     </div>
   );

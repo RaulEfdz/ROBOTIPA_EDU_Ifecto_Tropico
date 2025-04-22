@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Lista de roles válidos permitidos
 
-// Obtener el ADMIN_ID desde las variables de entorno
+// Obtener el STUDENT_ID desde las variables de entorno
 // Asegúrate de que esta variable esté definida en tu archivo .env
 const TEACHER_ID = process.env.TEACHER_ID;
 const STUDENT_ID = process.env.STUDENT_ID;
@@ -15,10 +15,12 @@ const VISITOR_ID = process.env.VISITOR_ID;
 const validRoles = [TEACHER_ID, STUDENT_ID, ADMIN_ID, VISITOR_ID];
 // const validRoles = ["admin"];
 
-// Opcional: Validar que admin_ID esté configurado al iniciar la aplicación
+// Opcional: Validar que student_ID esté configurado al iniciar la aplicación
 // En un caso real, podrías querer lanzar un error o advertencia aquí si no está
-if (!ADMIN_ID) {
-  console.error("FATAL ERROR: ADMIN_ID not defined in environment variables.");
+if (!STUDENT_ID) {
+  console.error(
+    "FATAL ERROR: STUDENT_ID not defined in environment variables."
+  );
   // En una aplicación real, podrías considerar lanzar un error de inicio aquí
   // process.exit(1);
 }
@@ -40,30 +42,32 @@ export async function POST(req: NextRequest) {
     let message = `Rol actualizado correctamente a '${customRole}'`; // Mensaje por defecto
 
     // --- Lógica para manejar el rol del profesor ---
-    // Verificar si el ID del usuario a actualizar coincide con el ADMIN_ID
-    if (ADMIN_ID && id === ADMIN_ID) {
-      // Si es el profesor, forzar el rol a 'admin'
-      roleToUpdateWith = "admin";
+    // Verificar si el ID del usuario a actualizar coincide con el STUDENT_ID
+    if (STUDENT_ID && id === STUDENT_ID) {
+      // Si es el profesor, forzar el rol a 'student'
+      roleToUpdateWith = "student";
       // Opcional: Añadir un mensaje específico si se fuerza el rol
-      if (customRole !== "admin") {
-        message = `El usuario es el profesor (${id}). Su rol ha sido forzado a 'admin', ignorando el rol solicitado '${customRole}'.`;
+      if (customRole !== "student") {
+        message = `El usuario es el profesor (${id}). Su rol ha sido forzado a 'student', ignorando el rol solicitado '${customRole}'.`;
       } else {
-        message = `El usuario es el profesor (${id}). Su rol 'admin' se ha confirmado.`;
+        message = `El usuario es el profesor (${id}). Su rol 'student' se ha confirmado.`;
       }
       // No se realiza validación adicional contra validRoles para el profesor,
-      // ya que siempre será 'admin'.
+      // ya que siempre será 'student'.
     } else {
       // Si NO es el profesor, validar que el customRole solicitado sea válido
       if (!validRoles.includes(customRole)) {
         return NextResponse.json(
           {
-            error: `Rol inválido, Debe ser uno de: ${validRoles.join(", ")}`,
+            error: `Rol inválido ${customRole}, Debe ser uno de: ${validRoles.join(
+              ", "
+            )}`,
           },
           { status: 400 }
         );
       }
       // Si es un rol válido y no es el profesor, usamos el customRole solicitado
-      roleToUpdateWith = ADMIN_ID;
+      roleToUpdateWith = STUDENT_ID;
       message = `Rol actualizado correctamente'.`;
     }
     // --- Fin de la lógica para manejar el rol del profesor ---
