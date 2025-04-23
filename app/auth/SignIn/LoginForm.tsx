@@ -13,6 +13,7 @@ import {
 import { Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
+import ClearCacheButton from "../clearSiteData";
 
 interface LoginFormProps {
   onAuthStateChange?: () => void;
@@ -95,7 +96,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     } catch (err) {
       toast.error("Error inesperado", {
         description:
-          err instanceof Error ? err.message : "Algo salió mal. Inténtalo de nuevo.",
+          err instanceof Error
+            ? err.message
+            : "Algo salió mal. Inténtalo de nuevo.",
       });
     } finally {
       setIsLoading(false);

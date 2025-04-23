@@ -13,8 +13,11 @@ import { PasswordRecoveryForm } from "./ResetPass/PasswordRecoveryForm";
 import { loginConfig } from "./config/loginConfig";
 import { printDebug } from "@/utils/debug/log";
 // import { getCurrentUserFromDB, UserDB } from "./CurrentUser/getCurrentUserFromDB";
-import { getCurrentUserFromDB, UserDB } from "./CurrentUser/getCurrentUserFromDB";
-
+import {
+  getCurrentUserFromDB,
+  UserDB,
+} from "./CurrentUser/getCurrentUserFromDB";
+import ClearCacheButton from "./clearSiteData";
 
 const metaDataPage = {
   title: "auth",
@@ -58,13 +61,13 @@ export default function AuthPage() {
     const fetchData = async () => {
       const user = await getCurrentUserFromDB();
       if (!user) return;
-  
+
       setUserData(user);
-  
+
       const metadata = user.metadata || {};
       const email = user.email;
       const emailVerified = metadata?.email_verified ?? true; // puedes ajustarlo si guardas ese dato
-  
+
       if (email && !emailVerified) {
         localStorage.setItem("pendingEmailVerification", email);
         setEmail(email);
@@ -88,14 +91,13 @@ export default function AuthPage() {
   // Verificar sesión e insertar usuario
   useEffect(() => {
     const checkSession = async () => {
-     const user = await getCurrentUserFromDB();
+      const user = await getCurrentUserFromDB();
       printDebug(`checkSession > user: ${JSON.stringify(user)}`);
 
       if (user) {
         setIsLoggedIn(true);
 
         try {
-
           const response = await fetch("/api/auth/insertUser");
           const result = await response.json();
           printDebug(`insertUser > response: ${JSON.stringify(result)}`);
@@ -142,7 +144,6 @@ export default function AuthPage() {
     return <EmailConfirmationPending email={email} />;
   }
   const defaultVisitorRoleId = process.env.NEXT_PUBLIC_VISITOR_ID || "";
-
 
   return (
     <div
@@ -263,14 +264,14 @@ export default function AuthPage() {
             )
           ) : (
             <SignupForm
-            onSignupSuccess={handleSignupSuccess}
-            setEmail={setEmail}
-            config={{
-              ...rightPanel.createAccount.form,
-              defaultRoleId: defaultVisitorRoleId, // ✅ ← ¡AQUÍ EL CAMBIO CLAVE!
-            }}
-            styles={currentStyles}
-          />
+              onSignupSuccess={handleSignupSuccess}
+              setEmail={setEmail}
+              config={{
+                ...rightPanel.createAccount.form,
+                defaultRoleId: defaultVisitorRoleId, // ✅ ← ¡AQUÍ EL CAMBIO CLAVE!
+              }}
+              styles={currentStyles}
+            />
           )}
 
           {/* Footer switch login/signup */}
@@ -294,6 +295,7 @@ export default function AuthPage() {
                 : rightPanel.createAccount.subtitle.linkText}
             </button>
           </p>
+          <ClearCacheButton />
         </div>
       </div>
     </div>
