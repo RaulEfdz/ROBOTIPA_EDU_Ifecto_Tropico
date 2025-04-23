@@ -92,7 +92,7 @@ export default function ExamDetailPage() {
         description: exam.description || "",
         duration: exam.duration ?? 0,
         isPublished: exam.isPublished || false,
-        passingScore: exam.data.passingScore || 70,
+        passingScore: exam.data?.passingScore || 70,
       });
     }
   }, [exam, reset]);
