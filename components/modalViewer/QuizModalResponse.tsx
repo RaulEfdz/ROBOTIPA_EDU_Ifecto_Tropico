@@ -1,7 +1,7 @@
-'use client'
+"use client";
 import React, { useState, useEffect } from "react";
-import { Quiz } from "@/app/(dashboard)/(routes)/teacher/quizzes/types";
-import { COLLECTION_QUIZZES } from "@/app/(dashboard)/(routes)/teacher/quizzes/context/QuizContext";
+import { Quiz } from "@/app/(dashboard)/(routes)/exams/types";
+import { COLLECTION_QUIZZES } from "@/app/(dashboard)/(routes)/exams/context/QuizContext";
 import { handleSubmitQuiz } from "./handleSubmitQuiz";
 import {
   Card,
@@ -34,7 +34,7 @@ import {
 import QuizResults from "./QuizResults";
 import ExpiredQuizResults from "./ExpiredQuizResults";
 import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
-import { getQuizzes } from "@/app/(dashboard)/(routes)/teacher/quizzes/handler/getQuizzes";
+import { getQuizzes } from "@/app/(dashboard)/(routes)/exams/handler/getQuizzes";
 
 interface Props {
   id: string;
@@ -77,10 +77,9 @@ const QuizModalResponse: React.FC<Props> = ({ id, onClose }) => {
         setError(err.message || "Error al cargar el usuario.");
       }
     };
-  
+
     fetchUser();
   }, []);
-  
 
   useEffect(() => {
     const fetchQuiz = async () => {

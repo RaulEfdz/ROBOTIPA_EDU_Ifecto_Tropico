@@ -7,11 +7,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Clock } from "lucide-react";
-import {
-  Answer,
-  Question,
-  Quiz,
-} from "@/app/(dashboard)/(routes)/teacher/quizzes/types";
+import { Answer, Question, Quiz } from "@/app/(dashboard)/(routes)/exams/types";
 import { formatTimestamp } from "@/utils/formatTextMS";
 
 interface ExpiredQuizResultsProps {
@@ -24,7 +20,6 @@ const ExpiredQuizResults: React.FC<ExpiredQuizResultsProps> = ({
   isExpired,
 }) => {
   if (!isExpired) return null;
-
 
   return (
     <Card className="w-[90vw] max-w-screen-sm mx-auto shadow-lg p-4 sm:p-6 md:p-8">
@@ -63,8 +58,7 @@ const ExpiredQuizResults: React.FC<ExpiredQuizResultsProps> = ({
           </div>
           <div className="space-y-1">
             <p className="font-bold tracking-tight text-red-600">
-              Quiz cerrado el{" "}
-              {formatTimestamp(quizData.closeDate?.timestamp)}
+              Quiz cerrado el {formatTimestamp(quizData.closeDate?.timestamp)}
             </p>
           </div>
         </div>

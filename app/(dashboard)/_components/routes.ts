@@ -67,7 +67,7 @@ export const teacherRoutes: Route[] = [
   {
     icon: Brain,
     label: "Quizzes",
-    href: "/teacher/quizzes",
+    href: "/exams",
     badge: {
       viewLabel: true,
       until: new Date("2025-10-01"),

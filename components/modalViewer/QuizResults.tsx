@@ -7,11 +7,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
-import {
-  Answer,
-  Question,
-  Quiz,
-} from "@/app/(dashboard)/(routes)/teacher/quizzes/types";
+import { Answer, Question, Quiz } from "@/app/(dashboard)/(routes)/exams/types";
 import { formatTimestamp } from "@/utils/formatTextMS";
 
 interface QuizResultsProps {
@@ -25,7 +21,7 @@ const QuizResults: React.FC<QuizResultsProps> = ({
   quizData,
   userAnswers,
   isResponse,
-  isExist
+  isExist,
 }) => {
   if (!isResponse) return null;
 
@@ -102,18 +98,21 @@ const QuizResults: React.FC<QuizResultsProps> = ({
             </p>
           </div>
 
-          {!isExist ?(<div className="space-y-1">
-            <p className="font-bold tracking-tight text-red-600">
-              Quiz cerrado el {formatTimestamp(quizData.quizData.closeDate?.timestamp)}
-            </p>
-          </div>): (
+          {!isExist ? (
             <div className="space-y-1">
-            <p className="font-bold tracking-tight text-green-600">
-              Quiz cierra el {formatTimestamp(quizData.quizData.closeDate?.timestamp)}
-            </p>
-          </div>
-          )
-          }
+              <p className="font-bold tracking-tight text-red-600">
+                Quiz cerrado el{" "}
+                {formatTimestamp(quizData.quizData.closeDate?.timestamp)}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-1">
+              <p className="font-bold tracking-tight text-green-600">
+                Quiz cierra el{" "}
+                {formatTimestamp(quizData.quizData.closeDate?.timestamp)}
+              </p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

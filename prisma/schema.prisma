@@ -1,11 +1,26 @@
+// schema.prisma
+
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
+}
+
+enum VideoType {
+  external
+  mux
+  youtube
+  vimeo
+}
+
+enum QuestionType {
+  single
+  multiple
+  text
 }
 
 model Course {
@@ -25,6 +40,8 @@ model Course {
   attachments Attachment[]
   purchases   Purchase[]
 
+  data Json? // ✅ agregado
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -37,15 +54,19 @@ model Category {
   id      String   @id @default(uuid())
   name    String   @unique
   courses Course[]
+
+  data Json? // ✅ agregado
 }
 
 model Attachment {
-  id       String   @id @default(uuid())
-  name     String
-  url      String
+  id   String @id @default(uuid())
+  name String
+  url  String
 
   courseId String
-  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  data Json? // ✅ agregado
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -62,12 +83,14 @@ model Chapter {
   isFree      Boolean  @default(false)
   delete      Boolean? @default(false)
 
-  video       Video?
+  video Video?
 
   courseId String
-  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   userProgress UserProgress[]
+
+  data Json? // ✅ agregado
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,53 +99,51 @@ model Chapter {
 }
 
 model Video {
-  id           String   @id @default(uuid())
-  type         VideoType
-  url          String?
-  assetId      String?
-  playbackId   String?
-  status       String?
-  duration     Float?
-  resolution   String?
-  aspectRatio  String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String    @id @default(uuid())
+  type        VideoType
+  url         String?
+  assetId     String?
+  playbackId  String?
+  status      String?
+  duration    Float?
+  resolution  String?
+  aspectRatio String?
 
-  chapterId    String   @unique
-  chapter      Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-}
+  chapterId String  @unique
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
-enum VideoType {
-  external // puedes conservarlo si quieres algo genérico
-  mux
-  youtube
-  vimeo
+  data Json? // ✅ agregado
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model UserProgress {
-  id         String   @id @default(uuid())
-  userId     String
-
+  id        String  @id @default(uuid())
+  userId    String
   chapterId String
-  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   isCompleted Boolean @default(false)
+
+  data Json? // ✅ agregado
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([chapterId])
   @@unique([userId, chapterId])
+  @@index([chapterId])
 }
 
 model Purchase {
-  id        String   @id @default(uuid())
-  userId    String
+  id       String @id @default(uuid())
+  userId   String
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  data Json? // ✅ agregado
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -134,134 +155,309 @@ model Purchase {
 }
 
 model User {
-  id                String   @id @default(uuid())
-  email             String   @unique
-  fullName          String
-  username          String
-  phone             String?
-  customRole        String
-  provider          String
-  lastSignInAt      DateTime?
-  metadata          Json
+  id               String    @id @default(uuid())
+  email            String    @unique
+  fullName         String
+  username         String
+  phone            String?
+  customRole       String
+  provider         String
+  lastSignInAt     DateTime?
+  metadata         Json
+  isActive         Boolean   @default(true)
+  isBanned         Boolean   @default(false)
+  isDeleted        Boolean   @default(false)
+  additionalStatus String    @default("active")
 
-  isActive          Boolean  @default(true)
-  isBanned          Boolean  @default(false)
-  isDeleted         Boolean  @default(false)
-  additionalStatus  String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  courses           Course[]
-  purchases         Purchase[]
-  userProgress      UserProgress[]
-  invoices          Invoice[]
-  examAttempts      ExamAttempt[]       // 🔧 Campo agregado
-
-  @@map("users")
+  courses       Course[]
+  purchases     Purchase[]
+  userProgress  UserProgress[]
+  invoices      Invoice[]
+  examAttempts  ExamAttempt[]
+  certificates  Certificate[] // ✅ Agregado
+  Subscription  Subscription?
+  PaymentMethod PaymentMethod[]
+  Payment       Payment[]
+  AuditLog      AuditLog[]
+  Notification  Notification[]
+  UserAccess    UserAccess[]
+  LegalDocument LegalDocument[]
 }
 
-
 model Invoice {
-  id             String   @id @default(uuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  concept        String
-  amount         Float
-  currency       String
-  status         String              // e.g. 'pending', 'paid', 'failed', etc.
-  paymentMethod  String              // e.g. 'yappy', 'paypal', 'transfer'
-  issuedAt       DateTime
-  paidAt         DateTime?
-  data           Json                // datos adicionales según método
+  concept       String
+  amount        Float
+  currency      String
+  status        String
+  paymentMethod String
+  issuedAt      DateTime
+  paidAt        DateTime?
+  data          Json // ya estaba
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
 }
 
-// ----------------- EXAM TABLE -----------------
-
 model Exam {
-  id          String   @id @default(uuid())
-  title       String                       // Título del examen
-  description String?                      // Descripción opcional
-  duration    Int?                         // Duración en minutos
-  isPublished Boolean  @default(false)     // Si está disponible públicamente
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  duration    Int?
+  isPublished Boolean @default(false)
 
-  questions   Question[]                   // Preguntas asociadas al examen
-  attempts    ExamAttempt[]                // Intentos realizados por usuarios
+  questions Question[]
+  attempts  ExamAttempt[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  data Json? // ✅ agregado
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Question {
-  id             String   @id @default(uuid())
-  examId         String
-  exam           Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  examId String
+  exam   Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
 
-  text           String                        // Texto de la pregunta
-  type           QuestionType                  // Tipo de pregunta
-  options        Option[]                      // Opciones disponibles (si aplica)
-  correctAnswers String[]                      // IDs de opciones correctas (para single o multiple)
-  points         Float     @default(1.0)       // Puntos que vale la pregunta
+  text           String
+  type           QuestionType
+  options        Option[]
+  correctAnswers String[]
+  points         Float        @default(1.0)
 
-  answers        Answer[]                      // 🔧 Campo inverso agregado
+  isVisible       Boolean? // ✅ puedes opcionalmente permitir ocultarla
+  explanationText String? // ✅ si la agregaste en UI
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  answers Answer[]
+  data    Json? // ✅ agregado
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([examId])
 }
-
 
 model Option {
   id         String   @id @default(uuid())
   questionId String
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
-  text       String                         // Texto de la opción
-  createdAt  DateTime @default(now())
+  text      String
+  isCorrect Boolean? // ✅ puedes mantener esto para facilidad
+
+  data Json? // ✅ agregado
+
+  createdAt DateTime @default(now())
 }
 
 model ExamAttempt {
-  id          String   @id @default(uuid())
-  userId      String
-  examId      String
+  id     String @id @default(uuid())
+  userId String
+  examId String
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exam        Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
 
-  startedAt   DateTime @default(now())          // Cuándo empezó el intento
-  submittedAt DateTime?                         // Cuándo fue enviado (opcional)
-  score       Float?                            // Puntuación total obtenida
-  status      String   @default("in_progress")  // Estado del intento
+  startedAt   DateTime  @default(now())
+  submittedAt DateTime?
+  score       Float?
+  status      String    @default("in_progress")
 
-  answers     Answer[]
+  answers Answer[]
+  data    Json? // ✅ agregado
 
   @@index([userId, examId])
 }
 
 model Answer {
-  id               String   @id @default(uuid())
-  attemptId        String
-  questionId       String
+  id         String @id @default(uuid())
+  attemptId  String
+  questionId String
 
-  attempt          ExamAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
-  question         Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attempt  ExamAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
-  selectedOptionIds String[]               // IDs de las opciones seleccionadas
-  textResponse      String?                // Texto libre si la pregunta es de tipo texto
-  isCorrect         Boolean?               // Evaluación automática o manual
+  selectedOptionIds String[]
+  textResponse      String?
+  isCorrect         Boolean?
 
-  createdAt         DateTime @default(now())
+  data Json? // ✅ agregado
+
+  createdAt DateTime @default(now())
 }
 
-enum QuestionType {
-  single      // Una sola respuesta correcta
-  multiple    // Varias respuestas correctas
-  text        // Respuesta abierta escrita
+model Certificate {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title       String // Nombre del certificado o curso
+  institution String // Quién lo emite
+  issuedAt    DateTime // Fecha de emisión
+  fileUrl     String? // URL del certificado (ej. PDF)
+  code        String? // Código de validación opcional
+  description String? // Información adicional
+  data        Json? // Extras opcionales
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Subscription {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  isActive  Boolean   @default(true)
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+  plan      String // Ej: "monthly", "yearly", "premium"
+  metadata  Json? // ✅ Para información adicional
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentMethod {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type      String // Ej: "credit_card", "paypal", "yappy", etc.
+  provider  String? // Ej: "Visa", "Mastercard", "Banco General"
+  last4     String? // Últimos 4 dígitos
+  token     String? // Tokenizado (Stripe, etc.)
+  isDefault Boolean @default(false)
+  metadata  Json? // ✅ Para datos técnicos
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Payment   Payment[]
+
+  @@index([userId])
+}
+
+model Payment {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  methodId String?
+  method   PaymentMethod? @relation(fields: [methodId], references: [id], onDelete: SetNull)
+
+  amount        Float
+  currency      String // Ej: "USD"
+  status        String // Ej: "pending", "completed", "failed"
+  referenceCode String? // Código de transacción (banco, Stripe, etc.)
+  description   String?
+  metadata      Json? // ✅ Payloads, errores, response raw
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id     String  @id @default(uuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  action   String // Ej: "login", "updated_profile", "payment_failed"
+  context  String? // Página, módulo, etc.
+  metadata Json? // ✅ Información del navegador, IP, detalles extra
+
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title    String
+  message  String
+  read     Boolean @default(false)
+  metadata Json? // ✅ Datos de origen (ej. link, tipo de notificación)
+
+  createdAt DateTime @default(now())
+}
+
+model FeatureFlag {
+  id        String   @id @default(uuid())
+  key       String   @unique // Ej: "enable_ai_chat", "new_ui"
+  enabled   Boolean  @default(false) // Activado o no
+  metadata  Json? // ✅ Puedes guardar descripción, condiciones, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserAccess {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  toolId String
+  tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  accessType String // Ej: "purchase", "subscription", "trial", etc.
+  expiresAt  DateTime? // Si es temporal
+
+  isActive Boolean @default(true)
+  metadata Json? // Promos, condiciones, datos técnicos, etc.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, toolId]) // evita duplicados por herramienta
+  @@index([userId])
+  @@index([toolId])
+}
+
+model Tool {
+  id          String  @id @default(uuid())
+  key         String  @unique
+  name        String
+  description String?
+  type        String
+  price       Float?
+  accessUrl   String?
+  isActive    Boolean @default(true)
+  metadata    Json?
+
+  userAccess UserAccess[] // 🔁 Relación inversa
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LegalDocument {
+  id            String    @id @default(uuid())
+  title         String // Ej: "Política de Privacidad"
+  slug          String    @unique // Ej: "politica-de-privacidad"
+  content       String // Contenido HTML/Markdown/Texto
+  type          String // Ej: "terms", "privacy", "internal_policy"
+  visibility    String    @default("public") // "public" | "internal" | "private"
+  status        String    @default("draft") // "draft" | "pending_approval" | "approved"
+  approvedById  String? // ID del aprobador (usuario)
+  approvedBy    User?     @relation(fields: [approvedById], references: [id], onDelete: SetNull)
+  effectiveFrom DateTime? // Desde cuándo es válido
+  metadata      Json? // ✅ Info extra, versión, tracking, etc.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([status])
 }

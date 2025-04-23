@@ -1,15 +1,9 @@
 // Enums
 export enum VideoType {
-  external= "external",
+  external = "external",
   youtube = "youtube",
   vimeo = "vimeo",
-  mux = "mux"
-}
-
-export enum QuestionType {
-  single = "single",    // Una sola respuesta correcta
-  multiple = "multiple",// Varias respuestas correctas
-  text = "text"         // Respuesta abierta escrita
+  mux = "mux",
 }
 
 // Interfaces de modelos
@@ -132,21 +126,28 @@ export interface Invoice {
   concept: string;
   amount: number;
   currency: string;
-  status: string;         // Ej: 'pending', 'paid', 'failed', etc.
-  paymentMethod: string;  // Ej: 'yappy', 'paypal', 'transfer'
+  status: string; // Ej: 'pending', 'paid', 'failed', etc.
+  paymentMethod: string; // Ej: 'yappy', 'paypal', 'transfer'
   issuedAt: Date;
   paidAt?: Date;
-  data: any;              // Datos adicionales según el método (tipo JSON)
+  data: any; // Datos adicionales según el método (tipo JSON)
   createdAt: Date;
   updatedAt: Date;
+}
+
+export enum QuestionType {
+  single = "single", // Una sola respuesta correcta
+  multiple = "multiple", // Varias respuestas correctas
+  text = "text", // Pregunta abierta (no tiene opciones)
 }
 
 export interface Exam {
   id: string;
   title: string;
   description?: string;
-  duration?: number;       // Duración en minutos
-  isPublished: boolean;
+  duration?: number; // Duración en minutos
+  isPublished: boolean; // Publicado o borrador
+  passingScore?: number; // Nuevo campo opcional para la nota mínima de aprobación
   questions: Question[];
   attempts: ExamAttempt[];
   createdAt: Date;
@@ -158,10 +159,12 @@ export interface Question {
   examId: string;
   exam: Exam;
   text: string;
-  type: QuestionType;
-  options: Option[];
-  correctAnswers: string[]; // IDs de las opciones correctas
+  type: QuestionType; // "single" | "multiple" | "text"
+  options: Option[]; // Vacío si type === "text"
+  correctAnswers: string[]; // IDs de las opciones correctas (vacío para type === "text")
+  explanationText?: string;
   points: number;
+  isVisible?: boolean;
   answers: Answer[];
   createdAt: Date;
   updatedAt: Date;
@@ -172,6 +175,7 @@ export interface Option {
   questionId: string;
   question: Question;
   text: string;
+  isCorrect?: boolean; // útil para single/multiple
   createdAt: Date;
 }
 
@@ -184,7 +188,7 @@ export interface ExamAttempt {
   startedAt: Date;
   submittedAt?: Date;
   score?: number;
-  status: string;         // Ej: "in_progress"
+  status: string; // Ej: "in_progress"
   answers: Answer[];
 }
 
@@ -194,8 +198,8 @@ export interface Answer {
   questionId: string;
   attempt: ExamAttempt;
   question: Question;
-  selectedOptionIds: string[];
-  textResponse?: string;
+  selectedOptionIds: string[]; // Usado si la pregunta NO es de tipo "text"
+  textResponse?: string; // Usado solo si la pregunta es de tipo "text"
   isCorrect?: boolean;
   createdAt: Date;
 }

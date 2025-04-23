@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  FileQuestionIcon,
-  ClipboardCopyIcon,
-  BookOpen,
-} from "lucide-react";
+import { FileQuestionIcon, ClipboardCopyIcon, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formmatedFile } from "@/tools/formmatedFile";
 import toast from "react-hot-toast";
@@ -17,8 +13,8 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { Quiz } from "@/app/(dashboard)/(routes)/teacher/quizzes/types";
-import { getAllQuizzes } from "@/app/(dashboard)/(routes)/teacher/quizzes/context/QuizContext";
+import { Quiz } from "@/app/(dashboard)/(routes)/exams/types";
+import { getAllQuizzes } from "@/app/(dashboard)/(routes)/exams/context/QuizContext";
 import { formatText } from "@/utils/formatTextMS";
 
 // Textos para soporte de múltiples idiomas
@@ -64,9 +60,7 @@ const QuizSidebar: React.FC<QuizSidebarProps> = ({
     }
   }, [isSheetOpen]);
 
-  const sortedQuizzes = [...quizzes].sort((a, b) =>
-    a.id.localeCompare(b.id)
-  );
+  const sortedQuizzes = [...quizzes].sort((a, b) => a.id.localeCompare(b.id));
 
   const formatTitle = (id: string) => id.replace(/ /g, "_");
 
@@ -106,9 +100,9 @@ const QuizSidebar: React.FC<QuizSidebarProps> = ({
                             size="sm"
                             aria-label="Copiar referencia del quiz"
                             onClick={() => {
-                              const formattedId = `@[Quiz_${formatText(quiz.title)}_&!${formatTitle(
-                                formmatedFile(quiz.id)
-                              )}]`;
+                              const formattedId = `@[Quiz_${formatText(
+                                quiz.title
+                              )}_&!${formatTitle(formmatedFile(quiz.id))}]`;
 
                               // Crear contenido enriquecido (HTML)
                               const richText = `
@@ -141,7 +135,7 @@ const QuizSidebar: React.FC<QuizSidebarProps> = ({
                         )}
                         <span className="mt-1 text-xs text-gray-500">
                           Preguntas: {quiz.questions.length}
-                           {/* - Creador:{" "} {quiz.idCreator} */}
+                          {/* - Creador:{" "} {quiz.idCreator} */}
                         </span>
                       </li>
                     ))
