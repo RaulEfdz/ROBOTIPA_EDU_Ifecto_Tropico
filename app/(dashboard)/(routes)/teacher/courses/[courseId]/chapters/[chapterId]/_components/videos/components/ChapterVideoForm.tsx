@@ -13,11 +13,11 @@ import { VideoDisplay } from "../components/VideoDisplay";
 import { UploadOptions } from "../components/UploadOptions";
 import { YouTubeInput } from "../components/YouTubeInput";
 import { VideoUploaderMux } from "./UploaderMux/VideoUploaderMux";
-import { ChapterVideo } from "@/prisma/types";
 import { VimeoInput } from "./VimeoInput";
+import { Video } from "@/prisma/types";
 
 interface ChapterWithVideo extends Chapter {
-  video?: ChapterVideo | null | undefined;
+  video?: Video | null | undefined;
 }
 
 interface ChapterVideoFormProps {
@@ -126,11 +126,10 @@ export const ChapterVideoForm = ({
     return data;
   };
 
-
   const validateVimeoUrl = (url: string): boolean => {
     return /vimeo\.com\/(?:video\/)?\d+/.test(url);
   };
-  
+
   const postVimeoVideoData = async (urlToSave: string) => {
     const res = await fetch(
       `/api/courses/${courseId}/chapters/${chapterId}/video/vimeo`,
@@ -140,23 +139,23 @@ export const ChapterVideoForm = ({
         body: JSON.stringify({ videoUrl: urlToSave }),
       }
     );
-  
+
     if (!res.ok) {
       const error = await res.json().catch(() => ({ message: t.errorMessage }));
       throw new Error(error.message || t.errorMessage);
     }
     return res.json();
   };
-  
+
   const handleVimeoSubmit = async () => {
     if (!validateVimeoUrl(videoUrl)) {
       setApiError("URL de Vimeo inválida");
       return;
     }
-  
+
     setIsSubmittingYouTube(true); // reutiliza este estado o crea otro si prefieres
     setApiError(null);
-  
+
     try {
       await postVimeoVideoData(videoUrl);
       toast.success(t.successMessage);
@@ -171,8 +170,6 @@ export const ChapterVideoForm = ({
       setIsSubmittingYouTube(false);
     }
   };
-  
-
 
   const handleYouTubeSubmit = async () => {
     if (!validateYouTubeUrl(videoUrl)) {

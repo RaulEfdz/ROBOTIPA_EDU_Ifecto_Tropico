@@ -7,7 +7,6 @@ import {
   ArrowLeft,
   Eye,
   LayoutDashboard,
-  Video,
   Save,
   Globe,
   Lock,
@@ -15,6 +14,7 @@ import {
   AlertTriangle,
   ChevronRight,
   RotateCcw,
+  VideoIcon,
 } from "lucide-react";
 
 import { IconBadge } from "@/components/icon-badge";
@@ -24,13 +24,13 @@ import { ChapterAccessForm } from "./_components/chapter-access-form";
 import { EnhancedChapterDescription } from "./_components/EnhancedChapterDescription/EnhancedChapterDescription";
 import { ChapterVideoForm } from "./_components/videos/components/ChapterVideoForm";
 import { Chapter as PrismaChapter } from "@prisma/client";
-import { ChapterVideo } from "@/prisma/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Video } from "@/prisma/types";
 
 export type ChapterWithVideo = PrismaChapter & {
-  video?: ChapterVideo | null;
+  video?: Video | null;
 };
 
 export type HandlerChecksItem = {
@@ -202,7 +202,9 @@ export default function ChapterIdPage() {
     : "bg-gradient-to-b from-amber-50 to-TextCustom dark:from-amber-900/20 dark:to-gray-900";
 
   return (
-    <div className={`min-h-screen ${bgColorClass} transition-colors duration-300 mb-24`}>
+    <div
+      className={`min-h-screen ${bgColorClass} transition-colors duration-300 mb-24`}
+    >
       {/* Banner según publicación */}
       {!chapter.isPublished ? (
         <Banner variant="warning" label={texts[language].unpublishedWarning} />
@@ -227,7 +229,9 @@ export default function ChapterIdPage() {
               size="sm"
               className="hidden sm:flex"
               onClick={() =>
-                router.push(`/courses/${params.courseId}/chapters/${params.chapterId}`)
+                router.push(
+                  `/courses/${params.courseId}/chapters/${params.chapterId}`
+                )
               }
             >
               <Eye className="h-4 w-4 mr-2" />
@@ -238,7 +242,9 @@ export default function ChapterIdPage() {
               onClick={togglePublishStatus}
               disabled={publishingStatus || completionProgress < 75}
               className={`${
-                chapter.isPublished ? "bg-amber-600 hover:bg-amber-700" : "bg-green-600 hover:bg-green-700"
+                chapter.isPublished
+                  ? "bg-amber-600 hover:bg-amber-700"
+                  : "bg-green-600 hover:bg-green-700"
               } text-TextCustom`}
               size="sm"
             >
@@ -249,7 +255,9 @@ export default function ChapterIdPage() {
               ) : (
                 <Globe className="h-4 w-4 mr-2" />
               )}
-              {chapter.isPublished ? texts[language].unpublish : texts[language].publish}
+              {chapter.isPublished
+                ? texts[language].unpublish
+                : texts[language].publish}
             </Button>
           </div>
         </div>
@@ -268,7 +276,9 @@ export default function ChapterIdPage() {
           <CardContent className="p-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold mb-1">{texts[language].editChapter}</h1>
+                <h1 className="text-xl sm:text-2xl font-bold mb-1">
+                  {texts[language].editChapter}
+                </h1>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">
                   {chapter.title || "Sin título"}
                 </p>
@@ -321,25 +331,54 @@ export default function ChapterIdPage() {
                 <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {texts[language].completionStatus}
                 </h3>
-                <span className="text-sm font-medium">{completionProgress}%</span>
+                <span className="text-sm font-medium">
+                  {completionProgress}%
+                </span>
               </div>
-              <Progress value={completionProgress} className="h-2 bg-gray-200 dark:bg-gray-700" />
+              <Progress
+                value={completionProgress}
+                className="h-2 bg-gray-200 dark:bg-gray-700"
+              />
 
               <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
                 <div className="flex items-center gap-1.5">
-                  <div className={`w-3 h-3 rounded-full ${chapter.title ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"}`}></div>
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      chapter.title
+                        ? "bg-green-500"
+                        : "bg-gray-300 dark:bg-gray-600"
+                    }`}
+                  ></div>
                   <span>Título</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className={`w-3 h-3 rounded-full ${chapter.description ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"}`}></div>
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      chapter.description
+                        ? "bg-green-500"
+                        : "bg-gray-300 dark:bg-gray-600"
+                    }`}
+                  ></div>
                   <span>Descripción</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className={`w-3 h-3 rounded-full ${chapter.video ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"}`}></div>
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      chapter.video
+                        ? "bg-green-500"
+                        : "bg-gray-300 dark:bg-gray-600"
+                    }`}
+                  ></div>
                   <span>Video</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className={`w-3 h-3 rounded-full ${chapter.isPublished ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"}`}></div>
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      chapter.isPublished
+                        ? "bg-green-500"
+                        : "bg-gray-300 dark:bg-gray-600"
+                    }`}
+                  ></div>
                   <span>Publicado</span>
                 </div>
               </div>
@@ -352,7 +391,9 @@ export default function ChapterIdPage() {
           <div className="bg-TextCustom dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
             <div className="flex items-center gap-x-2 mb-6">
               <IconBadge icon={LayoutDashboard} />
-              <h2 className="text-lg sm:text-xl font-medium">{texts[language].customizeChapter}</h2>
+              <h2 className="text-lg sm:text-xl font-medium">
+                {texts[language].customizeChapter}
+              </h2>
             </div>
             <ChapterTitleForm
               initialData={chapter}
@@ -368,8 +409,10 @@ export default function ChapterIdPage() {
         <section className="mb-6 space-y-6">
           <div className="bg-TextCustom dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
             <div className="flex items-center gap-x-2 mb-6">
-              <IconBadge icon={Video} />
-              <h2 className="text-lg sm:text-xl font-medium">{texts[language].addVideo}</h2>
+              <IconBadge icon={VideoIcon} />
+              <h2 className="text-lg sm:text-xl font-medium">
+                {texts[language].addVideo}
+              </h2>
             </div>
             <ChapterVideoForm
               initialData={chapter}

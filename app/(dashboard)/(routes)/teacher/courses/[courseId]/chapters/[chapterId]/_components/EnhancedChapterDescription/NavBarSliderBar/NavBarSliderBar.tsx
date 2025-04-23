@@ -2,7 +2,7 @@
 
 import React from "react";
 import ResourceSidebar from "./ResourceSidebar";
-import QuizSidebar from "./QuizSidebar";
+// import QuizSidebar from "./QuizSidebar";
 
 // Modelo de recurso
 interface ResourceItem {
@@ -18,7 +18,11 @@ interface NavBarProps {
   lang: "es" | "en";
 }
 
-const NavBarSliderBar: React.FC<NavBarProps> = ({ items, insertReference, lang }) => {
+const NavBarSliderBar: React.FC<NavBarProps> = ({
+  items,
+  insertReference,
+  lang,
+}) => {
   return (
     <nav className="flex items-center justify-center">
       <div className="flex gap-4">
@@ -33,10 +37,10 @@ const NavBarSliderBar: React.FC<NavBarProps> = ({ items, insertReference, lang }
 
         {/* Botón de Quizzes */}
         <div className="text-sm">
-          <QuizSidebar
+          {/* <QuizSidebar
             onInsertQuizReference={insertReference}
             lang={lang}
-          />
+          /> */}
         </div>
       </div>
     </nav>

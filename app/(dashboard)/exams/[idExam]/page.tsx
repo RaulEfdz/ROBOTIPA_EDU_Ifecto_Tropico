@@ -31,6 +31,9 @@ import {
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { Exam, Question } from "@/prisma/types";
+
+// Define the Exam type with the missing property
+
 import QuestionsList from "./QuestionsList";
 import AddQuestionModal from "./AddQuestionModal";
 
@@ -87,9 +90,9 @@ export default function ExamDetailPage() {
       reset({
         title: exam.title,
         description: exam.description || "",
-        duration: exam.duration,
+        duration: exam.duration ?? 0,
         isPublished: exam.isPublished || false,
-        passingScore: exam.passingScore || 70,
+        passingScore: exam.data.passingScore || 70,
       });
     }
   }, [exam, reset]);

@@ -20,11 +20,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "@/prisma/types";
-import { getAllRoles, translateRole, isValidRole } from "@/utils/roles/translate";
+import {
+  getAllRoles,
+  translateRole,
+  isValidRole,
+} from "@/utils/roles/translate";
 import { AlertCircle, Copy, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface EditUserFormProps {
   user: User;
@@ -34,7 +43,13 @@ interface EditUserFormProps {
   visibleColumns: Partial<Record<keyof User, boolean>>;
 }
 
-const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUserFormProps) => {
+const EditUserForm = ({
+  user,
+  onSave,
+  onCancel,
+  open,
+  visibleColumns,
+}: EditUserFormProps) => {
   const [formData, setFormData] = useState({
     customRole: user.customRole,
   });
@@ -82,102 +97,234 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
   const safeLength = (arr: any[] | undefined): string =>
     Array.isArray(arr) ? arr.length.toString() : "0";
 
-  const fieldMap: Record<keyof User, { label: string; value: string; rawValue?: any }> = {
+  const fieldMap: Record<
+    keyof User,
+    { label: string; value: string; rawValue?: any }
+  > = {
     id: { label: "ID", value: user.id, rawValue: user.id },
-    email: { label: "Email", value: user.email || "Sin especificar", rawValue: user.email },
-    fullName: { label: "Nombre Completo", value: user.fullName || "Sin especificar", rawValue: user.fullName },
-    username: { label: "Username", value: user.username || "Sin especificar", rawValue: user.username },
-    phone: { label: "Teléfono", value: user.phone || "Sin especificar", rawValue: user.phone },
-    customRole: { label: "Rol Actual", value: translateRole(user.customRole), rawValue: user.customRole },
-    provider: { label: "Proveedor", value: user.provider, rawValue: user.provider },
+    email: {
+      label: "Email",
+      value: user.email || "Sin especificar",
+      rawValue: user.email,
+    },
+    fullName: {
+      label: "Nombre Completo",
+      value: user.fullName || "Sin especificar",
+      rawValue: user.fullName,
+    },
+    username: {
+      label: "Username",
+      value: user.username || "Sin especificar",
+      rawValue: user.username,
+    },
+    phone: {
+      label: "Teléfono",
+      value: user.phone || "Sin especificar",
+      rawValue: user.phone,
+    },
+    customRole: {
+      label: "Rol Actual",
+      value: translateRole(user.customRole),
+      rawValue: user.customRole,
+    },
+    provider: {
+      label: "Proveedor",
+      value: user.provider,
+      rawValue: user.provider,
+    },
     lastSignInAt: {
       label: "Último Inicio de Sesión",
-      value: user.lastSignInAt ? new Date(user.lastSignInAt).toLocaleString() : "Nunca",
-      rawValue: user.lastSignInAt
+      value: user.lastSignInAt
+        ? new Date(user.lastSignInAt).toLocaleString()
+        : "Nunca",
+      rawValue: user.lastSignInAt,
     },
     metadata: {
       label: "Metadata",
       value: user.metadata ? JSON.stringify(user.metadata) : "Sin datos",
-      rawValue: user.metadata
+      rawValue: user.metadata,
     },
-    isActive: { 
-      label: "Estado", 
-      value: user.isActive ? "Activo" : "Inactivo", 
-      rawValue: user.isActive 
+    isActive: {
+      label: "Estado",
+      value: user.isActive ? "Activo" : "Inactivo",
+      rawValue: user.isActive,
     },
-    isBanned: { 
-      label: "¿Baneado?", 
-      value: user.isBanned ? "Sí" : "No", 
-      rawValue: user.isBanned 
+    isBanned: {
+      label: "¿Baneado?",
+      value: user.isBanned ? "Sí" : "No",
+      rawValue: user.isBanned,
     },
-    isDeleted: { 
-      label: "¿Eliminado?", 
-      value: user.isDeleted ? "Sí" : "No", 
-      rawValue: user.isDeleted 
+    isDeleted: {
+      label: "¿Eliminado?",
+      value: user.isDeleted ? "Sí" : "No",
+      rawValue: user.isDeleted,
     },
-    additionalStatus: { 
-      label: "Estado Adicional", 
-      value: user.additionalStatus, 
-      rawValue: user.additionalStatus 
+    additionalStatus: {
+      label: "Estado Adicional",
+      value: user.additionalStatus,
+      rawValue: user.additionalStatus,
     },
     createdAt: {
       label: "Fecha de Creación",
-      value: user.createdAt ? new Date(user.createdAt).toLocaleString() : "Sin especificar",
-      rawValue: user.createdAt
+      value: user.createdAt
+        ? new Date(user.createdAt).toLocaleString()
+        : "Sin especificar",
+      rawValue: user.createdAt,
     },
     updatedAt: {
       label: "Fecha de Actualización",
-      value: user.updatedAt ? new Date(user.updatedAt).toLocaleString() : "Sin especificar",
-      rawValue: user.updatedAt
+      value: user.updatedAt
+        ? new Date(user.updatedAt).toLocaleString()
+        : "Sin especificar",
+      rawValue: user.updatedAt,
     },
-    courses: { label: "Cursos Asignados", value: safeLength(user.courses), rawValue: user.courses },
-    purchases: { label: "Compras", value: safeLength(user.purchases), rawValue: user.purchases },
-    userProgress: { label: "Progreso de Usuario", value: safeLength(user.userProgress), rawValue: user.userProgress },
-    invoices: { label: "Facturas", value: safeLength(user.invoices), rawValue: user.invoices },
-    examAttempts: { label: "Intentos de Examen", value: safeLength(user.examAttempts), rawValue: user.examAttempts },
+    courses: {
+      label: "Cursos Asignados",
+      value: safeLength(user.courses),
+      rawValue: user.courses,
+    },
+    purchases: {
+      label: "Compras",
+      value: safeLength(user.purchases),
+      rawValue: user.purchases,
+    },
+    userProgress: {
+      label: "Progreso de Usuario",
+      value: safeLength(user.userProgress),
+      rawValue: user.userProgress,
+    },
+    invoices: {
+      label: "Facturas",
+      value: safeLength(user.invoices),
+      rawValue: user.invoices,
+    },
+    examAttempts: {
+      label: "Intentos de Examen",
+      value: safeLength(user.examAttempts),
+      rawValue: user.examAttempts,
+    },
+    Subscription: {
+      label: "Suscripción",
+      value: "Sin especificar",
+      rawValue: null,
+    },
+    PaymentMethod: {
+      label: "Método de Pago",
+      value: "Sin especificar",
+      rawValue: null,
+    },
+    Payment: { label: "Pago", value: "Sin especificar", rawValue: null },
+    AuditLog: {
+      label: "Registro de Auditoría",
+      value: "Sin especificar",
+      rawValue: null,
+    },
+    certificates: {
+      label: "Certificados",
+      value: "Sin especificar",
+      rawValue: null,
+    },
+    Notification: {
+      label: "Notificaciones",
+      value: "Sin especificar",
+      rawValue: null,
+    },
+    UserAccess: {
+      label: "Acceso de Usuario",
+      value: "Sin especificar",
+      rawValue: null,
+    },
+    LegalDocument: {
+      label: "Documento Legal",
+      value: "Sin especificar",
+      rawValue: null,
+    },
   };
 
   const readOnlyFields = Object.entries(visibleColumns)
     .filter(([_, visible]) => visible)
     .map(([key]) => ({ key, ...fieldMap[key as keyof User] }));
 
-  // Agrupar los campos para un mejor diseño  
-  const userInfoFields = readOnlyFields.filter(field => 
-    ["fullName", "email", "username", "phone"].includes(field.key));
-  
-  const statusFields = readOnlyFields.filter(field => 
-    ["isActive", "isBanned", "isDeleted", "additionalStatus"].includes(field.key));
-  
-  const activityFields = readOnlyFields.filter(field => 
-    ["lastSignInAt", "createdAt", "updatedAt"].includes(field.key));
-  
-  const statsFields = readOnlyFields.filter(field => 
-    ["courses", "purchases", "userProgress", "invoices", "examAttempts"].includes(field.key));
-  
-  const metadataField = readOnlyFields.find(field => field.key === "metadata");
-  
-  const otherFields = readOnlyFields.filter(field => 
-    !["fullName", "email", "username", "phone", "isActive", "isBanned", "isDeleted", "additionalStatus", 
-      "lastSignInAt", "createdAt", "updatedAt", "courses", "purchases", "userProgress", "invoices", "examAttempts", "metadata"].includes(field.key));
+  // Agrupar los campos para un mejor diseño
+  const userInfoFields = readOnlyFields.filter((field) =>
+    ["fullName", "email", "username", "phone"].includes(field.key)
+  );
+
+  const statusFields = readOnlyFields.filter((field) =>
+    ["isActive", "isBanned", "isDeleted", "additionalStatus"].includes(
+      field.key
+    )
+  );
+
+  const activityFields = readOnlyFields.filter((field) =>
+    ["lastSignInAt", "createdAt", "updatedAt"].includes(field.key)
+  );
+
+  const statsFields = readOnlyFields.filter((field) =>
+    [
+      "courses",
+      "purchases",
+      "userProgress",
+      "invoices",
+      "examAttempts",
+    ].includes(field.key)
+  );
+
+  const metadataField = readOnlyFields.find(
+    (field) => field.key === "metadata"
+  );
+
+  const otherFields = readOnlyFields.filter(
+    (field) =>
+      ![
+        "fullName",
+        "email",
+        "username",
+        "phone",
+        "isActive",
+        "isBanned",
+        "isDeleted",
+        "additionalStatus",
+        "lastSignInAt",
+        "createdAt",
+        "updatedAt",
+        "courses",
+        "purchases",
+        "userProgress",
+        "invoices",
+        "examAttempts",
+        "metadata",
+      ].includes(field.key)
+  );
 
   const renderFieldValue = (field: any) => {
     if (field.key === "isActive") {
       return (
-        <Badge className={field.value === "Activo" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+        <Badge
+          className={
+            field.value === "Activo"
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
+          }
+        >
           {field.value}
         </Badge>
       );
     } else if (field.key === "isBanned" || field.key === "isDeleted") {
       return (
-        <Badge className={field.value === "Sí" ? "bg-red-100 text-red-800" : "bg-gray-100 text-gray-800"}>
+        <Badge
+          className={
+            field.value === "Sí"
+              ? "bg-red-100 text-red-800"
+              : "bg-gray-100 text-gray-800"
+          }
+        >
           {field.value}
         </Badge>
       );
     } else if (field.key === "customRole") {
       return (
-        <Badge className="bg-purple-100 text-purple-800">
-          {field.value}
-        </Badge>
+        <Badge className="bg-purple-100 text-purple-800">{field.value}</Badge>
       );
     } else {
       return field.value;
@@ -185,13 +332,19 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
   };
 
   const renderCopyButton = (field: any) => {
-    if (field.rawValue && typeof field.rawValue !== 'object' && field.rawValue !== "") {
+    if (
+      field.rawValue &&
+      typeof field.rawValue !== "object" &&
+      field.rawValue !== ""
+    ) {
       return (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button 
-                onClick={() => copyToClipboard(field.rawValue.toString(), field.key)}
+              <button
+                onClick={() =>
+                  copyToClipboard(field.rawValue.toString(), field.key)
+                }
                 className="ml-2 text-gray-400 hover:text-gray-600 transition-colors"
               >
                 {copiedField === field.key ? (
@@ -202,7 +355,9 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              {copiedField === field.key ? "¡Copiado!" : "Copiar al portapapeles"}
+              {copiedField === field.key
+                ? "¡Copiado!"
+                : "Copiar al portapapeles"}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -213,18 +368,22 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
 
   const renderFieldGroup = (fields: typeof readOnlyFields, title: string) => {
     if (fields.length === 0) return null;
-    
+
     return (
       <Card className="shadow-sm hover:shadow transition-shadow duration-200">
         <CardHeader className="pb-2">
-          <CardTitle className="text-md font-medium text-gray-700">{title}</CardTitle>
+          <CardTitle className="text-md font-medium text-gray-700">
+            {title}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {fields.map((field) => (
               <div key={field.key} className="space-y-1">
                 <div className="flex items-center">
-                  <Label className="text-xs font-medium text-gray-500">{field.label}</Label>
+                  <Label className="text-xs font-medium text-gray-500">
+                    {field.label}
+                  </Label>
                   {renderCopyButton(field)}
                 </div>
                 <p className="text-sm font-medium whitespace-pre-wrap">
@@ -242,27 +401,34 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
     if (!metadataField || metadataField.rawValue === null) return null;
 
     const metadata = metadataField.rawValue;
-    if (!metadata || Object.keys(metadata).length === 0) return (
-      <Card className="shadow-sm hover:shadow transition-shadow duration-200">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-md font-medium text-gray-700">Metadata</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-gray-500">Sin datos</p>
-        </CardContent>
-      </Card>
-    );
+    if (!metadata || Object.keys(metadata).length === 0)
+      return (
+        <Card className="shadow-sm hover:shadow transition-shadow duration-200">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-md font-medium text-gray-700">
+              Metadata
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-500">Sin datos</p>
+          </CardContent>
+        </Card>
+      );
 
     return (
       <Card className="shadow-sm hover:shadow transition-shadow duration-200">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-md font-medium text-gray-700">Metadata</CardTitle>
+            <CardTitle className="text-md font-medium text-gray-700">
+              Metadata
+            </CardTitle>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button 
-                    onClick={() => copyToClipboard(JSON.stringify(metadata), "metadata-full")}
+                  <button
+                    onClick={() =>
+                      copyToClipboard(JSON.stringify(metadata), "metadata-full")
+                    }
                     className="text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     {copiedField === "metadata-full" ? (
@@ -273,7 +439,9 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
                   </button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {copiedField === "metadata-full" ? "¡Copiado!" : "Copiar todo"}
+                  {copiedField === "metadata-full"
+                    ? "¡Copiado!"
+                    : "Copiar todo"}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -287,12 +455,19 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
                   <div className="min-w-[6px] h-6 bg-blue-400 rounded-full mr-2 mt-0.5"></div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-gray-600">{key}</span>
+                      <span className="text-xs font-semibold text-gray-600">
+                        {key}
+                      </span>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <button 
-                              onClick={() => copyToClipboard(value?.toString() || "", `metadata-${key}`)}
+                            <button
+                              onClick={() =>
+                                copyToClipboard(
+                                  value?.toString() || "",
+                                  `metadata-${key}`
+                                )
+                              }
                               className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
                               {copiedField === `metadata-${key}` ? (
@@ -303,14 +478,22 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
                             </button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            {copiedField === `metadata-${key}` ? "¡Copiado!" : "Copiar valor"}
+                            {copiedField === `metadata-${key}`
+                              ? "¡Copiado!"
+                              : "Copiar valor"}
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </div>
                     <p className="text-sm font-medium">
                       {typeof value === "boolean" ? (
-                        <Badge className={value ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+                        <Badge
+                          className={
+                            value
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }
+                        >
                           {value ? "Sí" : "No"}
                         </Badge>
                       ) : (
@@ -331,7 +514,9 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Editar Usuario</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">
+            Editar Usuario
+          </DialogTitle>
           <DialogDescription className="text-gray-500">
             {user.fullName || user.username || user.email}
           </DialogDescription>
@@ -359,7 +544,9 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
 
           <Card className="shadow-md bg-gray-50">
             <CardHeader>
-              <CardTitle className="text-lg font-bold">Modificar Rol del Usuario</CardTitle>
+              <CardTitle className="text-lg font-bold">
+                Modificar Rol del Usuario
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -369,7 +556,10 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
                 <Select
                   value={translateRole(formData.customRole)}
                   onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, customRole: translateRole(value) }))
+                    setFormData((prev) => ({
+                      ...prev,
+                      customRole: translateRole(value),
+                    }))
                   }
                 >
                   <SelectTrigger className="w-full bg-white">
@@ -386,17 +576,17 @@ const EditUserForm = ({ user, onSave, onCancel, open, visibleColumns }: EditUser
               </div>
 
               <div className="flex justify-end space-x-3 pt-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={onCancel} 
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel}
                   disabled={isLoading}
                   className="border-gray-300 hover:bg-gray-100"
                 >
                   Cancelar
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={isLoading}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >

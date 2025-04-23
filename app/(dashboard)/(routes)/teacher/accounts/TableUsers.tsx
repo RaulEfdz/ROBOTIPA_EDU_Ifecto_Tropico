@@ -25,7 +25,7 @@ import toast from "react-hot-toast";
 import { User } from "@/prisma/types";
 import { translateRole } from "@/utils/roles/translate";
 
-type VisibleColumns = Record<keyof User, boolean>;
+type VisibleColumns = Partial<Record<keyof User, boolean>>;
 
 export interface TableUsersProps {
   users: User[];
@@ -64,7 +64,9 @@ const TableUsers = ({ users }: TableUsersProps) => {
     }));
   };
 
-  const handleSave = async (updatedUserData: Pick<User, "customRole" | "isActive">) => {
+  const handleSave = async (
+    updatedUserData: Pick<User, "customRole" | "isActive">
+  ) => {
     if (selectedUser) {
       const updatedUser: User = {
         ...selectedUser,
@@ -122,7 +124,9 @@ const TableUsers = ({ users }: TableUsersProps) => {
             <Table>
               <TableHeader className="sticky top-0 bg-background z-10">
                 <TableRow>
-                  {visibleColumns.fullName && <TableHead>Nombre Completo</TableHead>}
+                  {visibleColumns.fullName && (
+                    <TableHead>Nombre Completo</TableHead>
+                  )}
                   {visibleColumns.email && <TableHead>Email</TableHead>}
                   {visibleColumns.customRole && <TableHead>Rol</TableHead>}
                   {visibleColumns.phone && <TableHead>Teléfono</TableHead>}
@@ -139,12 +143,18 @@ const TableUsers = ({ users }: TableUsersProps) => {
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.3 }}
                     >
-                      {visibleColumns.fullName && <TableCell>{user.fullName}</TableCell>}
-                      {visibleColumns.email && <TableCell>{user.email}</TableCell>}
+                      {visibleColumns.fullName && (
+                        <TableCell>{user.fullName}</TableCell>
+                      )}
+                      {visibleColumns.email && (
+                        <TableCell>{user.email}</TableCell>
+                      )}
                       {visibleColumns.customRole && (
                         <TableCell>{translateRole(user.customRole)}</TableCell>
                       )}
-                      {visibleColumns.phone && <TableCell>{user.phone}</TableCell>}
+                      {visibleColumns.phone && (
+                        <TableCell>{user.phone}</TableCell>
+                      )}
                       <TableCell>
                         <Button
                           variant="secondary"

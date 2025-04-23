@@ -62,7 +62,10 @@ export default function EditQuestionModal({
   } = useForm<QuestionFormData>({
     defaultValues: {
       text: question.text,
-      options: question.options,
+      options: question.options.map((option) => ({
+        ...option,
+        isCorrect: option.isCorrect ?? false,
+      })),
       explanationText: question.explanationText || "",
       points: question.points,
     },
@@ -76,7 +79,10 @@ export default function EditQuestionModal({
   useEffect(() => {
     reset({
       text: question.text,
-      options: question.options,
+      options: question.options.map((option) => ({
+        ...option,
+        isCorrect: option.isCorrect ?? false,
+      })),
       explanationText: question.explanationText || "",
       points: question.points,
     });
