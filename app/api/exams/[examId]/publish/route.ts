@@ -9,11 +9,11 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ examId: string }> }
 ) {
-  const { id } = await params;
+  const { examId } = await params;
 
-  if (!id) {
+  if (!examId) {
     return NextResponse.json(
       { message: "ID de examen inválido" },
       { status: 400 }
@@ -33,7 +33,7 @@ export async function PUT(
 
     // Verificar que el examen existe
     const exam = await db.exam.findUnique({
-      where: { id },
+      where: { id: examId },
       include: { questions: true },
     });
 
@@ -57,7 +57,7 @@ export async function PUT(
 
     // Actualizar el estado de publicación
     const updatedExam = await db.exam.update({
-      where: { id },
+      where: { id: examId },
       data: {
         isPublished,
         updatedAt: new Date(),

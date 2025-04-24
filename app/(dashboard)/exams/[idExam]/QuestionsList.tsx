@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Edit2, Trash2, MoveUp, MoveDown, Eye, EyeOff } from "lucide-react";
 import { Question } from "@/prisma/types";
@@ -20,43 +19,40 @@ export default function QuestionsList({
   examId,
   onQuestionsChange,
 }: QuestionsListProps) {
+  const [localQuestions, setLocalQuestions] = useState<Question[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
 
-  // Función para eliminar una pregunta
-  const handleDeleteQuestion = async (questionId: string) => {
-    if (!confirm("¿Estás seguro de que quieres eliminar esta pregunta?")) {
-      return;
-    }
+  useEffect(() => {
+    setLocalQuestions(questions);
+  }, [questions]);
 
-    try {
-      const response = await fetch(
-        `/api/exams/${examId}/questions/${questionId}`,
-        {
-          method: "DELETE",
-        }
-      );
+  // Ordenar preguntas por data.order
+  const sortedQuestions = [...localQuestions].sort((a, b) => {
+    const aOrder = (a.data as any)?.order ?? 0;
+    const bOrder = (b.data as any)?.order ?? 0;
+    return aOrder - bOrder;
+  });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al eliminar la pregunta");
-      }
-
-      toast.success("Pregunta eliminada correctamente");
-      onQuestionsChange();
-    } catch (err: any) {
-      console.error("Error deleting question:", err);
-      toast.error(err.message || "Error al eliminar la pregunta");
-    }
+  const swap = (arr: Question[], i: number, j: number) => {
+    const copy = [...arr];
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+    return copy;
   };
 
-  // Función para cambiar el orden de las preguntas
   const handleReorderQuestion = async (
     questionId: string,
     direction: "up" | "down"
   ) => {
+    const idx = sortedQuestions.findIndex((q) => q.id === questionId);
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (idx === -1 || swapIdx < 0 || swapIdx >= sortedQuestions.length) return;
+
+    const swapped = swap(sortedQuestions, idx, swapIdx);
+    setLocalQuestions(swapped);
+
     try {
-      const response = await fetch(
+      const res = await fetch(
         `/api/exams/${examId}/questions/${questionId}/reorder`,
         {
           method: "PUT",
@@ -64,63 +60,72 @@ export default function QuestionsList({
           body: JSON.stringify({ direction }),
         }
       );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al reordenar la pregunta");
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Error al reordenar");
       }
-
       toast.success("Orden actualizado correctamente");
       onQuestionsChange();
-    } catch (err: any) {
-      console.error("Error reordering question:", err);
-      toast.error(err.message || "Error al cambiar el orden");
+    } catch (error: any) {
+      console.error("Error reordering question:", error);
+      toast.error(error.message || "Error al cambiar el orden");
+      setLocalQuestions(questions);
     }
   };
 
-  // Función para cambiar la visibilidad de una pregunta
+  const handleDeleteQuestion = async (questionId: string) => {
+    if (!confirm("¿Seguro que quieres eliminar esta pregunta?")) return;
+    try {
+      const res = await fetch(`/api/exams/${examId}/questions/${questionId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Error al eliminar");
+      }
+      toast.success("Pregunta eliminada correctamente");
+      onQuestionsChange();
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Error al eliminar la pregunta");
+    }
+  };
+
   const handleToggleVisibility = async (
     questionId: string,
     isVisible: boolean
   ) => {
     try {
-      const response = await fetch(
-        `/api/exams/${examId}/questions/${questionId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ isVisible: !isVisible }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al cambiar la visibilidad");
+      const res = await fetch(`/api/exams/${examId}/questions/${questionId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isVisible: !isVisible }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Error al cambiar visibilidad");
       }
-
       toast.success(`Pregunta ${!isVisible ? "visible" : "oculta"}`);
       onQuestionsChange();
     } catch (err: any) {
-      console.error("Error toggling visibility:", err);
+      console.error(err);
       toast.error(err.message || "Error al cambiar la visibilidad");
     }
   };
 
-  // Función para abrir el modal de edición con la pregunta seleccionada
-  const handleEditQuestion = (question: Question) => {
-    setCurrentQuestion(question);
+  const handleEditQuestion = (q: Question) => {
+    setCurrentQuestion(q);
     setIsEditModalOpen(true);
   };
 
-  // Función para manejar cuando se actualiza una pregunta
   const handleQuestionUpdated = () => {
-    onQuestionsChange();
     setIsEditModalOpen(false);
+    onQuestionsChange();
   };
 
   return (
     <div className="space-y-4">
-      {questions.map((question, index) => (
+      {sortedQuestions.map((question, index) => (
         <Card
           key={question.id}
           className={question.isVisible === false ? "opacity-60" : ""}
@@ -129,7 +134,9 @@ export default function QuestionsList({
             <div className="flex justify-between items-start">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg font-semibold">{index + 1}.</span>
+                  <span className="text-lg font-semibold">
+                    {question.data?.order || 0}.
+                  </span>
                   <span className="flex-1">{question.text}</span>
                   {question.isVisible === false && (
                     <span className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-full px-2 py-0.5">
@@ -138,28 +145,26 @@ export default function QuestionsList({
                   )}
                 </div>
 
-                {/* Opciones de respuesta */}
-                {question.options && question.options.length > 0 && (
+                {question.options?.length > 0 && (
                   <div className="ml-6 mt-2 space-y-1">
-                    {question.options.map((option, optIndex) => (
-                      <div key={optIndex} className="flex items-center gap-2">
+                    {question.options.map((opt, i) => (
+                      <div key={i} className="flex items-center gap-2">
                         <span
                           className={`text-sm px-2 py-0.5 rounded-full ${
-                            option.isCorrect
+                            opt.isCorrect
                               ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
                               : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
                           }`}
                         >
-                          {String.fromCharCode(65 + optIndex)}
+                          {String.fromCharCode(65 + i)}
                         </span>
-                        <span className="text-sm">{option.text}</span>
+                        <span className="text-sm">{opt.text}</span>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Acciones */}
               <div className="flex items-center gap-1">
                 <Button
                   size="icon"
@@ -173,7 +178,7 @@ export default function QuestionsList({
                 <Button
                   size="icon"
                   variant="ghost"
-                  disabled={index === questions.length - 1}
+                  disabled={index === sortedQuestions.length - 1}
                   onClick={() => handleReorderQuestion(question.id, "down")}
                   title="Mover abajo"
                 >
@@ -222,7 +227,6 @@ export default function QuestionsList({
         </Card>
       ))}
 
-      {/* Modal para editar pregunta */}
       {currentQuestion && (
         <EditQuestionModal
           isOpen={isEditModalOpen}

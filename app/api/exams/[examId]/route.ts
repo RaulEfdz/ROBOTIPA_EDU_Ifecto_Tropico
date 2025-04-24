@@ -9,11 +9,11 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ examId: string }> }
 ) {
-  const { id } = await params;
+  const { examId } = await params;
 
-  if (!id) {
+  if (!examId) {
     return NextResponse.json(
       { message: "ID de examen inválido" },
       { status: 400 }
@@ -22,7 +22,7 @@ export async function GET(
 
   try {
     const exam = await db.exam.findUnique({
-      where: { id },
+      where: { id: examId },
       include: {
         questions: {
           include: {
@@ -56,16 +56,16 @@ export async function GET(
 }
 
 /**
- * PUT /api/exams/[id]
+ * PUT /api/exams/[examId]
  * Actualiza un examen existente
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ examId: string }> }
 ) {
-  const { id } = await params;
+  const { examId } = await params;
 
-  if (!id) {
+  if (!examId) {
     return NextResponse.json(
       { message: "ID de examen inválido" },
       { status: 400 }
@@ -86,7 +86,7 @@ export async function PUT(
 
     // Comprobar si el examen existe
     const existingExam = await db.exam.findUnique({
-      where: { id },
+      where: { id: examId },
     });
 
     if (!existingExam) {
@@ -98,7 +98,7 @@ export async function PUT(
 
     // Actualizar el examen
     const updatedExam = await db.exam.update({
-      where: { id },
+      where: { id: examId },
       data: {
         title: title !== undefined ? title : undefined,
         description: description !== undefined ? description : undefined,
@@ -119,16 +119,16 @@ export async function PUT(
 }
 
 /**
- * DELETE /api/exams/[id]
+ * DELETE /api/exams/[examId]
  * Elimina un examen y todas sus entidades relacionadas
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ examId: string }> }
 ) {
-  const { id } = await params;
+  const { examId } = await params;
 
-  if (!id) {
+  if (!examId) {
     return NextResponse.json(
       { message: "ID de examen inválido" },
       { status: 400 }
@@ -138,7 +138,7 @@ export async function DELETE(
   try {
     // Verificar si el examen existe
     const exam = await db.exam.findUnique({
-      where: { id },
+      where: { id: examId },
     });
 
     if (!exam) {
@@ -150,7 +150,7 @@ export async function DELETE(
 
     // Eliminar el examen (asumiendo que las relaciones están configuradas para eliminar en cascada)
     await db.exam.delete({
-      where: { id },
+      where: { id: examId },
     });
 
     return NextResponse.json({ message: "Examen eliminado correctamente" });
