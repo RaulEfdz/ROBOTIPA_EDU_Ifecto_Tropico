@@ -1,7 +1,6 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
@@ -21,83 +20,84 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/format";
-import { fetchData } from "../../custom/fetchData";
 
 interface PriceFormProps {
   initialData: Course;
   courseId: string;
-};
+}
 
 const formSchema = z.object({
-  price: z.coerce.number(),
+  price: z.coerce
+    .number()
+    .min(0, { message: "El precio debe ser mayor o igual a 0" }),
 });
 
-export const PriceForm = ({
-  initialData,
-  courseId
-}: PriceFormProps) => {
+export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
-
-  const toggleEdit = () => setIsEditing((current) => !current);
-
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      price: initialData?.price || undefined,
-    },
+    defaultValues: { price: initialData.price ?? 0 },
   });
 
   const { isSubmitting, isValid } = form.formState;
 
-    // ----------------------------------------------------------------
-  // -----------------------------------------------------------------
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const path = `/api/courses/${courseId}`;
-    function callback() {
-       toast.success("Curso actualizado");
-      toggleEdit();
+    const path = `/api/courses/${courseId}/updates/price`;
+    try {
+      const response = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Error actualizando precio");
+      }
+      toast.success("Precio actualizado");
+      setIsEditing(false);
       router.refresh();
+    } catch (error: any) {
+      console.error("[PRICE_UPDATE]", error);
+      toast.error(error.message || "No se pudo actualizar el precio");
     }
-    
-    fetchData({ values, courseId, path, callback });
   };
-  // ----------------------------------------------------------------
-  // -----------------------------------------------------------------
-
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
-        Course price
-        <Button onClick={toggleEdit} variant="ghost">
-          {isEditing ? (
-            <>Cancelar</>
-          ) : (
-            <>
-              <Pencil className="h-4 w-4 mr-2" />
-              Editar precio
-            </>
-          )}
+    <div className="mt-6 border border-gray-200 dark:border-gray-700 bg-stone-50 dark:bg-stone-900 rounded-lg p-6 shadow-sm">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Precio del curso
+        </h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsEditing(!isEditing)}
+        >
+          <Pencil className="h-4 w-4 mr-1" />
+          {isEditing ? "Cancelar" : "Editar"}
         </Button>
       </div>
-      {!isEditing && (
-        <p className={cn(
-          "text-sm mt-2",
-          !initialData.price && "text-slate-500 italic"
-        )}>
-          {initialData.price
+
+      {!isEditing ? (
+        <p
+          className={cn(
+            "mt-4 text-base",
+            initialData.price == null || initialData.price === 0
+              ? "text-gray-500 italic"
+              : "text-gray-800 dark:text-gray-200"
+          )}
+        >
+          {initialData.price != null && initialData.price > 0
             ? formatPrice(initialData.price)
-            : "No price"
-          }
+            : "Sin precio asignado"}
         </p>
-      )}
-      {isEditing && (
+      ) : (
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-4"
+            className="mt-4 space-y-4"
           >
             <FormField
               control={form.control}
@@ -108,26 +108,37 @@ export const PriceForm = ({
                     <Input
                       type="number"
                       step="0.01"
+                      min={0}
                       disabled={isSubmitting}
-                      placeholder="Set a price for your course"
+                      placeholder="0.00"
                       {...field}
+                      className="w-32"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="flex items-center gap-x-2">
+
+            <div className="flex space-x-2">
               <Button
-                disabled={!isValid || isSubmitting}
                 type="submit"
+                disabled={!isValid || isSubmitting}
+                size="sm"
               >
                 Guardar
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditing(false)}
+              >
+                Cancelar
               </Button>
             </div>
           </form>
         </Form>
       )}
     </div>
-  )
-}
+  );
+};

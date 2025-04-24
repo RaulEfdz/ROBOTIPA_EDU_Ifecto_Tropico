@@ -4,7 +4,7 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ courseId: string }>}
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   const { courseId } = await params;
   try {
@@ -17,16 +17,22 @@ export async function POST(
 
     const { categoryId, newCategoryName } = await req.json();
 
-    if ((!categoryId || categoryId.trim() === "") && (!newCategoryName || newCategoryName.trim() === "")) {
-      return new NextResponse("Bad Request: categoryId or newCategoryName is required", {
-        status: 400,
-      });
+    if (
+      (!categoryId || categoryId.trim() === "") &&
+      (!newCategoryName || newCategoryName.trim() === "")
+    ) {
+      return new NextResponse(
+        "Bad Request: categoryId or newCategoryName is required",
+        {
+          status: 400,
+        }
+      );
     }
 
     const course = await db.course.findFirst({
       where: {
         id: courseId,
-        userId: user.id,
+        // userId: user.id,
         delete: false,
       },
     });
@@ -39,7 +45,10 @@ export async function POST(
 
     // Si viene un nombre nuevo, creamos o buscamos la categoría
     if (!finalCategoryId && newCategoryName) {
-      const normalizedName = newCategoryName.trim().toLowerCase().replace(/\s+/g, " ");
+      const normalizedName = newCategoryName
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
 
       let existingCategory = await db.category.findFirst({
         where: {
