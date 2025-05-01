@@ -25,18 +25,19 @@ const ENDPOINTS = {
 
 const texts = {
   es: {
-    title: "6 - Archivos adjuntos",
+    title: "Archivos adjuntos",
     addButton: "Agregar",
     cancelButton: "Cancelar",
     noAttachments: "Aún no hay archivos adjuntos",
     deleteSuccess: "Archivo eliminado",
     deleteError: "Ocurrió un error",
-    uploadInstructions: "Agrega documentos, plantillas o recursos para el curso.",
+    uploadInstructions:
+      "Agrega documentos, plantillas o recursos para el curso.",
     successMessage: "Archivo subido",
     preview: "Vista previa",
   },
   en: {
-    title: "6 - Attachments",
+    title: "Attachments",
     addButton: "Add",
     cancelButton: "Cancel",
     noAttachments: "No attachments yet",
@@ -132,7 +133,9 @@ export const AttachmentForm = ({
             size="sm"
             className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg h-8"
           >
-            {isEditing ? <X className="h-4 w-4" /> : (
+            {isEditing ? (
+              <X className="h-4 w-4" />
+            ) : (
               <>
                 <PlusCircle className="h-4 w-4 mr-1" />
                 {t.addButton}
@@ -153,7 +156,9 @@ export const AttachmentForm = ({
                     className="flex items-center p-3 w-full bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 rounded-md"
                   >
                     <File className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <p className="text-xs truncate flex-1">{formmatedFile(attachment.name)}</p>
+                    <p className="text-xs truncate flex-1">
+                      {formmatedFile(attachment.name)}
+                    </p>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -205,8 +210,8 @@ export const AttachmentForm = ({
             />
           ) : (
             <Image
-            height={1000}
-            width={1000}
+              height={1000}
+              width={1000}
               src={previewUrl!}
               alt="Vista previa"
               className="w-full max-h-[70vh] object-contain rounded-md"

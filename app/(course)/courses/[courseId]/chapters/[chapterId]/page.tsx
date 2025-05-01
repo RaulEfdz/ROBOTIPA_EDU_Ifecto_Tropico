@@ -17,6 +17,8 @@ import ChapterHeader from "./_components/ChapterHeader";
 import ChapterVideoSection from "./_components/ChapterVideoSection";
 import CustomProgressButton from "./_components/CustomProgressButton";
 import { CourseEnrollButton } from "./_components/course-enroll-button";
+import ExamViewer from "./_components/exam/ExamViewer";
+import ChapterHeaderBar from "./_components/customs/ChapterHeaderBar";
 
 const ChapterIdPage: React.FC = () => {
   const params = useParams() as { courseId: string; chapterId: string };
@@ -24,8 +26,8 @@ const ChapterIdPage: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
+  const [hasExam, setHasExam] = useState(false);
 
-  // Fetch chapter + user info
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -48,6 +50,13 @@ const ChapterIdPage: React.FC = () => {
           courseId,
           chapterId,
         });
+
+        const examCheck = await fetch(
+          `/api/courses/${courseId}/chapters/${chapterId}/exam/current`
+        );
+        const examResult = await examCheck.json();
+        setHasExam(!!examResult.exam);
+
         setData(chapterData);
       } catch (error) {
         console.error("Error al cargar los datos:", error);
@@ -59,7 +68,6 @@ const ChapterIdPage: React.FC = () => {
     fetchData();
   }, [params, router]);
 
-  // Optional: notificar estado de suscripción al cargar
   useEffect(() => {
     if (!loading && data) {
       data.purchase
@@ -99,7 +107,6 @@ const ChapterIdPage: React.FC = () => {
     );
   }
 
-  // Desestructurar y definir variables de estado
   const { chapter, course, muxData, nextChapter, userProgress, purchase } =
     data;
 
@@ -110,7 +117,6 @@ const ChapterIdPage: React.FC = () => {
   const isCompleted = Boolean(userProgress?.isCompleted);
   const completeOnEnd = isSubscribed && !isCompleted;
 
-  // Índices de capítulo
   const chapters = Array.isArray(course?.chapters) ? course.chapters : [];
   const currentIndex = chapters.findIndex((ch: any) => ch.id === chapter.id);
   const chapterIndex = currentIndex >= 0 ? currentIndex + 1 : 1;
@@ -121,8 +127,8 @@ const ChapterIdPage: React.FC = () => {
 
   return (
     <>
+      <ChapterHeaderBar />
       <Toaster position="top-right" />
-
       <div
         className={`min-h-screen pb-16 ${
           isCompleted
@@ -130,7 +136,6 @@ const ChapterIdPage: React.FC = () => {
             : "bg-gradient-to-b from-slate-50 to-TextCustom"
         }`}
       >
-        {/* Banners */}
         {isCompleted && (
           <Banner variant="success" label="✅ Ya completaste este capítulo." />
         )}
@@ -154,7 +159,6 @@ const ChapterIdPage: React.FC = () => {
             nextChapterId={nextChapterId}
           />
 
-          {/* Video section */}
           <div className={isLocked ? "filter blur-sm pointer-events-none" : ""}>
             <ChapterVideoSection
               videoUrl={chapter.video?.url ?? ""}
@@ -169,53 +173,40 @@ const ChapterIdPage: React.FC = () => {
             />
           </div>
 
-          {/* Controles de progreso y matrícula */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 px-2">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1 text-sm font-medium text-slate-700 bg-slate-100 px-3 py-1.5 rounded-md shadow-sm">
-                <span>
-                  Capítulo {chapterIndex} de {totalChapters}
-                </span>
-              </div>
               {chapter.estimatedTime && (
                 <div className="flex items-center gap-1 text-sm font-medium text-slate-700 bg-slate-100 px-3 py-1.5 rounded-md shadow-sm">
                   <span>{chapter.estimatedTime} min</span>
                 </div>
               )}
             </div>
-
             <div className="flex items-center gap-3">
-              {course.price > 0 ? (
-                <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium bg-amber-50 text-amber-700 shadow-sm">
-                  {formatPrice(course.price)}
-                </div>
-              ) : (
-                <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium bg-emerald-50 text-emerald-700 shadow-sm">
-                  Curso gratuito
-                </div>
-              )}
-
-              {isSubscribed ? (
+              {isSubscribed && !hasExam && (
                 <CustomProgressButton
                   chapterId={chapter.id}
                   courseId={course.id}
                   nextChapterId={nextChapterId}
                   isCompleted={isCompleted}
                 />
-              ) : (
-                <CourseEnrollButton
-                  price={course.price}
-                />
               )}
             </div>
           </div>
 
-          {/* Descripción */}
           <div className={isLocked ? "filter blur-sm pointer-events-none" : ""}>
             <Card className="p-6 mx-auto shadow-md border-slate-200">
               <EditorTextPreview htmlContent={chapter.description} />
             </Card>
           </div>
+
+          {!isLocked && hasExam && (
+            <div className="mt-12 max-h-[70vh] overflow-y-auto rounded-lg border">
+              <ExamViewer
+                isCompleted={isCompleted}
+                nextChapterId={nextChapterId}
+              />
+            </div>
+          )}
         </div>
       </div>
     </>

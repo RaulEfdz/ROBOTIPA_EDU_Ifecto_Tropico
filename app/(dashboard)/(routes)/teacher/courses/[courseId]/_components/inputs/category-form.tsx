@@ -10,7 +10,11 @@ import { toast } from "sonner";
 import { Course } from "@prisma/client";
 
 import {
-  Form, FormControl, FormField, FormItem, FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +23,7 @@ import { fetchData } from "../../../custom/fetchData";
 // Textos centralizados
 const categoryFormTexts = {
   es: {
-    title: "4 - Categoría del curso",
+    title: "Categoría del curso",
     editButton: "Editar",
     cancelButton: "Cancelar",
     saveButton: "Guardar",
@@ -34,7 +38,7 @@ const categoryFormTexts = {
     noResults: "No hay categorías disponibles",
   },
   en: {
-    title: "4 - Course category",
+    title: "Course category",
     editButton: "Edit",
     cancelButton: "Cancel",
     saveButton: "Save",
@@ -75,7 +79,9 @@ export const CategoryForm = ({
   const router = useRouter();
 
   const [options, setOptions] = useState<Option[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(initialData.categoryId || "");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    initialData.categoryId || ""
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -93,21 +99,26 @@ export const CategoryForm = ({
   const { isSubmitting } = form.formState;
 
   const selectedOption = useMemo(
-    () => options.find(opt => opt.value === selectedCategoryId),
+    () => options.find((opt) => opt.value === selectedCategoryId),
     [selectedCategoryId, options]
   );
 
-  const filteredOptions = useMemo(() =>
-    options.filter(opt =>
-      opt.label.toLowerCase().includes(searchTerm.toLowerCase())
-    ), [searchTerm, options]
+  const filteredOptions = useMemo(
+    () =>
+      options.filter((opt) =>
+        opt.label.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [searchTerm, options]
   );
 
-  const isNewCategory = useMemo(() =>
-    searchTerm.trim() !== "" &&
-    !options.some(opt =>
-      opt.label.trim().toLowerCase() === searchTerm.trim().toLowerCase()
-    ), [searchTerm, options]
+  const isNewCategory = useMemo(
+    () =>
+      searchTerm.trim() !== "" &&
+      !options.some(
+        (opt) =>
+          opt.label.trim().toLowerCase() === searchTerm.trim().toLowerCase()
+      ),
+    [searchTerm, options]
   );
 
   const toggleEdit = () => {
@@ -115,7 +126,7 @@ export const CategoryForm = ({
     setSearchTerm("");
     setShowDropdown(false);
     setCreateNew(false);
-    setIsEditing(prev => !prev);
+    setIsEditing((prev) => !prev);
   };
 
   const fetchCategories = async () => {
@@ -125,8 +136,8 @@ export const CategoryForm = ({
       const data = json?.data as { id?: string; name: string }[] | undefined;
 
       const formatted = (data ?? [])
-        .filter(cat => cat.id)
-        .map(cat => ({
+        .filter((cat) => cat.id)
+        .map((cat) => ({
           label: cat.name,
           value: cat.id!,
         }));
@@ -143,11 +154,14 @@ export const CategoryForm = ({
 
   const createCategory = async (name: string) => {
     const normalizedName = name.trim().toLowerCase().replace(/\s+/g, " ");
-    const res = await fetch(`/api/courses/${courseId}/updates/category/create`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: normalizedName }),
-    });
+    const res = await fetch(
+      `/api/courses/${courseId}/updates/category/create`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: normalizedName }),
+      }
+    );
 
     if (!res.ok) throw new Error("Error al crear la categoría");
 
@@ -171,7 +185,10 @@ export const CategoryForm = ({
         finalCategoryId = created?.id;
 
         if (created?.id && created?.name) {
-          setOptions(prev => [...prev, { value: created.id, label: created.name }]);
+          setOptions((prev) => [
+            ...prev,
+            { value: created.id, label: created.name },
+          ]);
         }
       }
 
@@ -195,7 +212,6 @@ export const CategoryForm = ({
           router.refresh();
         },
       });
-
     } catch (error) {
       console.error("Category update/create error:", error);
       toast.error(t.errorMessage);
@@ -227,7 +243,12 @@ export const CategoryForm = ({
           {t.title}
         </h3>
         {!isEditing && (
-          <Button onClick={toggleEdit} variant="ghost" size="sm" className="text-gray-500 hover:text-blue-600">
+          <Button
+            onClick={toggleEdit}
+            variant="ghost"
+            size="sm"
+            className="text-gray-500 hover:text-blue-600"
+          >
             <Pencil className="h-4 w-4" />
           </Button>
         )}
@@ -235,7 +256,9 @@ export const CategoryForm = ({
 
       {!isEditing ? (
         <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-          {selectedOption?.label || <em className="text-gray-400">{t.noCategory}</em>}
+          {selectedOption?.label || (
+            <em className="text-gray-400">{t.noCategory}</em>
+          )}
         </div>
       ) : (
         <Form {...form}>
@@ -246,7 +269,7 @@ export const CategoryForm = ({
                 <Input
                   placeholder={t.searchPlaceholder}
                   value={searchTerm}
-                  onChange={e => {
+                  onChange={(e) => {
                     setSearchTerm(e.target.value);
                     setShowDropdown(true);
                   }}
@@ -256,7 +279,7 @@ export const CategoryForm = ({
                 {showDropdown && (
                   <div className="absolute mt-1 w-full max-h-60 overflow-y-auto rounded-md border bg-TextCustom dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-md z-10">
                     {filteredOptions.length > 0 ? (
-                      filteredOptions.map(option => (
+                      filteredOptions.map((option) => (
                         <div
                           key={option.value}
                           onClick={() => handleSelect(option.value)}
@@ -273,7 +296,8 @@ export const CategoryForm = ({
                           className="w-full flex items-center justify-start gap-2"
                         >
                           <Plus className="h-4 w-4" />
-                          {t.createNew}: <span className="font-medium">{searchTerm}</span>
+                          {t.createNew}:{" "}
+                          <span className="font-medium">{searchTerm}</span>
                         </Button>
                       </div>
                     )}
@@ -300,10 +324,21 @@ export const CategoryForm = ({
             )}
 
             <div className="flex items-center gap-2">
-              <Button type="button" onClick={toggleEdit} variant="outline" size="icon" className="h-10 w-10">
+              <Button
+                type="button"
+                onClick={toggleEdit}
+                variant="outline"
+                size="icon"
+                className="h-10 w-10"
+              >
                 <X className="h-4 w-4 text-gray-500" />
               </Button>
-              <Button type="submit" disabled={isSaving || isSubmitting} size="icon" className="h-10 w-10 bg-blue-600 hover:bg-blue-700">
+              <Button
+                type="submit"
+                disabled={isSaving || isSubmitting}
+                size="icon"
+                className="h-10 w-10 bg-blue-600 hover:bg-blue-700"
+              >
                 {isSaving ? (
                   <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin" />
                 ) : (
@@ -322,7 +357,9 @@ export const CategoryForm = ({
                 <span className="font-semibold text-gray-800 dark:text-TextCustom">
                   {createNew
                     ? form.watch("newCategoryName")
-                    : options.find(opt => opt.value === form.watch("categoryId"))?.label || ""}
+                    : options.find(
+                        (opt) => opt.value === form.watch("categoryId")
+                      )?.label || ""}
                 </span>
               </div>
             )}

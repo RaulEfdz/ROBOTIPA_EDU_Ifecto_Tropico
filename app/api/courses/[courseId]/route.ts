@@ -1,52 +1,34 @@
+// app/api/courses/[courseId]/route.ts
 import { NextResponse } from "next/server";
-
 import { db } from "@/lib/db";
-import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
-export async function POST(req: Request,
-  { params }: { params: Promise<{ courseId: string }> }
+export async function GET(
+  req: Request,
+  { params }: { params: { courseId: string } }
 ) {
-  const { courseId } = await params;
+  const { courseId } = params;
+  if (!courseId) {
+    return new NextResponse("Bad Request: courseId is required", {
+      status: 400,
+    });
+  }
+
   try {
-    const user = (await getUserDataServerAuth())?.user;
-
-
-    if (!user?.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-
-    if (!courseId) {
-      return new NextResponse("Bad Request: courseId is required", {
-        status: 400,
-      });
-    }
-
-    // Verify if the course belongs to the user
-    const course = await db.course.findFirst({
-      where: {
-        isPublished: true,
-        id: courseId,
+    const course = await db.course.findUnique({
+      where: { id: courseId },
+      include: {
+        category: true,
+        chapters: { orderBy: { position: "asc" } },
       },
     });
 
     if (!course) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return new NextResponse("Not Found", { status: 404 });
     }
 
-    // Update the 'isPublished' field to true
-    const updatedCourse = await db.course.update({
-      where: {
-        id: courseId,
-      },
-      data: {
-        isPublished: false,
-      },
-    });
-
-    return NextResponse.json(updatedCourse);
-  } catch (error) {
-    console.error("[COURSE_PUBLISH]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(course);
+  } catch (err) {
+    console.error("[COURSE_GET]", err);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

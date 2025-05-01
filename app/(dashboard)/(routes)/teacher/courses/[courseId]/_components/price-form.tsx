@@ -33,12 +33,17 @@ const formSchema = z.object({
 });
 
 export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
-  const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
+
+  // 1) Estado local para reflejar inmediatamente el precio en UI
+  const [currentPrice, setCurrentPrice] = useState<number>(
+    initialData.price ?? 0
+  );
+  const [isEditing, setIsEditing] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { price: initialData.price ?? 0 },
+    defaultValues: { price: currentPrice },
   });
 
   const { isSubmitting, isValid } = form.formState;
@@ -55,8 +60,14 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
         const errorText = await response.text();
         throw new Error(errorText || "Error actualizando precio");
       }
+
+      // 2) Actualizo el estado local
+      setCurrentPrice(values.price);
+
       toast.success("Precio actualizado");
       setIsEditing(false);
+
+      // 3) Opcional: refresca datos en servidor si tienes lógica server-side
       router.refresh();
     } catch (error: any) {
       console.error("[PRICE_UPDATE]", error);
@@ -73,7 +84,11 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setIsEditing(!isEditing)}
+          onClick={() => {
+            // 4) Resetea el formulario al precio actual si cancelas edición
+            form.reset({ price: currentPrice });
+            setIsEditing((v) => !v);
+          }}
         >
           <Pencil className="h-4 w-4 mr-1" />
           {isEditing ? "Cancelar" : "Editar"}
@@ -84,14 +99,12 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
         <p
           className={cn(
             "mt-4 text-base",
-            initialData.price == null || initialData.price === 0
+            currentPrice === 0
               ? "text-gray-500 italic"
               : "text-gray-800 dark:text-gray-200"
           )}
         >
-          {initialData.price != null && initialData.price > 0
-            ? formatPrice(initialData.price)
-            : "Sin precio asignado"}
+          {currentPrice > 0 ? formatPrice(currentPrice) : "Sin precio asignado"}
         </p>
       ) : (
         <Form {...form}>
@@ -131,7 +144,10 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setIsEditing(false)}
+                onClick={() => {
+                  form.reset({ price: currentPrice });
+                  setIsEditing(false);
+                }}
               >
                 Cancelar
               </Button>

@@ -10,8 +10,6 @@ export const isTeacher = async (userId?: string): Promise<boolean> => {
     const user = await getCurrentUserFromDB();
     const customRole = user?.customRole;
 
-    console.log("customRole UUID ---------->:", customRole);
-
     const allowedRoles = [getTeacherId(), getAdminId()];
     const hasAccess = customRole ? allowedRoles.includes(customRole) : false;
 

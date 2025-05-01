@@ -22,7 +22,7 @@ import { TitleToolsNav } from "./tools-nav";
 
 const texts = {
   es: {
-    titleLabel: "1 - Título del curso",
+    titleLabel: "Título del curso",
     placeholder: "Nombre del curso",
     successMessage: "Título actualizado",
     validationMessage: "El título es obligatorio",
@@ -206,7 +206,9 @@ export const TitleForm = ({
           <div className="flex items-center text-sm text-gray-500">
             <div className="flex items-center mr-4">
               <div className="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
-              <span>Última actualización: {new Date().toLocaleDateString()}</span>
+              <span>
+                Última actualización: {new Date().toLocaleDateString()}
+              </span>
             </div>
             <div className="flex items-center">
               <ArrowRight className="h-3 w-3 mr-2" />

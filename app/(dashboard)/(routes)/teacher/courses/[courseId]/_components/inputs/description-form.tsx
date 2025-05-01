@@ -21,7 +21,7 @@ import { fetchData } from "../../../custom/fetchData";
 
 const texts = {
   es: {
-    title: "3 - Descripción del curso",
+    title: "Descripción del curso",
     editButton: "Editar",
     cancelButton: "Cancelar",
     saveButton: "Guardar",
@@ -33,7 +33,7 @@ const texts = {
     hintMessage: "Resume de forma clara los objetivos del curso",
   },
   en: {
-    title: "3 - Course description",
+    title: "Course description",
     editButton: "Edit",
     cancelButton: "Cancel",
     saveButton: "Save",

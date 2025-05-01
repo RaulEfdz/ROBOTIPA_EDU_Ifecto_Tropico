@@ -97,6 +97,7 @@
     "@types/slate": "^0.47.16",
     "@types/slate-react": "^0.50.0",
     "@types/youtube": "^0.0.50",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "prisma": "^5.18.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"

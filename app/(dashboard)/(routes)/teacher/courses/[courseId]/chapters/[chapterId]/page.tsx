@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Video } from "@/prisma/types";
+import { ChapterExamSelector } from "./exams/ChapterExamSelector";
 
 export type ChapterWithVideo = PrismaChapter & {
   video?: Video | null;
@@ -429,6 +430,13 @@ export default function ChapterIdPage() {
             courseId={params.courseId}
             chapterId={params.chapterId}
             lang="es"
+          />
+        </section>
+
+        <section className="mb-6 space-y-6">
+          <ChapterExamSelector
+            courseId={params.courseId}
+            chapterId={params.chapterId}
           />
         </section>
 

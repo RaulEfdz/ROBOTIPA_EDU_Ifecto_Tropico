@@ -4,7 +4,7 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ courseId: string }>}
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   const { courseId } = await params;
   try {
@@ -18,16 +18,15 @@ export async function POST(
     const course = await db.course.findUnique({
       where: {
         id: courseId,
-        userId: user.id,
+        // userId: user.id,
         delete: false,
       },
       select: {
         isPublished: true,
       },
     });
-    
-     console.log("--------------- xxx x xxx x------------------: ", course)
 
+    console.log("--------------- xxx x xxx x------------------: ", course);
 
     if (!course) {
       return new NextResponse("Course not found", { status: 404 });

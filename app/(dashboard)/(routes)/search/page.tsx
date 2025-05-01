@@ -30,7 +30,7 @@ const SearchContent: React.FC = () => {
 
       // Armar payload solo con filtros activos
       const payload: Record<string, string> = {};
-      if (title)      payload.title      = title;
+      if (title) payload.title = title;
       if (categoryId) payload.categoryId = categoryId;
 
       try {
@@ -153,7 +153,9 @@ const SearchContent: React.FC = () => {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-medium text-slate-700">
               {courses.length > 0
-                ? `${courses.length} curso${courses.length === 1 ? "" : "s"} encontrado${courses.length === 1 ? "" : "s"}`
+                ? `${courses.length} curso${
+                    courses.length === 1 ? "" : "s"
+                  } encontrado${courses.length === 1 ? "" : "s"}`
                 : "Resultados"}
             </h2>
             <div className="flex items-center gap-2">
@@ -199,7 +201,9 @@ const SearchContent: React.FC = () => {
 // Wrapping the actual content in Suspense
 export default function PageWrapper() {
   return (
-    <Suspense fallback={<div className="text-center mt-10">Cargando búsqueda...</div>}>
+    <Suspense
+      fallback={<div className="text-center mt-10">Cargando búsqueda...</div>}
+    >
       <SearchContent />
     </Suspense>
   );

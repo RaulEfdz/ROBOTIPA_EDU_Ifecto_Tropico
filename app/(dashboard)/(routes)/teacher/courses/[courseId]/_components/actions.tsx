@@ -20,7 +20,9 @@ export const Actions = ({ disabled, courseId, isPublished }: ActionsProps) => {
   const router = useRouter();
   const confetti = useConfettiStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [published, setPublished] = useState<boolean | null>(isPublished ?? null);
+  const [published, setPublished] = useState<boolean | null>(
+    isPublished ?? null
+  );
 
   useEffect(() => {
     const fetchPublicationStatus = async () => {
@@ -44,7 +46,9 @@ export const Actions = ({ disabled, courseId, isPublished }: ActionsProps) => {
     if (published === null) return;
 
     setIsLoading(true);
-    const path = `/api/courses/${courseId}/${published ? "unpublish" : "publish"}`;
+    const path = `/api/courses/${courseId}/${
+      published ? "unpublish" : "publish"
+    }`;
 
     try {
       await fetchData({
@@ -52,10 +56,10 @@ export const Actions = ({ disabled, courseId, isPublished }: ActionsProps) => {
         path,
         method: "POST",
         callback: () => {
-          toast.success(
-            published ? "Curso ocultado" : "Curso publicado",
-            { duration: 2000, position: "bottom-right" }
-          );
+          toast.success(published ? "Curso ocultado" : "Curso publicado", {
+            duration: 2000,
+            position: "bottom-right",
+          });
           if (!published) confetti.onOpen();
           setPublished(!published);
           router.refresh();
@@ -96,7 +100,7 @@ export const Actions = ({ disabled, courseId, isPublished }: ActionsProps) => {
     <div className="flex items-center gap-x-2">
       <Button
         onClick={handleTogglePublish}
-        disabled={disabled || isLoading || published === null}
+        // disabled={disabled || isLoading || published === null}
         variant={published ? "default" : "outline"}
         size="sm"
         className="rounded-lg"

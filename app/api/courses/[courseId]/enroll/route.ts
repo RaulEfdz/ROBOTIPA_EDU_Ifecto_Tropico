@@ -5,9 +5,10 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
+  { params }: { params: { courseId: string } }
 ) {
-  const { courseId } = await params;
+  const { courseId } = params;
+
   try {
     const user = (await getUserDataServerAuth())?.user;
 
@@ -40,23 +41,15 @@ export async function POST(
       return NextResponse.json({ message: "Already enrolled" });
     }
 
-    // 🟢 Curso gratuito: inscribir directo
-    if (!course.price || course.price === 0) {
-      const purchase = await db.purchase.create({
-        data: {
-          userId: user.id,
-          courseId: course.id,
-        },
-      });
+    // ✅ Registrar la compra sin importar si es gratis o pagado (ya pagó por PagueloFacil)
+    const purchase = await db.purchase.create({
+      data: {
+        userId: user.id,
+        courseId: course.id,
+      },
+    });
 
-      return NextResponse.json({ message: "Enrolled", purchase });
-    }
-
-    // 💳 Curso de pago: generar link de pago (placeholder)
-    // Aquí deberías generar link real de pago (Stripe, Yappy, etc)
-    const fakeCheckoutUrl = `https://payment-provider.com/pay?courseId=${course.id}&userId=${user.id}`;
-
-    return NextResponse.json({ url: fakeCheckoutUrl });
+    return NextResponse.json({ message: "Enrolled", purchase });
   } catch (error) {
     console.error("[ENROLL_POST]", error);
     return new NextResponse("Internal Server Error", { status: 500 });

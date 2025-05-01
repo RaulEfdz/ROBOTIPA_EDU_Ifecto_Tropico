@@ -32,7 +32,7 @@ const CourseRedirector = () => {
       setLoading(true);
       try {
         const res = await fetch(`/api/courses/${courseId}/published-chapters`, {
-                            //   app/api/courses/[courseId]/published-chapters/route.ts
+          //   app/api/courses/[courseId]/published-chapters/route.ts
           method: "GET",
           cache: "no-store",
         });
