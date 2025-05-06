@@ -6,12 +6,12 @@ import { Toaster, toast } from "sonner";
 
 import { Banner } from "@/components/banner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Lock, ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 import { getChapterU } from "./handler/getChapter";
 import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
-import { formatPrice } from "@/lib/format";
 import EditorTextPreview from "@/components/preview";
 import ChapterHeader from "./_components/ChapterHeader";
 import ChapterVideoSection from "./_components/ChapterVideoSection";
@@ -27,14 +27,18 @@ const ChapterIdPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
   const [hasExam, setHasExam] = useState(false);
+  const [isSequentiallyLocked, setIsSequentiallyLocked] = useState(false);
+  const [subscriptionToastShown, setSubscriptionToastShown] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setIsSequentiallyLocked(false);
+      setSubscriptionToastShown(false);
+
       try {
         const user = await getCurrentUserFromDB();
         if (!user?.id) {
-          toast.error("No hay sesión activa.");
           router.push("/login");
           return;
         }
@@ -51,6 +55,21 @@ const ChapterIdPage: React.FC = () => {
           chapterId,
         });
 
+        if (
+          !chapterData.isFirstChapter &&
+          !chapterData.isPreviousChapterCompleted
+        ) {
+          if (!chapterData.chapter.isFree && !chapterData.purchase) {
+            // sigue bloqueado por pago
+          } else {
+            setIsSequentiallyLocked(true);
+            toast.error(
+              "Debes completar el capítulo anterior para acceder a este."
+            );
+            return;
+          }
+        }
+
         const examCheck = await fetch(
           `/api/courses/${courseId}/chapters/${chapterId}/exam/current`
         );
@@ -65,16 +84,39 @@ const ChapterIdPage: React.FC = () => {
         setLoading(false);
       }
     };
+
     fetchData();
   }, [params, router]);
 
   useEffect(() => {
-    if (!loading && data) {
-      data.purchase
-        ? toast.success("✅ Estás suscrito a este curso.")
-        : toast.error("🔒 No estás suscrito a este curso.");
+    if (!loading && data && !subscriptionToastShown) {
+      if (isSequentiallyLocked) {
+        setSubscriptionToastShown(true);
+        return;
+      }
+
+      const { purchase, chapter } = data;
+      const isFreeChapter = chapter.isFree;
+
+      if (purchase) {
+        toast.success("Inscripción activa. ¡Disfruta el contenido!", {
+          duration: 3000,
+        });
+      } else {
+        if (isFreeChapter) {
+          toast.info("✨ ¡Estás viendo un capítulo gratuito!", {
+            duration: 3500,
+          });
+        } else {
+          toast.warning("🔒 Este capítulo requiere inscripción.", {
+            duration: 5000,
+          });
+        }
+      }
+
+      setSubscriptionToastShown(true);
     }
-  }, [loading, data]);
+  }, [loading, data, subscriptionToastShown, isSequentiallyLocked]);
 
   if (loading) {
     return (
@@ -107,6 +149,22 @@ const ChapterIdPage: React.FC = () => {
     );
   }
 
+  if (isSequentiallyLocked) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)] text-center p-6">
+        <Lock className="w-16 h-16 text-yellow-500 mb-4" />
+        <h2 className="text-2xl font-semibold mb-2">Capítulo Bloqueado</h2>
+        <p className="text-slate-600 mb-6 max-w-md">
+          Necesitas completar el capítulo anterior antes de poder acceder a este
+          contenido.
+        </p>
+        <Button onClick={() => router.back()}>
+          <ArrowLeft className="mr-2 h-4 w-4" /> Volver al capítulo anterior
+        </Button>
+      </div>
+    );
+  }
+
   const { chapter, course, muxData, nextChapter, userProgress, purchase } =
     data;
 
@@ -128,7 +186,7 @@ const ChapterIdPage: React.FC = () => {
   return (
     <>
       <ChapterHeaderBar />
-      <Toaster position="top-right" />
+      <Toaster position="top-right" richColors />
       <div
         className={`min-h-screen pb-16 ${
           isCompleted
@@ -205,6 +263,15 @@ const ChapterIdPage: React.FC = () => {
                 isCompleted={isCompleted}
                 nextChapterId={nextChapterId}
               />
+            </div>
+          )}
+
+          {isLocked && course.price != null && (
+            <div className="mt-8 p-6 bg-slate-100 rounded-lg text-center shadow">
+              <p className="font-semibold mb-3">
+                Este capítulo requiere inscripción.
+              </p>
+              <CourseEnrollButton price={course.price} />
             </div>
           )}
         </div>

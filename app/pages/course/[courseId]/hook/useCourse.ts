@@ -1,8 +1,7 @@
-// hooks/useCourse.ts
 "use client";
 
 import { useEffect, useState } from "react";
-import { Course, Chapter } from "@/prisma/types";
+import { Course } from "@/prisma/types";
 
 export interface ChapterPreview {
   id: string;
@@ -15,16 +14,23 @@ export function useCourse(courseId?: string) {
   const [relatedCourses, setRelatedCourses] = useState<Course[]>([]);
   const [chaptersPreview, setChaptersPreview] = useState<ChapterPreview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null); // 🆕
 
   useEffect(() => {
-    if (!courseId) return;
+    if (!courseId) {
+      setError("ID de curso inválido.");
+      setIsLoading(false);
+      return;
+    }
 
     async function fetchData() {
       setIsLoading(true);
+      setError(null); // 🆕 resetear errores
+
       try {
         // 1. Cargar información del curso
         const res = await fetch(`/api/preview/courses/${courseId}`);
-        if (!res.ok) throw new Error(res.statusText);
+        if (!res.ok) throw new Error("Curso no encontrado");
         const data: Course = await res.json();
         setCourse(data);
 
@@ -47,9 +53,12 @@ export function useCourse(courseId?: string) {
           const chapters: ChapterPreview[] = await chaptersRes.json();
           setChaptersPreview(chapters);
         }
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        console.error("Error en useCourse:", err);
         setCourse(null);
+        setRelatedCourses([]);
+        setChaptersPreview([]);
+        setError(err.message ?? "Error al cargar el curso."); // 🆕
       } finally {
         setIsLoading(false);
       }
@@ -58,5 +67,5 @@ export function useCourse(courseId?: string) {
     fetchData();
   }, [courseId]);
 
-  return { course, relatedCourses, chaptersPreview, isLoading };
+  return { course, relatedCourses, chaptersPreview, isLoading, error }; // 🆕
 }

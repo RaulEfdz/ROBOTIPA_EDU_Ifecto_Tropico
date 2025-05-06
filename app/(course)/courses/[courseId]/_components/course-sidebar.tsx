@@ -36,21 +36,18 @@ export const CourseSidebar = async ({
     },
   });
 
-  const sortedChapters = [...course.chapters].sort((a, b) => {
-    const normalizedTitleA = a.title.toLowerCase().trim();
-    const normalizedTitleB = b.title.toLowerCase().trim();
-    const startsWithIntroA = normalizedTitleA.startsWith("introducción");
-    const startsWithIntroB = normalizedTitleB.startsWith("introducción");
+  const chaptersInOrder = course.chapters; // Asume que ya vienen ordenados por `position`
 
-    if (startsWithIntroA && !startsWithIntroB) return -1;
-    if (!startsWithIntroA && startsWithIntroB) return 1;
-
-    return normalizedTitleA.localeCompare(normalizedTitleB);
+  const chapterCompletionStatus = new Map<string, boolean>();
+  chaptersInOrder.forEach((chapter) => {
+    chapterCompletionStatus.set(
+      chapter.id,
+      !!chapter.userProgress?.[0]?.isCompleted
+    );
   });
 
   return (
     <aside className="h-full w-full md:w-80 border-r bg-gradient-to-b from-muted to-background shadow-sm flex flex-col overflow-y-auto">
-      {/* Header con botón de regreso */}
       <div className="p-6 border-b space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-bold text-foreground">
@@ -76,18 +73,32 @@ export const CourseSidebar = async ({
         )}
       </div>
 
-      {/* Lista de capítulos */}
       <nav className="flex flex-col divide-y divide-border">
-        {sortedChapters.map((chapter, index) => (
-          <CourseSidebarItem
-            key={chapter.id}
-            id={chapter.id}
-            label={chapter.title}
-            isCompleted={!!chapter.userProgress?.[0]?.isCompleted}
-            courseId={course.id}
-            isLocked={!chapter.isFree && !purchase}
-          />
-        ))}
+        {chaptersInOrder.map((chapter, index) => {
+          const isFirstChapter = index === 0;
+          const previousChapterId = isFirstChapter
+            ? null
+            : chaptersInOrder[index - 1].id;
+          const isPreviousCompleted =
+            isFirstChapter ||
+            (previousChapterId
+              ? chapterCompletionStatus.get(previousChapterId) ?? false
+              : false);
+
+          return (
+            <CourseSidebarItem
+              key={chapter.id}
+              id={chapter.id}
+              label={chapter.title}
+              isCompleted={chapterCompletionStatus.get(chapter.id) ?? false}
+              courseId={course.id}
+              isPreviousCompleted={isPreviousCompleted}
+              isFirstChapter={isFirstChapter}
+              hasPurchase={!!purchase}
+              isFree={chapter.isFree}
+            />
+          );
+        })}
       </nav>
     </aside>
   );

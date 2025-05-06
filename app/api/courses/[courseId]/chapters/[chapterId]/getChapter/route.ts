@@ -14,9 +14,13 @@ export async function POST(request: Request) {
     const { userId, courseId, chapterId }: GetChapterProps = body;
 
     if (!userId || !courseId || !chapterId) {
-      return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+      return NextResponse.json(
+        { message: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
+    // 📌 Compra del curso (para desbloqueo por pago)
     const purchase = await db.purchase.findUnique({
       where: {
         userId_courseId: {
@@ -26,6 +30,7 @@ export async function POST(request: Request) {
       },
     });
 
+    // 📌 Curso (validación y carga mínima)
     const course = await db.course.findUnique({
       where: {
         isPublished: true,
@@ -35,49 +40,57 @@ export async function POST(request: Request) {
       select: {
         price: true,
         imageUrl: true,
+        chapters: {
+          select: {
+            id: true,
+            position: true,
+          },
+        },
       },
     });
 
+    // 📌 Capítulo actual
     const chapter = await db.chapter.findUnique({
       where: {
         id: chapterId,
       },
       include: {
-        video: true, // ✅ Se incluye el video relacionado
+        video: true,
       },
     });
 
     if (!chapter || !course || chapter.delete || !chapter.isPublished) {
-      return NextResponse.json({ message: "Chapter or course not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Chapter or course not found" },
+        { status: 404 }
+      );
     }
 
+    // 📌 Adjuntos solo si está comprado
     let attachments: Attachment[] = [];
-    let nextChapter: Chapter | null = null;
-
     if (purchase) {
       attachments = await db.attachment.findMany({
-        where: {
-          courseId: courseId,
-        },
+        where: { courseId },
       });
     }
 
+    // 📌 Capítulo siguiente (si tiene acceso)
+    let nextChapter: Chapter | null = null;
     if (chapter.isFree || purchase) {
       nextChapter = await db.chapter.findFirst({
         where: {
           delete: false,
-          courseId: courseId,
+          courseId,
           isPublished: true,
           position: {
             gt: chapter.position,
           },
         },
-        orderBy: {
-          position: "asc",
-        },
+        orderBy: { position: "asc" },
       });
     }
 
+    // 📌 Progreso del usuario en este capítulo
     const userProgress = await db.userProgress.findUnique({
       where: {
         userId_chapterId: {
@@ -87,14 +100,52 @@ export async function POST(request: Request) {
       },
     });
 
+    // 📌 Determinar si es el primer capítulo y si el anterior está completado
+    let isFirstChapter = false;
+    let isPreviousChapterCompleted = true;
+    let previousChapterId: string | null = null;
+
+    const previousChapter = await db.chapter.findFirst({
+      where: {
+        courseId,
+        isPublished: true,
+        delete: false,
+        position: {
+          lt: chapter.position,
+        },
+      },
+      orderBy: {
+        position: "desc",
+      },
+    });
+
+    if (previousChapter) {
+      previousChapterId = previousChapter.id;
+      const previousProgress = await db.userProgress.findUnique({
+        where: {
+          userId_chapterId: {
+            userId,
+            chapterId: previousChapter.id,
+          },
+        },
+      });
+      isPreviousChapterCompleted = !!previousProgress?.isCompleted;
+    } else {
+      isFirstChapter = true;
+      isPreviousChapterCompleted = true;
+    }
+
     return NextResponse.json({
       chapter,
       course,
-      video: chapter.video ?? null, // ✅ Enviamos el video directamente
+      video: chapter.video ?? null,
       attachments,
       nextChapter,
       userProgress,
       purchase,
+      isFirstChapter,
+      isPreviousChapterCompleted,
+      previousChapterId, // útil para debug
     });
   } catch (error) {
     console.error("[GET_CHAPTER_ERROR]", error);
@@ -109,6 +160,8 @@ export async function POST(request: Request) {
         nextChapter: null,
         userProgress: null,
         purchase: null,
+        isFirstChapter: false,
+        isPreviousChapterCompleted: false,
       },
       { status: 500 }
     );
