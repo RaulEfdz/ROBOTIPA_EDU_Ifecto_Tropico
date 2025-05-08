@@ -1,8 +1,9 @@
-// app/(course)/courses/catalog/CatalogHeader.tsx
+// app/(course)/courses/catalog/components/CatalogHeader.tsx
 "use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Importar useRouter
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -18,7 +19,8 @@ import {
   User as UserIcon,
   LayoutDashboard,
   BookOpen as MyCoursesIcon,
-} from "lucide-react"; // Renombrado BookOpen para evitar conflicto
+  HomeIcon, // Para el botón de Inicio
+} from "lucide-react";
 import {
   getCurrentUserFromDB,
   UserDB,
@@ -29,6 +31,7 @@ import { createClient } from "@/utils/supabase/client";
 export default function CatalogHeader() {
   const [user, setUser] = useState<UserDB | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter(); // Inicializar useRouter
   const supabase = createClient();
 
   useEffect(() => {
@@ -38,108 +41,148 @@ export default function CatalogHeader() {
         const currentUser = await getCurrentUserFromDB();
         setUser(currentUser);
       } catch (error) {
-        console.error("Error fetching user:", error);
-        setUser(null);
+        console.error("Error fetching user in CatalogHeader:", error);
+        setUser(null); // Asegurar que user sea null en caso de error
       } finally {
         setIsLoading(false);
       }
     };
     fetchUser();
-  }, []);
+  }, []); // Se ejecuta solo una vez al montar el componente
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error during logout:", error.message);
+      // Podrías mostrar un toast de error aquí
+    }
     setUser(null);
-    window.location.href = "/auth";
+    router.push("/auth"); // Usar router para la navegación
+    router.refresh(); // Para asegurar que el estado del servidor se actualice
   };
 
-  const getInitials = (name: string | undefined) => {
-    if (!name) return "U";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
+  const getInitials = (name?: string | null): string => {
+    if (!name || name.trim() === "") return "U"; // "U" de Usuario como fallback
+    const nameParts = name.split(" ").filter(Boolean); // Filtra partes vacías
+    if (nameParts.length === 0) return "U";
+    if (nameParts.length === 1)
+      return nameParts[0].substring(0, 2).toUpperCase();
+    return (
+      nameParts[0][0] + (nameParts[nameParts.length - 1][0] || "")
+    ).toUpperCase();
   };
 
   return (
-    <header className="bg-white dark:bg-slate-900 shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="bg-white dark:bg-slate-900 shadow-sm sticky top-0 z-50 border-b dark:border-slate-700">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+        {" "}
+        {/* max-w-screen-xl para más ancho */}
         <div className="flex items-center justify-between h-16">
+          {/* Sección Izquierda: Logo y Título del Catálogo */}
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0">
-              <Logo version="original" width={100} height={40} />
+            <Link href="/" className="flex-shrink-0 flex items-center">
+              <Logo version="original" width={36} height={36} />{" "}
+              {/* Ajusta tamaño si es necesario */}
+              <span className="ml-2 text-lg font-semibold text-slate-800 dark:text-slate-100 hidden sm:inline">
+                {process.env.NEXT_PUBLIC_NAME_APP || "Plataforma"}
+              </span>
             </Link>
-            <Link
-              href="/courses/catalog"
-              className="ml-4 text-xl font-semibold text-slate-700 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400"
-            >
-              Catálogo de Cursos
-            </Link>
+            {/* Título "Catálogo de Cursos" */}
+            <div className="ml-4 pl-4 border-l border-slate-200 dark:border-slate-700 hidden md:block">
+              <Link
+                href="/courses/catalog"
+                className="text-base font-medium text-slate-600 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400"
+              >
+                Catálogo de Cursos
+              </Link>
+            </div>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <Link
-              href="/"
-              className="text-sm font-medium text-slate-600 hover:text-sky-600 dark:text-slate-300 dark:hover:text-sky-400 hidden md:block"
-            >
-              Inicio
-            </Link>
+          {/* Sección Derecha: Navegación y Usuario */}
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            {/* Botón de Inicio (solo si hay sesión) */}
+            {user && (
+              <Link
+                href="/dashboard" // O la ruta principal para usuarios logueados
+                className="text-sm font-medium text-slate-600 hover:text-sky-600 dark:text-slate-300 dark:hover:text-sky-400 flex items-center gap-1"
+                title="Ir al panel principal"
+              >
+                <HomeIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="hidden sm:inline">Inicio</span>
+              </Link>
+            )}
+
+            {/* Estado de Carga o Menú de Usuario/Botones de Login */}
             {isLoading ? (
-              <div className="h-8 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+              <div className="flex items-center space-x-2">
+                <div className="h-8 w-8 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse"></div>
+                <div className="h-5 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse hidden sm:block"></div>
+              </div>
             ) : user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-10 w-10 rounded-full"
+                    className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full p-0"
                   >
-                    <Avatar className="h-10 w-10">
+                    <Avatar className="h-9 w-9 sm:h-10 sm:w-10">
                       <AvatarImage
-                        src={user.metadata?.avatar || undefined}
-                        alt={user.fullName || "Usuario"}
+                        src={user.metadata?.avatar_url || undefined} // Campo estándar de Supabase para avatar
+                        alt={
+                          user.fullName || user.username || "Avatar de usuario"
+                        }
                       />
-                      <AvatarFallback>
-                        {getInitials(user.fullName)}
+                      <AvatarFallback className="text-sm sm:text-base">
+                        {getInitials(user.fullName || user.username)}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuContent className="w-60" align="end" forceMount>
+                  {" "}
+                  {/* Aumentado ancho */}
                   <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        {user.fullName || user.username}
+                    <div className="flex flex-col space-y-1 p-1">
+                      <p className="text-sm font-semibold leading-none truncate">
+                        {user.fullName || user.username || "Usuario"}
                       </p>
-                      <p className="text-xs leading-none text-muted-foreground">
+                      <p className="text-xs leading-none text-muted-foreground truncate">
                         {user.email}
                       </p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="cursor-pointer">
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                    <Link
+                      href="/dashboard"
+                      className="cursor-pointer w-full flex items-center"
+                    >
+                      <LayoutDashboard className="mr-2 h-4 w-4 text-slate-500" />
                       <span>Mi Panel</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/profile" className="cursor-pointer">
-                      <UserIcon className="mr-2 h-4 w-4" />
+                    <Link
+                      href="/profile"
+                      className="cursor-pointer w-full flex items-center"
+                    >
+                      <UserIcon className="mr-2 h-4 w-4 text-slate-500" />
                       <span>Mi Perfil</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    {/* Asumiendo que /search es donde ven sus cursos inscritos o una página similar */}
-                    <Link href="/search" className="cursor-pointer">
-                      <MyCoursesIcon className="mr-2 h-4 w-4" />
+                    <Link
+                      href="/search"
+                      className="cursor-pointer w-full flex items-center"
+                    >
+                      <MyCoursesIcon className="mr-2 h-4 w-4 text-slate-500" />
                       <span>Mis Cursos</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={handleLogout}
-                    className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-700/20 dark:focus:text-red-400"
+                    className="cursor-pointer text-red-600 focus:text-red-500 focus:bg-red-50 dark:text-red-400 dark:focus:text-red-400 dark:focus:bg-red-900/30 w-full flex items-center"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Cerrar Sesión</span>
@@ -147,11 +190,15 @@ export default function CatalogHeader() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="space-x-2">
-                <Button variant="ghost" asChild>
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" asChild size="sm">
                   <Link href="/auth">Iniciar Sesión</Link>
                 </Button>
-                <Button asChild className="bg-sky-600 hover:bg-sky-700">
+                <Button
+                  asChild
+                  size="sm"
+                  className="bg-sky-600 hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600 text-white"
+                >
                   <Link href="/auth?action=sign_up">Registrarse</Link>
                 </Button>
               </div>

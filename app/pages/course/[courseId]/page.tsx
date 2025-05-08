@@ -325,10 +325,10 @@ export default function CoursePage() {
               </p>
             )}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-emerald-50">
-              <div className="flex items-center gap-1">
+              {/* <div className="flex items-center gap-1">
                 <Star size={16} className="text-yellow-400 fill-yellow-400" />{" "}
                 {rating.toFixed(1)} Rating
-              </div>
+              </div> */}
               <div className="flex items-center gap-1">
                 <BookOpen size={16} /> {chapterCount} Capítulos
               </div>

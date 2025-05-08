@@ -1,303 +1,128 @@
+// app/auth/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import Image from "next/image";
-
-import { Button } from "@/components/ui/button";
-import { LoginForm } from "./SignIn/LoginForm";
-import { SignupForm } from "./SignUp/SignupForm";
-import { EmailConfirmationPending } from "./SignUp/confirm-action/EmailConfirmationPending";
-import { PasswordRecoveryForm } from "./ResetPass/PasswordRecoveryForm";
-import { loginConfig } from "./config/loginConfig";
-import { printDebug } from "@/utils/debug/log";
-// import { getCurrentUserFromDB, UserDB } from "./CurrentUser/getCurrentUserFromDB";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import Image from "next/image"; // Para la imagen de fondo/lateral
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Logo } from "@/utils/logo"; // Asumo que tienes un componente Logo
 import {
-  getCurrentUserFromDB,
-  UserDB,
-} from "./CurrentUser/getCurrentUserFromDB";
-import ClearCacheButton from "./clearSiteData";
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import LoginForm from "./SignIn/LoginForm";
+import SignupForm from "./SignUp/SignupForm";
 
-const metaDataPage = {
-  title: "auth",
-  route: "app/auth/page.tsx",
-  index: 0,
-};
-
-printDebug(`${metaDataPage.index} ${metaDataPage.route}`);
-
-export default function AuthPage() {
-  const router = useRouter();
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoginFormVisible, setIsLoginFormVisible] = useState(true);
-  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
-  const [showConfirmationMessage, setShowConfirmationMessage] = useState(false);
-  const [email, setEmail] = useState("");
-  const [userData, setUserData] = useState<UserDB | null>(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const { layout, logo, leftPanel, rightPanel, eventBanner, styles } =
-    loginConfig;
-
-  const backgroundImages = Array.isArray(layout?.backgroundImage)
-    ? layout.backgroundImage
-    : [layout?.backgroundImage];
-
-  const currentStyles = styles?.[styles.mode] || styles.light;
-
-  // Leer email pendiente de verificación
-  useEffect(() => {
-    const storedEmail = localStorage.getItem("pendingEmailVerification");
-    if (storedEmail) {
-      setEmail(storedEmail);
-      setShowConfirmationMessage(true);
-    }
-  }, []);
-
-  // Verificar si hay un usuario no confirmado
-  useEffect(() => {
-    const fetchData = async () => {
-      const user = await getCurrentUserFromDB();
-      if (!user) return;
-
-      setUserData(user);
-
-      const metadata = user.metadata || {};
-      const email = user.email;
-      const emailVerified = metadata?.email_verified ?? true; // puedes ajustarlo si guardas ese dato
-
-      if (email && !emailVerified) {
-        localStorage.setItem("pendingEmailVerification", email);
-        setEmail(email);
-        setShowConfirmationMessage(true);
-      }
-    };
-    fetchData();
-  }, []);
-
-  // Animación de carrusel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex(
-        (prevIndex) => (prevIndex + 1) % backgroundImages.length
-      );
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, [backgroundImages.length]);
-
-  // Verificar sesión e insertar usuario
-  useEffect(() => {
-    const checkSession = async () => {
-      const user = await getCurrentUserFromDB();
-      printDebug(`checkSession > user: ${JSON.stringify(user)}`);
-
-      if (user) {
-        setIsLoggedIn(true);
-
-        try {
-          const response = await fetch("/api/auth/insertUser");
-          const result = await response.json();
-          printDebug(`insertUser > response: ${JSON.stringify(result)}`);
-
-          if (!response.ok) {
-            toast.error(
-              result.error || "Ocurrió un error al registrar el usuario"
-            );
-            return;
-          }
-
-          if (result.success) {
-            toast.success("Sesión iniciada. ¡Bienvenido!");
-          } else if (result.message === "Usuario ya existe") {
-            toast.info("Bienvenido de nuevo 👋");
-          } else {
-            toast("Usuario validado");
-          }
-
-          router.push("/");
-        } catch (error) {
-          console.error("❌ Error al llamar a /api/auth/insertUser:", error);
-          toast.error("Error al conectar con el servidor.");
-        }
-      }
-    };
-
-    checkSession();
-  }, [router]);
-
-  // Redirección si ya está logueado
-  useEffect(() => {
-    if (isLoggedIn) {
-      router.push("/");
-    }
-  }, [isLoggedIn, router]);
-
-  const handleSignupSuccess = () => {
-    setShowConfirmationMessage(true);
-  };
-
-  if (isLoggedIn) return null;
-  if (showConfirmationMessage) {
-    return <EmailConfirmationPending email={email} />;
-  }
-  const defaultVisitorRoleId = process.env.NEXT_PUBLIC_VISITOR_ID || "";
+// Componente interno para usar useSearchParams y aplicar diseño
+function AuthPageContent() {
+  const searchParams = useSearchParams();
+  const rawRedirectUrl = searchParams.get("redirectUrl");
+  const redirectUrl =
+    rawRedirectUrl && rawRedirectUrl.startsWith("/")
+      ? rawRedirectUrl
+      : "/dashboard";
+  const initialAction = searchParams.get("action");
 
   return (
-    <div
-      className="flex h-screen w-full"
-      style={{ backgroundColor: currentStyles.backgrounds.panel }}
-    >
-      {/* Panel izquierdo */}
-      {leftPanel?.show && (
-        <div className="hidden md:flex w-1/2 items-center justify-center relative">
-          <Image
-            key={backgroundImages[currentImageIndex]}
-            src={backgroundImages[currentImageIndex]}
-            alt="Fondo del carrusel"
-            width={800}
-            height={1200}
-            className="absolute inset-0 object-contain w-full h-full opacity-90 p-2 transition-all duration-1000"
-          />
-          {layout?.coverColor !== "none" && (
-            <div
-              className="absolute inset-0 m-2 rounded-md"
-              style={{ backgroundColor: layout?.coverColor, opacity: 0 }}
-            />
-          )}
-          <div className="relative z-10 text-center px-10 text-TextCustom">
-            {logo?.show && (
-              <Image
-                src={logo.src}
-                alt={logo.alt}
-                width={logo.width}
-                height={logo.width}
-                className="mx-auto mb-4"
-              />
-            )}
-            <h1 className="text-3xl font-bold mb-2">
-              {leftPanel.taglineTitle}
-            </h1>
-            <p
-              className="text-sm"
-              style={{ color: currentStyles.texts.secondary }}
-            >
-              {leftPanel.taglineSubtitle}
-            </p>
+    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2">
+      {/* Panel Izquierdo - Imagen y Mensaje (visible en pantallas grandes) */}
+      <div className="hidden lg:flex flex-col items-center justify-center bg-gradient-to-br from-primaryCustom2/90 via-primaryCustom2 to-primaryCustom/80 p-12 text-white relative overflow-hidden">
+        {/* Imagen de fondo sutil o ilustración */}
+        <Image
+          src="/auth-background.jpg" // REEMPLAZA con la ruta a tu imagen en /public
+          alt="Fondo decorativo de autenticación"
+          layout="fill"
+          objectFit="cover"
+          className="opacity-20" // Ajusta la opacidad según necesites
+        />
+        <div className="relative z-10 text-center">
+          <div className="mb-8">
+            <Logo version="light" width={180} height={90} />
           </div>
-          {leftPanel.backToWebsite?.show && (
-            <div className="absolute top-0 right-0 z-10 m-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push(leftPanel.backToWebsite.url)}
-              >
-                {leftPanel.backToWebsite.text}
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Panel derecho */}
-      <div className="flex w-full md:w-1/2 items-center justify-center px-6">
-        <div
-          className="w-full max-w-md space-y-6 p-6 rounded-lg shadow"
-          style={{ backgroundColor: currentStyles.backgrounds.panel }}
-        >
-          {/* Banner */}
-          {eventBanner?.show && (
-            <div
-              className="p-4 rounded-md shadow-sm text-center"
-              style={{
-                backgroundColor: currentStyles.backgrounds.banner,
-                borderColor: currentStyles.borders.default,
-                borderWidth: 1,
-                borderStyle: "solid",
-                color: currentStyles.texts.primary,
-              }}
-            >
-              <h3 className="text-base font-semibold">{eventBanner.title}</h3>
-              <p
-                className="text-sm"
-                style={{ color: currentStyles.texts.secondary }}
-              >
-                {eventBanner.description}
-              </p>
-              <a
-                href={eventBanner.ctaUrl}
-                className="inline-block mt-2 text-sm font-medium underline"
-                style={{ color: currentStyles.texts.link }}
-              >
-                {eventBanner.ctaText}
-              </a>
-            </div>
-          )}
-
-          {/* Título de sección */}
-          <div>
-            <h2
-              className="text-3xl font-semibold"
-              style={{ color: currentStyles.texts.primary }}
-            >
-              {isLoginFormVisible
-                ? rightPanel.login.title
-                : rightPanel.createAccount.title}
-            </h2>
-          </div>
-
-          {/* Formularios */}
-          {isLoginFormVisible ? (
-            isPasswordRecovery ? (
-              <PasswordRecoveryForm />
-            ) : (
-              <LoginForm
-                onAuthStateChange={() => setIsLoggedIn(true)}
-                email={email}
-                setEmail={setEmail}
-                setIsPasswordRecovery={setIsPasswordRecovery}
-                config={rightPanel.login.form}
-                styles={currentStyles}
-              />
-            )
-          ) : (
-            <SignupForm
-              onSignupSuccess={handleSignupSuccess}
-              setEmail={setEmail}
-              config={{
-                ...rightPanel.createAccount.form,
-                defaultRoleId: defaultVisitorRoleId, // ✅ ← ¡AQUÍ EL CAMBIO CLAVE!
-              }}
-              styles={currentStyles}
-            />
-          )}
-
-          {/* Footer switch login/signup */}
-          <p
-            className="text-sm pt-10"
-            style={{ color: currentStyles.texts.secondary }}
-          >
-            {isLoginFormVisible
-              ? rightPanel.login.subtitle.text
-              : rightPanel.createAccount.subtitle.text}{" "}
-            <button
-              onClick={() => {
-                setIsPasswordRecovery(false);
-                setIsLoginFormVisible(!isLoginFormVisible);
-              }}
-              className="underline transition"
-              style={{ color: currentStyles.texts.link }}
-            >
-              {isLoginFormVisible
-                ? rightPanel.login.subtitle.linkText
-                : rightPanel.createAccount.subtitle.linkText}
-            </button>
+          <h1 className="text-4xl font-bold mb-4">
+            {process.env.NEXT_PUBLIC_NAME_APP || "Tu Plataforma Educativa"}
+          </h1>
+          <p className="text-xl text-slate-200">
+            Aprende, crece y alcanza tus metas con nosotros.
           </p>
-          <ClearCacheButton />
         </div>
       </div>
+
+      {/* Panel Derecho - Formularios de Autenticación */}
+      <div className="flex flex-col items-center justify-center p-6 sm:p-10 bg-slate-50 dark:bg-slate-900">
+        <Card className="w-full max-w-md bg-PanelCustom dark:bg-slate-800 shadow-xl rounded-xl overflow-hidden border dark:border-slate-700">
+          <CardHeader className="text-center p-6 sm:p-8">
+            {/* Logo para pantallas pequeñas, oculto en grandes donde está en el panel izquierdo */}
+            <div className="mx-auto mb-6 lg:hidden">
+              <Logo version="original" width={120} height={60} />
+            </div>
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-primaryCustom2 dark:text-slate-100">
+              Bienvenido
+            </CardTitle>
+            <CardDescription className="text-primaryCustom dark:text-slate-400 mt-1">
+              Accede o crea tu cuenta para continuar.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6 sm:p-8">
+            <Tabs
+              defaultValue={initialAction === "sign_up" ? "signup" : "login"}
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-100 dark:bg-slate-700 p-1 rounded-lg">
+                <TabsTrigger
+                  value="login"
+                  className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm data-[state=active]:text-primaryCustom2 dark:data-[state=active]:text-sky-400"
+                >
+                  Iniciar Sesión
+                </TabsTrigger>
+                <TabsTrigger
+                  value="signup"
+                  className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm data-[state=active]:text-primaryCustom2 dark:data-[state=active]:text-sky-400"
+                >
+                  Crear Cuenta
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="login">
+                <LoginForm redirectUrl={redirectUrl} />
+              </TabsContent>
+              <TabsContent value="signup">
+                <SignupForm redirectUrl={redirectUrl} />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+        <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
+          Al continuar, aceptas nuestros{" "}
+          <a
+            href="/temrs"
+            className="underline hover:text-primaryCustom dark:hover:text-sky-400"
+          >
+            Términos de Servicio
+          </a>
+          .
+        </p>
+      </div>
     </div>
+  );
+}
+
+// Wrapper con Suspense para useSearchParams
+export default function AuthPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen w-full flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+          <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-primaryCustom2 dark:border-sky-500"></div>
+          <p className="ml-4 text-lg text-slate-700 dark:text-slate-300">
+            Cargando...
+          </p>
+        </div>
+      }
+    >
+      <AuthPageContent />
+    </Suspense>
   );
 }

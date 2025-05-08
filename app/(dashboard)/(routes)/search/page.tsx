@@ -169,8 +169,8 @@ const SearchContent: React.FC = () => {
                 aria-label="Ordenar resultados"
               >
                 <option value="recent">Más recientes</option>
-                <option value="popularity">Popularidad</option>
-                <option value="rating">Mejor valorados</option>
+                {/* <option value="popularity">Popularidad</option> */}
+                {/* <option value="rating">Mejor valorados</option> */}
               </select>
             </div>
           </div>

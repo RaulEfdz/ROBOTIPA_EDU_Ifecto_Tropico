@@ -1,305 +1,129 @@
+// app/auth/SignUp/SignupForm.tsx
 "use client";
-
 import { useState } from "react";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { createClient } from "@/utils/supabase/client";
-import { Eye, EyeOff } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
+// Define la interfaz para las props del componente
 interface SignupFormProps {
-  onSignupSuccess?: () => void;
-  setEmail: (email: string) => void;
-  config: {
-    fullNamePlaceholder: string;
-    usernamePlaceholder: string;
-    emailPlaceholder: string;
-    passwordPlaceholder: string;
-    confirmPasswordPlaceholder: string;
-    createButtonText: string;
-    defaultRoleId: string; // ✅ agregar esto
-  };
-  
-  styles: {
-    backgrounds: {
-      panel: string;
-    };
-    texts: {
-      primary: string;
-      secondary: string;
-    };
-    buttons: {
-      primary: string;
-      primaryText: string;
-    };
-  };
+  redirectUrl: string;
 }
 
-interface PasswordStrength {
-  score: number;
-  feedback: string;
-  color: string;
-}
-
-export const SignupForm: React.FC<SignupFormProps> = ({
-  onSignupSuccess,
-  setEmail,
-  config,
-  styles,
-}) => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    fullName: "",
-    username: "",
-    customRole: config.defaultRoleId ?? "", // renombrado a customRole
-  });
-  
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [emailValid, setEmailValid] = useState<boolean | null>(null);
-  const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
-    score: 0,
-    feedback: "",
-    color: "bg-gray-200",
-  });
-
+export default function SignupForm({ redirectUrl }: SignupFormProps) {
+  const router = useRouter();
   const supabase = createClient();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const validatePasswordStrength = (password: string): PasswordStrength => {
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumbers = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    const isLongEnough = password.length >= 8;
-
-    let score = 0;
-    const feedback = [];
-
-    if (hasUpperCase) score++;
-    else feedback.push("mayúscula");
-    if (hasLowerCase) score++;
-    else feedback.push("minúscula");
-    if (hasNumbers) score++;
-    else feedback.push("número");
-    if (hasSpecialChar) score++;
-    else feedback.push("carácter especial");
-    if (isLongEnough) score++;
-    else feedback.push("mínimo 8 caracteres");
-
-    const colors = {
-      0: "bg-red-200",
-      1: "bg-red-400",
-      2: "bg-yellow-400",
-      3: "bg-yellow-600",
-      4: "bg-green-400",
-      5: "bg-green-600",
-    };
-
-    return {
-      score,
-      feedback: feedback.length
-        ? `Falta: ${feedback.join(", ")}`
-        : "Contraseña fuerte",
-      color: colors[score as keyof typeof colors],
-    };
-  };
-
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    setEmailValid(emailRegex.test(email));
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-
-    if (name === "email") validateEmail(value);
-    if (name === "password") {
-      setPasswordStrength(validatePasswordStrength(value));
-    }
-  };
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setIsLoading(true);
+    toast.loading("Creando cuenta...");
 
-    if (!emailValid) {
-      toast.error("Correo inválido", {
-        description: "Ingresa un correo electrónico válido.",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Las contraseñas no coinciden");
-      setIsLoading(false);
-      return;
-    }
-
-    if (passwordStrength.score < 4) {
-      toast.error("Contraseña débil", {
-        description:
-          "Debe contener mayúscula, minúscula, número, carácter especial y 8+ caracteres.",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    if (!formData.fullName || !formData.username) {
-      toast.error("Todos los campos son obligatorios");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            full_name: formData.fullName,
-            username: formData.username,
-            custom_role: formData.customRole,
-          },
+    const { data: signUpData, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName, // Supabase Auth permite 'user_metadata' o 'app_metadata'
+          // Aquí asumimos que 'full_name' se mapea a user_metadata.full_name
         },
-      });
+        emailRedirectTo: `${
+          window.location.origin
+        }/auth/confirm-action?next=${encodeURIComponent(redirectUrl)}`,
+      },
+    });
 
-      if (signUpError) {
-        if (signUpError.message.includes("User already registered")) {
-          toast.error("Cuenta existente", {
-            description: "Ya existe una cuenta con este correo electrónico.",
-          });
-        } else {
-          toast.error("Error al registrarse", {
-            description: signUpError.message,
-          });
-        }
-      } else {
-        toast.success("Registro exitoso", {
-          description: "Verifica tu correo para activar la cuenta.",
+    setIsLoading(false);
+    toast.dismiss();
+
+    if (error) {
+      toast.error(error.message || "Error al crear la cuenta.");
+    } else if (
+      signUpData.user &&
+      signUpData.user.identities &&
+      signUpData.user.identities.length === 0
+    ) {
+      toast.info(
+        "Parece que ya tienes una cuenta con este correo. Intenta iniciar sesión o revisa tu bandeja de entrada para un correo de confirmación si no lo has hecho.",
+        { duration: 8000 }
+      );
+    } else if (signUpData.session) {
+      // Esto sucede si la confirmación por correo está deshabilitada
+      toast.success("¡Cuenta creada e iniciada sesión!");
+      try {
+        await fetch("/api/auth/insertUser", { method: "POST" });
+      } catch (syncError) {
+        console.error("Error sincronizando usuario con DB local:", syncError);
+        toast.warning("No se pudo sincronizar completamente la sesión.", {
+          duration: 5000,
         });
-        setEmail(formData.email);
-        if (onSignupSuccess) onSignupSuccess();
       }
-    } catch (error) {
-      toast.error("Error inesperado", {
-        description:
-          error instanceof Error ? error.message : "Error desconocido.",
-      });
-    } finally {
-      setIsLoading(false);
+      console.log(
+        "SignupForm (auto-login) - Pushing to redirectUrl:",
+        redirectUrl
+      );
+      router.push(redirectUrl);
+      setTimeout(() => router.refresh(), 100);
+    } else {
+      // Comportamiento estándar: email de confirmación enviado
+      toast.success(
+        "¡Cuenta creada! Revisa tu correo electrónico para confirmar tu cuenta y completar el registro.",
+        { duration: 8000 }
+      );
+      // Opcional: redirigir a una página informativa
+      // router.push("/auth/check-email"); // Crea esta página si quieres
     }
   };
 
   return (
-    <Card
-      className="w-full max-w-md mx-auto shadow-lg border-0"
-      style={{ backgroundColor: styles.backgrounds.panel }}
-    >
-      <CardHeader className="space-y-2">
-        <CardTitle className="text-2xl font-bold text-center" style={{ color: styles.texts.primary }}>
-          { "Crear Cuenta"}
-        </CardTitle>
-        <p className="text-sm text-center" style={{ color: styles.texts.secondary }}>
-          Completa los campos para registrarte
-        </p>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSignup} className="space-y-4">
-          <Input
-            name="fullName"
-            placeholder={config.fullNamePlaceholder}
-            value={formData.fullName}
-            onChange={handleInputChange}
-            required
-          />
-          <Input
-            name="username"
-            placeholder={config.usernamePlaceholder}
-            value={formData.username}
-            onChange={handleInputChange}
-            required
-          />
-          <Input
-            name="email"
-            type="email"
-            placeholder={config.emailPlaceholder}
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-            className={emailValid === false ? "border-red-500" : ""}
-          />
-          {emailValid === false && (
-            <p className="text-xs text-red-500">Correo electrónico no válido</p>
-          )}
-
-          <div className="relative">
-            <Input
-              name="password"
-              type={showPassword ? "text" : "password"}
-              placeholder={config.passwordPlaceholder}
-              value={formData.password}
-              onChange={handleInputChange}
-              required
-              className="pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-500" />
-              ) : (
-                <Eye className="h-4 w-4 text-gray-500" />
-              )}
-            </button>
-          </div>
-
-          <div className="w-full h-2 bg-gray-200 rounded-full">
-            <div
-              className={`h-full rounded-full transition-all ${passwordStrength.color}`}
-              style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
-            />
-          </div>
-          <p className="text-xs text-gray-600">{passwordStrength.feedback}</p>
-
-          <Input
-            name="confirmPassword"
-            type="password"
-            placeholder={config.confirmPasswordPlaceholder}
-            value={formData.confirmPassword}
-            onChange={handleInputChange}
-            required
-          />
-
-          <Button
-            type="submit"
-            className="w-full font-semibold h-11"
-            disabled={isLoading}
-            style={{
-              backgroundColor: styles.buttons.primary,
-              color: styles.buttons.primaryText,
-            }}
-          >
-            {isLoading ? "Registrando..." : config.createButtonText}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <form onSubmit={handleSignUp} className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="fullName-signup">Nombre Completo</Label>
+        <Input
+          id="fullName-signup"
+          type="text"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          required
+          placeholder="Juan Pérez"
+          autoComplete="name"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="email-signup">Correo Electrónico</Label>
+        <Input
+          id="email-signup"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          placeholder="tu@email.com"
+          autoComplete="email"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="password-signup">Contraseña</Label>
+        <Input
+          id="password-signup"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          placeholder="•••••••• (mínimo 6 caracteres)"
+          minLength={6}
+          autoComplete="new-password"
+        />
+      </div>
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Creando..." : "Crear Cuenta"}
+      </Button>
+    </form>
   );
-};
-
-export default SignupForm;
+}
