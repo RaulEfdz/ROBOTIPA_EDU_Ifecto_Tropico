@@ -10,7 +10,7 @@ import {
   ExamAttempt,
   getLetterGrade,
 } from "../utils/examApi";
-import AttemptDetailModal from "../components/AttemptDetailModal";
+import AttemptDetailModal from "./AttemptDetailModal";
 
 interface Props {
   exam: Exam;
@@ -23,23 +23,7 @@ export default function AttemptsTab({ exam, attemptsData }: Props) {
     attemptsData.attempts ?? []
   );
 
-  // Abrir modal con detalle completo (incluye answers)
-  async function openDetail(id: string) {
-    try {
-      const res = await fetch(`/api/exam-attempts/${id}`);
-      if (!res.ok) {
-        toast.error("Error al cargar detalle del intento.");
-        return;
-      }
-      const fullAttempt: ExamAttempt = await res.json();
-      setSelected(fullAttempt);
-    } catch (error) {
-      console.error(error);
-      toast.error("Error de red al cargar detalle del intento.");
-    }
-  }
-
-  // Actualizar calificación vía POST
+  // Función para actualizar la calificación vía API usando POST
   async function handleUpdateScore(attemptId: string, newScore: number) {
     try {
       const res = await fetch("/api/exam-attempts/score", {
@@ -48,17 +32,20 @@ export default function AttemptsTab({ exam, attemptsData }: Props) {
         body: JSON.stringify({ attemptId, score: newScore }),
       });
       const data = await res.json();
+
       if (!res.ok) {
         toast.error(data.message || `Error ${res.status}`);
         return;
       }
+
       toast.success("Calificación actualizada correctamente.");
 
-      // Refrescar lista
+      // Refrescar la lista de intentos tras actualizar
       const updatedRes = await fetch(`/api/exams/${exam.id}/attempts`);
       if (updatedRes.ok) {
         const updatedData: AttemptsData = await updatedRes.json();
         setAttempts(updatedData.attempts ?? []);
+        // Actualizar detalle abierto si corresponde
         setSelected((prev) =>
           prev && prev.id === attemptId ? { ...prev, score: newScore } : prev
         );
@@ -89,7 +76,7 @@ export default function AttemptsTab({ exam, attemptsData }: Props) {
         {attempts.map((a) => (
           <button
             key={a.id}
-            onClick={() => openDetail(a.id)}
+            onClick={() => setSelected(a)}
             className="w-full p-4 border rounded flex justify-between hover:bg-gray-50"
           >
             <div>

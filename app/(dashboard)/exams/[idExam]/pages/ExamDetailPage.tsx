@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Globe, FileText } from "lucide-react";
 import { ExamFormData } from "../components/ExamTabs";
+// Importa el tipo de examen desde ExamTabs
 
 export default function ExamDetailsForm({
   isSubmitting,
@@ -40,31 +41,32 @@ export default function ExamDetailsForm({
   isPublished: boolean;
   handlePublishChange: (checked: boolean) => void;
 }) {
+  const methods = useFormContext<ExamFormData>();
+  if (!methods) {
+    throw new Error("ExamDetailsForm debe usarse dentro de un FormProvider");
+  }
   const {
     register,
     setValue,
     formState: { errors },
-  } = useFormContext<ExamFormData>();
+  } = methods;
 
-  // Local state to control select and confirmation
+  // Local state para controlar la publicación y confirmación
   const [publishedState, setPublishedState] = useState(isPublished);
   const [pendingState, setPendingState] = useState(isPublished);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-  // Sync local with external prop
   useEffect(() => {
     setPublishedState(isPublished);
     setPendingState(isPublished);
   }, [isPublished]);
 
-  // When select changes, open confirmation
   const onSelectChange = (value: string) => {
     const checked = value === "published";
     setPendingState(checked);
     setIsConfirmOpen(true);
   };
 
-  // Confirm or cancel
   const confirmPublish = () => {
     setPublishedState(pendingState);
     setValue("isPublished", pendingState, { shouldDirty: true });
@@ -76,7 +78,7 @@ export default function ExamDetailsForm({
     setIsConfirmOpen(false);
   };
 
-  // Always register isPublished as hidden field
+  // Mantener siempre el valor en el formulario
   useEffect(() => {
     setValue("isPublished", publishedState);
   }, [publishedState, setValue]);
@@ -86,6 +88,7 @@ export default function ExamDetailsForm({
       <CardContent>
         <form className="space-y-4">
           <input type="hidden" {...register("isPublished")} />
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Título */}
             <div className="space-y-2">
@@ -148,7 +151,6 @@ export default function ExamDetailsForm({
             <div className="space-y-2">
               <Label htmlFor="publicationStatus">Estado de Publicación</Label>
               <Select
-                // id="publicationStatus"
                 value={publishedState ? "published" : "draft"}
                 onValueChange={onSelectChange}
               >
