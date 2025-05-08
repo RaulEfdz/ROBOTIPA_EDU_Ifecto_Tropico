@@ -1,17 +1,33 @@
+// app/api/courses/[courseId]/is-enrolled/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth"; // Asegúrate que la ruta a esta función sea correcta
 
 export async function GET(
-  req: Request,
-  context: { params: Promise<{ courseId: string }> }
+  req: Request, // El primer parámetro suele ser Request
+  { params }: { params: { courseId: string } } // El segundo parámetro es un objeto con `params`
 ) {
-  const { courseId } = await context.params;
-
   try {
-    const user = (await getUserDataServerAuth())?.user;
+    const courseId = params.courseId; // Acceso directo al courseId
+
+    // VALIDACIÓN EXPLÍCITA DE courseId
+    if (!courseId || typeof courseId !== "string" || courseId.trim() === "") {
+      console.warn(
+        "[IS_ENROLLED_GET] Bad Request: courseId is missing or invalid. Received:",
+        courseId
+      );
+      return new NextResponse(
+        "Bad Request: courseId is required and must be a non-empty string",
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const user = (await getUserDataServerAuth())?.user; // Tu función de autenticación
 
     if (!user?.id) {
+      console.warn("[IS_ENROLLED_GET] Unauthorized: No user session found.");
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -19,22 +35,23 @@ export async function GET(
       where: {
         userId_courseId: {
           userId: user.id,
-          courseId,
+          courseId: courseId, // Usar el courseId validado
         },
       },
     });
 
-    if (!purchase) {
-      return NextResponse.json({ enrolled: false });
+    // En lugar de !purchase, verifica directamente el valor de purchase
+    if (purchase) {
+      return NextResponse.json({
+        isEnrolled: true, // Cambiado de 'enrolled' a 'isEnrolled' para consistencia con el frontend
+        purchaseId: purchase.id,
+        enrolledAt: purchase.createdAt,
+      });
+    } else {
+      return NextResponse.json({ isEnrolled: false }); // Cambiado de 'enrolled' a 'isEnrolled'
     }
-
-    return NextResponse.json({
-      enrolled: true,
-      purchaseId: purchase.id,
-      enrolledAt: purchase.createdAt,
-    });
   } catch (error) {
-    console.error("[IS_ENROLLED_GET]", error);
+    console.error("[IS_ENROLLED_GET] Internal Server Error:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
