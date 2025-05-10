@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Exam, ExamAttempt, getLetterGrade } from "../utils/examApi";
+import { Exam, getLetterGrade } from "../utils/examApi";
 import {
   Check,
   X,
@@ -38,9 +38,28 @@ import {
   Calendar,
 } from "lucide-react";
 
+// Tipo de respuesta detallada
+export interface DetailedAnswer {
+  questionText: string;
+  correctOptions: { id: string; text: string }[];
+  selectedOptions: { id: string; text: string }[];
+  textResponse: string | null;
+}
+
+// Extiende ExamAttempt pero con DetailedAnswer[]
+export interface DetailedAttempt {
+  id: string;
+  examId: string;
+  score: number | null;
+  status: string;
+  submittedAt?: string;
+  answers: DetailedAnswer[];
+  user?: { fullName: string; email: string };
+}
+
 interface Props {
   exam: Exam;
-  attempt: ExamAttempt;
+  attempt: DetailedAttempt;
   onClose: () => void;
   onUpdateScore?: (attemptId: string, newScore: number) => Promise<void>;
 }
@@ -78,7 +97,6 @@ export default function AttemptDetailModal({
           <DialogTitle className="flex items-center gap-2">
             Detalle del Intento <Badge>{attempt.status}</Badge>
           </DialogTitle>
-          {/* <DialogClose /> */}
         </DialogHeader>
 
         <Tabs
@@ -89,7 +107,7 @@ export default function AttemptDetailModal({
           <TabsList className="grid grid-cols-2">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="answers">
-              Respuestas ({attempt.answers?.length || 0})
+              Respuestas ({attempt.answers.length})
             </TabsTrigger>
           </TabsList>
 
@@ -176,54 +194,81 @@ export default function AttemptDetailModal({
             value="answers"
             className="flex-1 overflow-auto pt-4 space-y-4"
           >
-            {(attempt.answers || []).map((ans, idx) => {
-              const q = exam.questions.find((x) => x.id === ans.questionId);
+            {attempt.answers.map((ans, idx) => {
+              const isTextQuestion =
+                ans.selectedOptions.length === 0 && ans.textResponse != null;
               const correct =
-                ans.selectedOptionIds?.every((id) =>
-                  q?.correctAnswers.includes(id)
-                ) && q?.correctAnswers.length === ans.selectedOptionIds.length;
+                !isTextQuestion &&
+                ans.selectedOptions.length === ans.correctOptions.length &&
+                ans.correctOptions.every((co) =>
+                  ans.selectedOptions.some((so) => so.id === co.id)
+                );
 
               return (
                 <Card
                   key={idx}
                   className={
-                    correct ? "border-l-green-500" : "border-l-red-500"
+                    isTextQuestion
+                      ? "border-l-blue-500"
+                      : correct
+                      ? "border-l-green-500"
+                      : "border-l-red-500"
                   }
                 >
                   <CardHeader>
                     <div className="flex justify-between">
                       <CardTitle>Pregunta {idx + 1}</CardTitle>
-                      <Badge variant={correct ? "secondary" : "destructive"}>
-                        {correct ? <Check /> : <X />}{" "}
-                        {correct ? "Correcta" : "Incorrecta"}
+                      <Badge
+                        variant={
+                          isTextQuestion
+                            ? "secondary"
+                            : correct
+                            ? "secondary"
+                            : "destructive"
+                        }
+                      >
+                        {isTextQuestion ? (
+                          "Respuesta abierta"
+                        ) : correct ? (
+                          <Check />
+                        ) : (
+                          <X />
+                        )}{" "}
+                        {isTextQuestion
+                          ? ""
+                          : correct
+                          ? "Correcta"
+                          : "Incorrecta"}
                       </Badge>
                     </div>
-                    <p className="mt-1 text-sm">{q?.text}</p>
+                    <p className="mt-1 text-sm">{ans.questionText}</p>
                   </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="space-y-2 text-sm">
+                  <CardContent className="pt-0 space-y-2 text-sm">
+                    {isTextQuestion ? (
                       <p>
-                        <strong>Seleccionadas:</strong>{" "}
-                        {ans.selectedOptionIds?.length
-                          ? ans.selectedOptionIds.join(", ")
-                          : "Ninguna"}
+                        <strong>Respuesta del estudiante:</strong>{" "}
+                        {ans.textResponse}
                       </p>
-                      {ans.textResponse && (
+                    ) : (
+                      <>
                         <p>
-                          <strong>Texto:</strong> {ans.textResponse}
+                          <strong>Seleccionadas:</strong>{" "}
+                          {ans.selectedOptions.length
+                            ? ans.selectedOptions.map((o) => o.text).join(", ")
+                            : "Ninguna"}
                         </p>
-                      )}
-                      <p>
-                        <strong>Correctas:</strong>{" "}
-                        {q?.correctAnswers.join(", ")}
-                      </p>
-                    </div>
+                        <p>
+                          <strong>Correctas:</strong>{" "}
+                          {ans.correctOptions.map((o) => o.text).join(", ")}
+                        </p>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               );
             })}
 
-            {(!attempt.answers || attempt.answers.length === 0) && (
+            {attempt.answers.length === 0 && (
               <div className="flex flex-col items-center py-12 text-gray-500">
                 <AlertCircle size={48} className="mb-4" />
                 <p>No hay respuestas registradas.</p>
