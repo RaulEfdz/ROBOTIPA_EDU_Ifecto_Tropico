@@ -1,36 +1,43 @@
-// app/api/exam-attempts/route.ts
-
+// File: app/api/exam-attempts/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db"; // Prisma client
-import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
 
 export async function POST(req: NextRequest) {
+  // Autenticación del usuario
   const user = await getCurrentUserFromDBServer();
   if (!user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Parseo del cuerpo de la petición
   const body = await req.json();
-  const { examId, answers } = body;
+  const { examId, score, answers, timestamp } = body;
 
-  if (!examId || !Array.isArray(answers)) {
+  // Validación del payload
+  if (
+    typeof examId !== "string" ||
+    typeof score !== "number" ||
+    !Array.isArray(answers) ||
+    typeof timestamp !== "string"
+  ) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
   try {
-    // Crear un nuevo intento
+    // Crear el registro de intento de examen
     const attempt = await db.examAttempt.create({
       data: {
         userId: user.id,
         examId,
+        score,
         status: "submitted",
-        startedAt: new Date(),
-        submittedAt: new Date(),
+        submittedAt: new Date(timestamp),
+        // startedAt usará el valor por defecto (now())
       },
     });
 
-    // Guardar respuestas
+    // Guardar cada respuesta
     for (const answer of answers) {
       const { questionId, selectedOptionIds = [], textResponse = "" } = answer;
 
@@ -40,7 +47,7 @@ export async function POST(req: NextRequest) {
           questionId,
           selectedOptionIds,
           textResponse,
-          isCorrect: null, // puedes calcularlo después
+          isCorrect: null, // Calcular más adelante si es necesario
         },
       });
     }
@@ -50,7 +57,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error: any) {
-    console.error("[POST_EXAM_ATTEMPT]", error);
+    console.error("[POST /exam-attempts] Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
