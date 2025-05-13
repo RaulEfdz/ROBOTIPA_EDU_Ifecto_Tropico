@@ -37,15 +37,23 @@ export default function AttemptsTab({ exam, attemptsData }: Props) {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Refresh attempts on mount or when exam changes
+  // Endpoint URL builders
+  const LIST_URL = `/api/exams/${exam.id}/attempts`;
+  const ANSWERS_URL = (id: string) =>
+    `/api/exam-attempts/${encodeURIComponent(id)}/getanswers`;
+  const UPDATE_SCORE_URL = "/api/exam-attempts/score";
+  const GET_ATTEMPT_URL = (id: string) =>
+    `/api/exam-attempts/${encodeURIComponent(id)}`;
+
+  // Refresca los intentos al montar o cambiar el examen
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/exams/${exam.id}/attempts`)
+    fetch(LIST_URL)
       .then((res) => res.json())
       .then((data: AttemptsData) => setAttempts(data.attempts ?? []))
       .catch(() => toast.error("No se pudieron cargar los intentos."))
       .finally(() => setLoading(false));
-  }, [exam.id]);
+  }, [LIST_URL]);
 
   const filtered = attempts.filter(
     (a) =>
@@ -56,11 +64,11 @@ export default function AttemptsTab({ exam, attemptsData }: Props) {
   async function openDetail(a: ExamAttempt) {
     setLoadingDetail(true);
     try {
-      const res = await fetch(
-        `/api/exam-attempts/${encodeURIComponent(a.id)}/getanswers`
-      );
-      if (!res.ok)
-        throw new Error((await res.json()).error || `Error ${res.status}`);
+      const res = await fetch(ANSWERS_URL(a.id));
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || `Error ${res.status}`);
+      }
       const detailed = await res.json();
       setSelected({ ...a, answers: detailed });
     } catch (error: any) {
@@ -71,17 +79,35 @@ export default function AttemptsTab({ exam, attemptsData }: Props) {
     }
   }
 
-  const handleUpdateScore = async (attemptId: string, newScore: number) => {
+  // Función para actualizar el score: POST y refrescar solo esa card
+  const updateAttemptScore = async (attemptId: string, newScore: number) => {
     try {
-      const res = await fetch("/api/exam-attempts/score", {
+      const res = await fetch(UPDATE_SCORE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ attemptId, score: newScore }),
       });
-      if (!res.ok)
-        throw new Error((await res.json()).message || `Error ${res.status}`);
-      toast.success("Calificación actualizada");
-      openDetail({ id: attemptId } as ExamAttempt);
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || `Error ${res.status}`);
+      }
+      const getRes = await fetch(GET_ATTEMPT_URL(attemptId));
+      if (!getRes.ok) {
+        const err = await getRes.json();
+        throw new Error(err.message || `Error ${getRes.status}`);
+      }
+      const updated: ExamAttempt = await getRes.json();
+      setAttempts((prev) =>
+        prev.map((a) =>
+          a.id === attemptId
+            ? { ...a, score: updated.score, submittedAt: updated.submittedAt }
+            : a
+        )
+      );
+      setSelected((prev) =>
+        prev && prev.id === attemptId ? { ...prev, score: updated.score } : prev
+      );
+      toast.success("Calificación actualizada correctamente.");
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || "Error al actualizar la calificación.");
@@ -154,7 +180,7 @@ export default function AttemptsTab({ exam, attemptsData }: Props) {
           exam={exam}
           attempt={selected}
           onClose={() => setSelected(null)}
-          onUpdateScore={handleUpdateScore}
+          onUpdateScore={updateAttemptScore}
         />
       )}
     </div>

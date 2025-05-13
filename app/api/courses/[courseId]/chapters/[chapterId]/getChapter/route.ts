@@ -1,106 +1,87 @@
+// app/api/courses/[courseId]/chapters/[chapterId]/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { Attachment, Chapter, Video } from "@prisma/client";
+import type { Attachment, Chapter } from "@prisma/client";
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
-interface GetChapterProps {
-  userId: string;
-  courseId: string;
-  chapterId: string;
-}
-
-export async function POST(request: Request) {
+export async function POST(
+  req: Request,
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
+) {
   try {
-    const body = await request.json();
-    const { userId, courseId, chapterId }: GetChapterProps = body;
+    const { courseId, chapterId } = await params;
+    const user = (await getUserDataServerAuth())?.user;
 
-    if (!userId || !courseId || !chapterId) {
-      return NextResponse.json(
-        { message: "Missing required fields" },
-        { status: 400 }
-      );
+    if (!user?.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // 📌 Compra del curso (para desbloqueo por pago)
+    // 📌 Verificar compra para desbloqueo por pago
     const purchase = await db.purchase.findUnique({
       where: {
         userId_courseId: {
-          userId,
+          userId: user.id,
           courseId,
         },
       },
     });
 
-    // 📌 Curso (validación y carga mínima)
-    const course = await db.course.findUnique({
+    // 📌 Datos mínimos del curso
+    const course = await db.course.findFirst({
       where: {
-        isPublished: true,
         id: courseId,
+        isPublished: true,
         delete: false,
       },
       select: {
         price: true,
         imageUrl: true,
         chapters: {
-          select: {
-            id: true,
-            position: true,
-          },
+          select: { id: true, position: true },
         },
       },
     });
 
-    // 📌 Capítulo actual
+    // 📌 Capítulo actual (incluye video)
     const chapter = await db.chapter.findUnique({
-      where: {
-        id: chapterId,
-      },
-      include: {
-        video: true,
-      },
+      where: { id: chapterId },
+      include: { video: true },
     });
 
     if (!chapter || !course || chapter.delete || !chapter.isPublished) {
-      return NextResponse.json(
-        { message: "Chapter or course not found" },
-        { status: 404 }
-      );
+      return new NextResponse("Chapter or course not found", { status: 404 });
     }
 
-    // 📌 Adjuntos solo si está comprado
-    let attachments: Attachment[] = [];
-    if (purchase) {
-      attachments = await db.attachment.findMany({
-        where: { courseId },
-      });
-    }
+    // 📌 Cargar adjuntos solo si hay compra
+    const attachments: Attachment[] = purchase
+      ? await db.attachment.findMany({ where: { courseId } })
+      : [];
 
-    // 📌 Capítulo siguiente (si tiene acceso)
-    let nextChapter: Chapter | null = null;
-    if (chapter.isFree || purchase) {
-      nextChapter = await db.chapter.findFirst({
-        where: {
-          delete: false,
-          courseId,
-          isPublished: true,
-          position: {
-            gt: chapter.position,
-          },
-        },
-        orderBy: { position: "asc" },
-      });
-    }
+    // 📌 Siguiente capítulo (si es gratis o hay compra)
+    const nextChapter: Chapter | null =
+      chapter.isFree || purchase
+        ? await db.chapter.findFirst({
+            where: {
+              courseId,
+              delete: false,
+              isPublished: true,
+              position: { gt: chapter.position },
+            },
+            orderBy: { position: "asc" },
+          })
+        : null;
 
     // 📌 Progreso del usuario en este capítulo
     const userProgress = await db.userProgress.findUnique({
       where: {
         userId_chapterId: {
-          userId,
+          userId: user.id,
           chapterId,
         },
       },
     });
 
-    // 📌 Determinar si es el primer capítulo y si el anterior está completado
+    // 📌 Ver si es primer capítulo y si el anterior está completado
     let isFirstChapter = false;
     let isPreviousChapterCompleted = true;
     let previousChapterId: string | null = null;
@@ -110,29 +91,24 @@ export async function POST(request: Request) {
         courseId,
         isPublished: true,
         delete: false,
-        position: {
-          lt: chapter.position,
-        },
+        position: { lt: chapter.position },
       },
-      orderBy: {
-        position: "desc",
-      },
+      orderBy: { position: "desc" },
     });
 
     if (previousChapter) {
       previousChapterId = previousChapter.id;
-      const previousProgress = await db.userProgress.findUnique({
+      const prevProg = await db.userProgress.findUnique({
         where: {
           userId_chapterId: {
-            userId,
+            userId: user.id,
             chapterId: previousChapter.id,
           },
         },
       });
-      isPreviousChapterCompleted = !!previousProgress?.isCompleted;
+      isPreviousChapterCompleted = Boolean(prevProg?.isCompleted);
     } else {
       isFirstChapter = true;
-      isPreviousChapterCompleted = true;
     }
 
     return NextResponse.json({
@@ -145,25 +121,10 @@ export async function POST(request: Request) {
       purchase,
       isFirstChapter,
       isPreviousChapterCompleted,
-      previousChapterId, // útil para debug
+      previousChapterId,
     });
   } catch (error) {
-    console.error("[GET_CHAPTER_ERROR]", error);
-    return NextResponse.json(
-      {
-        message: "Internal server error",
-        error: error instanceof Error ? error.message : "Unknown error",
-        chapter: null,
-        course: null,
-        video: null,
-        attachments: [],
-        nextChapter: null,
-        userProgress: null,
-        purchase: null,
-        isFirstChapter: false,
-        isPreviousChapterCompleted: false,
-      },
-      { status: 500 }
-    );
+    console.error("[POST_CHAPTER_ERROR]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

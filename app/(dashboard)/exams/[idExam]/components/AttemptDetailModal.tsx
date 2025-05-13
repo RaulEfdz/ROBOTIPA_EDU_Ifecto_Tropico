@@ -1,18 +1,20 @@
-// File: AttemptDetailModal.tsx
-import React, { useState } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
+  CardDescription as UiCardDescription,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -26,7 +28,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Exam, getLetterGrade } from "../utils/examApi";
+import {
+  Exam,
+  getLetterGrade,
+  // DetailedAttempt,
+  // DetailedAnswer,
+} from "../utils/examApi";
 import {
   Check,
   X,
@@ -36,149 +43,245 @@ import {
   User,
   Mail,
   Calendar,
+  Loader2,
 } from "lucide-react";
-
-// Tipo de respuesta detallada
-export interface DetailedAnswer {
-  questionText: string;
-  correctOptions: { id: string; text: string }[];
-  selectedOptions: { id: string; text: string }[];
-  textResponse: string | null;
-}
-
-// Extiende ExamAttempt pero con DetailedAnswer[]
-export interface DetailedAttempt {
-  id: string;
-  examId: string;
-  score: number | null;
-  status: string;
-  submittedAt?: string;
-  answers: DetailedAnswer[];
-  user?: { fullName: string; email: string };
-}
 
 interface Props {
   exam: Exam;
-  attempt: DetailedAttempt;
+  attempt: any; // Este es el que recibe la data actualizada
   onClose: () => void;
-  onUpdateScore?: (attemptId: string, newScore: number) => Promise<void>;
+  onUpdateScore?: (
+    attemptId: string,
+    newScore: number
+  ) => Promise<boolean | void>;
 }
 
 export default function AttemptDetailModal({
   exam,
-  attempt,
+  attempt, // Esta prop se actualiza desde AttemptsTab
   onClose,
   onUpdateScore,
 }: Props) {
   const [activeTab, setActiveTab] = useState("general");
-  const [isEditing, setIsEditing] = useState(false);
-  const [scoreInput, setScoreInput] = useState((attempt.score ?? 0).toString());
-  const [submitting, setSubmitting] = useState(false);
+  const [isEditingScore, setIsEditingScore] = useState(false);
+  // Inicializar scoreInput con el valor de attempt.score, o vacío si es null/undefined
+  const [scoreInput, setScoreInput] = useState<string>(
+    attempt.score !== null && attempt.score !== undefined
+      ? attempt.score.toString()
+      : ""
+  );
+  const [isSubmittingScore, setIsSubmittingScore] = useState(false);
+  const [currentScore, setCurrentScore] = useState<number>(attempt.score | 0);
 
-  const handleScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Sincronizar scoreInput cuando la prop attempt.score (que viene del padre) cambia
+  useEffect(() => {
+    // Si el modal no está en modo edición y la prop attempt.score cambia,
+    // actualizamos el scoreInput para que la próxima vez que entre en modo edición,
+    // el valor sea el más reciente.
+    // Si ya está en modo edición, el usuario tiene el control del input.
+    // Sin embargo, la visualización de la nota (el h3) SIEMPRE leerá de `attempt.score`.
+    if (!isEditingScore) {
+      setScoreInput(
+        attempt.score !== null && attempt.score !== undefined
+          ? attempt.score.toString()
+          : ""
+      );
+    }
+  }, [attempt.score, isEditingScore]); // Depender también de isEditingScore
+
+  const handleScoreInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    if (/^$|^\d{1,3}$/.test(val) && +val <= 100) {
+    if (
+      val === "" || // Permitir campo vacío para borrar
+      (/^\d{1,3}$/.test(val) && parseInt(val) >= 0 && parseInt(val) <= 100)
+    ) {
       setScoreInput(val);
     }
   };
 
-  const submitScore = async () => {
+  const handleSubmitScore = async () => {
     if (!onUpdateScore) return;
-    setSubmitting(true);
-    await onUpdateScore(attempt.id, parseInt(scoreInput) || 0);
-    setIsEditing(false);
-    setSubmitting(false);
+
+    // Validar que scoreInput no esté vacío antes de parsear
+    if (scoreInput.trim() === "") {
+      toast.error("La calificación no puede estar vacía.");
+      return;
+    }
+
+    const newScoreValue = parseInt(scoreInput);
+    if (isNaN(newScoreValue) || newScoreValue < 0 || newScoreValue > 100) {
+      toast.error(
+        "Por favor, introduce una calificación válida entre 0 y 100."
+      );
+      return;
+    }
+
+    setIsSubmittingScore(true);
+    try {
+      setCurrentScore(newScoreValue); // Actualizar la calificación mostrada
+      const success = await onUpdateScore(attempt.id, newScoreValue);
+      if (success !== false) {
+        setIsEditingScore(false); // Salir del modo edición
+        // No es necesario llamar a onClose() aquí si el padre lo maneja
+        // o si se espera que el usuario cierre manualmente después de ver la actualización.
+      }
+    } catch (error) {
+      console.error(
+        "Error al procesar la actualización de calificación:",
+        error
+      );
+      toast.error(
+        "Ocurrió un error inesperado al intentar actualizar la calificación."
+      );
+    } finally {
+      setIsSubmittingScore(false);
+    }
+  };
+  // Cuando se sale del modo edición SIN guardar, reseteamos scoreInput al valor actual de attempt.score
+  const handleCancelEdit = () => {
+    setScoreInput(
+      attempt.score !== null && attempt.score !== undefined
+        ? attempt.score.toString()
+        : ""
+    );
+    setIsEditingScore(false);
   };
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-6">
-        <DialogHeader className="flex items-center justify-between">
-          <DialogTitle className="flex items-center gap-2">
-            Detalle del Intento <Badge>{attempt.status}</Badge>
+      <DialogContent className="max-w-4xl w-[95vw] md:w-full max-h-[90vh] overflow-hidden flex flex-col p-4 sm:p-6">
+        <DialogHeader className="pb-4 border-b">
+          <DialogTitle className="text-lg sm:text-xl font-semibold flex items-center gap-2">
+            Detalle del Intento
+            <Badge
+              variant={attempt.status === "completed" ? "default" : "secondary"}
+            >
+              {attempt.status}
+            </Badge>
           </DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">
+            Examen: {exam.title}
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
-          className="flex-1 flex flex-col overflow-hidden"
+          className="flex-1 flex flex-col overflow-hidden mt-2"
         >
-          <TabsList className="grid grid-cols-2">
+          <TabsList className="grid grid-cols-2 w-full sm:w-auto self-start">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="answers">
-              Respuestas ({attempt.answers.length})
+              Respuestas ({(attempt.answers || []).length})
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="general" className="flex-1 overflow-auto pt-4">
+          <TabsContent
+            value="general"
+            className="flex-1 overflow-y-auto pt-4 space-y-4 custom-scrollbar"
+          >
+            {/* Información del estudiante */}
             <Card>
               <CardHeader>
-                <CardTitle>Información del Estudiante</CardTitle>
+                <CardTitle className="text-base sm:text-lg">
+                  Información del Estudiante
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <User size={18} /> {attempt.user?.fullName}
+              <CardContent className="space-y-3 text-sm">
+                <div className="flex items-center gap-3">
+                  <User size={18} className="text-muted-foreground" />
+                  <span>{attempt.user?.fullName || "Usuario Anónimo"}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Mail size={18} /> {attempt.user?.email}
+                <div className="flex items-center gap-3">
+                  <Mail size={18} className="text-muted-foreground" />
+                  <span>{attempt.user?.email || "N/A"}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Calendar size={18} />{" "}
-                  {attempt.submittedAt
-                    ? new Date(attempt.submittedAt).toLocaleString()
-                    : "Sin enviar"}
+                <div className="flex items-center gap-3">
+                  <Calendar size={18} className="text-muted-foreground" />
+                  <span>
+                    Enviado:{" "}
+                    {attempt.submittedAt
+                      ? new Date(attempt.submittedAt).toLocaleString()
+                      : "No enviado"}
+                  </span>
                 </div>
               </CardContent>
             </Card>
-
-            <Separator className="my-4" />
-
+            <Separator />
             <Card>
               <CardHeader>
-                <CardTitle>Calificación</CardTitle>
-                <CardDescription>Puntuación (%)</CardDescription>
+                <CardTitle className="text-base sm:text-lg">
+                  Calificación
+                </CardTitle>
+                <UiCardDescription>Puntuación (%)</UiCardDescription>
               </CardHeader>
-              <CardContent className="flex items-center justify-between">
-                {isEditing ? (
-                  <div className="flex items-center gap-2">
+              <CardContent className="flex items-center justify-between gap-4">
+                {isEditingScore ? (
+                  <div className="flex items-center gap-2 flex-1">
                     <Input
+                      type="number"
                       value={scoreInput}
-                      onChange={handleScoreChange}
-                      className="w-20"
+                      onChange={handleScoreInputChange}
+                      className="w-24 h-10 text-lg"
+                      min="0"
+                      max="100"
+                      aria-label="Nueva calificación"
                     />
-                    <span>/100</span>
+                    <span className="text-lg font-semibold text-muted-foreground">
+                      / 100 %
+                    </span>
                   </div>
                 ) : (
-                  <h3 className="text-2xl font-bold">
-                    {attempt.score}% ({getLetterGrade(attempt.score)})
-                  </h3>
+                  <div className="flex items-baseline gap-2">
+                    {currentScore && (
+                      <h3 className="text-2xl sm:text-3xl font-bold text-primary">
+                        {currentScore}
+                      </h3>
+                    )}
+                    {attempt.score !== null && attempt.score !== undefined && (
+                      <span className="text-lg font-semibold text-muted-foreground">
+                        ({getLetterGrade(attempt.score)})
+                      </span>
+                    )}
+                  </div>
                 )}
-
                 {onUpdateScore && (
-                  <TooltipProvider>
+                  <TooltipProvider delayDuration={200}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() =>
-                            isEditing ? submitScore() : setIsEditing(true)
-                          }
-                          disabled={submitting}
-                          className="gap-1"
+                          onClick={() => {
+                            if (isEditingScore) {
+                              handleSubmitScore();
+                            } else {
+                              // Al entrar en modo edición, asegurarse que scoreInput tenga el valor actual
+                              setScoreInput(
+                                attempt.score !== null &&
+                                  attempt.score !== undefined
+                                  ? attempt.score.toString()
+                                  : ""
+                              );
+                              setIsEditingScore(true);
+                            }
+                          }}
+                          disabled={isSubmittingScore}
+                          className="gap-1.5 shrink-0"
                         >
-                          {isEditing ? (
+                          {isSubmittingScore ? (
+                            <Loader2 size={16} className="animate-spin" />
+                          ) : isEditingScore ? (
                             <Save size={16} />
                           ) : (
                             <Pencil size={16} />
-                          )}
-                          {isEditing ? "Guardar" : "Editar"}
+                          )}{" "}
+                          {isEditingScore ? "Guardar" : "Editar"}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>
-                          {isEditing
+                          {isEditingScore
                             ? "Guardar nueva calificación"
                             : "Editar calificación manualmente"}
                         </p>
@@ -186,98 +289,165 @@ export default function AttemptDetailModal({
                     </Tooltip>
                   </TooltipProvider>
                 )}
+                {/* Botón Cancelar Edición */}
+                {isEditingScore && !isSubmittingScore && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleCancelEdit}
+                    className="text-xs"
+                  >
+                    Cancelar
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent
             value="answers"
-            className="flex-1 overflow-auto pt-4 space-y-4"
+            className="flex-1 overflow-y-auto pt-4 space-y-3 custom-scrollbar"
           >
-            {attempt.answers.map((ans, idx) => {
-              const isTextQuestion =
-                ans.selectedOptions.length === 0 && ans.textResponse != null;
-              const correct =
-                !isTextQuestion &&
-                ans.selectedOptions.length === ans.correctOptions.length &&
-                ans.correctOptions.every((co) =>
-                  ans.selectedOptions.some((so) => so.id === co.id)
-                );
-
-              return (
-                <Card
-                  key={idx}
-                  className={
-                    isTextQuestion
-                      ? "border-l-blue-500"
-                      : correct
-                      ? "border-l-green-500"
-                      : "border-l-red-500"
+            {(attempt.answers || []).length > 0 ? (
+              (attempt.answers || []).map(
+                (
+                  ans: {
+                    selectedOptions: any[];
+                    textResponse: null;
+                    correctOptions: any[];
+                    questionId: any;
+                    questionText: any;
+                  },
+                  idx: number
+                ) => {
+                  const isTextQ =
+                    !(ans.selectedOptions && ans.selectedOptions.length > 0) &&
+                    ans.textResponse != null;
+                  let isAnsCorrect = false;
+                  if (!isTextQ && ans.correctOptions && ans.selectedOptions) {
+                    const correctIds = ans.correctOptions
+                      .map((o) => o.id)
+                      .sort();
+                    const selectedIds = ans.selectedOptions
+                      .map((o: { id: any }) => o.id)
+                      .sort();
+                    isAnsCorrect =
+                      JSON.stringify(correctIds) ===
+                      JSON.stringify(selectedIds);
                   }
-                >
-                  <CardHeader>
-                    <div className="flex justify-between">
-                      <CardTitle>Pregunta {idx + 1}</CardTitle>
-                      <Badge
-                        variant={
-                          isTextQuestion
-                            ? "secondary"
-                            : correct
-                            ? "secondary"
-                            : "destructive"
-                        }
-                      >
-                        {isTextQuestion ? (
-                          "Respuesta abierta"
-                        ) : correct ? (
-                          <Check />
+                  return (
+                    <Card
+                      key={
+                        ans.questionId
+                          ? `${ans.questionId}_${idx}`
+                          : `answer_${idx}`
+                      }
+                      className={`border-l-4 ${
+                        isTextQ
+                          ? "border-blue-500"
+                          : isAnsCorrect
+                          ? "border-green-500"
+                          : "border-red-500"
+                      }`}
+                    >
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-sm sm:text-base font-semibold">
+                            Pregunta {idx + 1}
+                          </CardTitle>
+                          <Badge
+                            variant={
+                              isTextQ
+                                ? "outline"
+                                : isAnsCorrect
+                                ? "default"
+                                : "destructive"
+                            }
+                            className={`text-xs ${
+                              isTextQ
+                                ? ""
+                                : isAnsCorrect
+                                ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-700/20 dark:text-green-300 dark:border-green-600"
+                                : ""
+                            } `}
+                          >
+                            {isTextQ ? (
+                              "Respuesta Abierta"
+                            ) : isAnsCorrect ? (
+                              <>
+                                <Check size={14} className="mr-1" />
+                                Correcta
+                              </>
+                            ) : (
+                              <>
+                                <X size={14} className="mr-1" />
+                                Incorrecta
+                              </>
+                            )}
+                          </Badge>
+                        </div>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {ans.questionText ||
+                            "Texto de pregunta no disponible"}
+                        </p>
+                      </CardHeader>
+                      <CardContent className="pt-0 space-y-1 text-xs sm:text-sm">
+                        {isTextQ ? (
+                          <div>
+                            <strong className="font-medium">
+                              Respuesta del estudiante:
+                            </strong>
+                            <p className="pl-2 mt-0.5 bg-slate-50 dark:bg-slate-800 p-2 rounded border dark:border-slate-700 whitespace-pre-wrap">
+                              {ans.textResponse || <em>Sin respuesta</em>}
+                            </p>
+                          </div>
                         ) : (
-                          <X />
-                        )}{" "}
-                        {isTextQuestion
-                          ? ""
-                          : correct
-                          ? "Correcta"
-                          : "Incorrecta"}
-                      </Badge>
-                    </div>
-                    <p className="mt-1 text-sm">{ans.questionText}</p>
-                  </CardHeader>
-                  <CardContent className="pt-0 space-y-2 text-sm">
-                    {isTextQuestion ? (
-                      <p>
-                        <strong>Respuesta del estudiante:</strong>{" "}
-                        {ans.textResponse}
-                      </p>
-                    ) : (
-                      <>
-                        <p>
-                          <strong>Seleccionadas:</strong>{" "}
-                          {ans.selectedOptions.length
-                            ? ans.selectedOptions.map((o) => o.text).join(", ")
-                            : "Ninguna"}
-                        </p>
-                        <p>
-                          <strong>Correctas:</strong>{" "}
-                          {ans.correctOptions.map((o) => o.text).join(", ")}
-                        </p>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
-
-            {attempt.answers.length === 0 && (
-              <div className="flex flex-col items-center py-12 text-gray-500">
-                <AlertCircle size={48} className="mb-4" />
-                <p>No hay respuestas registradas.</p>
+                          <>
+                            <p>
+                              <strong className="font-medium">
+                                Seleccionadas:
+                              </strong>{" "}
+                              {ans.selectedOptions &&
+                              ans.selectedOptions.length > 0 ? (
+                                ans.selectedOptions
+                                  .map((o) => o.text)
+                                  .join(" | ")
+                              ) : (
+                                <em>Ninguna</em>
+                              )}
+                            </p>
+                            <p>
+                              <strong className="font-medium">
+                                Correctas:
+                              </strong>{" "}
+                              {ans.correctOptions &&
+                              ans.correctOptions.length > 0 ? (
+                                ans.correctOptions
+                                  .map((o) => o.text)
+                                  .join(" | ")
+                              ) : (
+                                <em>N/A</em>
+                              )}
+                            </p>
+                          </>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                }
+              )
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-muted-foreground py-12">
+                <AlertCircle size={48} className="mb-4 opacity-50" />
+                <p>
+                  No hay respuestas detalladas disponibles para este intento.
+                </p>
               </div>
             )}
           </TabsContent>
         </Tabs>
 
-        <DialogFooter className="pt-4 border-t">
+        <DialogFooter className="pt-4 border-t mt-2">
           <Button variant="outline" onClick={onClose}>
             Cerrar
           </Button>

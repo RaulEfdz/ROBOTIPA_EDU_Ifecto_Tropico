@@ -151,7 +151,7 @@ export default function ExamViewer({
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className="mb-4">
+      <Button className="w-full" onClick={() => setOpen(true)}>
         Realizar Examen
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>

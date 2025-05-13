@@ -7,33 +7,34 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function PUT(
   req: Request,
-  { params }: { params: Promise<{ courseId: string; chapterId: string }> }) {
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
+) {
   try {
     const { chapterId } = await params;
     const { isCompleted } = await req.json();
 
     const user = (await getUserDataServerAuth())?.user;
-        
-          if (!user?.id) {
+
+    if (!user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
-    } 
+    }
 
     const userProgress = await db.userProgress.upsert({
       where: {
         userId_chapterId: {
           userId: user?.id,
           chapterId: chapterId,
-        }
+        },
       },
       update: {
-        isCompleted
+        isCompleted,
       },
       create: {
-        userId:user?.id,
+        userId: user?.id,
         chapterId: chapterId,
         isCompleted,
-      }
-    })
+      },
+    });
 
     return NextResponse.json(userProgress);
   } catch (error) {
