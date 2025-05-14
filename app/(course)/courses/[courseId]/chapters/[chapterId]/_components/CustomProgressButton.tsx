@@ -47,10 +47,34 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
           }
         );
         if (!res.ok) throw new Error(`Error ${res.status}`);
+        const data = await res.json();
 
-        // Disparar confeti y notificación
-        confetti.onOpen();
-        toast.success("✅ Capítulo marcado como completado");
+        // Notificación y confetti por certificado
+        if (
+          data.courseCompleted &&
+          (data.certificateGenerated || data.certificateId)
+        ) {
+          toast.success(
+            <span>
+              ¡Felicidades! Has completado el curso y obtenido tu certificado.{" "}
+              <a
+                href="/students/my-certificates"
+                className="underline text-sky-700 hover:text-sky-900 ml-1"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ver mis certificados
+              </a>
+            </span>
+          );
+          confetti.onOpen(); // Confetti del certificado
+        } else if (!isCompleted && !nextChapterId) {
+          // Confetti solo si es el último capítulo y NO se generó certificado
+          confetti.onOpen();
+          toast.success("✅ Capítulo marcado como completado");
+        } else {
+          toast.success("✅ Capítulo marcado como completado");
+        }
 
         // Esperar a que el confeti se vea (3 s)
         await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -84,8 +108,8 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
       {isLoading
         ? "Cargando..."
         : isCompleted
-        ? "Continuar"
-        : "Marcar como completado"}
+          ? "Continuar"
+          : "Marcar como completado"}
     </Button>
   );
 };

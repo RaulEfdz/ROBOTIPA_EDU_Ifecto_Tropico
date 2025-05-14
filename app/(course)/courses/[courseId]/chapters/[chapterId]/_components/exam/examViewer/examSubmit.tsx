@@ -110,9 +110,32 @@ async function markChapterCompletedAndNavigate(
       }
     );
     if (!res.ok) throw new Error("No se pudo completar el capítulo");
+    const apiResponse = await res.json();
 
-    toast.success("✅ Capítulo completado");
-    await new Promise((r) => setTimeout(r, 1500));
+    // Notificación y confetti por certificado
+    if (
+      apiResponse.courseCompleted &&
+      (apiResponse.certificateGenerated || apiResponse.certificateId)
+    ) {
+      toast.success(
+        <span>
+          ¡Felicidades! Has completado el curso y obtenido tu certificado.{" "}
+          <a
+            href="/students/my-certificates"
+            className="underline text-sky-700 hover:text-sky-900 ml-1"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ver mis certificados
+          </a>
+        </span>
+      );
+      useConfettiStore.getState().onOpen();
+      await new Promise((r) => setTimeout(r, 2000));
+    } else {
+      toast.success("✅ Capítulo completado");
+      await new Promise((r) => setTimeout(r, 1500));
+    }
 
     const target = nextChapterId
       ? `/courses/${courseId}/chapters/${nextChapterId}`
@@ -178,8 +201,8 @@ export function useProcessAndSubmitExam() {
             selectedOptionIds: Array.isArray(value)
               ? value
               : value
-              ? [value]
-              : [],
+                ? [value]
+                : [],
             textResponse:
               question.type === QuestionType.TEXT && typeof value === "string"
                 ? value
@@ -201,8 +224,7 @@ export function useProcessAndSubmitExam() {
         onScoreCallback?.(score);
 
         if (score >= 70 && !isChapterAlreadyCompleted) {
-          confettiStore.onOpen();
-          await new Promise((r) => setTimeout(r, 500));
+          // markChapterCompletedAndNavigate ahora maneja el confetti del certificado y del capítulo
           await markChapterCompletedAndNavigate(
             courseId,
             chapterId,
@@ -223,7 +245,7 @@ export function useProcessAndSubmitExam() {
         setIsLoading(false);
       }
     },
-    [router, confettiStore]
+    [router] // Eliminada la dependencia innecesaria confettiStore
   );
 
   return { submit, isLoading };

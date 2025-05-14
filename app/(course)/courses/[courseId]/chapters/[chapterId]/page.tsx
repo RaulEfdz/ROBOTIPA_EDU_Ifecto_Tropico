@@ -340,6 +340,15 @@ const ChapterIdPage: React.FC = () => {
             </div>
           </div>
 
+          {!isLockedForPayment && hasExam && (
+            <div className="mt-12 max-h-[70vh] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-700">
+              <ExamViewer
+                isCompleted={isCompleted}
+                nextChapterId={nextChapter?.id}
+              />
+            </div>
+          )}
+
           <div
             className={
               isLockedForPayment ? "filter blur-sm pointer-events-none" : ""
@@ -349,15 +358,6 @@ const ChapterIdPage: React.FC = () => {
               <EditorTextPreview htmlContent={chapter.description} />
             </Card>
           </div>
-
-          {!isLockedForPayment && hasExam && (
-            <div className="mt-12 max-h-[70vh] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-700">
-              <ExamViewer
-                isCompleted={isCompleted}
-                nextChapterId={nextChapter?.id}
-              />
-            </div>
-          )}
 
           {isLockedForPayment && course.price != null && (
             <div className="mt-8 p-6 bg-slate-100 dark:bg-slate-800 rounded-lg text-center shadow">

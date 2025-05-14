@@ -1,4 +1,6 @@
 import { format } from "date-fns";
+import { db } from "./db";
+import type { Certificate } from "@/prisma/types";
 
 // Almacén temporal de plantillas de certificado (puedes expandirlo en el futuro)
 const TEMPLATES_STORAGE: Record<string, string> = {
@@ -62,4 +64,47 @@ export async function getCertificateTemplateHtml(
     process.env.DEFAULT_CERTIFICATE_TEMPLATE_VERSION ||
     "v1.0";
   return TEMPLATES_STORAGE[version] || null;
+}
+
+/**
+ * Genera un certificado para un usuario y curso si no existe.
+ * @returns El certificado creado, el existente, o null si hubo error.
+ */
+export async function generateCertificate(
+  userId: string,
+  courseId: string
+): Promise<Certificate | null> {
+  // Verificar existencia de usuario y curso
+  const [user, course] = await Promise.all([
+    db.user.findUnique({ where: { id: userId } }),
+    db.course.findUnique({ where: { id: courseId } }),
+  ]);
+  if (!user || !course) return null;
+
+  // Verificar si ya existe certificado
+  const existing = await db.certificate.findFirst({
+    where: { userId, courseId },
+  });
+  if (existing) return existing as Certificate;
+
+  // Generar código único y datos
+  const code = await generateUniqueCertificateCode(courseId, userId);
+  const templateVersion =
+    process.env.DEFAULT_CERTIFICATE_TEMPLATE_VERSION || "v1.0";
+  const institution =
+    process.env.NEXT_PUBLIC_NAME_APP || "Tu Plataforma Educativa";
+
+  // Crear certificado
+  const cert = await db.certificate.create({
+    data: {
+      userId,
+      courseId,
+      title: course.title,
+      institution,
+      issuedAt: new Date(),
+      code,
+      data: { templateVersion },
+    },
+  });
+  return cert as Certificate;
 }
