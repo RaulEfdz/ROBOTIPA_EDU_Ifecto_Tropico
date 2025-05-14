@@ -1,11 +1,12 @@
 // app/api/payments/status/[txId]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
+// 🔄 Refactorizado a nueva sintaxis de params (Promise<T>)
 export async function GET(
   req: NextRequest,
-  { params }: { params: { txId: string } }
+  { params }: { params: Promise<{ txId: string }> }
 ) {
-  const { txId } = params;
+  const { txId } = await params;
   const cclw = process.env.PAGUELOFACIL_CCLW!;
   const apiKey = process.env.PAGUELOFACIL_API_KEY!;
 

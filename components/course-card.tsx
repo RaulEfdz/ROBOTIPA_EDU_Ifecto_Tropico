@@ -23,7 +23,7 @@ export interface CourseWithProgress extends Course {
 }
 
 interface CourseCardProps {
-  course: CourseWithProgress; // Recibe el objeto curso completo (o adaptado)
+  course: any; // Recibe el objeto curso completo (o adaptado)
   setLoading: (value: boolean) => void; // Función para indicar estado de carga al navegar
 }
 

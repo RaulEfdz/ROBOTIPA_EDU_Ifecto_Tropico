@@ -3,12 +3,13 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth"; // Asegúrate que la ruta a esta función sea correcta
 
+// 🔄 Refactorizado a nueva sintaxis de params (Promise<T>)
 export async function GET(
   req: Request, // El primer parámetro suele ser Request
-  { params }: { params: { courseId: string } } // El segundo parámetro es un objeto con `params`
+  { params }: { params: Promise<{ courseId: string }> } // El segundo parámetro es un objeto con `params`
 ) {
   try {
-    const courseId = params.courseId; // Acceso directo al courseId
+    const { courseId } = await params; // Acceso directo al courseId con await
 
     // VALIDACIÓN EXPLÍCITA DE courseId
     if (!courseId || typeof courseId !== "string" || courseId.trim() === "") {

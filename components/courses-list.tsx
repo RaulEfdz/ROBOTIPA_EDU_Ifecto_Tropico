@@ -6,14 +6,22 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { SkeletonCard } from "./SkeletonCard";
 
-// Define un tipo que extiende el modelo para incluir progreso opcional
-export type CourseWithProgress = Course & { progress?: number | null };
+// Tipo base que extiende Course para añadir progreso opcional
+export type CourseWithProgress = Course & {
+  progress?: number | null;
+};
+
+// Tipo que añade además la categoría
+export type CourseWithProgressWithCategory = CourseWithProgress & {
+  category: { id: string; name: string };
+};
 
 interface CoursesListProps {
   /**
    * Arreglo de cursos con progreso opcional.
+   * Puede venir con o sin la propiedad `category`.
    */
-  items: CourseWithProgress[];
+  items: Array<CourseWithProgress | CourseWithProgressWithCategory>;
 }
 
 export const CoursesList = ({ items }: CoursesListProps) => {
@@ -44,13 +52,18 @@ export const CoursesList = ({ items }: CoursesListProps) => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
         >
-          {sortedItems.map((course) => (
-            <CourseCard
-              key={course.id}
-              course={course}
-              setLoading={setLoading}
-            />
-          ))}
+          {sortedItems.map((course) => {
+            if ("examId" in course) {
+              return (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  setLoading={setLoading}
+                />
+              );
+            }
+            return null; // Skip items without examId
+          })}
         </motion.div>
       )}
     </section>

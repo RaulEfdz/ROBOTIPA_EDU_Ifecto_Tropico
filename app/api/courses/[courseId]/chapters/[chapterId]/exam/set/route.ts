@@ -9,9 +9,9 @@ import { db } from "@/lib/db";
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { courseId: string; chapterId: string } }
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
 ) {
-  const { courseId, chapterId } = params;
+  const { courseId, chapterId } = await params;
 
   // Validar params
   if (!courseId) {

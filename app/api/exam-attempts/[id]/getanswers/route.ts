@@ -2,12 +2,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+// 🔄 Refactorizado a nueva sintaxis de params (Promise<T>)
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const attemptId = params.id;
+    const { id: attemptId } = await params;
     if (!attemptId) {
       return NextResponse.json(
         { error: "Falta el parámetro id" },

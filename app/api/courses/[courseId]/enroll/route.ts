@@ -5,9 +5,9 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
-  const { courseId } = params;
+  const { courseId } = await params;
 
   try {
     const user = (await getUserDataServerAuth())?.user;

@@ -3,12 +3,14 @@ import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// 🔄 Refactorizado a nueva sintaxis de params (Promise<T>)
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const attempt = await db.examAttempt.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: {
       id: true,
       score: true,

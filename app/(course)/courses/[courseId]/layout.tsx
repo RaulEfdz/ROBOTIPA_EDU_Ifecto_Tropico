@@ -4,23 +4,12 @@ import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseNavbar } from "./_components/course-navbar";
 import { getCourseLayoutData } from "./getCourseLayoutData";
 
-interface CourseLayoutProps {
-  children: ReactNode;
-  params: { courseId: string };
-}
-
-const CourseLayout = async ({ children, params }: CourseLayoutProps) => {
+const CourseLayout = async ({ children, params }: any) => {
   // Desestructuramos los datos cargados
   const { course, progressCount } = await getCourseLayoutData(params.courseId);
 
   return (
     <div className="h-full">
-      {/* Uncomment if you want top navbar */}
-      {/*
-      <div className="h-[80px] md:pl-80 fixed inset-y-0 w-full z-50">
-        <CourseNavbar course={course} progressCount={progressCount} />
-      </div>
-      */}
       <div className="hidden md:flex h-full w-80 flex-col fixed inset-y-0 z-50">
         <CourseSidebar course={course} progressCount={progressCount} />
       </div>

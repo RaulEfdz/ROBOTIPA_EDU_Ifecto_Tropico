@@ -1,6 +1,7 @@
 "use client";
+
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,24 +15,33 @@ import {
 type Status = "success" | "error" | "loading";
 
 export default function ThankYouPage() {
-  const params = useSearchParams();
+  const params = useParams(); // <-- usamos useParams
   const router = useRouter();
   const [statusVisual, setStatusVisual] = useState<Status>("loading");
   const [courseName, setCourseName] = useState<string>("");
 
-  const status = params.get("status");
-  const courseId = params.get("course");
+  // Extraemos status y course de los params de la ruta
+  const statusParam = params.status as string | undefined;
+  const courseId = params.course as string | undefined;
+
+  // Normalizamos el status para compararlo
+  const statusNormalized =
+    statusParam?.toLowerCase() === "success"
+      ? "SUCCESS"
+      : statusParam?.toLowerCase() === "error"
+      ? "ERROR"
+      : undefined;
 
   useEffect(() => {
     const enrollUser = async () => {
-      if (status !== "SUCCESS" || !courseId) {
+      if (statusNormalized !== "SUCCESS" || !courseId) {
         toast.error("Parámetros inválidos o pago no exitoso.");
         setStatusVisual("error");
         return;
       }
 
       try {
-        // Intentar obtener información del curso
+        // Fetch info del curso
         const courseRes = await fetch(`/api/courses/${courseId}`);
         if (courseRes.ok) {
           const courseData = await courseRes.json();
@@ -70,7 +80,7 @@ export default function ThankYouPage() {
     };
 
     enrollUser();
-  }, [status, courseId]);
+  }, [statusNormalized, courseId]);
 
   const renderContent = () => {
     switch (statusVisual) {

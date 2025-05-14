@@ -4,11 +4,12 @@ import { db } from "@/lib/db";
 import { getProgress } from "@/actions/get-progress";
 import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
 
+// 🔄 Refactorizado a nueva sintaxis de params (Promise<T>)
 export async function GET(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
-  const { courseId } = params;
+  const { courseId } = await params;
   if (!courseId) {
     return new NextResponse("Bad Request: courseId is required", {
       status: 400,
