@@ -16,6 +16,7 @@ import {
   ChevronRight,
   ChevronLeft,
   X,
+  FileSignature, // Añadido para Registros Manuales y Certificados
 } from "lucide-react";
 
 export interface Badge {
@@ -48,6 +49,11 @@ export const guestRoutes: Route[] = [
   { icon: Compass, label: "Explorar", href: "/search" },
   { icon: Bell, label: "Notificaciones", href: "/notifications" },
   { icon: HelpCircle, label: "Ayuda", href: "/help" },
+  {
+    icon: FileSignature,
+    label: "Mis Certificados",
+    href: "/students/my-certificates",
+  },
 ];
 
 export const teacherRoutes: Route[] = [
@@ -77,7 +83,7 @@ export const teacherRoutes: Route[] = [
   },
   {
     icon: Users,
-    label: "Usuarios",
+    label: "Usuarios y Registros", // Renombrado para agrupar más cosas
     isCollapsible: true,
     href: "/admin/users",
     subRoutes: [
@@ -85,51 +91,41 @@ export const teacherRoutes: Route[] = [
         icon: UserCheck,
         label: "Administradores",
         href: "/admin/users/admins",
-        badge: {
-          viewLabel: true,
-          until: new Date("2025-10-01"),
-          textLabel: "Nuevo",
-          color: "text-purple-400",
-        },
-        superAdmin: true,
+        // superAdmin: true, // Quitar si Profesores también deben ver
       },
       {
         icon: UserCheck,
         label: "Profesores",
         href: "/admin/users/teachers",
-        badge: {
-          viewLabel: true,
-          until: new Date("2025-10-01"),
-          textLabel: "Nuevo",
-          color: "text-purple-400",
-        },
-        superAdmin: true,
+        // superAdmin: true,
       },
       {
         icon: UserCheck,
         label: "Estudiantes",
         href: "/admin/users/students",
-        badge: {
-          viewLabel: true,
-          until: new Date("2025-10-01"),
-          textLabel: "Nuevo",
-          color: "text-purple-400",
-        },
-        superAdmin: true,
+        // superAdmin: true,
       },
       {
         icon: UserCheck,
         label: "Visitantes",
         href: "/admin/users/visitor",
+        // superAdmin: true,
+      },
+      // --- NUEVA SUB-RUTA PARA REGISTRO MANUAL ---
+      {
+        icon: FileSignature,
+        label: "Registros Manuales",
+        href: "/admin/manual-registrations",
         badge: {
           viewLabel: true,
-          until: new Date("2025-10-01"),
+          until: new Date("2025-12-31"),
           textLabel: "Nuevo",
-          color: "text-purple-400",
         },
-        superAdmin: true,
+        // No se pone 'superAdmin: true' si es para Profesores Y Administradores.
       },
+      // --- FIN NUEVA SUB-RUTA ---
     ],
+    // superAdmin: true, // Quitar si Profesores también deben ver la sección
   },
   {
     icon: BarChart,
@@ -144,4 +140,9 @@ export const teacherRoutes: Route[] = [
     superAdmin: true,
   },
   { icon: Settings, label: "Configuración", href: "/teacher/settings" },
+  {
+    icon: FileSignature,
+    label: "Gestionar Certificados",
+    href: "/admin/certificates/manage",
+  },
 ];

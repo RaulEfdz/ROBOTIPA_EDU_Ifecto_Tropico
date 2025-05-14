@@ -45,10 +45,11 @@ model Course {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Exam   Exam?   @relation(fields: [examId], references: [id])
-  examId String?
-  exams  Exam[]  @relation("CourseExams")
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Exam        Exam?         @relation(fields: [examId], references: [id])
+  examId      String?
+  exams       Exam[]        @relation("CourseExams")
+  Certificate Certificate[]
 
   @@index([categoryId])
 }
@@ -181,14 +182,14 @@ model User {
   userProgress  UserProgress[]
   invoices      Invoice[]
   examAttempts  ExamAttempt[]
-  certificates  Certificate[] // ✅ Agregado
-  Subscription  Subscription?
   PaymentMethod PaymentMethod[]
   Payment       Payment[]
   AuditLog      AuditLog[]
   Notification  Notification[]
   UserAccess    UserAccess[]
   LegalDocument LegalDocument[]
+  Certificate   Certificate[]
+  Subscription  Subscription?
 }
 
 model Invoice {
@@ -308,18 +309,25 @@ model Certificate {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  title       String // Nombre del certificado o curso
-  institution String // Quién lo emite
+  // --- RELACIÓN CON COURSE (AÑADIDO/ACTUALIZADO) ---
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  // --- FIN RELACIÓN CON COURSE ---
+
+  title       String // Se almacena el título del curso en el momento de la emisión
+  institution String // Quién lo emite (ej. Nombre de la app desde variable de entorno)
   issuedAt    DateTime // Fecha de emisión
-  fileUrl     String? // URL del certificado (ej. PDF)
-  code        String? // Código de validación opcional
-  description String? // Información adicional
-  data        Json? // Extras opcionales
+  fileUrl     String? // URL si el certificado PDF se guarda externamente
+  code        String   @unique // Código de validación único del certificado
+  description String? // Información adicional sobre el certificado o curso
+  data        Json? // Para guardar 'templateVersion' y otros metadatos
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  // @@unique([userId, courseId]) // Descomentar si solo se permite un certificado por usuario y curso
 
   @@index([userId])
+  @@index([courseId]) // Índice para búsquedas por curso
 }
 
 model Subscription {

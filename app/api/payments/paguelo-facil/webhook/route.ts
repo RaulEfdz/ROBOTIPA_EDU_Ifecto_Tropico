@@ -1,6 +1,7 @@
 //app/api/payments/paguelo-facil/webhook/route.ts
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { sendEnrollmentConfirmationEmails } from "@/lib/email-service";
 
 export async function POST(req: Request) {
   try {
@@ -29,12 +30,37 @@ export async function POST(req: Request) {
     }
 
     // Inscribir al usuario
-    await db.purchase.create({
+    const purchase = await db.purchase.create({
       data: {
         userId,
         courseId,
       },
     });
+
+    // Obtener datos del usuario y del curso para el email
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, fullName: true, username: true },
+    });
+
+    const course = await db.course.findUnique({
+      where: { id: courseId },
+      select: { id: true, title: true, price: true },
+    });
+
+    if (user && course) {
+      // Envía los correos de confirmación
+      await sendEnrollmentConfirmationEmails({
+        user,
+        course,
+        purchaseId: purchase.id,
+        transactionDetails: `Transacción aprobada vía webhook`,
+      });
+    } else {
+      console.error(
+        `Webhook: Usuario (ID: ${userId}) o Curso (ID: ${courseId}) no encontrado para enviar email. Compra ID: ${purchase.id}`
+      );
+    }
 
     return NextResponse.json({ message: "Usuario inscrito vía webhook" });
   } catch (error) {
