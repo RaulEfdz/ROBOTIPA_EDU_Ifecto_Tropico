@@ -1,18 +1,25 @@
 import React, { useRef } from "react";
 import html2canvas from "html2canvas";
+import { DynamicCert, DynamicCertProps as InnerDynamicCertProps } from "@/app/(dashboard)/(routes)/admin/certificates/templatesCertificate/dinamic";
 
-export interface CertificateGeneratorProps {
+// Omitimos 'name' porque lo manejamos como studentName
+// y 'certificateId' porque ya está explícito en CertificateGeneratorProps
+// Así permitimos pasar unit, baseRem, positions, etc.
+type DynamicCertPassthroughProps = Omit<InnerDynamicCertProps, "name">;
+
+export interface CertificateGeneratorProps extends DynamicCertPassthroughProps {
   studentName: string;
   certificateId: string;
   courseName?: string;
-  // ...otras props necesarias para renderizar el certificado
 }
 
 export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
   studentName,
   certificateId,
   courseName,
-  // ...otras props
+  unit,
+  baseRem,
+  positions,
 }) => {
   const certRef = useRef<HTMLDivElement>(null);
 
@@ -40,8 +47,13 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
   return (
     <div>
       <div ref={certRef}>
-        {/* Renderizado del certificado aquí usando las props */}
-        {/* ...existing code... */}
+        <DynamicCert
+          name={studentName}
+          certificateId={certificateId}
+          unit={unit}
+          baseRem={baseRem}
+          positions={positions}
+        />
       </div>
       <button onClick={handleDownloadImage}>Descargar Certificado</button>
     </div>
