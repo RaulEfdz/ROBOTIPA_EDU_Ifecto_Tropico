@@ -9,10 +9,10 @@ import { es } from "date-fns/locale";
 
 export async function GET(
   req: Request,
-  { params }: { params: { code: string } }
+  { params }: { params: Promise<{ code: string }> }
 ) {
   try {
-    const { code } = params;
+    const { code } = await params;
     if (!code) {
       return new NextResponse("Código de certificado requerido", {
         status: 400,

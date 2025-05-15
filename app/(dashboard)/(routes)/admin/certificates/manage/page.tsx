@@ -169,6 +169,12 @@ const ManageCertificatesPage = () => {
             )}
             Generar / Reemitir Certificado
           </Button>
+          <Button
+            onClick={() => router.push("/admin/certificates")}
+            className="w-full mt-4"
+          >
+            ver
+          </Button>
         </CardContent>
       </Card>
     </div>

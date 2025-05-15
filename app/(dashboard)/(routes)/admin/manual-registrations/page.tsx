@@ -30,7 +30,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB"; // Para obtener usuario en cliente
 import { UserDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB"; // Tipo UserDB
@@ -303,15 +302,13 @@ const ManualRegistrationsPage = () => {
               </p>
             </div>
             <DialogFooter>
-              <DialogClose asChild>
-                <Button
-                  variant="outline"
-                  disabled={isConfirming}
-                  className="dark:border-slate-600 dark:hover:bg-slate-700"
-                >
-                  Cancelar
-                </Button>
-              </DialogClose>
+              <Button
+                variant="outline"
+                disabled={isConfirming}
+                className="dark:border-slate-600 dark:hover:bg-slate-700"
+              >
+                Cancelar
+              </Button>
               <Button
                 onClick={handleConfirmRegistration}
                 disabled={isConfirming}

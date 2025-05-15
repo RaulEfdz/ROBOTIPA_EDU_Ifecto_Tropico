@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { isValid, parse, isFuture } from "date-fns";
-import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
+import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
 
 const MANUAL_ACCESS_ID_SEPARATOR =
   process.env.NEXT_PUBLIC_MANUAL_ACCESS_ID_SEPARATOR || "|";
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
       userId,
       date: parsedDate.toISOString().slice(0, 10),
       courseTitle: course.title,
-      userName: userDb.name,
+      userName: userDb.fullName || userDb.username,
       userEmail: userDb.email,
     });
   } catch (error: any) {

@@ -1,6 +1,10 @@
 import { format } from "date-fns";
 import { db } from "./db";
-import type { Certificate } from "@/prisma/types";
+import type {
+  Certificate as CertificateModel,
+  User,
+  Course,
+} from "@prisma/client";
 
 // Almacén temporal de plantillas de certificado (puedes expandirlo en el futuro)
 const TEMPLATES_STORAGE: Record<string, string> = {
@@ -19,9 +23,11 @@ const TEMPLATES_STORAGE: Record<string, string> = {
       </body>
     </html>
   `,
-  // Puedes agregar más versiones aquí
 };
 
+/**
+ * Genera un código de certificado único basado en usuario y curso.
+ */
 export async function generateUniqueCertificateCode(
   courseId: string,
   userId: string
@@ -36,11 +42,12 @@ export async function generateUniqueCertificateCode(
     userId.length > 4
       ? userId.substring(0, 4).toUpperCase()
       : userId.toUpperCase();
-  let code = `CERT${separator}${cIdPart}${separator}${uIdPart}${separator}${datePart}`;
-  // Opcional: Verificar colisión en DB (no implementado por simplicidad)
-  return code;
+  return `CERT${separator}${cIdPart}${separator}${uIdPart}${separator}${datePart}`;
 }
 
+/**
+ * Reemplaza los placeholders en la plantilla HTML con los datos reales del certificado.
+ */
 export function renderCertificateHtml(
   certificateData: Record<string, any>,
   templateHtml: string
@@ -56,8 +63,11 @@ export function renderCertificateHtml(
   return renderedHtml;
 }
 
+/**
+ * Obtiene el HTML de la plantilla según la versión especificada.
+ */
 export async function getCertificateTemplateHtml(
-  templateVersion: string
+  templateVersion?: string
 ): Promise<string | null> {
   const version =
     templateVersion ||
@@ -68,33 +78,35 @@ export async function getCertificateTemplateHtml(
 
 /**
  * Genera un certificado para un usuario y curso si no existe.
- * @returns El certificado creado, el existente, o null si hubo error.
+ * Devuelve el registro plano del certificado (sin relaciones anidadas).
  */
 export async function generateCertificate(
   userId: string,
   courseId: string
-): Promise<Certificate | null> {
-  // Verificar existencia de usuario y curso
+): Promise<CertificateModel | null> {
+  // 1) Verificar existencia de usuario y curso
   const [user, course] = await Promise.all([
     db.user.findUnique({ where: { id: userId } }),
     db.course.findUnique({ where: { id: courseId } }),
   ]);
   if (!user || !course) return null;
 
-  // Verificar si ya existe certificado
+  // 2) Buscar certificado existente
   const existing = await db.certificate.findFirst({
     where: { userId, courseId },
   });
-  if (existing) return existing as Certificate;
+  if (existing) {
+    return existing;
+  }
 
-  // Generar código único y datos
+  // 3) Generar código y metadatos
   const code = await generateUniqueCertificateCode(courseId, userId);
   const templateVersion =
     process.env.DEFAULT_CERTIFICATE_TEMPLATE_VERSION || "v1.0";
   const institution =
     process.env.NEXT_PUBLIC_NAME_APP || "Tu Plataforma Educativa";
 
-  // Crear certificado
+  // 4) Crear nuevo certificado
   const cert = await db.certificate.create({
     data: {
       userId,
@@ -106,5 +118,6 @@ export async function generateCertificate(
       data: { templateVersion },
     },
   });
-  return cert as Certificate;
+
+  return cert;
 }
