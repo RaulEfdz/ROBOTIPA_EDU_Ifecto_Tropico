@@ -1,6 +1,9 @@
 import React, { useRef } from "react";
 import html2canvas from "html2canvas";
-import { DynamicCert, DynamicCertProps as InnerDynamicCertProps } from "@/app/(dashboard)/(routes)/admin/certificates/templatesCertificate/dinamic";
+import {
+  DynamicCert,
+  DynamicCertProps as InnerDynamicCertProps,
+} from "@/app/(dashboard)/(routes)/admin/certificates/templatesCertificate/dinamic";
 
 // Omitimos 'name' porque lo manejamos como studentName
 // y 'certificateId' porque ya está explícito en CertificateGeneratorProps
