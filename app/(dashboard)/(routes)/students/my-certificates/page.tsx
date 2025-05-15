@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Award, Eye, Download, ShieldX } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import CertificateGenerator from "@/components/CertificateGenerator";
 
 interface Certificate {
   id: string;
@@ -138,12 +139,13 @@ const MyCertificatesPage: React.FC = () => {
                     <Eye className="h-4 w-4 mr-1" /> Ver Online
                   </a>
                 </Button>
-                <Button asChild variant="secondary" size="sm" disabled>
-                  <span>
-                    <Download className="h-4 w-4 mr-1" /> Descargar
-                    (Próximamente)
-                  </span>
-                </Button>
+                <CertificateGenerator
+                  name={cert.title}
+                  certificateId={cert.code || ""}
+                  unit="px"
+                  fileName={"certificado"}
+                  positions={{}}
+                />
               </div>
             </CardContent>
           </Card>

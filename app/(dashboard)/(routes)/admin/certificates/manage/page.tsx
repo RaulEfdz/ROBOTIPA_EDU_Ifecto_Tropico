@@ -18,12 +18,17 @@ import {
 } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CertificateGenerator } from "@/components/CertificateGenerator";
 
 const ManageCertificatesPage = () => {
   const [userIdInput, setUserIdInput] = useState("");
   const [courseIdInput, setCourseIdInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [certPreview, setCertPreview] = useState<{
+    name: string;
+    certificateId: string;
+  } | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -80,6 +85,38 @@ const ManageCertificatesPage = () => {
       );
       setUserIdInput("");
       setCourseIdInput("");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePreviewCertificate = async () => {
+    if (!userIdInput.trim() || !courseIdInput.trim()) {
+      toast.error("Por favor, ingresa el ID de Usuario y el ID de Curso.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      // Suponiendo que existe un endpoint para obtener los datos del certificado generado
+      const response = await fetch("/api/admin/certificates/reissue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userIdInput.trim(),
+          courseId: courseIdInput.trim(),
+          preview: true, // Indica que solo queremos los datos, no guardar
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || "Error al obtener el certificado.");
+      }
+      setCertPreview({
+        name: result.name || "Estudiante",
+        certificateId: result.code || "CERT-PRUEBA",
+      });
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -169,6 +206,21 @@ const ManageCertificatesPage = () => {
             )}
             Generar / Reemitir Certificado
           </Button>
+          <Button
+            onClick={handlePreviewCertificate}
+            className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+            disabled={isLoading}
+          >
+            Previsualizar y Descargar Certificado
+          </Button>
+          {certPreview && (
+            <div className="mt-6">
+              <CertificateGenerator
+                studentName={certPreview.name}
+                certificateId={certPreview.certificateId}
+              />
+            </div>
+          )}
           <Button
             onClick={() => router.push("/admin/certificates")}
             className="w-full mt-4"
