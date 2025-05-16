@@ -76,7 +76,7 @@ export async function middleware(request: NextRequest) {
     console.log(
       "Middleware: User with session on /auth, redirecting to /dashboard"
     );
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   // Si es una ruta pública y no es /auth (ya que /auth se maneja arriba si hay sesión), dejamos pasar

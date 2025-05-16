@@ -21,9 +21,7 @@ function AuthPageContent() {
   const searchParams = useSearchParams();
   const rawRedirectUrl = searchParams.get("redirectUrl");
   const redirectUrl =
-    rawRedirectUrl && rawRedirectUrl.startsWith("/")
-      ? rawRedirectUrl
-      : "/dashboard";
+    rawRedirectUrl && rawRedirectUrl.startsWith("/") ? rawRedirectUrl : "/";
   const initialAction = searchParams.get("action");
 
   return (
