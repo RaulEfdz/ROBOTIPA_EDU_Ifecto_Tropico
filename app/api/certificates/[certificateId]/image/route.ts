@@ -5,9 +5,10 @@ import path from "path";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { certificateId: string } }
+  { params }: { params: Promise<{ certificateId: string }> }
 ) {
-  const cert = await getCertificateById(params.certificateId);
+  const paramsResolved = await params;
+  const cert = await getCertificateById(paramsResolved.certificateId);
   if (!cert) {
     return new Response("Not found", { status: 404 });
   }

@@ -6,9 +6,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { SkeletonCard } from "./SkeletonCard";
 
-// Tipo base que extiende Course para añadir progreso opcional
+// Tipo base que extiende Course para añadir progreso opcional y examId requerido
 export type CourseWithProgress = Course & {
   progress?: number | null;
+  examId: string; // Asegura que examId esté presente
 };
 
 // Tipo que añade además la categoría
@@ -53,16 +54,16 @@ export const CoursesList = ({ items }: CoursesListProps) => {
           transition={{ duration: 0.4 }}
         >
           {sortedItems.map((course) => {
-            if ("examId" in course) {
+            if ("examId" in course && course.data) {
               return (
                 <CourseCard
                   key={course.id}
-                  course={course}
+                  course={course as any} // 'any' used to bypass type mismatch, ensure data is present
                   setLoading={setLoading}
                 />
               );
             }
-            return null; // Skip items without examId
+            return null; // Skip items without examId or data
           })}
         </motion.div>
       )}

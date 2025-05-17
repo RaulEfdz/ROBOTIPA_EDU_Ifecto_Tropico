@@ -120,6 +120,7 @@ const MyCertificatesPage: React.FC = () => {
                 {cert.courseName}
               </h2>
               <CertificateGenerator
+                certRef={React.createRef()} // Add the required certRef prop
                 studentName={cert.studentName}
                 certificateId={cert.certificateId}
                 courseName={cert.courseName}

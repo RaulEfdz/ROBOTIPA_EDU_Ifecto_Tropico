@@ -4,9 +4,9 @@ import { db } from "@/lib/db";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   console.log("API: fetching certificate with id =", id);
   if (!id) {
     return NextResponse.json(
