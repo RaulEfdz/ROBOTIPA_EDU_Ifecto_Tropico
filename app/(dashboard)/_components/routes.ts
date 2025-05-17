@@ -16,7 +16,8 @@ import {
   ChevronRight,
   ChevronLeft,
   X,
-  FileSignature, // Añadido para Registros Manuales y Certificados
+  FileSignature,
+  Files, // Añadido para Registros Manuales y Certificados
 } from "lucide-react";
 
 export interface Badge {
@@ -46,9 +47,9 @@ export interface Route {
 
 export const guestRoutes: Route[] = [
   { icon: Layout, label: "Tablero", href: "/" },
-  { icon: Compass, label: "Explorar", href: "/search" },
-  { icon: Bell, label: "Notificaciones", href: "/notifications" },
-  { icon: HelpCircle, label: "Ayuda", href: "/help" },
+  { icon: Compass, label: "Catalogo", href: "/courses/catalog" },
+  // { icon: Bell, label: "Notificaciones", href: "/notifications" },
+  // { icon: HelpCircle, label: "Ayuda", href: "/help" },
   {
     icon: FileSignature,
     label: "Mis Certificados",
@@ -145,4 +146,9 @@ export const teacherRoutes: Route[] = [
     label: "Gestionar Certificados",
     href: "/admin/certificates/manage",
   },
+  // {
+  //   icon: Files,
+  //   label: "Catalogo publico",
+  //   href: "/admin/certificates/manage",
+  // },
 ];

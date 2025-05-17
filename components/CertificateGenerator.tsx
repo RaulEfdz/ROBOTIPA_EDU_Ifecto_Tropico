@@ -14,6 +14,13 @@ export interface CertificateGeneratorProps extends DynamicCertPassthroughProps {
   studentName: string;
   certificateId: string;
   courseName?: string;
+  certRef: React.RefObject<HTMLDivElement>;
+  unit?: "px" | "rem" | "vh";
+  baseRem?: number;
+  positions?: {
+    name?: { x: number; y: number };
+    certificate?: { x: number; y: number };
+  };
 }
 
 export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
@@ -23,8 +30,9 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
   unit,
   baseRem,
   positions,
+  certRef,
 }) => {
-  const certRef = useRef<HTMLDivElement>(null);
+  // const certRef = useRef<HTMLDivElement>(null);
 
   // Sanitiza el nombre para el archivo
   const sanitizeFileName = (name: string) =>
@@ -58,7 +66,7 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
           positions={positions}
         />
       </div>
-      <button onClick={handleDownloadImage}>Descargar Certificado</button>
+      {/* <button onClick={handleDownloadImage}>Descargar Certificado</button> */}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 // app/(dashboard)/(routes)/admin/certificates/templatesCertificate/dinamic.tsx
 "use client";
+export const TEMPLATE_URL = "/Certificado-de-Participación-Animales.png";
 
 import React, { useEffect, useState } from "react";
 
@@ -17,7 +18,6 @@ export interface DynamicCertProps {
   };
 }
 
-const TEMPLATE_URL = "/Certificado-de-Participación-Animales.png";
 const ORIGINAL = { width: 623, height: 440 };
 const SCALE = 2;
 const DEFAULT_POS = {

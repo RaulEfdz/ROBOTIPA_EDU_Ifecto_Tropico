@@ -254,8 +254,8 @@ export default function CoursePage() {
   const priceDisplay = isFree
     ? "Gratis"
     : price
-    ? formatPrice(price)
-    : "Precio no disponible";
+      ? formatPrice(price)
+      : "Precio no disponible";
 
   // Determinar texto e icono del botón principal basado en los estados
   let mainButtonText: string;
@@ -297,7 +297,6 @@ export default function CoursePage() {
   // --- JSX de la Página ---
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Toaster position="top-center" richColors />
       <Header user={user} courseTitle={title} />
 
       {/* --- Hero Section --- */}
@@ -352,22 +351,23 @@ export default function CoursePage() {
               src={imageUrl || "/images/course-placeholder.webp"}
               alt={`Visual del curso ${title}`}
               fill
-              className="object-cover"
+              className="object-contain rounded-xl transition-transform group-hover:scale-105"
               priority // Cargar rápido la imagen principal
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 384px" // Optimizar tamaños
             />
             <div
               className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-all flex items-center justify-center cursor-pointer"
-              onClick={() =>
-                toast.info(
-                  "La previsualización de video no está disponible aún."
-                )
-              }
+              // onClick={() =>
+              //   // toast.info(
+              //   //   "La previsualización de video no está disponible aún.",
+              //   //   { id: "preview-video" }
+              //   // )
+              // }
             >
-              <PlayCircle
+              {/* <PlayCircle
                 size={64}
                 className="text-white/80 group-hover:text-white group-hover:scale-110 transition-transform"
-              />
+              /> */}
             </div>
           </div>
         </div>
@@ -444,8 +444,8 @@ export default function CoursePage() {
                       {user && !hasPurchased && !isFree
                         ? `Comprar para ver los ${course.chapters.length} capítulos`
                         : user
-                        ? `Acceder para ver los ${course.chapters.length} capítulos`
-                        : `Iniciar sesión para ver los ${course.chapters.length} capítulos`}
+                          ? `Acceder para ver los ${course.chapters.length} capítulos`
+                          : `Iniciar sesión para ver los ${course.chapters.length} capítulos`}
                     </Button>
                   </div>
                 )}
@@ -490,8 +490,8 @@ export default function CoursePage() {
                   {isActionLoading
                     ? "Procesando..."
                     : isLoadingInitial
-                    ? "Cargando..."
-                    : mainButtonText}
+                      ? "Cargando..."
+                      : mainButtonText}
                 </span>
               </Button>
 

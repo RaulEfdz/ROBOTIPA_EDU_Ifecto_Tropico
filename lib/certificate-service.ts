@@ -151,3 +151,26 @@ export function renderCertificateHtml(
   // Puedes agregar más reemplazos si añades más placeholders en la plantilla
   return renderedHtml;
 }
+
+/**
+ * Obtiene un certificado por su código (certificateId/code).
+ * Incluye información del usuario y del curso.
+ */
+export async function getCertificateById(certificateId: string) {
+  if (!certificateId) return null;
+  const cert = await db.certificate.findUnique({
+    where: { code: certificateId },
+    include: {
+      user: { select: { fullName: true } },
+      course: { select: { title: true } },
+    },
+  });
+  if (!cert) return null;
+  return {
+    certificateId: cert.code,
+    studentName: cert.user?.fullName || "Estudiante",
+    courseName: cert.course?.title || cert.title || "Curso",
+    issuedAt: cert.issuedAt,
+    // Puedes agregar más campos si lo necesitas
+  };
+}

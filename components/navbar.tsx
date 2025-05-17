@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import React from 'react';
+import Image from "next/image";
+import React from "react";
 
 // Define una interfaz para los botones
 interface ButtonProps {
@@ -16,7 +16,13 @@ export const Navbar: React.FC<NavbarProps> = ({ buttons }) => {
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1 flex items-center">
-        <Image height={1000} width={1000} src="/logo.png" alt="Logo" className="h-10 w-auto mr-4" />
+        <Image
+          height={1000}
+          width={1000}
+          src="/logo.png"
+          alt="Logo"
+          className="h-10 w-auto mr-4"
+        />
         <a className="btn btn-ghost text-xl">daisyUI</a>
       </div>
       <div className="flex-none">
