@@ -1,0 +1,83 @@
+/* 
+  app/theme.css
+  Centralización de clases semánticas de alto nivel para el diseño gráfico.
+  Usa @apply con utilidades de Tailwind y variables CSS de Shadcn/UI.
+  Importar este archivo en app/layout.tsx después de globals.css.
+*/
+
+/* Espaciado de secciones */
+.section-padding {
+  @apply py-12 md:py-16 lg:py-20;
+}
+
+/* Tarjetas */
+.card-base {
+  @apply bg-card text-card-foreground rounded-md p-6;
+}
+.card-raised {
+  @apply bg-card text-card-foreground rounded-md p-6 shadow-lg;
+}
+
+/* Botones */
+.btn-primary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-6 py-3 text-base font-semibold transition-colors;
+}
+.btn-secondary {
+  @apply border border-primary bg-transparent text-primary hover:bg-primary/10 rounded-md px-6 py-3 text-base font-semibold transition-colors;
+}
+.btn-danger {
+  @apply bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md px-6 py-3 text-base font-semibold transition-colors;
+}
+.btn-disabled {
+  @apply opacity-50 pointer-events-none;
+}
+
+/* Títulos */
+.title-h1 {
+  @apply text-4xl md:text-5xl font-bold mb-4;
+  color: hsl(var(--foreground));
+}
+.title-h2 {
+  @apply text-3xl md:text-4xl font-semibold mb-3;
+  color: hsl(var(--foreground));
+}
+.title-h3 {
+  @apply text-2xl md:text-3xl font-semibold mb-2;
+  color: hsl(var(--foreground));
+}
+
+/* Texto */
+.text-body-default {
+  @apply text-base;
+  color: hsl(var(--foreground));
+}
+.text-body-muted {
+  @apply text-base text-muted-foreground;
+}
+.text-caption {
+  @apply text-sm text-muted-foreground;
+}
+
+/* Inputs y formularios */
+.input-default {
+  @apply bg-background border border-border rounded-md px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition;
+}
+.input-error {
+  @apply border-destructive text-destructive placeholder:text-destructive/70;
+}
+.label-default {
+  @apply text-sm font-medium text-foreground mb-1;
+}
+
+/* Links */
+.link-default {
+  @apply text-primary underline underline-offset-2 hover:text-primary/80 transition-colors;
+}
+
+/* Utilidades varias */
+.divider {
+  @apply border-b border-border my-8;
+}
+.shadow-card {
+  @apply shadow-md;
+}

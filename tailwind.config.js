@@ -55,11 +55,24 @@ module.exports = withUt({
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // NUEVA PALETA SEMÁNTICA
+        "brand-primary": "#1E3A2B",
+        "brand-accent": "#8CC63F",
+        "bg-base": "#FCFCF8",
+        "bg-card": "#FCFCF8",
+        "text-heading": "#212529",
+        "text-body": "#343A40",
+        "text-link": "#1E3A2B",
+        "border-default": "#DEE2E6",
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 0.1rem)",
-        sm: "calc(var(--radius) - 0.1rem)",
+        sm: "2px",
+        md: "6px",
+        lg: "12px",
+        full: "9999px",
+      },
+      fontFamily: {
+        sans: ['Renogare Soft', 'ChaletBook', 'sans-serif'],
       },
       keyframes: {
         "accordion-down": {
@@ -79,4 +92,3 @@ module.exports = withUt({
   },
   plugins: [require("tailwindcss-animate")],
 });
-

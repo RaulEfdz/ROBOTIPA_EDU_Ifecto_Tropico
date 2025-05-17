@@ -98,7 +98,7 @@ export default function ExamManagement() {
         <div className="flex space-x-2">
           {/* Botón Refrescar */}
           <Button
-            variant="outline"
+            className="btn-primary"
             onClick={handleRefresh}
             disabled={refreshing || isLoading}
           >
@@ -116,7 +116,10 @@ export default function ExamManagement() {
           />
 
           {/* Botón para abrir el modal */}
-          <Button onClick={() => setIsNewDialogOpen(true)}>
+          <Button
+            className="btn-primary"
+            onClick={() => setIsNewDialogOpen(true)}
+          >
             <PlusCircle className="w-4 h-4 mr-1" />
             Nuevo Examen
           </Button>
@@ -178,6 +181,7 @@ export default function ExamManagement() {
                     <>
                       <p>No hay exámenes disponibles.</p>
                       <Button
+                        className="btn-primary"
                         onClick={() => setIsNewDialogOpen(true)}
                         size="sm"
                       >
@@ -216,8 +220,8 @@ export default function ExamManagement() {
                   </TableCell>
                   <TableCell className="flex justify-center space-x-1">
                     <Button
+                      className="btn-primary"
                       size="icon"
-                      variant="outline"
                       asChild
                       title="Ver/Editar"
                     >
@@ -226,8 +230,8 @@ export default function ExamManagement() {
                       </a>
                     </Button>
                     <Button
+                      className="btn-primary"
                       size="icon"
-                      variant="destructive"
                       onClick={() => handleDelete(exam.id)}
                       title="Eliminar"
                     >

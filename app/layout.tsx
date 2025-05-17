@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./theme.css";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import { ToastProvider } from "@/components/providers/toaster-provider";

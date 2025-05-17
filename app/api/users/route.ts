@@ -10,9 +10,6 @@ export async function GET(_req: NextRequest) {
       orderBy: { fullName: "asc" }, // Mantiene el ordenamiento por nombre
     });
 
-    console.log("----users: ");
-    console.log(users);
-
     // Renombrar la clave de respuesta de 'teachers' a 'users'
     return NextResponse.json({ success: true, users });
   } catch (error) {
