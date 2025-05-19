@@ -110,22 +110,24 @@ const MyCertificatesPage: React.FC = () => {
         Mis Certificados
       </h1>
       {certificates.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {certificates.map((cert) => (
             <div
               key={cert.id}
-              className="w-full max-w-md p-4 bg-white dark:bg-slate-800 shadow-xl rounded-lg border border-slate-200 dark:border-slate-700"
+              className="w-full max-w-full md:max-w-md p-2 sm:p-4 bg-white dark:bg-slate-800 shadow-xl rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col"
             >
-              <h2 className="text-xl font-semibold mb-3 text-center text-sky-700 dark:text-sky-400">
+              <h2 className="text-lg sm:text-xl font-semibold mb-3 text-center text-sky-700 dark:text-sky-400">
                 {cert.courseName}
               </h2>
-              <CertificateGenerator
-                certRef={React.createRef()} // Add the required certRef prop
-                studentName={cert.studentName}
-                certificateId={cert.certificateId}
-                courseName={cert.courseName}
-                // unit, baseRem, positions si lo necesitas por certificado
-              />
+              <div className="w-full">
+                <CertificateGenerator
+                  certRef={React.createRef()} // Add the required certRef prop
+                  studentName={cert.studentName}
+                  certificateId={cert.certificateId}
+                  courseName={cert.courseName}
+                  // unit, baseRem, positions si lo necesitas por certificado
+                />
+              </div>
             </div>
           ))}
         </div>

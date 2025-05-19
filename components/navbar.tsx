@@ -14,7 +14,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ buttons }) => {
   return (
-    <div className="navbar bg-base-100 flex flex-wrap items-center justify-between">
+    <div className="navbar bg-base-100 flex flex-wrap items-center justify-between bg-white">
       <div className="flex items-center">
         <Image
           height={1000}
@@ -23,7 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({ buttons }) => {
           alt="Logo"
           className="h-10 w-auto mr-4"
         />
-        <a className="btn btn-ghost text-xl">daisyUI</a>
+        <a className="btn btn-ghost text-xl"></a>
       </div>
       <div className="flex-none flex items-center space-x-4">
         <div className="hidden md:flex" id="navbar-right">
