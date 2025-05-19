@@ -40,6 +40,7 @@ export async function GET() {
         studentName,
         certificateId: cert.code,
         courseName: cert.course?.title || "Nombre del Curso Desconocido",
+        pdfUrl: cert.pdfUrl,
         // Puedes agregar más campos si lo necesitas
       };
     });

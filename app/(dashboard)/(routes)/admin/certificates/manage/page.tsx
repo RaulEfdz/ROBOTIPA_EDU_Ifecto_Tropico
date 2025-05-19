@@ -4,6 +4,12 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -19,15 +25,16 @@ import {
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CertificateGenerator } from "@/components/CertificateGenerator";
+import DefaultCertificateTemplate from "@/templates/certificates/DefaultCertificateTemplate";
 
 const ManageCertificatesPage = () => {
   const [userIdInput, setUserIdInput] = useState("");
   const [courseIdInput, setCourseIdInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingReissue, setIsLoadingReissue] = useState(false);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [certPreview, setCertPreview] = useState<{
-    name: string;
-    certificateId: string;
+    templateProps: any;
   } | null>(null);
   const router = useRouter();
 
@@ -66,7 +73,7 @@ const ManageCertificatesPage = () => {
       toast.error("Por favor, ingresa el ID de Usuario y el ID de Curso.");
       return;
     }
-    setIsLoading(true);
+    setIsLoadingReissue(true);
     try {
       const response = await fetch("/api/admin/certificates/reissue", {
         method: "POST",
@@ -88,7 +95,7 @@ const ManageCertificatesPage = () => {
     } catch (err: any) {
       toast.error(err.message);
     } finally {
-      setIsLoading(false);
+      setIsLoadingReissue(false);
     }
   };
 
@@ -97,9 +104,9 @@ const ManageCertificatesPage = () => {
       toast.error("Por favor, ingresa el ID de Usuario y el ID de Curso.");
       return;
     }
-    setIsLoading(true);
+    setIsLoadingPreview(true);
     try {
-      // Suponiendo que existe un endpoint para obtener los datos del certificado generado
+      // Suponiendo que el endpoint devuelve todos los datos necesarios para la plantilla
       const response = await fetch("/api/admin/certificates/reissue", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -113,14 +120,23 @@ const ManageCertificatesPage = () => {
       if (!response.ok) {
         throw new Error(result.error || "Error al obtener el certificado.");
       }
+      // Mapear los datos de la API a los props requeridos por DefaultCertificateTemplate
       setCertPreview({
-        name: result.name || "Estudiante",
-        certificateId: result.code || "CERT-PRUEBA",
+        templateProps: {
+          studentName: result.name || "Estudiante",
+          courseName: result.courseName || "Curso",
+          issueDate: result.issueDate || new Date().toLocaleDateString(),
+          certificateCode: result.code || "CERT-PRUEBA",
+          backgroundImageUrl:
+            result.backgroundImageUrl ||
+            "/public/Certificado-de-Participación-Animales.png",
+          qrCodeDataUrl: result.qrCodeDataUrl || undefined,
+        },
       });
     } catch (err: any) {
       toast.error(err.message);
     } finally {
-      setIsLoading(false);
+      setIsLoadingPreview(false);
     }
   };
 
@@ -147,90 +163,120 @@ const ManageCertificatesPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <Card className="max-w-lg mx-auto shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
-            Gestionar/Reemitir Certificados
-          </CardTitle>
-          <CardDescription className="text-center text-muted-foreground">
-            Ingresa los datos para generar o reemitir un certificado.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertTitle>Información Importante</AlertTitle>
-            <AlertDescription>
-              Si el certificado ya existe para el usuario y curso, se
-              actualizará la fecha de emisión (y opcionalmente el código y
-              plantilla). Si no existe, se generará uno nuevo.
-            </AlertDescription>
-          </Alert>
-          <div className="space-y-2">
-            <label htmlFor="userIdInput" className="block text-sm font-medium">
-              ID del Usuario
-            </label>
-            <Input
-              id="userIdInput"
-              type="text"
-              value={userIdInput}
-              onChange={(e) => setUserIdInput(e.target.value)}
-              placeholder="Ingresa el ID del usuario"
-            />
-          </div>
-          <div className="space-y-2">
-            <label
-              htmlFor="courseIdInput"
-              className="block text-sm font-medium"
-            >
-              ID del Curso
-            </label>
-            <Input
-              id="courseIdInput"
-              type="text"
-              value={courseIdInput}
-              onChange={(e) => setCourseIdInput(e.target.value)}
-              placeholder="Ingresa el ID del curso"
-            />
-          </div>
-          <Button
-            onClick={handleReissueCertificate}
-            disabled={isLoading}
-            className="w-full bg-sky-600 hover:bg-sky-700"
-          >
-            {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <RotateCcw className="mr-2 h-4 w-4" />
-            )}
-            Generar / Reemitir Certificado
-          </Button>
-          <Button
-            onClick={handlePreviewCertificate}
-            className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-            disabled={isLoading}
-          >
-            Previsualizar y Descargar Certificado
-          </Button>
-          {certPreview && (
-            <div className="mt-6">
-              <CertificateGenerator
-                studentName={certPreview.name}
-                certificateId={certPreview.certificateId}
-                certRef={React.createRef()}
+    <TooltipProvider>
+      <div className="container mx-auto p-4 md:p-8">
+        <Card className="max-w-lg mx-auto shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">
+              Gestionar/Reemitir Certificados
+            </CardTitle>
+            <CardDescription className="text-center text-muted-foreground">
+              Ingresa los datos para generar o reemitir un certificado.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertTitle>Información Importante</AlertTitle>
+              <AlertDescription>
+                Si el certificado ya existe para el usuario y curso, se
+                actualizará la fecha de emisión (y opcionalmente el código y
+                plantilla). Si no existe, se generará uno nuevo.
+              </AlertDescription>
+            </Alert>
+            <div className="space-y-2">
+              <label
+                htmlFor="userIdInput"
+                className="block text-sm font-medium"
+              >
+                ID del Usuario
+              </label>
+              <Input
+                id="userIdInput"
+                type="text"
+                value={userIdInput}
+                onChange={(e) => setUserIdInput(e.target.value)}
+                placeholder="Ingresa el ID del usuario"
               />
             </div>
-          )}
-          <Button
-            onClick={() => router.push("/admin/certificates")}
-            className="w-full mt-4"
-          >
-            ver
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="courseIdInput"
+                className="block text-sm font-medium"
+              >
+                ID del Curso
+              </label>
+              <Input
+                id="courseIdInput"
+                type="text"
+                value={courseIdInput}
+                onChange={(e) => setCourseIdInput(e.target.value)}
+                placeholder="Ingresa el ID del curso"
+              />
+            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button
+                    onClick={handleReissueCertificate}
+                    disabled={isLoadingReissue || isLoadingPreview}
+                    className="w-full bg-sky-600 hover:bg-sky-700"
+                  >
+                    {isLoadingReissue ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <RotateCcw className="mr-2 h-4 w-4" />
+                    )}
+                    Generar/Reemitir Oficialmente
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                Genera o reemite el certificado de forma oficial y lo guarda en
+                la base de datos. Usa esta opción para emitir certificados
+                válidos para el usuario y curso indicados.
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button
+                    onClick={handlePreviewCertificate}
+                    className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+                    disabled={isLoadingPreview || isLoadingReissue}
+                  >
+                    {isLoadingPreview ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
+                    Previsualizar/Descargar Borrador
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                Muestra una previsualización del certificado sin guardarlo
+                oficialmente. Útil para revisar el diseño o descargar un
+                borrador antes de emitirlo oficialmente.
+              </TooltipContent>
+            </Tooltip>
+            {certPreview && (
+              <div className="mt-6">
+                <CertificateGenerator
+                  certRef={React.createRef()}
+                  templateComponent={DefaultCertificateTemplate}
+                  templateProps={certPreview.templateProps}
+                />
+              </div>
+            )}
+            <Button
+              onClick={() => router.push("/admin/certificates")}
+              className="w-full mt-4"
+            >
+              ver
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </TooltipProvider>
   );
 };
 

@@ -14,8 +14,8 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ buttons }) => {
   return (
-    <div className="navbar bg-base-100 flex flex-wrap items-center justify-between bg-white">
-      <div className="flex items-center">
+    <nav className="w-full bg-base border-b border-default shadow-card flex flex-wrap items-center justify-between font-[Renogare Soft, ChaletBook, sans-serif]">
+      <div className="flex items-center py-2 pl-4">
         <Image
           height={1000}
           width={1000}
@@ -23,14 +23,14 @@ export const Navbar: React.FC<NavbarProps> = ({ buttons }) => {
           alt="Logo"
           className="h-10 w-auto mr-4"
         />
-        <a className="btn btn-ghost text-xl"></a>
+        <span className="title-h2 text-brand-primary">RobotiPA EDU</span>
       </div>
-      <div className="flex-none flex items-center space-x-4">
+      <div className="flex-none flex items-center space-x-4 pr-4">
         <div className="hidden md:flex" id="navbar-right">
           {buttons.map((button, index) => (
             <button
               key={index}
-              className="btn btn-ghost"
+              className="btn-primary"
               onClick={button.onClick}
             >
               {button.title}
@@ -38,7 +38,8 @@ export const Navbar: React.FC<NavbarProps> = ({ buttons }) => {
           ))}
         </div>
         <button
-          className="btn btn-square btn-ghost md:hidden"
+          className="btn-secondary btn-square md:hidden"
+          aria-label="Abrir menú"
           onClick={() => {
             const navbarRight = document.getElementById("navbar-right");
             if (navbarRight) {
@@ -50,17 +51,17 @@ export const Navbar: React.FC<NavbarProps> = ({ buttons }) => {
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
-            className="inline-block h-5 w-5 stroke-current"
+            className="inline-block h-6 w-6 stroke-brand-primary"
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
-              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+              d="M4 8h16M4 16h16"
             ></path>
           </svg>
         </button>
       </div>
-    </div>
+    </nav>
   );
 };

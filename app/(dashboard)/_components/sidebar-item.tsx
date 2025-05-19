@@ -26,18 +26,18 @@ export const SidebarItem = ({
       className={cn(
         "flex items-center gap-x-2 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200",
         isActive
-          ? "bg-TextCustom/20 text-TextCustom shadow-sm"
-          : "text-slate-50 opacity-90 hover:bg-TextCustom/10 hover:opacity-100",
+          ? "bg-brand-accent/20 text-brand-primary shadow-card"
+          : "text-heading opacity-90 hover:bg-brand-accent/10 hover:text-brand-primary hover:opacity-100",
         isAnimated && "animate-fadeIn"
       )}
     >
       <Icon
         className={cn(
           "h-5 w-5 flex-shrink-0",
-          isActive ? "text-TextCustom" : "text-TextCustom/80"
+          isActive ? "text-brand-primary" : "text-brand-primary/80"
         )}
       />
-      <span className={cn(isActive ? "text-TextCustom" : "text-TextCustom/90")}>
+      <span className={cn(isActive ? "text-brand-primary" : "text-heading")}>
         {label}
       </span>
     </Link>

@@ -27,9 +27,46 @@ export async function generateUniqueCertificateCode(
 }
 
 /**
+ * Prepara los datos necesarios para emitir o reemitir un certificado.
+ * Devuelve un objeto con: fullName, courseTitle, issuedAtFormatted, certificateCode.
+ */
+export async function prepareCertificateData(
+  userId: string,
+  courseId: string
+): Promise<{
+  fullName: string;
+  courseTitle: string;
+  issuedAtFormatted: string;
+  certificateCode: string;
+} | null> {
+  // 1) Obtener usuario y curso
+  const [user, course] = await Promise.all([
+    db.user.findUnique({ where: { id: userId } }),
+    db.course.findUnique({ where: { id: courseId } }),
+  ]);
+  if (!user || !course) return null;
+
+  // 2) Formatear fecha actual
+  const issuedAt = new Date();
+  const issuedAtFormatted = format(issuedAt, "dd/MM/yyyy");
+
+  // 3) Generar código de certificado único
+  const certificateCode = await generateUniqueCertificateCode(courseId, userId);
+
+  return {
+    fullName: user.fullName,
+    courseTitle: course.title,
+    issuedAtFormatted,
+    certificateCode,
+  };
+}
+
+/**
  * Genera un certificado para un usuario y curso si no existe.
  * Devuelve el registro plano del certificado (sin relaciones anidadas).
  */
+import { generateCertificatePdf } from "../services/certificateGeneratorService";
+
 export async function generateCertificate(
   userId: string,
   courseId: string
@@ -45,26 +82,49 @@ export async function generateCertificate(
   const existing = await db.certificate.findFirst({
     where: { userId, courseId },
   });
-  if (existing) {
-    return existing;
-  }
 
   // 3) Generar código y metadatos
-  const code = await generateUniqueCertificateCode(courseId, userId);
+  const code = existing
+    ? existing.code
+    : await generateUniqueCertificateCode(courseId, userId);
   const templateVersion =
     process.env.DEFAULT_CERTIFICATE_TEMPLATE_VERSION || "v1.0";
+  const templateId = "default_v1";
   const institution =
     process.env.NEXT_PUBLIC_NAME_APP || "Tu Plataforma Educativa";
 
-  // 4) Crear nuevo certificado
-  const cert = await db.certificate.create({
-    data: {
+  // 4) Preparar datos para el PDF
+  const issuedAt = existing ? existing.issuedAt : new Date();
+  const certificateData = {
+    studentName: user.fullName,
+    courseName: course.title,
+    issueDate: format(new Date(issuedAt), "dd/MM/yyyy"),
+    certificateCode: code,
+    backgroundImageUrl: "/public/Certificado-de-Participación-Animales.png", // Ajusta si tienes una lógica dinámica
+    // qrCodeDataUrl: undefined, // Agrega si tienes QR
+  };
+
+  // 5) Generar PDF y obtener la URL
+  const pdfUrl = await generateCertificatePdf(certificateData);
+
+  // 6) Crear o actualizar el certificado en la base de datos
+  const cert = await db.certificate.upsert({
+    where: existing ? { id: existing.id } : { code }, // Si no existe, usará el código generado
+    update: {
+      pdfUrl,
+      templateId,
+      data: { templateVersion },
+      // Puedes actualizar otros campos si lo deseas
+    },
+    create: {
       userId,
       courseId,
       title: course.title,
       institution,
-      issuedAt: new Date(),
+      issuedAt,
       code,
+      pdfUrl,
+      templateId,
       data: { templateVersion },
     },
   });

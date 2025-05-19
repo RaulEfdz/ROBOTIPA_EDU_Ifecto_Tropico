@@ -33,5 +33,6 @@ export async function GET(
     studentName: certificate.user.fullName,
     certificateId: certificate.code,
     courseName: certificate.course.title,
+    pdfUrl: certificate.pdfUrl,
   });
 }

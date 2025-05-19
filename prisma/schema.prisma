@@ -320,6 +320,8 @@ model Certificate {
   fileUrl     String? // URL si el certificado PDF se guarda externamente
   code        String   @unique // Código de validación único del certificado
   description String? // Información adicional sobre el certificado o curso
+  pdfUrl      String? // URL del PDF generado (opcional)
+  templateId  String? // Referencia a la plantilla usada (opcional)
   data        Json? // Para guardar 'templateVersion' y otros metadatos
 
   createdAt DateTime @default(now())

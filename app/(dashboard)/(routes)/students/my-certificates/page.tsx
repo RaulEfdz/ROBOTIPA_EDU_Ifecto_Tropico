@@ -35,6 +35,7 @@ interface StudentCertificateData {
   studentName: string;
   certificateId: string;
   courseName: string;
+  pdfUrl?: string | null;
   // unit?: "px" | "rem" | "vh";
   // baseRem?: number;
   // positions?: { name?: { x: number; y: number }; certificate?: { x: number; y: number } };
@@ -66,6 +67,7 @@ const MyCertificatesPage: React.FC = () => {
           studentName: cert.userFullName || cert.studentName || "Estudiante",
           certificateId: cert.code || cert.certificateId,
           courseName: cert.course?.title || cert.title || "Curso",
+          pdfUrl: cert.pdfUrl,
         }));
         setCertificates(mapped);
       } catch (err: any) {
@@ -127,6 +129,20 @@ const MyCertificatesPage: React.FC = () => {
                   courseName={cert.courseName}
                   // unit, baseRem, positions si lo necesitas por certificado
                 />
+                {cert.pdfUrl && (
+                  <div className="mt-4 flex justify-center">
+                    <a
+                      href={cert.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded shadow transition-colors text-sm font-medium"
+                      download={false}
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      Ver Certificado
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           ))}

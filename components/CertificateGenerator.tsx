@@ -10,11 +10,14 @@ import {
 // Así permitimos pasar unit, baseRem, positions, etc.
 type DynamicCertPassthroughProps = Omit<InnerDynamicCertProps, "name">;
 
-export interface CertificateGeneratorProps extends DynamicCertPassthroughProps {
-  studentName: string;
-  certificateId: string;
-  courseName?: string;
+export interface CertificateGeneratorProps {
   certRef: React.RefObject<HTMLDivElement>;
+  templateComponent?: React.ComponentType<any>;
+  templateProps?: Record<string, any>;
+  // For backward compatibility with DynamicCert
+  studentName?: string;
+  certificateId?: string;
+  courseName?: string;
   unit?: "px" | "rem" | "vh";
   baseRem?: number;
   positions?: {
@@ -24,24 +27,32 @@ export interface CertificateGeneratorProps extends DynamicCertPassthroughProps {
 }
 
 export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
+  certRef,
+  templateComponent: TemplateComponent,
+  templateProps,
+  // legacy props for DynamicCert
   studentName,
   certificateId,
   courseName,
   unit,
   baseRem,
   positions,
-  certRef,
 }) => {
-  // const certRef = useRef<HTMLDivElement>(null);
-
   // Sanitiza el nombre para el archivo
   const sanitizeFileName = (name: string) =>
     name.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_.-]/g, "");
 
-  const sName = sanitizeFileName(studentName);
-  const cName = courseName
-    ? sanitizeFileName(courseName)
-    : sanitizeFileName(certificateId);
+  const sName = sanitizeFileName(
+    studentName || (templateProps?.studentName ?? "Estudiante")
+  );
+  const cName = sanitizeFileName(
+    courseName ||
+      templateProps?.courseName ||
+      certificateId ||
+      templateProps?.certificateId ||
+      templateProps?.certificateCode ||
+      "CERT"
+  );
   const downloadFileName = `Certificado_${sName}_${cName}.png`;
 
   const handleDownloadImage = async () => {
@@ -62,7 +73,7 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        width: "100%",
+        // width: "100%",
         height: "100%",
         padding: "1rem",
         boxSizing: "border-box",
@@ -72,20 +83,39 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
         ref={certRef}
         style={{
           width: "100%",
-          maxWidth: "600px",
+          // maxWidth: "1123px",
           boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
           borderRadius: "8px",
           overflow: "hidden",
         }}
       >
-        <DynamicCert
-          name={studentName}
-          certificateId={certificateId}
-          unit={unit}
-          baseRem={baseRem}
-          positions={positions}
-        />
+        {TemplateComponent ? (
+          <TemplateComponent {...templateProps} />
+        ) : (
+          <DynamicCert
+            name={studentName || ""}
+            certificateId={certificateId || ""}
+            unit={unit}
+            baseRem={baseRem}
+            positions={positions}
+          />
+        )}
       </div>
+      <button
+        onClick={handleDownloadImage}
+        style={{
+          marginTop: "1rem",
+          padding: "0.5rem 1.2rem",
+          background: "#2563eb",
+          color: "#fff",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer",
+          fontWeight: 600,
+        }}
+      >
+        Descargar como imagen
+      </button>
     </div>
   );
 };

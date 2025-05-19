@@ -34,33 +34,33 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     fetchUserAndCheckRole();
   }, []);
 
-  const gradientClasses = isUserTeacher
-    ? "from-gray-900 to-gray-800"
-    : "from-gray-800 to-gray-700";
+  // Usar gradiente institucional o fondo base según la guía de estilos
+  const sidebarBg =
+    "bg-gradient-to-b from-brand-primary to-brand-accent text-heading";
 
   return (
     <aside
       className={
-        `fixed inset-y-0 left-0 z-30 transform bg-gradient-to-b ${gradientClasses} text-white w-64 md:w-56 ` +
+        `fixed inset-y-0 left-0 z-30 transform ${sidebarBg} w-64 md:w-56 border-r border-default shadow-card ` +
         `transition-transform duration-300 flex flex-col ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0`
+        } md:translate-x-0 font-[Renogare Soft, ChaletBook, sans-serif]`
       }
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-default">
         <Logo />
         {/* Close only on mobile */}
         <button
           onClick={() => toggleSidebar(false)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="md:hidden p-2 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-200"
+          className="md:hidden btn-secondary p-2 rounded-full transition-all duration-200"
           aria-label="Cerrar menú"
         >
           <ChevronLeft
             size={22}
-            className={`transition-transform duration-200 ${
+            className={`transition-transform duration-200 text-brand-primary ${
               isHovered ? "-translate-x-1 scale-110" : "translate-x-0"
             }`}
           />
@@ -68,18 +68,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-3 space-y-1 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-transparent">
+      <nav className="flex-1 overflow-y-auto py-3 space-y-1 scrollbar-thin scrollbar-thumb-brand-accent/30 scrollbar-track-transparent">
         <SidebarRoutes />
       </nav>
 
       {/* Footer */}
       <div className="mt-auto">
-        <div className="px-4 py-4 border-t border-white/20">
+        <div className="px-4 py-4 border-t border-default bg-base">
           <Administrative />
         </div>
-        <div className="flex items-center justify-between px-4 py-2 text-sm font-light bg-white/10">
-          <span>ROBOTIPA_LMS</span>
-          <span>v19.5.25</span>
+        <div className="flex items-center justify-between px-4 py-2 text-caption bg-base border-t border-default">
+          <span className="text-brand-primary font-light text-xs">
+            ROBOTIPA_LMS
+          </span>
+          <span className="text-brand-primary font-light text-xs">
+            v19.5.25
+          </span>
         </div>
       </div>
     </aside>
