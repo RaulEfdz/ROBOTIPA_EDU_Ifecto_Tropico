@@ -31,8 +31,6 @@ export async function GET(req: Request) {
       },
     });
 
-    console.log("Chapters:", chapters);
-
     return NextResponse.json(chapters);
   } catch (error) {
     console.error("Error fetching chapter previews:", error);

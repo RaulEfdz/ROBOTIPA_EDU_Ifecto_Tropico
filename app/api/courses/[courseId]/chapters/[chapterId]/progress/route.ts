@@ -59,18 +59,15 @@ export async function PUT(
           if (cert) {
             certificateGenerated = true;
             certificateId = cert.id;
-            console.log(
               `CERT_GEN: Certificado generado/obtenido para usuario ${user.id} en curso ${courseId} con código ${cert.code}`
             );
           } else {
-            console.log(
               `CERT_GEN: No se pudo generar/obtener certificado para usuario ${user.id} en curso ${courseId}.`
             );
           }
         }
       }
     }
-    // --- Fin lógica de generación de certificado ---
 
     return NextResponse.json({
       success: true,

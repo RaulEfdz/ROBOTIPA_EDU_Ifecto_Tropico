@@ -66,8 +66,6 @@ export async function getUserDataServerAuth(): Promise<SupabaseSession | null> {
     error,
   } = await (await supabase).auth.getUser();
 
-  console.log("User data:", user);
-
   if (error || !user) return null;
 
   const {

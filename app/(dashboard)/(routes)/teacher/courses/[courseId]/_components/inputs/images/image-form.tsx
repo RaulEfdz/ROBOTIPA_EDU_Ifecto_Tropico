@@ -1,7 +1,14 @@
 "use client";
 
 import * as z from "zod";
-import { Pencil, PlusCircle, ImageIcon, X, ArrowRight, Camera } from "lucide-react";
+import {
+  Pencil,
+  PlusCircle,
+  ImageIcon,
+  X,
+  ArrowRight,
+  Camera,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -23,7 +30,8 @@ const texts = {
     placeholder: "Formato recomendado: 16:9 (1280x720 px)",
     validationMessage: "Se requiere una imagen",
     noImage: "Sin imagen",
-    imageInfo: "La imagen del curso aparecerá en la página principal y listados",
+    imageInfo:
+      "La imagen del curso aparecerá en la página principal y listados",
     dragDropText: "Arrastra una imagen o haz clic para seleccionar",
   },
   en: {
@@ -51,7 +59,11 @@ const formSchema = z.object({
   imageUrl: z.string().min(1),
 });
 
-export const ImageForm = ({ initialData, courseId, lang = "es" }: ImageFormProps) => {
+export const ImageForm = ({
+  initialData,
+  courseId,
+  lang = "es",
+}: ImageFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [imageUrl, setImageUrl] = useState(initialData.imageUrl || "");
   const [isUploading, setIsUploading] = useState(false);
@@ -64,16 +76,12 @@ export const ImageForm = ({ initialData, courseId, lang = "es" }: ImageFormProps
     setIsUploading(true);
     const path = `/api/courses/${courseId}/updates/images/`;
 
-    console.log("🟡 Enviando imagen al backend...", values);
-
     try {
       await fetchData({
         values,
         path,
         method: "POST",
         callback: (res: any) => {
-          console.log("🟢 Respuesta del servidor:", res);
-
           if (res?.data?.imageUrl) {
             setImageUrl(res.data.imageUrl);
             toast.success(t.successMessage, {
@@ -103,8 +111,17 @@ export const ImageForm = ({ initialData, courseId, lang = "es" }: ImageFormProps
         </h3>
 
         {!isEditing && (
-          <Button onClick={toggleEdit} variant="ghost" size="sm" className="text-gray-500 hover:text-blue-600">
-            {imageUrl ? <Pencil className="h-4 w-4" /> : <PlusCircle className="h-4 w-4" />}
+          <Button
+            onClick={toggleEdit}
+            variant="ghost"
+            size="sm"
+            className="text-gray-500 hover:text-blue-600"
+          >
+            {imageUrl ? (
+              <Pencil className="h-4 w-4" />
+            ) : (
+              <PlusCircle className="h-4 w-4" />
+            )}
           </Button>
         )}
       </div>
@@ -115,7 +132,12 @@ export const ImageForm = ({ initialData, courseId, lang = "es" }: ImageFormProps
             <div className="flex flex-col items-center justify-center h-48 bg-gray-50 dark:bg-gray-800 rounded-lg border border-dashed">
               <ImageIcon className="h-12 w-12 text-gray-300 mb-2 z-0" />
               <p className="text-sm text-gray-500">{t.noImage}</p>
-              <Button onClick={toggleEdit} variant="outline" size="sm" className="mt-4">
+              <Button
+                onClick={toggleEdit}
+                variant="outline"
+                size="sm"
+                className="mt-4"
+              >
                 <PlusCircle className="h-4 w-4 mr-2" />
                 {t.addButton}
               </Button>
@@ -130,7 +152,12 @@ export const ImageForm = ({ initialData, courseId, lang = "es" }: ImageFormProps
                   src={imageUrl}
                 />
                 <div className="absolute bottom-0 right-0 p-2">
-                  <Button onClick={toggleEdit} variant="secondary" size="sm" className="bg-TextCustom/80 backdrop-blur-sm">
+                  <Button
+                    onClick={toggleEdit}
+                    variant="secondary"
+                    size="sm"
+                    className="bg-TextCustom/80 backdrop-blur-sm"
+                  >
                     <Camera className="h-4 w-4 mr-1" />
                     {t.editButton}
                   </Button>
@@ -143,7 +170,12 @@ export const ImageForm = ({ initialData, courseId, lang = "es" }: ImageFormProps
       ) : (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={toggleEdit} variant="ghost" size="sm" className="text-gray-500">
+            <Button
+              onClick={toggleEdit}
+              variant="ghost"
+              size="sm"
+              className="text-gray-500"
+            >
               <X className="h-4 w-4 mr-1" />
               {t.cancelButton}
             </Button>
@@ -160,10 +192,11 @@ export const ImageForm = ({ initialData, courseId, lang = "es" }: ImageFormProps
                 }
               }}
               onSuccess={(result) => {
-                console.log("📤 Imagen subida con éxito:", result);
               }}
             />
-            <p className="text-sm text-center text-gray-500 mt-4">{t.placeholder}</p>
+            <p className="text-sm text-center text-gray-500 mt-4">
+              {t.placeholder}
+            </p>
           </div>
         </div>
       )}

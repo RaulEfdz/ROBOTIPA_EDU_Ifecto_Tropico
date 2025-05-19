@@ -39,7 +39,7 @@ export const Sidebar = ({
 
   return (
     <aside
-      className={`w-auto h-full flex flex-col bg-gradient-to-b ${gradientClasses} text-white shadow-xl transition-colors duration-300`}
+      className={`bg-slate-100 w-full md:w-56 h-full flex flex-col bg-gradient-to-b ${gradientClasses} text-white shadow-xl transition-colors duration-300`}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4">
@@ -75,7 +75,7 @@ export const Sidebar = ({
         </div>
         <div className="flex items-center justify-between px-4 py-2 text-sm font-light bg-white/10">
           <span>ROBOTIPA_LMS</span>
-          <span>v19.4.25</span>
+          <span>v19.5.25</span>
         </div>
       </div>
     </aside>

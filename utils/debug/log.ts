@@ -6,7 +6,7 @@ export function printInitDebug(pageName: string) {
     --------------------
     ＲＯＢＯＴＩＰＡ ＬＭＳ
     --------------------
-      `);
+    `);
   }
 }
 
@@ -15,9 +15,7 @@ export function printDebug(pageName: string) {
 
   if (isDebug) {
     console.log(`
-        
-  Debug Mode: ${pageName}
-
-  `);
+    Debug Mode: ${pageName}
+    `);
   }
 }

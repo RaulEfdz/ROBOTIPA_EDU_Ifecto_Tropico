@@ -37,7 +37,6 @@ export async function GET(
     }
 
     // 3) Respuesta con el array de exámenes
-    console.log(course.examId);
     return NextResponse.json({ exams: course.exams });
   } catch (err: any) {
     console.error(

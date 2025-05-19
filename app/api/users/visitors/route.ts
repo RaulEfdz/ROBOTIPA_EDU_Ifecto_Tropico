@@ -28,9 +28,6 @@ export async function GET(_req: NextRequest) {
       orderBy: { fullName: "asc" },
     });
 
-    console.log("----visitor: ");
-    console.log(visitor);
-
     return NextResponse.json({ success: true, visitor });
   } catch (error) {
     console.error("[API visitor GET]", error);

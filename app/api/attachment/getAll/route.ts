@@ -39,11 +39,6 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    console.log(
-      `Obteniendo lista de archivos desde ${UPLOADTHING_API_ENDPOINT} con paginación:`,
-      paginationParams
-    );
-
     // 4. Solicitud a Uploadthing API
     const response = await fetch(UPLOADTHING_API_ENDPOINT, {
       method: "POST",
@@ -56,18 +51,17 @@ export async function POST(req: NextRequest) {
 
     // 5. Validar respuesta
     if (!response.ok) {
-      let errorData = { message: "Error al obtener archivos desde Uploadthing" };
+      let errorData = {
+        message: "Error al obtener archivos desde Uploadthing",
+      };
       try {
         errorData = await response.json();
       } catch (parseError) {
-        errorData.message = await response.text() || errorData.message;
+        errorData.message = (await response.text()) || errorData.message;
         console.error("Error al interpretar respuesta:", parseError);
       }
 
-      console.error(
-        `Error Uploadthing API (${response.status}):`,
-        errorData
-      );
+      console.error(`Error Uploadthing API (${response.status}):`, errorData);
 
       return NextResponse.json(
         { error: errorData.message || "Error al obtener archivos" },
@@ -84,16 +78,11 @@ export async function POST(req: NextRequest) {
       if (file && typeof file.size === "number") {
         totalSizeBytes += file.size;
       } else {
-        console.warn(
-          "Archivo inválido o sin propiedad 'size':",
-          file
-        );
+        console.warn("Archivo inválido o sin propiedad 'size':", file);
       }
     });
 
-    const totalSizeMB = parseFloat(
-      (totalSizeBytes / (1024 * 1024)).toFixed(2)
-    );
+    const totalSizeMB = parseFloat((totalSizeBytes / (1024 * 1024)).toFixed(2));
 
     const totalCount = data.count ?? files.length;
     const totalPages = Math.ceil(totalCount / paginationParams.limit);
@@ -107,7 +96,9 @@ export async function POST(req: NextRequest) {
         totalSizeMB,
         pagination: {
           ...paginationParams,
-          currentPage: Math.floor(paginationParams.offset / paginationParams.limit),
+          currentPage: Math.floor(
+            paginationParams.offset / paginationParams.limit
+          ),
           totalPages,
         },
       },

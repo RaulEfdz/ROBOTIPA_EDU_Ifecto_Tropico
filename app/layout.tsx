@@ -16,9 +16,9 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "rbtpMed-UP",
+  title: "Infectotrópico Academy",
   description:
-    "Programa de formación en metodología de la investigación y habilidades blandas de la facultad de medicina de la Universidad de Panamá 🇵🇦",
+    "Grupo multidisciplinario comprometido con el avance científico, la generación de conocimiento y el bienestar de las comunidades afectadas por enfermedades infecciosas tropicales y desatendidas, a través de un enfoque integral ofreciendo soluciones que impacten positivamente en la salud global, siguiendo un enfoque de 0ne Health",
 };
 
 const metaDataPage = {

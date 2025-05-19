@@ -10,7 +10,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "images.clerk.dev",
+        hostname: "example.com", // Añadir un hostname válido
         pathname: "/**",
       },
       {

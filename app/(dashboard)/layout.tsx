@@ -42,12 +42,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       printDebug(`🧑 Usuario desde BD: ${JSON.stringify(user)}`);
 
       if (!user) {
-
-        
-
         console.warn("❌ Usuario no autenticado o no encontrado");
         const confirmedUser = confirm(JSON.stringify(user));
-        const confirmed = confirm("Tu sesión ha expirado. ¿Deseas iniciar sesión?");
+        const confirmed = confirm(
+          "Tu sesión ha expirado. ¿Deseas iniciar sesión?"
+        );
         if (confirmed) router.push("/auth");
         return;
       }
@@ -55,14 +54,21 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       const role = user.customRole;
       printDebug(`🔐 Rol obtenido: ${role}`);
 
-      const allowedRoles = [getTeacherId(), getAdminId(), getStudentId(), getVisitorId()];
+      const allowedRoles = [
+        getTeacherId(),
+        getAdminId(),
+        getStudentId(),
+        getVisitorId(),
+      ];
       const hasAccess = allowedRoles.includes(role);
 
       printDebug(`✅ Acceso permitido: ${hasAccess}`);
 
       if (!hasAccess) {
         console.warn("⛔ Rol no autorizado");
-        const confirmed = confirm("No tienes permisos para acceder a esta página. ¿Deseas iniciar sesión?");
+        const confirmed = confirm(
+          "No tienes permisos para acceder a esta página. ¿Deseas iniciar sesión?"
+        );
         if (confirmed) router.push("/auth");
         return;
       }
@@ -81,7 +87,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Sidebar */}
       <div
         className={`${
-          isSidebarOpen ? "w-56" : "w-0"
+          isSidebarOpen ? "w-full md:w-56" : "w-0"
         } h-full flex-col fixed inset-y-0 z-30 transition-all duration-300 overflow-hidden`}
       >
         <Sidebar toggleSidebar={toggleSidebar} />
@@ -92,7 +98,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <button
           onClick={() => toggleSidebar(true)}
           className={`fixed bottom-5 left-3 z-40 p-3 rounded-full shadow-lg ${
-            isUserTeacher ? "bg-primaryCustom2 text-TextCustom" : "bg-[#386329] text-TextCustom"
+            isUserTeacher
+              ? "bg-primaryCustom2 text-TextCustom"
+              : "bg-[#386329] text-TextCustom"
           }`}
         >
           <MenuIcon />

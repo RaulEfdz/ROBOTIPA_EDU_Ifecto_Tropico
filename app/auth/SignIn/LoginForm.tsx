@@ -38,11 +38,6 @@ export default function LoginForm({
     const emailToSubmit = email.trim();
     const passwordToSubmit = password;
 
-    console.log("Intentando iniciar sesión con (desde LoginForm actual):", {
-      email: `"${emailToSubmit}"`,
-      password: `"${passwordToSubmit}"`,
-    });
-
     if (!emailToSubmit || !passwordToSubmit) {
       toast.error("Por favor, ingresa tu correo y contraseña.");
       setIsLoading(false);
@@ -54,8 +49,6 @@ export default function LoginForm({
       email: emailToSubmit,
       password: passwordToSubmit,
     });
-
-    console.log("Respuesta de Supabase signInWithPassword:", { error, data });
 
     setIsLoading(false);
     toast.dismiss();
@@ -84,7 +77,6 @@ export default function LoginForm({
       // Sincronizar con la base de datos local después del login
       try {
         await fetch("/api/auth/insertUser", { method: "POST" });
-        console.log("Sincronización con /api/auth/insertUser exitosa.");
       } catch (syncError) {
         console.error("Error sincronizando usuario con DB local:", syncError);
         toast.warning("No se pudo sincronizar completamente la sesión.", {
@@ -92,7 +84,6 @@ export default function LoginForm({
         });
       }
 
-      console.log("LoginForm - Pushing to redirectUrl:", redirectUrl);
       router.push(redirectUrl);
       setTimeout(() => router.refresh(), 100); // Refrescar para actualizar estado del servidor
     }

@@ -32,7 +32,6 @@ export async function POST(
         { status: 400 }
       );
     }
-    console.log(courseId, "USER LEARNING course");
 
     // Verificar que el curso existe y pertenece al usuario
     const course = await db.course.findFirst({

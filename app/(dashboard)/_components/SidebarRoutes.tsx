@@ -145,7 +145,7 @@ export const SidebarRoutes = () => {
 
   return (
     <div
-      className={`pr-4 pl-2 py-2 transition-all duration-300 mr-2 ${
+      className={`pr-4 pl-2 py-2 transition-all duration-300 mr-2 bg-red-400 ${
         isCollapsed ? "w-20" : "w-64"
       }`}
     >

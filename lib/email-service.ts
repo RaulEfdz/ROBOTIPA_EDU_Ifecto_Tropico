@@ -97,7 +97,6 @@ export async function sendEnrollmentConfirmationEmails({
         subject: userEmailSubject,
         html: userEmailHtmlBody,
       });
-      console.log(
         `Correo de confirmación de acceso enviado a: ${user.email} para el curso ${course.title}`
       );
     } catch (error) {
@@ -141,9 +140,6 @@ export async function sendEnrollmentConfirmationEmails({
         subject: adminEmailSubject,
         html: adminEmailHtmlBody,
       });
-      console.log(
-        `Notificación de acceso manual enviada al administrador: ${adminEmail}`
-      );
     } catch (error) {
       console.error(
         `Error al enviar notificación de acceso manual al administrador:`,

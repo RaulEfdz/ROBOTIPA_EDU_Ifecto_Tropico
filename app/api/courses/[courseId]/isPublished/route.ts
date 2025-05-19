@@ -26,8 +26,6 @@ export async function POST(
       },
     });
 
-    console.log("--------------- xxx x xxx x------------------: ", course);
-
     if (!course) {
       return new NextResponse("Course not found", { status: 404 });
     }

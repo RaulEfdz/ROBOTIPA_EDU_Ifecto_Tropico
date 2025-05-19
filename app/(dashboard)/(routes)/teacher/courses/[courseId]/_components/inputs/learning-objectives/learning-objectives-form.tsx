@@ -24,7 +24,6 @@ export function LearningObjectivesForm({
     initialData?.data?.learningObjectives || []
   );
 
-  console.log(initialData);
   const [newObjective, setNewObjective] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 

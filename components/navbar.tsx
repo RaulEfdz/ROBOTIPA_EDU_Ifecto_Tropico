@@ -14,8 +14,8 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ buttons }) => {
   return (
-    <div className="navbar bg-base-100">
-      <div className="flex-1 flex items-center">
+    <div className="navbar bg-base-100 flex flex-wrap items-center justify-between">
+      <div className="flex items-center">
         <Image
           height={1000}
           width={1000}
@@ -25,17 +25,27 @@ export const Navbar: React.FC<NavbarProps> = ({ buttons }) => {
         />
         <a className="btn btn-ghost text-xl">daisyUI</a>
       </div>
-      <div className="flex-none">
-        {buttons.map((button, index) => (
-          <button
-            key={index}
-            className="btn btn-ghost"
-            onClick={button.onClick}
-          >
-            {button.title}
-          </button>
-        ))}
-        <button className="btn btn-square btn-ghost">
+      <div className="flex-none flex items-center space-x-4">
+        <div className="hidden md:flex" id="navbar-right">
+          {buttons.map((button, index) => (
+            <button
+              key={index}
+              className="btn btn-ghost"
+              onClick={button.onClick}
+            >
+              {button.title}
+            </button>
+          ))}
+        </div>
+        <button
+          className="btn btn-square btn-ghost md:hidden"
+          onClick={() => {
+            const navbarRight = document.getElementById("navbar-right");
+            if (navbarRight) {
+              navbarRight.classList.toggle("hidden");
+            }
+          }}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

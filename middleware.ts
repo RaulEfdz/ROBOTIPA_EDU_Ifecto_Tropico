@@ -68,14 +68,9 @@ export async function middleware(request: NextRequest) {
     const redirectUrlAfterAuth =
       request.nextUrl.searchParams.get("redirectUrl");
     if (redirectUrlAfterAuth && redirectUrlAfterAuth.startsWith("/")) {
-      console.log(
-        `Middleware: User with session on /auth, redirecting to redirectUrl: ${redirectUrlAfterAuth}`
-      );
       return NextResponse.redirect(new URL(redirectUrlAfterAuth, request.url));
     }
-    console.log(
-      "Middleware: User with session on /auth, redirecting to /dashboard"
-    );
+
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -88,11 +83,7 @@ export async function middleware(request: NextRequest) {
   if (isProtectedRoute && !session) {
     const loginUrl = new URL("/auth", request.url);
     loginUrl.searchParams.set("redirectUrl", pathname + request.nextUrl.search);
-    console.log(
-      `Middleware: Protected route, no session. Redirecting to /auth with redirectUrl: ${loginUrl.searchParams.get(
-        "redirectUrl"
-      )}`
-    );
+
     return NextResponse.redirect(loginUrl);
   }
 

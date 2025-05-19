@@ -34,8 +34,6 @@ export default function TeacherDataTable({ data, columns }: Props<User>) {
     },
   });
 
-  console.log("data: ", data);
-
   return (
     <div className="rounded-md border">
       <Table>

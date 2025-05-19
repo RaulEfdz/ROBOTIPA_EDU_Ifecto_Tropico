@@ -65,10 +65,7 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
           duration: 5000,
         });
       }
-      console.log(
-        "SignupForm (auto-login) - Pushing to redirectUrl:",
-        redirectUrl
-      );
+
       router.push(redirectUrl);
       setTimeout(() => router.refresh(), 100);
     } else {

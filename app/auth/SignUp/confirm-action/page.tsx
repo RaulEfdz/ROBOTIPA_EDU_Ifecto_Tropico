@@ -18,7 +18,6 @@ function ConfirmActionContent() {
 
   useEffect(() => {
     const nextUrl = searchParams.get("next");
-    console.log("ConfirmAction - nextUrl from params:", nextUrl);
 
     const handleAuthConfirmation = async () => {
       // El SDK de Supabase maneja el token de la URL automáticamente al cargar.
@@ -51,7 +50,6 @@ function ConfirmActionContent() {
         // Sincronizar con la base de datos local después de la confirmación
         try {
           await fetch("/api/auth/insertUser", { method: "POST" });
-          console.log("Usuario sincronizado con DB local tras confirmación.");
         } catch (syncError) {
           console.error(
             "Error sincronizando usuario con DB local tras confirmación:",
@@ -65,10 +63,7 @@ function ConfirmActionContent() {
 
         const finalRedirectUrl =
           nextUrl && nextUrl.startsWith("/") ? nextUrl : "/dashboard";
-        console.log(
-          "ConfirmAction - Pushing to finalRedirectUrl:",
-          finalRedirectUrl
-        );
+
         router.push(finalRedirectUrl);
         setTimeout(() => router.refresh(), 100);
       } else {

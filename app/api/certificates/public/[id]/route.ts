@@ -7,7 +7,6 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  console.log("API: fetching certificate with id =", id);
   if (!id) {
     return NextResponse.json(
       { error: "ID de certificado requerido" },

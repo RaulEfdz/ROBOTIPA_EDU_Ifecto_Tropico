@@ -30,7 +30,6 @@ export const ourFileRouter = {
       return { userId };
     })
     .onUploadComplete(async ({ file }) => {
-      console.log("✅ Imagen subida:", file.url);
     }),
 
   // Subida de archivos adjuntos para cursos
@@ -52,7 +51,6 @@ export const ourFileRouter = {
       return { userId };
     })
     .onUploadComplete(async ({ file }) => {
-      console.log("✅ Archivo adjunto subido:", file.url);
     }),
 
   // Subida de archivos desde el editor
@@ -68,7 +66,6 @@ export const ourFileRouter = {
       return { userId };
     })
     .onUploadComplete(async ({ file }) => {
-      console.log("📄 Archivo del editor subido:", file.url);
     }),
 
   // Subida de un único video por capítulo
@@ -83,7 +80,6 @@ export const ourFileRouter = {
       return { userId };
     })
     .onUploadComplete(async ({ file }) => {
-      console.log("🎥 Video único subido:", file.url);
     }),
 
   // Subida de múltiples videos por capítulo (opcional)
@@ -98,7 +94,6 @@ export const ourFileRouter = {
       return { userId };
     })
     .onUploadComplete(async ({ file }) => {
-      console.log("🎬 Video múltiple subido:", file.url);
     }),
 } satisfies FileRouter;
 

@@ -28,9 +28,6 @@ export async function GET(_req: NextRequest) {
       orderBy: { fullName: "asc" },
     });
 
-    console.log("----teachers: ");
-    console.log(teachers);
-
     return NextResponse.json({ success: true, teachers });
   } catch (error) {
     console.error("[API TEACHERS GET]", error);

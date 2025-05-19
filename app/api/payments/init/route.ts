@@ -3,9 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("[/api/payments/init] Incoming request");
     const body = await req.json();
-    console.log("[/api/payments/init] Request body:", body);
 
     const { amount, description, email, phone } = body;
     if (!amount || !description || !email || !phone) {
@@ -23,7 +21,6 @@ export async function POST(req: NextRequest) {
 
     const apiKey = process.env.PAGUELOFACIL_API_KEY;
     const cclw = process.env.PAGUELOFACIL_CCLW;
-    console.log("[/api/payments/init] Loaded env vars:", {
       apiKey: !!apiKey,
       cclw: !!cclw,
     });
@@ -47,7 +44,6 @@ export async function POST(req: NextRequest) {
         { id: "orderId", nameOrLabel: "ID de Orden", value: "12345" },
       ],
     };
-    console.log("[/api/payments/init] Payload to PagueloFacil:", payload);
 
     const pfRes = await fetch(
       "https://api.pfserver.net/webservices/rest/regCashTx",
@@ -61,12 +57,7 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    console.log(
-      "[/api/payments/init] PagueloFacil responded with status:",
-      pfRes.status
-    );
     const data = await pfRes.json();
-    console.log("[/api/payments/init] PagueloFacil response body:", data);
 
     if (!data.success) {
       console.error("[/api/payments/init] PagueloFacil error:", data);
@@ -76,7 +67,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("[/api/payments/init] Payment URL:", data.data.url);
     return NextResponse.json({ paymentUrl: data.data.url }, { status: 200 });
   } catch (err: any) {
     console.error("[/api/payments/init] Unexpected error:", err);

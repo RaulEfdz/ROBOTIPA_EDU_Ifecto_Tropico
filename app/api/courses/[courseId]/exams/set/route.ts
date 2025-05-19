@@ -25,7 +25,6 @@ export async function POST(
   let body: { examIds?: string[] };
   try {
     body = await request.json();
-    console.log("[COURSE_EXAMS_UPDATE] payload recibido:", body);
   } catch (err) {
     console.error("[COURSE_EXAMS_UPDATE] JSON inválido:", err);
     return NextResponse.json(
@@ -50,7 +49,6 @@ export async function POST(
     const deletedCount = await db.$executeRaw`
       DELETE FROM "_CourseExams" WHERE "A" = ${courseId}
     `;
-    console.log(`[COURSE_EXAMS_UPDATE] filas borradas:`, deletedCount);
 
     // 5) Insertar nuevos enlaces
     for (const examId of examIds) {
@@ -58,7 +56,6 @@ export async function POST(
         INSERT INTO "_CourseExams" ("A","B") VALUES (${courseId}, ${examId})
       `;
     }
-    console.log(`[COURSE_EXAMS_UPDATE] filas insertadas:`, examIds.length);
 
     // 6) Responder éxito
     return NextResponse.json({ success: true });

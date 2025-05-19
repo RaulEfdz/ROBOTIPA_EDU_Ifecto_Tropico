@@ -56,8 +56,28 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
   };
 
   return (
-    <div>
-      <div ref={certRef}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        width: "100%",
+        height: "100%",
+        padding: "1rem",
+        boxSizing: "border-box",
+      }}
+    >
+      <div
+        ref={certRef}
+        style={{
+          width: "100%",
+          maxWidth: "600px",
+          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+          borderRadius: "8px",
+          overflow: "hidden",
+        }}
+      >
         <DynamicCert
           name={studentName}
           certificateId={certificateId}
@@ -66,7 +86,6 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
           positions={positions}
         />
       </div>
-      {/* <button onClick={handleDownloadImage}>Descargar Certificado</button> */}
     </div>
   );
 };

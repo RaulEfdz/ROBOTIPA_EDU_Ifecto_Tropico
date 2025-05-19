@@ -26,8 +26,6 @@ export async function GET(
       },
     });
 
-    console.log(`[getanswers-raw] attemptId=${attemptId}`, rawAnswers);
-
     if (rawAnswers.length === 0) {
       return NextResponse.json([], { status: 200 });
     }
@@ -35,8 +33,6 @@ export async function GET(
     // 2) Para cada respuesta, cargar la pregunta + opciones con isCorrect
     const detailed = await Promise.all(
       rawAnswers.map(async (ans) => {
-        console.log(`[getanswers-answer]`, ans);
-
         const question = await db.question.findUnique({
           where: { id: ans.questionId },
           select: {
@@ -50,11 +46,6 @@ export async function GET(
             },
           },
         });
-
-        console.log(
-          `[getanswers-question] questionId=${ans.questionId}`,
-          question
-        );
 
         if (!question) {
           return {
@@ -83,8 +74,6 @@ export async function GET(
         };
       })
     );
-
-    console.log(`[getanswers-final] attemptId=${attemptId}`, detailed);
 
     return NextResponse.json(detailed);
   } catch (error) {
