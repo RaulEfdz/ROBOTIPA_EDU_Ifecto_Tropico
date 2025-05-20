@@ -55,7 +55,7 @@ export default function CertificateViewPage() {
   }
 
   return (
-    <div ref={certRef} className="w-screen h-screen bg-white overflow-auto">
+    <div ref={certRef} className="w-screen h-screen overflow-auto">
       <CertificateGenerator
         certRef={certRef}
         studentName={certificate.studentName}

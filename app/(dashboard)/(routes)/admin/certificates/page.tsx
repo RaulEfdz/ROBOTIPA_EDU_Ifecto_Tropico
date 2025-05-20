@@ -22,7 +22,7 @@ const PageCert: React.FC = () => (
       justifyContent: "center",
       alignItems: "center",
       flexWrap: "wrap",
-      gap: "2rem",
+      // gap: "2rem",
       background: "#f3f4f6",
       padding: "2rem",
     }}
