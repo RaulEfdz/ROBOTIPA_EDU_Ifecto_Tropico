@@ -97,6 +97,7 @@ export async function sendEnrollmentConfirmationEmails({
         subject: userEmailSubject,
         html: userEmailHtmlBody,
       });
+      console.log(
         `Correo de confirmación de acceso enviado a: ${user.email} para el curso ${course.title}`
       );
     } catch (error) {

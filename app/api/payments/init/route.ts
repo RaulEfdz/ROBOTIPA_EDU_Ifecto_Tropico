@@ -21,9 +21,6 @@ export async function POST(req: NextRequest) {
 
     const apiKey = process.env.PAGUELOFACIL_API_KEY;
     const cclw = process.env.PAGUELOFACIL_CCLW;
-      apiKey: !!apiKey,
-      cclw: !!cclw,
-    });
 
     if (!apiKey || !cclw) {
       console.error("[/api/payments/init] Payment credentials not configured.");

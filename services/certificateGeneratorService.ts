@@ -1,5 +1,3 @@
-import React from "react";
-import ReactDOMServer from "react-dom/server";
 import puppeteer from "puppeteer";
 import DefaultCertificateTemplate from "../templates/certificates/DefaultCertificateTemplate";
 import cloudinary from "../lib/cloudinary";
@@ -23,6 +21,10 @@ export async function generateCertificatePdf(
 
   // Add qrCodeDataUrl to data
   const dataWithQr = { ...data, qrCodeDataUrl };
+
+  // Importar React y ReactDOMServer dinámicamente solo en el servidor
+  const React = (await import("react")).default;
+  const ReactDOMServer = (await import("react-dom/server")).default;
 
   // Render React component to static HTML
   const html = ReactDOMServer.renderToStaticMarkup(
