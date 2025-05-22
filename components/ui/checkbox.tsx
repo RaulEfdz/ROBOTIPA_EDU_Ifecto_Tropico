@@ -30,10 +30,10 @@ const Checkbox = React.forwardRef<
       props.checked === "indeterminate"
         ? "mixed"
         : typeof props.checked === "boolean"
-        ? props.checked
-        : props.checked === "mixed"
-        ? "mixed"
-        : undefined
+          ? props.checked
+          : props.checked === "mixed"
+            ? "mixed"
+            : undefined
     }
     {...props}
   >
