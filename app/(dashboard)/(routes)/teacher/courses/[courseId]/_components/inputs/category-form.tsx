@@ -3,11 +3,12 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil, Check, X, ArrowRight, Plus, Search } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Pencil, Check, X, ArrowRight, Plus, Search, Info } from "lucide-react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Course } from "@prisma/client";
+import { motion, AnimatePresence } from "framer-motion";
 
 import {
   Form,
@@ -19,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fetchData } from "../../../custom/fetchData";
+import { Badge } from "@/components/ui/badge";
 
 // Textos centralizados
 const categoryFormTexts = {
@@ -129,7 +131,7 @@ export const CategoryForm = ({
     setIsEditing((prev) => !prev);
   };
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const res = await fetch(`/api/courses/${courseId}/updates/category/get`);
       const json = await res.json();
@@ -146,11 +148,11 @@ export const CategoryForm = ({
     } catch (err) {
       console.error("Error loading categories", err);
     }
-  };
+  }, [courseId]);
 
   useEffect(() => {
     fetchCategories();
-  }, [courseId]);
+  }, [fetchCategories]);
 
   const createCategory = async (name: string) => {
     const normalizedName = name.trim().toLowerCase().replace(/\s+/g, " ");
@@ -238,31 +240,47 @@ export const CategoryForm = ({
 
   return (
     <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-          {t.title}
-        </h3>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <span>{t.title}</span>
+            <span title={t.hintMessage}>
+              <Info className="w-4 h-4 text-emerald-500" />
+            </span>
+          </h3>
+          {selectedOption?.label ? (
+            <Badge className="bg-emerald-100 text-emerald-700 text-base px-3 py-1 ml-2 animate-pulse">
+              Completado
+            </Badge>
+          ) : (
+            <Badge className="bg-gray-200 text-gray-600 text-base px-3 py-1 ml-2 animate-pulse">
+              Pendiente
+            </Badge>
+          )}
+        </div>
         {!isEditing && (
           <Button
-            onClick={toggleEdit}
+            onClick={() => setIsEditing(true)}
             variant="ghost"
             size="sm"
-            className="text-gray-500 hover:text-blue-600"
+            className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg h-8"
           >
             <Pencil className="h-4 w-4" />
           </Button>
         )}
       </div>
-
-      {!isEditing ? (
-        <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-          {selectedOption?.label || (
-            <em className="text-gray-400">{t.noCategory}</em>
-          )}
-        </div>
-      ) : (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+        {t.hintMessage}
+      </p>
+      <AnimatePresence mode="wait">
+        {isEditing ? (
+          <motion.div
+            key="edit"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
             {!createNew ? (
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -363,24 +381,23 @@ export const CategoryForm = ({
                 </span>
               </div>
             )}
-          </form>
-        </Form>
-      )}
-
-      {!isEditing && (
-        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 text-sm text-gray-500">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-400" />
-              <span>{selectedOption?.label || t.noCategory}</span>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="display"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="flex items-center gap-2 mt-4">
+              <span className="text-base font-semibold text-gray-800 dark:text-gray-200">
+                {selectedOption?.label || t.noCategory}
+              </span>
             </div>
-            <div className="flex items-center gap-2">
-              <ArrowRight className="h-3 w-3" />
-              <span>ID: {courseId.slice(0, 8)}</span>
-            </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

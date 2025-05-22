@@ -250,6 +250,7 @@ export const ChaptersForm = ({
                 onEdit={onEdit}
                 onReorder={onReorder}
                 items={chapters}
+                isLoading={isUpdating}
               />
             ) : (
               <div className="flex items-center justify-center h-24 bg-gray-50 dark:bg-gray-800/50 rounded-lg">

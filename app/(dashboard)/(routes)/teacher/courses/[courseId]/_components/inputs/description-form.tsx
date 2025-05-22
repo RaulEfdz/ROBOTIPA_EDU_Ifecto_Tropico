@@ -4,9 +4,12 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil, Check, X, ArrowRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Info } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import {
   Form,
@@ -74,6 +77,13 @@ export const DescriptionForm = ({
 
   const { isSubmitting, isValid, isDirty } = form.formState;
 
+  const toggleEdit = useCallback(() => {
+    if (isEditing) {
+      form.reset({ description });
+    }
+    setIsEditing((prev) => !prev);
+  }, [isEditing, form, description]);
+
   useEffect(() => {
     if (!isEditing) return;
 
@@ -83,14 +93,7 @@ export const DescriptionForm = ({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isEditing]);
-
-  const toggleEdit = () => {
-    if (isEditing) {
-      form.reset({ description });
-    }
-    setIsEditing((prev) => !prev);
-  };
+  }, [isEditing, toggleEdit]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (values.description === description) {
@@ -130,11 +133,24 @@ export const DescriptionForm = ({
 
   return (
     <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-          {t.title}
-        </h3>
-
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <span>{t.title}</span>
+            <span title={t.hintMessage}>
+              <Info className="w-4 h-4 text-emerald-500" />
+            </span>
+          </h3>
+          {description ? (
+            <Badge className="bg-emerald-100 text-emerald-700 text-base px-3 py-1 ml-2 animate-pulse">
+              Completado
+            </Badge>
+          ) : (
+            <Badge className="bg-gray-200 text-gray-600 text-base px-3 py-1 ml-2 animate-pulse">
+              Pendiente
+            </Badge>
+          )}
+        </div>
         {!isEditing && (
           <Button
             onClick={toggleEdit}
@@ -146,69 +162,80 @@ export const DescriptionForm = ({
           </Button>
         )}
       </div>
-
-      {!isEditing ? (
-        <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-          {description ? (
-            <div
-              className="prose dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: description }}
-            />
-          ) : (
-            <em className="text-gray-400">{t.noDescription}</em>
-          )}
-        </div>
-      ) : (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <EditorText
-                      initialText={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
+      <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+        {t.hintMessage}
+      </p>
+      <AnimatePresence mode="wait">
+        {isEditing ? (
+          <motion.div
+            key="edit"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <EditorText
+                          initialText={field.value}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex items-center space-x-2">
+                  <Button
+                    disabled={!isValid || isSubmitting || !isDirty}
+                    type="submit"
+                    size="sm"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    Guardar
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={toggleEdit}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="display"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mt-4">
+              {description ? (
+                <div
+                  className="prose dark:prose-invert max-w-none"
+                  dangerouslySetInnerHTML={{ __html: description }}
+                />
+              ) : (
+                <em className="text-gray-400">{t.noDescription}</em>
               )}
-            />
-
-            <div className="flex items-center space-x-2">
-              <Button
-                type="button"
-                onClick={toggleEdit}
-                variant="outline"
-                size="icon"
-                className="h-10 w-10 rounded-lg border-gray-200 dark:border-gray-700"
-              >
-                <X className="h-4 w-4 text-gray-500" />
-              </Button>
-
-              <Button
-                disabled={!isValid || isSubmitting || !isDirty}
-                type="submit"
-                size="icon"
-                className="h-10 w-10 rounded-lg bg-blue-600 hover:bg-blue-700"
-              >
-                {isSaving ? (
-                  <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Check className="h-4 w-4 text-TextCustom" />
-                )}
-              </Button>
             </div>
-
-            <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
-              <div className="w-1 h-1 rounded-full bg-gray-300 mr-2" />
-              {t.hintMessage}
-            </div>
-          </form>
-        </Form>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {!isEditing && (
         <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">

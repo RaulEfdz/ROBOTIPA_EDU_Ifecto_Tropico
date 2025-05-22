@@ -18,6 +18,9 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { fetchData } from "../../../../custom/fetchData";
 import FileUploader from "./FileUploader";
+import { Badge } from "@/components/ui/badge";
+import { Info } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const texts = {
   es: {
@@ -105,11 +108,24 @@ export const ImageForm = ({
 
   return (
     <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-          {t.title}
-        </h3>
-
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <span>{t.title}</span>
+            <span title={t.imageInfo}>
+              <Info className="w-4 h-4 text-emerald-500" />
+            </span>
+          </h3>
+          {imageUrl ? (
+            <Badge className="bg-emerald-100 text-emerald-700 text-base px-3 py-1 ml-2 animate-pulse">
+              Completado
+            </Badge>
+          ) : (
+            <Badge className="bg-gray-200 text-gray-600 text-base px-3 py-1 ml-2 animate-pulse">
+              Pendiente
+            </Badge>
+          )}
+        </div>
         {!isEditing && (
           <Button
             onClick={toggleEdit}
@@ -125,81 +141,96 @@ export const ImageForm = ({
           </Button>
         )}
       </div>
-
-      {!isEditing ? (
-        <>
-          {!imageUrl ? (
-            <div className="flex flex-col items-center justify-center h-48 bg-gray-50 dark:bg-gray-800 rounded-lg border border-dashed">
-              <ImageIcon className="h-12 w-12 text-gray-300 mb-2 z-0" />
-              <p className="text-sm text-gray-500">{t.noImage}</p>
-              <Button
-                onClick={toggleEdit}
-                variant="outline"
-                size="sm"
-                className="mt-4"
-              >
-                <PlusCircle className="h-4 w-4 mr-2" />
-                {t.addButton}
-              </Button>
-            </div>
-          ) : (
+      <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+        {t.placeholder}
+      </p>
+      <AnimatePresence mode="wait">
+        {isEditing ? (
+          <motion.div
+            key="edit"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
             <div className="space-y-4">
-              <div className="relative aspect-video rounded-lg overflow-hidden border shadow-sm">
-                <Image
-                  alt="Course image"
-                  fill
-                  className="object-cover"
-                  src={imageUrl}
+              <div className="border-2 border-dashed rounded-lg p-4">
+                <FileUploader
+                  value={imageUrl}
+                  folder={`courses/${courseId}`}
+                  onChange={(url) => {
+                    if (url) {
+                      onSubmit({ imageUrl: url });
+                    }
+                  }}
+                  onSuccess={() => {}}
                 />
-                <div className="absolute bottom-0 right-0 p-2">
-                  <Button
-                    onClick={toggleEdit}
-                    variant="secondary"
-                    size="sm"
-                    className="bg-TextCustom/80 backdrop-blur-sm"
-                  >
-                    <Camera className="h-4 w-4 mr-1" />
-                    {t.editButton}
-                  </Button>
-                </div>
+                <p className="text-sm text-center text-gray-500 mt-4">
+                  {t.placeholder}
+                </p>
               </div>
-              <p className="text-xs text-gray-500">{t.imageInfo}</p>
+              <div className="flex justify-end">
+                <Button
+                  onClick={toggleEdit}
+                  variant="outline"
+                  size="sm"
+                  className="text-gray-500"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  {t.cancelButton}
+                </Button>
+              </div>
             </div>
-          )}
-        </>
-      ) : (
-        <div className="space-y-4">
-          <div className="flex justify-end">
-            <Button
-              onClick={toggleEdit}
-              variant="ghost"
-              size="sm"
-              className="text-gray-500"
-            >
-              <X className="h-4 w-4 mr-1" />
-              {t.cancelButton}
-            </Button>
-          </div>
-
-          <div className="border-2 border-dashed rounded-lg p-4">
-            {/* Reemplazamos el componente FileUpload por nuestro nuevo FileUploader */}
-            <FileUploader
-              value={imageUrl}
-              folder={`courses/${courseId}`}
-              onChange={(url) => {
-                if (url) {
-                  onSubmit({ imageUrl: url });
-                }
-              }}
-              onSuccess={(result) => {
-              }}
-            />
-            <p className="text-sm text-center text-gray-500 mt-4">
-              {t.placeholder}
-            </p>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        ) : (
+          <motion.div
+            key="display"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            {!imageUrl ? (
+              <div className="flex flex-col items-center justify-center h-48 bg-gray-50 dark:bg-gray-800 rounded-lg border border-dashed">
+                <ImageIcon className="h-12 w-12 text-gray-300 mb-2 z-0" />
+                <p className="text-sm text-gray-500">{t.noImage}</p>
+                <Button
+                  onClick={toggleEdit}
+                  variant="outline"
+                  size="sm"
+                  className="mt-4"
+                >
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  {t.addButton}
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="relative aspect-video rounded-lg overflow-hidden border shadow-sm">
+                  <Image
+                    alt="Course image"
+                    fill
+                    className="object-cover"
+                    src={imageUrl}
+                  />
+                  <div className="absolute bottom-0 right-0 p-2">
+                    <Button
+                      onClick={toggleEdit}
+                      variant="secondary"
+                      size="sm"
+                      className="bg-TextCustom/80 backdrop-blur-sm"
+                    >
+                      <Camera className="h-4 w-4 mr-1" />
+                      {t.editButton}
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500">{t.imageInfo}</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {imageUrl && !isEditing && (
         <div className="mt-4 pt-4 border-t text-sm text-gray-500">

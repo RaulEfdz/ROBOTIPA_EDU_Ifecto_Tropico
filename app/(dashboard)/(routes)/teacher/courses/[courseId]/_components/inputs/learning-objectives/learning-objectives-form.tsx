@@ -4,12 +4,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { PlusCircle, X, Save, BookOpen } from "lucide-react";
+import { PlusCircle, X, Save, BookOpen, Info } from "lucide-react";
 import {
   learningObjectives,
   suggestedLearningObjectives,
 } from "./learning-objectives";
 import { Course } from "@/prisma/types";
+import { Badge } from "@/components/ui/badge";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface LearningObjectivesFormProps {
   initialData: Course;
@@ -83,9 +85,21 @@ export function LearningObjectivesForm({
     <div className="space-y-6 p-6 bg-white dark:bg-gray-950 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
       <div className="flex items-center gap-2 border-b pb-4 mb-4">
         <BookOpen className="h-5 w-5 text-emerald-600" />
-        <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
+        <h3 className="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
           Objetivos de Aprendizaje
+          <span title="Agrega los objetivos que los estudiantes lograrán al finalizar el curso.">
+            <Info className="w-4 h-4 text-emerald-500" />
+          </span>
         </h3>
+        {objectives.length > 0 ? (
+          <Badge className="bg-emerald-100 text-emerald-700 text-base px-3 py-1 ml-2 animate-pulse">
+            Completado
+          </Badge>
+        ) : (
+          <Badge className="bg-gray-200 text-gray-600 text-base px-3 py-1 ml-2 animate-pulse">
+            Pendiente
+          </Badge>
+        )}
       </div>
 
       {/* Input para añadir nuevo objetivo con mejoras de accesibilidad */}

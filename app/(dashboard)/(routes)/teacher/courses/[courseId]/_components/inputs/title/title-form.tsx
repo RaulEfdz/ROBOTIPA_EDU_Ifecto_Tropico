@@ -3,10 +3,11 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil, Check, X, ArrowRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Pencil, Check, X, ArrowRight, Info } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 import {
   Form,
@@ -19,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { fetchData } from "../../../../custom/fetchData";
 import { TitleToolsNav } from "./tools-nav";
+import { Badge } from "@/components/ui/badge";
 
 const texts = {
   es: {
@@ -27,6 +29,8 @@ const texts = {
     successMessage: "Título actualizado",
     validationMessage: "El título es obligatorio",
     hintMessage: "El título debe ser claro, único y descriptivo",
+    cancelButton: "Cancelar",
+    editButton: "Editar",
   },
   en: {
     titleLabel: "Course Title",
@@ -34,6 +38,8 @@ const texts = {
     successMessage: "Title updated",
     validationMessage: "Title is required",
     hintMessage: "The title should be clear, unique and descriptive",
+    cancelButton: "Cancel",
+    editButton: "Edit",
   },
 };
 
@@ -65,24 +71,10 @@ export const TitleForm = ({
 
   const { isSubmitting, isValid, isDirty } = form.formState;
 
-  useEffect(() => {
-    if (!isEditing) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") toggleEdit();
-      if (e.key === "Enter" && isValid && isDirty) {
-        form.handleSubmit(onSubmit)();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isEditing, isValid, isDirty]);
-
-  const toggleEdit = () => {
+  const toggleEdit = useCallback(() => {
     if (isEditing) form.reset({ title });
     setIsEditing((prev) => !prev);
-  };
+  }, [isEditing, form, title]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (values.title === title) return toggleEdit();
@@ -117,89 +109,118 @@ export const TitleForm = ({
     }
   };
 
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") toggleEdit();
+      if (e.key === "Enter" && isValid && isDirty) {
+        form.handleSubmit(onSubmit)();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isEditing, isValid, isDirty, form, onSubmit, toggleEdit]);
+
   return (
     <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-          {t.titleLabel}
-        </h3>
-        {!isEditing && (
-          <Button
-            onClick={toggleEdit}
-            variant="ghost"
-            size="sm"
-            className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg h-8"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
-
-      {isEditing ? (
-        <Form {...form}>
-          <TitleToolsNav />
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex space-x-2">
-                    <FormControl>
-                      <Input
-                        disabled={isSubmitting}
-                        placeholder={t.placeholder}
-                        className="h-10 text-lg font-medium border-gray-200 dark:border-gray-700 focus-visible:ring-blue-500 rounded-lg"
-                        autoFocus
-                        {...field}
-                      />
-                    </FormControl>
-
-                    <div className="flex items-center space-x-1">
-                      <Button
-                        type="button"
-                        onClick={toggleEdit}
-                        variant="outline"
-                        size="icon"
-                        className="h-10 w-10 rounded-lg border-gray-200 dark:border-gray-700"
-                      >
-                        <X className="h-4 w-4 text-gray-500" />
-                      </Button>
-
-                      <Button
-                        disabled={!isValid || isSubmitting || !isDirty}
-                        type="submit"
-                        size="icon"
-                        className="h-10 w-10 rounded-lg bg-blue-600 hover:bg-blue-700"
-                      >
-                        {isSaving ? (
-                          <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin"></div>
-                        ) : (
-                          <Check className="h-4 w-4 text-TextCustom" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex items-center mt-2 text-xs text-gray-500">
-                    <div className="w-1 h-1 rounded-full bg-gray-300 mr-2"></div>
-                    {t.hintMessage}
-                  </div>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-      ) : (
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-            {title || <span className="text-gray-400 italic">Sin título</span>}
-          </h2>
-          <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 text-xs px-2 py-1 rounded-full">
-            Activo
-          </div>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <span>{t.titleLabel}</span>
+            <span title={t.hintMessage}>
+              <Info className="w-4 h-4 text-emerald-500" />
+            </span>
+          </h3>
+          {title ? (
+            <Badge className="bg-emerald-100 text-emerald-700 text-base px-3 py-1 ml-2 animate-pulse">
+              Completado
+            </Badge>
+          ) : (
+            <Badge className="bg-gray-200 text-gray-600 text-base px-3 py-1 ml-2 animate-pulse">
+              Pendiente
+            </Badge>
+          )}
         </div>
-      )}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleEdit}
+          className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg h-8"
+        >
+          <Pencil className="h-4 w-4 mr-1" />
+          {isEditing ? t.cancelButton || "Cancelar" : t.editButton || "Editar"}
+        </Button>
+      </div>
+      <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+        {t.hintMessage}
+      </p>
+      <AnimatePresence mode="wait">
+        {isEditing ? (
+          <motion.div
+            key="edit"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Form {...form}>
+              <TitleToolsNav />
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          placeholder={t.placeholder}
+                          {...field}
+                          className="w-full border-2 border-emerald-400 focus:ring-2 focus:ring-emerald-500 text-lg"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex space-x-2">
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting || !isValid}
+                    size="sm"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    Guardar
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={toggleEdit}>
+                    Cancelar
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="display"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="flex items-center gap-2 mt-4">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                {title || (
+                  <span className="text-gray-400 italic">Sin título</span>
+                )}
+              </h2>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {!isEditing && (
         <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
