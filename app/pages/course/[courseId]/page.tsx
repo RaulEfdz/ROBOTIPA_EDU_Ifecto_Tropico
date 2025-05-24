@@ -157,6 +157,8 @@ export default function CoursePage() {
               courseId: course.id,
               amount: course.price,
               description: course.title,
+              email: user?.email,
+              phone: user?.phone,
             }),
           });
           if (!paymentResponse.ok) {

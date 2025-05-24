@@ -63,7 +63,7 @@ export default function PaymentButton({
         amount,
         description,
         customParam1: user.id,
-        returnUrl: `${window.location.origin}/pages/thank-you?status=SUCCESS&course=${courseId}`,
+        returnUrl: `${process.env.NEXT_PUBLIC_RETURN_URL}?status=SUCCESS&course=${courseId}`,
         pfCf: {
           email: user.email,
           phone: user.phone || "",
