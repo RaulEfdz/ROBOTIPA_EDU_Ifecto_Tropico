@@ -51,7 +51,7 @@ const EditUserForm = ({
   visibleColumns,
 }: EditUserFormProps) => {
   const [formData, setFormData] = useState({
-    customRole: user.role,
+    customRole: user.customRole,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -124,8 +124,8 @@ const EditUserForm = ({
     },
     customRole: {
       label: "Rol Actual",
-      value: translateRole(user.role),
-      rawValue: user.role,
+      value: translateRole(user.customRole),
+      rawValue: user.customRole,
     },
     provider: {
       label: "Proveedor",

@@ -11,7 +11,7 @@ async function checkPermissions() {
   const session = await getUserDataServerAuth();
   if (!session || !session.user) return false;
   const user = session.user;
-  // Permitir por user.role o user.user_metadata.custom_role
+  // Permitir por user.customRole o user.user_metadata.custom_role
   if (
     ALLOWED_ROLES.includes(user.role) ||
     ALLOWED_ROLES.includes(user.user_metadata?.custom_role)

@@ -9,6 +9,8 @@ import {
 import { InfoCard } from "./_components/info-card";
 import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
 
+export const dynamic = "force-dynamic";
+
 export default async function Dashboard() {
   const user = await getCurrentUserFromDBServer();
 

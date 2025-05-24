@@ -3,11 +3,15 @@ import { db } from "@/lib/db";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 import { translateRole } from "@/utils/roles/translate";
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { courseId: string } }
-) {
-  const { courseId } = params;
+export async function POST(req: NextRequest) {
+  // Extract courseId from URL path
+  const url = new URL(req.url);
+  const pathSegments = url.pathname.split("/");
+  // Assuming the path is /api/courses/[courseId]/updates/price
+  const courseIdIndex =
+    pathSegments.findIndex((segment) => segment === "courses") + 1;
+  const courseId = pathSegments[courseIdIndex];
+
   try {
     // Autenticación del usuario
     const session = await getUserDataServerAuth();
@@ -16,8 +20,8 @@ export async function POST(
     // Validación del payload
     const { price } = await req.json();
     if (price == null || typeof price !== "number" || price < 0) {
-      return new NextResponse(
-        "Bad Request: price must be a non-negative number",
+      return NextResponse.json(
+        { error: "Bad Request: price must be a non-negative number" },
         {
           status: 400,
         }
@@ -33,7 +37,10 @@ export async function POST(
     });
 
     if (!course) {
-      return new NextResponse("Not found or unauthorized", { status: 404 });
+      return NextResponse.json(
+        { error: "Not found or unauthorized" },
+        { status: 404 }
+      );
     }
     // Actualizar precio
     const updatedCourse = await db.course.update({
@@ -50,6 +57,6 @@ export async function POST(
     return NextResponse.json({ success: true, data: updatedCourse });
   } catch (error) {
     console.error("[COURSE_UPDATE_PRICE]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }

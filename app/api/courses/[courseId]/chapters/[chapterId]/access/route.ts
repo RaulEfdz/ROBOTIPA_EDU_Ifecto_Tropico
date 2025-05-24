@@ -24,7 +24,7 @@ export async function POST(
     // Aquí deberías obtener el usuario autenticado, por ejemplo:
     // const user = ...
     // if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    // const isAdmin = translateRole(user.role) === "admin";
+    // const isAdmin = translateRole(user.customRole) === "admin";
     // const isOwner = course?.userId === user.id;
     // if (!isAdmin && !isOwner) {
     //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

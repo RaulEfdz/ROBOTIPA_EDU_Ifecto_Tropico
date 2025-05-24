@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db"; // Asegúrate de importar tu cliente de base de datos correctamente
 import { translateRole } from "@/utils/roles/translate";
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
 export async function POST(req: Request) {
   try {
     // Obtener datos del cuerpo de la solicitud
     const { courseId, chapterId, description } = await req.json();
+    const user = (await getUserDataServerAuth())?.user;
 
     if (!courseId || !chapterId || !description) {
       console.error(
@@ -43,9 +45,7 @@ export async function POST(req: Request) {
     // Obtener el usuario autenticado (ajusta esto según tu sistema de autenticación)
     // Por ejemplo, si usas NextAuth:
     // import { getServerSession } from "next-auth";
-    // const session = await getServerSession(authOptions);
-    // const user = session?.user;
-    const user = null; // TODO: Reemplaza esto con la obtención real del usuario
+    // const user = null; // TODO: Reemplaza esto con la obtención real del usuario
 
     if (!user) {
       return new NextResponse("Unauthorized: User not authenticated", {

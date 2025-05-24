@@ -79,7 +79,7 @@ export default function NewTeacherDialog({
 
   const handleSelectUser = (userId: string) => {
     const user = users.find((u) => u.id === userId);
-    if (user && user.role?.toLowerCase() === translateRole("teacher")) {
+    if (user && user.customRole?.toLowerCase() === translateRole("teacher")) {
       toast.error("Este usuario ya es un profesor", {
         icon: <AlertCircle className="h-5 w-5 text-red-500" />,
       });
@@ -133,7 +133,7 @@ export default function NewTeacherDialog({
 
   const filteredUsers = users.filter((user) => {
     const fullName = user.fullName?.toLowerCase() || "";
-    const userRole = translateRole(user.role)?.toLowerCase() || "default";
+    const userRole = translateRole(user.customRole)?.toLowerCase() || "default";
     const matchesSearch = fullName.includes(searchTerm.toLowerCase());
 
     if (activeTab === "all") return matchesSearch;
@@ -147,7 +147,7 @@ export default function NewTeacherDialog({
   });
 
   const isUserTeacher = (user: User) => {
-    return user.role?.toLowerCase() === "teacher";
+    return user.customRole?.toLowerCase() === "teacher";
   };
 
   return (
@@ -192,7 +192,7 @@ export default function NewTeacherDialog({
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-h-96 overflow-y-auto p-1">
                 {filteredUsers.map((user) => {
                   const userRole =
-                    translateRole(user.role)?.toLowerCase() || "default";
+                    translateRole(user.customRole)?.toLowerCase() || "default";
                   const isTeacher = isUserTeacher(user);
 
                   return (
@@ -244,7 +244,7 @@ export default function NewTeacherDialog({
                             userRole
                           )}`}
                         >
-                          {translateRole(user.role) || "Otros"}
+                          {translateRole(user.customRole) || "Otros"}
                         </Badge>
                         {isTeacher && (
                           <span className="text-xs text-red-500 mt-1">

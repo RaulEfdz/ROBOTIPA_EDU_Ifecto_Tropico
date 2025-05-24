@@ -81,7 +81,7 @@ export default function NewVisitorDialog({
     const user = users.find((u) => u.id === userId);
     if (
       user &&
-      user.role?.toLowerCase() === translateRole("visitor").toLowerCase()
+      user.customRole?.toLowerCase() === translateRole("visitor").toLowerCase()
     ) {
       toast.error("Este usuario ya es un Visitante", {
         icon: <AlertCircle className="h-5 w-5 text-red-500" />,
@@ -130,14 +130,15 @@ export default function NewVisitorDialog({
       return;
     }
 
-    updateUserRole(selectedUser.id, selecteduser.role || "");
+    updateUserRole(selectedUser.id, selectedUser.customRole || "");
   };
 
   const getRoleColor = (role: string) => roleColors[role] || roleColors.default;
 
   const filteredUsers = users.filter((user) => {
     const fullName = user.fullName?.toLowerCase() || "";
-    const userRole = translateRole(user.role || "")?.toLowerCase() || "default";
+    const userRole =
+      translateRole(user.customRole || "")?.toLowerCase() || "default";
     const matchesSearch = fullName.includes(searchTerm.toLowerCase());
 
     if (activeTab === "all") return matchesSearch;
@@ -151,7 +152,7 @@ export default function NewVisitorDialog({
   });
 
   const isUserVisitor = (user: User) => {
-    return translateRole(user.role || "").toLowerCase() === "visitor";
+    return translateRole(user.customRole || "").toLowerCase() === "visitor";
   };
 
   return (
@@ -196,7 +197,8 @@ export default function NewVisitorDialog({
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-h-96 overflow-y-auto p-1">
                 {filteredUsers.map((user) => {
                   const userRole =
-                    translateRole(user.role || "")?.toLowerCase() || "default";
+                    translateRole(user.customRole || "")?.toLowerCase() ||
+                    "default";
                   const isVisitor = isUserVisitor(user);
 
                   return (
@@ -248,7 +250,7 @@ export default function NewVisitorDialog({
                             userRole
                           )}`}
                         >
-                          {translateRole(user.role || "") || "Otros"}
+                          {translateRole(user.customRole || "") || "Otros"}
                         </Badge>
                         {isVisitor && (
                           <span className="text-xs text-red-500 mt-1">

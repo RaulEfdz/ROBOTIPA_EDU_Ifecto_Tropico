@@ -95,7 +95,7 @@ export default function UserProfileDashboard() {
     {
       icon: <Shield className="mr-3 text-primaryCustom2" />,
       label: "Rol personalizado",
-      value: user.role || "No asignado",
+      value: user.customRole || "No asignado",
     },
     {
       icon: <Shield className="mr-3 text-primaryCustom" />,
@@ -126,7 +126,7 @@ export default function UserProfileDashboard() {
                   </CardTitle>
                   <p className="text-sm text-primaryCustom">{user.email}</p>
                   <Badge className="mt-2" variant="secondary">
-                    <Shield className="w-4 h-4 mr-1" /> {user.role}
+                    <Shield className="w-4 h-4 mr-1" /> {user.customRole}
                   </Badge>
                 </div>
               </div>

@@ -29,7 +29,10 @@ export async function DELETE(
     if (!ownCourse) return new NextResponse("Unauthorized", { status: 401 });
 
     // Permitir solo si es admin (por ID) o dueño del curso
-    const chapter = await db.chapter.findUnique({ where: { id: chapterId } });
+    const chapter = await db.chapter.findUnique({
+      where: { id: chapterId },
+      include: { video: true },
+    });
     if (!chapter) {
       return new NextResponse("Chapter not found", { status: 404 });
     }

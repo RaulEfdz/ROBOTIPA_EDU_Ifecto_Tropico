@@ -25,7 +25,10 @@ export async function POST(
     const session = await getUserDataServerAuth();
     const user = session?.user;
     // Permitir solo si es admin (por ID) o dueño del curso
-    const chapter = await db.chapter.findUnique({ where: { id: chapterId } });
+    const chapter = await db.chapter.findUnique({
+      where: { id: chapterId },
+      include: { video: true },
+    });
     if (!chapter) {
       return new NextResponse("Chapter not found", { status: 404 });
     }
