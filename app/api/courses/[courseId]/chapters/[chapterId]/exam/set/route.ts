@@ -2,6 +2,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { translateRole } from "@/utils/roles/translate";
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
 /**
  * POST /api/courses/[courseId]/chapters/[chapterId]/exam
@@ -60,14 +62,19 @@ export async function POST(
       );
     }
 
-    // Verificar existencia del capítulo
+    // Permitir solo si es admin (por ID) o dueño del curso
+    const user = (await getUserDataServerAuth())?.user;
+    if (!user?.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
     const chapter = await db.chapter.findUnique({ where: { id: chapterId } });
     if (!chapter) {
-      console.error(`[ASSIGN_CHAPTER_EXAM] capítulo no existe: ${chapterId}`);
-      return NextResponse.json(
-        { message: "Not Found: chapter does not exist" },
-        { status: 404 }
-      );
+      return new NextResponse("Chapter not found", { status: 404 });
+    }
+    const isAdmin = translateRole(user.role) === "admin";
+    const isOwner = course?.userId === user.id;
+    if (!isAdmin && !isOwner) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     // Fusionar o establecer examId en el campo JSON 'data'

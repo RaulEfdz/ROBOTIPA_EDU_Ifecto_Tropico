@@ -81,7 +81,7 @@ export default function NewstudentDialog({
     const user = users.find((u) => u.id === userId);
     if (
       user &&
-      user.customRole?.toLowerCase() === translateRole("student").toLowerCase()
+      user.role?.toLowerCase() === translateRole("student").toLowerCase()
     ) {
       toast.error("Este usuario ya es un Estudiantes", {
         icon: <AlertCircle className="h-5 w-5 text-red-500" />,
@@ -129,15 +129,14 @@ export default function NewstudentDialog({
       return;
     }
 
-    updateUserRole(selectedUser.id, selectedUser.customRole || "");
+    updateUserRole(selectedUser.id, selecteduser.role || "");
   };
 
   const getRoleColor = (role: string) => roleColors[role] || roleColors.default;
 
   const filteredUsers = users.filter((user) => {
     const fullName = user.fullName?.toLowerCase() || "";
-    const userRole =
-      translateRole(user.customRole || "")?.toLowerCase() || "default";
+    const userRole = translateRole(user.role || "")?.toLowerCase() || "default";
     const matchesSearch = fullName.includes(searchTerm.toLowerCase());
 
     if (activeTab === "all") return matchesSearch;
@@ -151,7 +150,7 @@ export default function NewstudentDialog({
   });
 
   const isUserstudent = (user: User) => {
-    return translateRole(user.customRole || "").toLowerCase() === "student";
+    return translateRole(user.role || "").toLowerCase() === "student";
   };
 
   return (
@@ -196,8 +195,7 @@ export default function NewstudentDialog({
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-h-96 overflow-y-auto p-1">
                 {filteredUsers.map((user) => {
                   const userRole =
-                    translateRole(user.customRole || "")?.toLowerCase() ||
-                    "default";
+                    translateRole(user.role || "")?.toLowerCase() || "default";
                   const isstudent = isUserstudent(user);
 
                   return (
@@ -249,7 +247,7 @@ export default function NewstudentDialog({
                             userRole
                           )}`}
                         >
-                          {translateRole(user.customRole || "") || "Otros"}
+                          {translateRole(user.role || "") || "Otros"}
                         </Badge>
                         {isstudent && (
                           <span className="text-xs text-red-500 mt-1">

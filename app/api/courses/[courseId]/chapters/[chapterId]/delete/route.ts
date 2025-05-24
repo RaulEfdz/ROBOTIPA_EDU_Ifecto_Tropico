@@ -2,15 +2,16 @@ import Mux from "@mux/mux-node";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
+import { translateRole } from "@/utils/roles/translate";
 
 const { Video } = new Mux(
   process.env.MUX_TOKEN_ID!,
-  process.env.MUX_TOKEN_SECRET!,
+  process.env.MUX_TOKEN_SECRET!
 );
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ courseId: string; chapterId: string }>}
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
 ) {
   const { courseId, chapterId } = await params;
   try {
@@ -27,16 +28,19 @@ export async function DELETE(
 
     if (!ownCourse) return new NextResponse("Unauthorized", { status: 401 });
 
-    const chapter = await db.chapter.findUnique({
-      where: {
-        id: chapterId,
-      },
-      include: {
-        video: true, // 👈 Incluimos el video relacionado
-      },
+    // Permitir solo si es admin (por ID) o dueño del curso
+    const chapter = await db.chapter.findUnique({ where: { id: chapterId } });
+    if (!chapter) {
+      return new NextResponse("Chapter not found", { status: 404 });
+    }
+    const course = await db.course.findUnique({
+      where: { id: chapter.courseId },
     });
-
-    if (!chapter) return new NextResponse("Not Found", { status: 404 });
+    const isAdmin = translateRole(user.role) === "admin";
+    const isOwner = course?.userId === user.id;
+    if (!isAdmin && !isOwner) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
 
     // ✅ Si el capítulo tiene video con asset en Mux, eliminarlo
     if (chapter.video?.assetId) {

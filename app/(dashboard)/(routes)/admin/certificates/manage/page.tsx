@@ -41,7 +41,7 @@ const ManageCertificatesPage = () => {
   useEffect(() => {
     const checkPermissions = async () => {
       try {
-        const user = await getCurrentUserFromDB();
+        const user = (await getCurrentUserFromDB()) as UserDB;
         if (!user) {
           toast.error("Debes iniciar sesión para acceder.");
           router.push(
@@ -57,12 +57,12 @@ const ManageCertificatesPage = () => {
         setHasPermission(permitted);
         if (!permitted) {
           toast.error("Acceso denegado.");
-          router.push("/dashboard");
+          router.push("/courses/catalog");
         }
       } catch (e) {
         toast.error("Error verificando permisos.");
         setHasPermission(false);
-        router.push("/dashboard");
+        router.push("/courses/catalog");
       }
     };
     checkPermissions();
@@ -155,7 +155,7 @@ const ManageCertificatesPage = () => {
         <h1 className="text-2xl font-semibold text-red-700 mb-2">
           Acceso Denegado
         </h1>
-        <Button onClick={() => router.push("/dashboard")} className="mt-6">
+        <Button onClick={() => router.push("/catalog")} className="mt-6">
           Volver al Tablero
         </Button>
       </div>

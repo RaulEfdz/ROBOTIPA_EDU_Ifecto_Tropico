@@ -5,7 +5,7 @@ import { createClient } from "./utils/supabase/server";
 
 // Rutas protegidas (requieren sesión)
 const protectedRoutes = [
-  "/dashboard",
+  "/catalog",
   "/profile",
   "/courses", // Asegúrate que la ruta base del curso esté aquí
   "/teacher",

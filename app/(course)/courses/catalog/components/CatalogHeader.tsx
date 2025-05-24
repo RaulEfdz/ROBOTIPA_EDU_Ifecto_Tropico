@@ -103,7 +103,7 @@ export default function CatalogHeader() {
             {/* Botón de Inicio (solo si hay sesión) */}
             {user && (
               <Link
-                href="/dashboard" // O la ruta principal para usuarios logueados
+                href="/courses/catalog" // O la ruta principal para usuarios logueados
                 className="text-sm font-medium text-slate-600 hover:text-sky-600 dark:text-slate-300 dark:hover:text-sky-400 flex items-center gap-1"
                 title="Ir al panel principal"
               >
@@ -154,7 +154,7 @@ export default function CatalogHeader() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link
-                      href="/dashboard"
+                      href="/courses/catalog"
                       className="cursor-pointer w-full flex items-center"
                     >
                       <LayoutDashboard className="mr-2 h-4 w-4 text-slate-500" />

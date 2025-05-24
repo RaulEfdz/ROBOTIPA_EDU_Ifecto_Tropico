@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
+import { translateRole } from "@/utils/roles/translate";
 
 export async function POST(
   req: Request,
@@ -13,15 +14,19 @@ export async function POST(
 
     if (!user?.id) return new NextResponse("Unauthorized", { status: 401 });
 
-    const ownCourse = await db.course.findUnique({
-      where: {
-        id: courseId,
-        userId: user.id,
-        delete: false,
-      },
+    // Permitir solo si es admin (por ID) o dueño del curso
+    const chapter = await db.chapter.findUnique({ where: { id: chapterId } });
+    if (!chapter) {
+      return new NextResponse("Chapter not found", { status: 404 });
+    }
+    const course = await db.course.findUnique({
+      where: { id: chapter.courseId },
     });
-
-    if (!ownCourse) return new NextResponse("Unauthorized", { status: 401 });
+    const isAdmin = translateRole(user.role) === "admin";
+    const isOwner = course?.userId === user.id;
+    if (!isAdmin && !isOwner) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
 
     const updated = await db.chapter.update({
       where: {
@@ -39,4 +44,4 @@ export async function POST(
     console.error("[CHAPTER_EDIT]", error);
     return new NextResponse("Error interno", { status: 500 });
   }
-} 
+}

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
+import { translateRole } from "@/utils/roles/translate";
 
 export async function PUT(
   req: Request,
@@ -25,6 +26,13 @@ export async function PUT(
 
     if (!course) {
       return new NextResponse("Not found", { status: 404 });
+    }
+
+    // Permitir solo si es admin (por ID) o dueño del curso
+    const isAdmin = user && translateRole(user.role) === "admin";
+    const isOwner = user && course.userId === user.id;
+    if (!isAdmin && !isOwner) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const unpublishedCourse = await db.course.update({

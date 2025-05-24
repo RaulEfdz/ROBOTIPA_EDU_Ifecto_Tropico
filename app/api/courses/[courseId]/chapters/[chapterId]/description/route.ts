@@ -1,6 +1,8 @@
 // app/api/courses/[courseId]/chapters/[chapterId]/description/route.ts
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { translateRole } from "@/utils/roles/translate";
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
 // GET → Obtener descripción
 export async function GET(
@@ -24,7 +26,10 @@ export async function GET(
     });
 
     if (!chapter) {
-      return NextResponse.json({ message: "Chapter not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Chapter not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({ description: chapter.description ?? "" });
@@ -58,7 +63,27 @@ export async function PATCH(
       );
     }
 
-    const chapter = await db.chapter.update({
+    // Obtener usuario autenticado
+    const user = (await getUserDataServerAuth())?.user;
+    if (!user?.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    // Permitir solo si es admin (por ID) o dueño del curso
+    const chapter = await db.chapter.findUnique({ where: { id: chapterId } });
+    if (!chapter) {
+      return new NextResponse("Chapter not found", { status: 404 });
+    }
+    const course = await db.course.findUnique({
+      where: { id: chapter.courseId },
+    });
+    const isAdmin = translateRole(user.role) === "admin";
+    const isOwner = course?.userId === user.id;
+    if (!isAdmin && !isOwner) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const updatedChapter = await db.chapter.update({
       where: {
         id: chapterId,
         courseId,
@@ -69,7 +94,7 @@ export async function PATCH(
 
     return NextResponse.json({
       message: "Description updated successfully",
-      description: chapter.description,
+      description: updatedChapter.description,
     });
   } catch (error) {
     console.error("[PATCH_CHAPTER_DESCRIPTION_ERROR]", error);

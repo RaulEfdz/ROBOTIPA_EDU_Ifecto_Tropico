@@ -91,7 +91,7 @@ export const CourseCard = ({ course, setLoading }: CourseCardProps) => {
   // Renderizado especial si el curso no está publicado
   if (!isPublished) {
     return (
-      <div className="card-base group relative opacity-70 cursor-not-allowed">
+      <div className="card-base group relative opacity-70 cursor-not-allowed shadow-md shadow-slate-400 dark:shadow-slate-900">
         <div className="relative w-full aspect-video overflow-hidden rounded-t-lg bg-bg-card">
           <Image
             fill
@@ -113,10 +113,9 @@ export const CourseCard = ({ course, setLoading }: CourseCardProps) => {
 
   // Renderizado normal para cursos publicados
   return (
-    // Usa un div clickeable para poder llamar a setLoading antes de la navegación
     <div
       onClick={handleNavigate}
-      className="cursor-pointer h-full block focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 rounded-lg"
+      className="cursor-pointer h-full block focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 rounded-lg shadow-lg shadow-slate-300 dark:shadow-slate-900 hover:shadow-2xl transition-shadow duration-300"
       role="link"
       aria-label={`Ver detalles del curso ${title}`}
       tabIndex={0}
@@ -124,7 +123,7 @@ export const CourseCard = ({ course, setLoading }: CourseCardProps) => {
         if (e.key === "Enter" || e.key === " ") handleNavigate();
       }}
     >
-      <div className="card-base group relative flex flex-col hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 h-full">
+      <div className="card-base group relative flex flex-col h-full">
         {/* Sección de Imagen */}
         <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
           <Image

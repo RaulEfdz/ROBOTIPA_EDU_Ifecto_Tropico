@@ -46,8 +46,9 @@ export interface Route {
 }
 
 export const guestRoutes: Route[] = [
-  { icon: Layout, label: "Tablero", href: "/" },
   { icon: Compass, label: "Catalogo", href: "/courses/catalog" },
+
+  { icon: Layout, label: "Tablero", href: "/" },
   // { icon: Bell, label: "Notificaciones", href: "/notifications" },
   // { icon: HelpCircle, label: "Ayuda", href: "/help" },
   {
@@ -58,29 +59,31 @@ export const guestRoutes: Route[] = [
 ];
 
 export const teacherRoutes: Route[] = [
+  { icon: Compass, label: "Catalogo", href: "/courses/catalog" },
+
   { icon: Layout, label: "Tablero", href: "/teacher" },
   { icon: List, label: "Cursos", href: "/teacher/courses" },
   {
     icon: Folder,
     label: "Recursos",
     href: "/teacher/attachments",
-    badge: {
-      viewLabel: true,
-      until: new Date("2025-10-01"),
-      textLabel: "Nuevo",
-      color: "text-green-400",
-    },
+    // badge: {
+    //   viewLabel: true,
+    //   until: new Date("2025-10-01"),
+    //   // textLabel: "Nuevo",
+    //   color: "text-green-400",
+    // },
   },
   {
     icon: Brain,
     label: "Quizzes",
     href: "/exams",
-    badge: {
-      viewLabel: true,
-      until: new Date("2025-10-01"),
-      textLabel: "Nuevo",
-      color: "text-blue-400",
-    },
+    // badge: {
+    //   viewLabel: true,
+    //   until: new Date("2025-10-01"),
+    //   // textLabel: "Nuevo",
+    //   color: "text-blue-400",
+    // },
   },
   {
     icon: Users,
@@ -117,11 +120,11 @@ export const teacherRoutes: Route[] = [
         icon: FileSignature,
         label: "Registros Manuales",
         href: "/admin/manual-registrations",
-        badge: {
-          viewLabel: true,
-          until: new Date("2025-12-31"),
-          textLabel: "Nuevo",
-        },
+        // badge: {
+        //   viewLabel: true,
+        //   until: new Date("2025-12-31"),
+        //   textLabel: "Nuevo",
+        // },
         // No se pone 'superAdmin: true' si es para Profesores Y Administradores.
       },
       // --- FIN NUEVA SUB-RUTA ---
@@ -132,15 +135,15 @@ export const teacherRoutes: Route[] = [
     icon: BarChart,
     label: "Analítica",
     href: "/teacher/analytics",
-    badge: {
-      viewLabel: true,
-      until: new Date("2025-10-01"),
-      textLabel: "Actualizado",
-      color: "text-rose-400",
-    },
+    // badge: {
+    //   viewLabel: true,
+    //   until: new Date("2025-10-01"),
+    //   textLabel: "Actualizado",
+    //   color: "text-rose-400",
+    // },
     superAdmin: true,
   },
-  { icon: Settings, label: "Configuración", href: "/teacher/settings" },
+  // { icon: Settings, label: "Configuración", href: "/teacher/settings" },
   {
     icon: FileSignature,
     label: "Gestionar Certificados",

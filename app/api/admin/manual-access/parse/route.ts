@@ -17,15 +17,14 @@ async function checkAdminOrTeacherPermission(user: any) {
 
 export async function POST(req: Request) {
   try {
-    const user = await getCurrentUserFromDBServer();
-    if (!user || !(await checkAdminOrTeacherPermission(user))) {
-      return NextResponse.json({ error: "No autorizado." }, { status: 403 });
-    }
-
     const { code } = await req.json();
     if (!code || typeof code !== "string") {
       return NextResponse.json(
-        { error: "El parámetro 'code' es requerido." },
+        {
+          error: "El parámetro 'code' es requerido.",
+          details:
+            "El campo 'code' es obligatorio y debe ser una cadena de texto.",
+        },
         { status: 400 }
       );
     }
@@ -36,6 +35,8 @@ export async function POST(req: Request) {
         {
           error:
             "Formato de ID inválido. Debe contener cursoId, userId y fecha.",
+          details:
+            "Asegúrate de usar el separador '|' y el formato: courseId|userId|YYYYMMDD.",
         },
         { status: 400 }
       );
@@ -43,7 +44,10 @@ export async function POST(req: Request) {
     const [courseId, userId, dateStr] = parts;
     if (!courseId || !userId || !dateStr) {
       return NextResponse.json(
-        { error: "Faltan datos en el ID de solicitud." },
+        {
+          error: "Faltan datos en el ID de solicitud.",
+          details: "El ID debe incluir courseId, userId y fecha (YYYYMMDD).",
+        },
         { status: 400 }
       );
     }
@@ -52,13 +56,20 @@ export async function POST(req: Request) {
     const parsedDate = parse(dateStr, "yyyyMMdd", new Date());
     if (!isValid(parsedDate)) {
       return NextResponse.json(
-        { error: "La fecha del ID no es válida. Usa formato YYYYMMDD." },
+        {
+          error: "La fecha del ID no es válida. Usa formato YYYYMMDD.",
+          details:
+            "El segmento de fecha debe cumplir el formato YYYYMMDD y ser una fecha real.",
+        },
         { status: 400 }
       );
     }
     if (isFuture(parsedDate)) {
       return NextResponse.json(
-        { error: "La fecha de activación no puede ser futura." },
+        {
+          error: "La fecha de activación no puede ser futura.",
+          details: "El valor de fecha no debe ser posterior al día de hoy.",
+        },
         { status: 400 }
       );
     }
@@ -67,14 +78,20 @@ export async function POST(req: Request) {
     const course = await db.course.findUnique({ where: { id: courseId } });
     if (!course) {
       return NextResponse.json(
-        { error: "No se encontró el curso especificado." },
+        {
+          error: "No se encontró el curso especificado.",
+          details: `No existe un curso con id ${courseId}.`,
+        },
         { status: 404 }
       );
     }
     const userDb = await db.user.findUnique({ where: { id: userId } });
     if (!userDb) {
       return NextResponse.json(
-        { error: "No se encontró el usuario especificado." },
+        {
+          error: "No se encontró el usuario especificado.",
+          details: `No existe un usuario con id ${userId}.`,
+        },
         { status: 404 }
       );
     }
@@ -89,7 +106,12 @@ export async function POST(req: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Error interno del servidor." },
+      {
+        error: "Error interno del servidor.",
+        details:
+          error.message ||
+          "Ocurrió un error inesperado. Contacte al administrador.",
+      },
       { status: 500 }
     );
   }

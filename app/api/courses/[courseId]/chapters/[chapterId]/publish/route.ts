@@ -2,10 +2,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
+import { translateRole } from "@/utils/roles/translate";
 
 export async function PUT(
   req: Request,
-  { params }: { params:Promise<{ courseId: string; chapterId: string }>}
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
 ) {
   const { courseId, chapterId } = await params;
   try {
@@ -15,34 +16,18 @@ export async function PUT(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
-      where: {
-        id: courseId,
-        userId: user.id,
-        delete: false,
-      },
-    });
-
-    if (!ownCourse) {
-      return new NextResponse("Unauthorized", { status: 401 });
+    // Permitir solo si es admin (por ID) o dueño del curso
+    const chapter = await db.chapter.findUnique({ where: { id: chapterId } });
+    if (!chapter) {
+      return new NextResponse("Chapter not found", { status: 404 });
     }
-
-    const chapter = await db.chapter.findUnique({
-      where: {
-        id: chapterId,
-      },
-      include: {
-        video: true, // ✅ Incluir video
-      },
+    const course = await db.course.findUnique({
+      where: { id: chapter.courseId },
     });
-
-    if (
-      !chapter ||
-      !chapter.title ||
-      !chapter.description ||
-      !chapter.video?.url // ✅ Validamos video vía relación
-    ) {
-      return new NextResponse("Missing required fields", { status: 400 });
+    const isAdmin = translateRole(user.role) === "admin";
+    const isOwner = course?.userId === user.id;
+    if (!isAdmin && !isOwner) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const publishedChapter = await db.chapter.update({

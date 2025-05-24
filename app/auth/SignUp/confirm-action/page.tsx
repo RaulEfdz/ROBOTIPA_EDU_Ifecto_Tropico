@@ -62,7 +62,7 @@ function ConfirmActionContent() {
         }
 
         const finalRedirectUrl =
-          nextUrl && nextUrl.startsWith("/") ? nextUrl : "/dashboard";
+          nextUrl && nextUrl.startsWith("/") ? nextUrl : "/catalog";
 
         router.push(finalRedirectUrl);
         setTimeout(() => router.refresh(), 100);

@@ -150,7 +150,7 @@ const TableUsers = ({ users }: TableUsersProps) => {
                         <TableCell>{user.email}</TableCell>
                       )}
                       {visibleColumns.customRole && (
-                        <TableCell>{translateRole(user.customRole)}</TableCell>
+                        <TableCell>{translateRole(user.role)}</TableCell>
                       )}
                       {visibleColumns.phone && (
                         <TableCell>{user.phone}</TableCell>

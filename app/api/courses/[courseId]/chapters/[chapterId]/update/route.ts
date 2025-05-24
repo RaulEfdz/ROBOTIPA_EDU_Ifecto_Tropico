@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db"; // Asegúrate de importar tu cliente de base de datos correctamente
+import { translateRole } from "@/utils/roles/translate";
 
 export async function POST(req: Request) {
   try {
@@ -7,8 +8,12 @@ export async function POST(req: Request) {
     const { courseId, chapterId, description } = await req.json();
 
     if (!courseId || !chapterId || !description) {
-      console.error("Error: Faltan campos 'courseId', 'chapterId' o 'description'");
-      return new NextResponse("Bad Request: Missing required fields", { status: 400 });
+      console.error(
+        "Error: Faltan campos 'courseId', 'chapterId' o 'description'"
+      );
+      return new NextResponse("Bad Request: Missing required fields", {
+        status: 400,
+      });
     }
 
     // Verificar si el capítulo existe
@@ -22,6 +27,36 @@ export async function POST(req: Request) {
     if (!chapterExists) {
       console.error("Error: No se encontró el capítulo con el ID:", chapterId);
       return new NextResponse("Not Found: Chapter not found", { status: 404 });
+    }
+
+    // Permitir solo si es admin (por ID) o dueño del curso
+    const chapterData = await db.chapter.findUnique({
+      where: { id: chapterId },
+    });
+    if (!chapterData) {
+      return new NextResponse("Chapter not found", { status: 404 });
+    }
+    const course = await db.course.findUnique({
+      where: { id: chapterData.courseId },
+    });
+
+    // Obtener el usuario autenticado (ajusta esto según tu sistema de autenticación)
+    // Por ejemplo, si usas NextAuth:
+    // import { getServerSession } from "next-auth";
+    // const session = await getServerSession(authOptions);
+    // const user = session?.user;
+    const user = null; // TODO: Reemplaza esto con la obtención real del usuario
+
+    if (!user) {
+      return new NextResponse("Unauthorized: User not authenticated", {
+        status: 401,
+      });
+    }
+
+    const isAdmin = translateRole(user.role) === "admin";
+    const isOwner = course?.userId === user.id;
+    if (!isAdmin && !isOwner) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     // Actualizar la descripción del capítulo

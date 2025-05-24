@@ -34,6 +34,7 @@ import {
 } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 import { createClient } from "@/utils/supabase/client";
 import { formatPrice } from "@/lib/format"; // Importar formatPrice
+import ManualRegistrationButton from "./components/ManualRegistrationButton";
 
 const supabase = createClient();
 
@@ -494,6 +495,11 @@ export default function CoursePage() {
                       : mainButtonText}
                 </span>
               </Button>
+
+              <ManualRegistrationButton
+                courseId={courseId}
+                courseTitle={title}
+              />
 
               <Button
                 variant="outline"

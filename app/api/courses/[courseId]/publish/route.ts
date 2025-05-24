@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
+import { translateRole } from "@/utils/roles/translate";
 
 export async function POST(req: Request, { params }: any) {
   try {
@@ -28,6 +29,13 @@ export async function POST(req: Request, { params }: any) {
     });
 
     if (!course) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    // Permitir solo si es admin (por ID) o dueño del curso
+    const isAdmin = translateRole(user.role) === "admin";
+    const isOwner = course.userId === user.id;
+    if (!isAdmin && !isOwner) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

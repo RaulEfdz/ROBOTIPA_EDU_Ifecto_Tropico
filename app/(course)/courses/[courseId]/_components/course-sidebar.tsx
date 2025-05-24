@@ -48,8 +48,8 @@ export const CourseSidebar = async ({
 
   return (
     <aside className="h-full w-full md:w-80 border-r bg-gradient-to-b from-muted to-background shadow-sm flex flex-col overflow-y-auto">
-      <div className="p-6 border-b space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="px-4 md:px-6 lg:px-8 p-6 border-b space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 className="text-lg font-bold text-foreground">
             📘 {course.title}
           </h1>
@@ -73,7 +73,7 @@ export const CourseSidebar = async ({
         )}
       </div>
 
-      <nav className="flex flex-col divide-y divide-border">
+      <nav className="flex flex-col divide-y divide-border w-full">
         {chaptersInOrder.map((chapter, index) => {
           const isFirstChapter = index === 0;
           const previousChapterId = isFirstChapter
@@ -82,7 +82,7 @@ export const CourseSidebar = async ({
           const isPreviousCompleted =
             isFirstChapter ||
             (previousChapterId
-              ? chapterCompletionStatus.get(previousChapterId) ?? false
+              ? (chapterCompletionStatus.get(previousChapterId) ?? false)
               : false);
 
           return (

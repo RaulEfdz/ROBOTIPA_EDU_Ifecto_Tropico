@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { translateRole } from "@/utils/roles/translate";
+import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
 export async function GET(
   req: Request,
@@ -7,6 +9,11 @@ export async function GET(
 ) {
   const { courseId } = await params;
   try {
+    const user = (await getUserDataServerAuth())?.user;
+    if (!user) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const course = await db.course.findUnique({
       where: {
         id: courseId,
@@ -27,6 +34,13 @@ export async function GET(
 
     if (!course) {
       return new NextResponse("Course not found", { status: 404 });
+    }
+
+    // Permitir solo si es admin (por ID) o dueño del curso
+    const isAdmin = translateRole(user.role) === "admin";
+    const isOwner = course.userId === user.id;
+    if (!isAdmin && !isOwner) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     return NextResponse.json(course);
