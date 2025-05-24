@@ -63,7 +63,9 @@ export async function POST(req: NextRequest) {
       ],
     };
 
-    const pfRes = await fetch("https://api.pfserver.net/", {
+    const apiUrl = process.env.PAGUELOFACIL_API_URL;
+
+    const pfRes = await fetch(apiUrl || "https://api.pfserver.net/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
