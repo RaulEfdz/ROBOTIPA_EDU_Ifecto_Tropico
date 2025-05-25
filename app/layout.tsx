@@ -5,6 +5,7 @@ import { ToastProvider } from "@/components/providers/toaster-provider";
 import { ConfettiProvider } from "@/components/providers/confetti-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import FloatingHelpButton from "@/components/FloatingHelpButton";
 import { printDebug, printInitDebug } from "@/utils/debug/log";
 
 export const metadata: Metadata = {
@@ -52,6 +53,7 @@ export default function RootLayout({
           <ConfettiProvider />
           <ToastProvider />
           {children}
+          <FloatingHelpButton />
           <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>

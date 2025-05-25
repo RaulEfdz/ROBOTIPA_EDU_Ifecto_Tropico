@@ -46,7 +46,7 @@ export interface Route {
 }
 
 export const guestRoutes: Route[] = [
-  { icon: Compass, label: "Catalogo", href: "/courses/catalog" },
+  { icon: Compass, label: "Catálogo", href: "/courses/catalog" },
 
   { icon: Layout, label: "Tablero", href: "/" },
   // { icon: Bell, label: "Notificaciones", href: "/notifications" },
@@ -59,7 +59,7 @@ export const guestRoutes: Route[] = [
 ];
 
 export const teacherRoutes: Route[] = [
-  { icon: Compass, label: "Catalogo", href: "/courses/catalog" },
+  { icon: Compass, label: "Catálogo", href: "/courses/catalog" },
 
   { icon: Layout, label: "Tablero", href: "/teacher" },
   { icon: List, label: "Cursos", href: "/teacher/courses" },
@@ -151,7 +151,7 @@ export const teacherRoutes: Route[] = [
   },
   // {
   //   icon: Files,
-  //   label: "Catalogo publico",
+  //   label: "Catálogo publico",
   //   href: "/admin/certificates/manage",
   // },
 ];

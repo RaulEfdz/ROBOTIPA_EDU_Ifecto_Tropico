@@ -20,11 +20,13 @@ import { ParseRequestForm } from "./components/ParseRequestForm";
 import { VerifiedDataCard } from "./components/VerifiedDataCard";
 import { ConfirmRegistrationDialog } from "./components/ConfirmRegistrationDialog";
 import { ParsedData } from "./components/export interface ParsedData {";
+import { ManualAssignmentTable } from "./components/ManualAssignmentTable";
 
 export default function ManualRegistrationsPage() {
   const [requestCode, setRequestCode] = useState("");
   const [parsedData, setParsedData] = useState<ParsedData | null>(null);
   const [showDialog, setShowDialog] = useState(false);
+  const [showIdModal, setShowIdModal] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [processingUser, setProcessingUser] = useState<UserDB | null>(null);
   const [errorModal, setErrorModal] = useState<{
@@ -33,6 +35,7 @@ export default function ManualRegistrationsPage() {
     message: string;
     details?: string;
   } | null>(null);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -40,14 +43,12 @@ export default function ManualRegistrationsPage() {
       try {
         const user = await getCurrentUserFromDB();
         if (!user) {
-          toast.error(
-            "No se pudo identificar al usuario procesador. Intenta recargar la página."
-          );
+          toast.error("No se pudo identificar al usuario procesador.");
           return;
         }
         setProcessingUser(user);
       } catch (e) {
-        toast.error("Error obteniendo datos del usuario procesador.");
+        toast.error("Error obteniendo datos del usuario.");
         console.error(e);
       }
     }
@@ -67,11 +68,11 @@ export default function ManualRegistrationsPage() {
       setErrorModal({
         open: true,
         title: "Error de datos",
-        message:
-          "Faltan datos para la confirmación o el usuario procesador no está identificado.",
+        message: "Faltan datos para la confirmación.",
       });
       return;
     }
+
     setIsConfirming(true);
     try {
       const res = await fetch("/api/admin/manual-access/confirm", {
@@ -85,10 +86,10 @@ export default function ManualRegistrationsPage() {
           processedByUserEmail: processingUser.email,
         }),
       });
+
       const result = await res.json();
       if (!res.ok) {
-        // Mostrar modal para errores críticos, toast largo para otros
-        const errorMsg = result.error || "Error al confirmar el registro.";
+        const errorMsg = result.error || "Error al confirmar.";
         const errorDetails = result.details || "";
         if ([403, 500].includes(res.status)) {
           setErrorModal({
@@ -100,29 +101,26 @@ export default function ManualRegistrationsPage() {
         } else {
           toast.error(
             <>
-              <div>
-                <strong>{errorMsg}</strong>
-                {errorDetails && (
-                  <div style={{ marginTop: 8, fontSize: 13, color: "#888" }}>
-                    {errorDetails}
-                  </div>
-                )}
-              </div>
+              <strong>{errorMsg}</strong>
+              {errorDetails && (
+                <div className="mt-1 text-sm text-muted-foreground">
+                  {errorDetails}
+                </div>
+              )}
             </>,
             { duration: 10000 }
           );
         }
-        throw new Error(errorMsg + (errorDetails ? ` - ${errorDetails}` : ""));
+        throw new Error(errorMsg);
       }
-      toast.success(
-        result.message || "Registro manual completado exitosamente."
-      );
+
+      toast.success(result.message || "Registro completado exitosamente.");
       setShowDialog(false);
       setParsedData(null);
       setRequestCode("");
-    } catch (error) {
-      // Ya se maneja arriba, solo log
-      console.error(error);
+      setShowIdModal(false);
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsConfirming(false);
     }
@@ -130,30 +128,71 @@ export default function ManualRegistrationsPage() {
 
   return (
     <PermissionGuard>
-      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-        <Card className="w-full max-w-lg shadow-xl">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">
-              Registro Manual de Cursos
-            </CardTitle>
-            <CardDescription className="mt-2 text-slate-600 dark:text-slate-400">
-              Ingresa el ID de solicitud proporcionado por el alumno o vendedor
-            </CardDescription>
-          </CardHeader>
+      <div className="flex flex-col w-full max-w-7xl mx-auto p-4 space-y-6">
+        {/* Header con título y botón */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-extrabold text-slate-800 dark:text-white">
+              Asignación Manual de Acceso a Cursos
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Selecciona un curso para asignarlo manualmente a un usuario
+            </p>
+          </div>
+          <button
+            onClick={() => setShowIdModal(true)}
+            className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded text-sm"
+          >
+            Registrar por ID manualmente
+          </button>
+        </div>
 
-          <CardContent className="space-y-6">
-            <ParseRequestForm
-              requestCodeValue={requestCode}
-              onRequestCodeChange={setRequestCode}
-              onParsed={handleParsedData}
-            />
+        {/* Tabla principal */}
+        <ManualAssignmentTable />
 
-            {parsedData && (
-              <VerifiedDataCard data={parsedData} onProceed={handleProceed} />
-            )}
-          </CardContent>
-        </Card>
+        {/* Modal por ID */}
+        {showIdModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-lg p-6 relative">
+              <button
+                onClick={() => {
+                  setShowIdModal(false);
+                  setParsedData(null);
+                  setRequestCode("");
+                }}
+                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
 
+              <CardHeader className="text-center mb-4">
+                <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">
+                  Registro por ID de Curso
+                </CardTitle>
+                <CardDescription>
+                  Ingresa el ID proporcionado por el alumno o vendedor
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="space-y-6">
+                <ParseRequestForm
+                  requestCodeValue={requestCode}
+                  onRequestCodeChange={setRequestCode}
+                  onParsed={handleParsedData}
+                />
+
+                {parsedData && (
+                  <VerifiedDataCard
+                    data={parsedData}
+                    onProceed={handleProceed}
+                  />
+                )}
+              </CardContent>
+            </div>
+          </div>
+        )}
+
+        {/* Confirmación */}
         {parsedData && (
           <ConfirmRegistrationDialog
             open={showDialog}
@@ -164,12 +203,9 @@ export default function ManualRegistrationsPage() {
           />
         )}
 
-        {/* Modal de error crítico */}
+        {/* Error modal */}
         {errorModal?.open && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
-            style={{ backdropFilter: "blur(2px)" }}
-          >
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full">
               <h2 className="text-xl font-bold text-red-600 mb-2">
                 {errorModal.title}

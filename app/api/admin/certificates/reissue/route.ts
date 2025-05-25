@@ -1,33 +1,46 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { generateCertificate } from "@/lib/certificate-service";
-import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
+import { PrismaClient } from "@prisma/client";
 
-export async function POST(req: Request) {
+const prisma = new PrismaClient();
+
+export async function POST(req: NextRequest) {
   try {
-    const user = (await getUserDataServerAuth())?.user;
-    if (!user?.id || !["admin", "teacher"].includes((user as any).customRole)) {
-      return new NextResponse("No autorizado", { status: 403 });
-    }
     const { userId, courseId } = await req.json();
+
     if (!userId || !courseId) {
-      return new NextResponse("userId y courseId son requeridos", {
+      return new NextResponse("Missing userId or courseId", { status: 400 });
+    }
+
+    // Verificar si ya existe certificado para ese usuario y curso
+    const existing = await prisma.certificate.findFirst({
+      where: {
+        userId,
+        courseId,
+      },
+    });
+
+    if (existing) {
+      return new NextResponse("Certificate already exists for this course", {
         status: 400,
       });
     }
-    // Usar el servicio refactorizado para emitir o reemitir el certificado
-    const cert = await generateCertificate(userId, courseId);
-    if (!cert) {
-      return new NextResponse("No se pudo emitir el certificado", {
+
+    // Generar certificado
+    const certificate = await generateCertificate(userId, courseId);
+
+    if (!certificate) {
+      return new NextResponse("Failed to generate certificate", {
         status: 500,
       });
     }
+
     return NextResponse.json({
-      success: true,
-      certificateId: cert.id,
-      pdfUrl: cert.pdfUrl,
+      message: "Certificate created successfully",
+      certificate,
     });
   } catch (error) {
-    console.error("[ADMIN_CERTIFICATE_REISSUE]", error);
-    return new NextResponse("Error interno del servidor", { status: 500 });
+    console.error("Error generating certificate:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

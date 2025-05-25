@@ -118,7 +118,11 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
           autoComplete="new-password"
         />
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button
+        type="submit"
+        className="w-full h-10 sm:h-11 font-semibold bg-emerald-900 hover:bg-emerald-950 text-white dark:bg-emerald-500 dark:hover:bg-emerald-600" // Estilos aplicados
+        disabled={isLoading}
+      >
         {isLoading ? "Creando..." : "Crear Cuenta"}
       </Button>
     </form>

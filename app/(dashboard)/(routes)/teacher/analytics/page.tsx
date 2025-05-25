@@ -572,7 +572,7 @@ const AnalyticsDashboard = () => {
                   {t("availableToStudents")}
                 </p>
               </div>
-              <div className="rounded-lg bg-cyan-50 p-6 dark:bg-gray-700">
+              <div className="rounded-lg bg-emerald-50 p-6 dark:bg-gray-700">
                 <h3 className="mb-2 text-lg font-medium">
                   {t("totalAttempts")}
                 </h3>

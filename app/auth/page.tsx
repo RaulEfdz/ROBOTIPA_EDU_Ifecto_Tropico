@@ -1,11 +1,11 @@
 // app/auth/page.tsx
 "use client";
 
+import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
-import Image from "next/image"; // Para la imagen de fondo/lateral
+import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Logo } from "@/utils/logo"; // Asumo que tienes un componente Logo
+import { Logo } from "@/utils/logo";
 import {
   Card,
   CardContent,
@@ -16,7 +16,23 @@ import {
 import LoginForm from "./SignIn/LoginForm";
 import SignupForm from "./SignUp/SignupForm";
 
-// Componente interno para usar useSearchParams y aplicar diseño
+export default function AuthPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen w-full items-center justify-center bg-gray-100 dark:bg-gray-900">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-700-500"></div>
+          <p className="ml-4 text-lg text-gray-700 dark:text-gray-300">
+            Cargando...
+          </p>
+        </div>
+      }
+    >
+      <AuthPageContent />
+    </Suspense>
+  );
+}
+
 function AuthPageContent() {
   const searchParams = useSearchParams();
   const rawRedirectUrl = searchParams.get("redirectUrl");
@@ -27,64 +43,62 @@ function AuthPageContent() {
   const initialAction = searchParams.get("action");
 
   return (
-    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2">
-      {/* Panel Izquierdo - Imagen y Mensaje (visible en pantallas grandes) */}
-      <div className="hidden lg:flex flex-col items-center justify-center bg-gradient-to-br from-primaryCustom2/90 via-primaryCustom2 to-primaryCustom/80 p-12 text-white relative overflow-hidden">
-        {/* Imagen de fondo sutil o ilustración */}
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+      {/* Left Panel */}
+      <div className="relative hidden lg:flex items-center justify-center bg-gradient-to-br from-emerald-600 to-emerald-500 p-12">
         <Image
-          src="/auth-background.jpg" // REEMPLAZA con la ruta a tu imagen en /public
-          alt="Fondo decorativo de autenticación"
-          layout="fill"
-          objectFit="cover"
-          className="opacity-20" // Ajusta la opacidad según necesites
+          src="/auth-background.jpg"
+          alt="Decorative background"
+          fill
+          style={{ objectFit: "cover" }}
+          className="opacity-10"
         />
-        <div className="relative z-10 text-center">
-          <div className="mb-8">
-            <Logo version="light" width={180} height={90} />
-          </div>
-          <h1 className="text-4xl font-bold mb-4">
+        <div className="relative z-10 text-center text-white">
+          <Logo version="light" width={180} height={90} />
+          <h1 className="mt-6 text-5xl font-extrabold tracking-tight">
             {process.env.NEXT_PUBLIC_NAME_APP || "Tu Plataforma Educativa"}
           </h1>
-          <p className="text-xl text-slate-200">
+          <p className="mt-4 text-lg opacity-80">
             Aprende, crece y alcanza tus metas con nosotros.
           </p>
         </div>
       </div>
 
-      {/* Panel Derecho - Formularios de Autenticación */}
-      <div className="flex flex-col items-center justify-center p-6 sm:p-10 bg-slate-50 dark:bg-slate-900">
-        <Card className="w-full max-w-md bg-PanelCustom dark:bg-slate-800 shadow-xl rounded-xl overflow-hidden border dark:border-slate-700">
-          <CardHeader className="text-center p-6 sm:p-8">
-            {/* Logo para pantallas pequeñas, oculto en grandes donde está en el panel izquierdo */}
-            <div className="mx-auto mb-6 lg:hidden">
+      {/* Right Panel */}
+      <div className="flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-6 sm:p-12">
+        <Card className="w-full max-w-md bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
+          <CardHeader className="p-8 text-center">
+            <div className="block lg:hidden">
               <Logo version="original" width={120} height={60} />
             </div>
-            <CardTitle className="text-2xl sm:text-3xl font-bold text-primaryCustom2 dark:text-slate-100">
+            <CardTitle className="mt-4 text-3xl font-bold text-gray-800 dark:text-white">
               Bienvenido
             </CardTitle>
-            <CardDescription className="text-primaryCustom dark:text-slate-400 mt-1">
+            <CardDescription className="mt-2 text-gray-600 dark:text-gray-400">
               Accede o crea tu cuenta para continuar.
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-6 sm:p-8">
+
+          <CardContent className="p-8">
             <Tabs
               defaultValue={initialAction === "sign_up" ? "signup" : "login"}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-100 dark:bg-slate-700 p-1 rounded-lg">
+              <TabsList className="grid grid-cols-2 mb-6 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
                 <TabsTrigger
                   value="login"
-                  className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm data-[state=active]:text-primaryCustom2 dark:data-[state=active]:text-emerald-400"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400"
                 >
                   Iniciar Sesión
                 </TabsTrigger>
                 <TabsTrigger
                   value="signup"
-                  className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm data-[state=active]:text-primaryCustom2 dark:data-[state=active]:text-emerald-400"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400"
                 >
                   Crear Cuenta
                 </TabsTrigger>
               </TabsList>
+
               <TabsContent value="login">
                 <LoginForm redirectUrl={redirectUrl} />
               </TabsContent>
@@ -93,36 +107,21 @@ function AuthPageContent() {
               </TabsContent>
             </Tabs>
           </CardContent>
+
+          {/* <div className="px-8 pb-8">
+            <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+              Al continuar, aceptas nuestros{" "}
+              <a
+                href="/terms"
+                className="underline hover:text-emerald-600 dark:hover:text-emerald-400"
+              >
+                Términos de Servicio
+              </a>
+              .
+            </p>
+          </div> */}
         </Card>
-        <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
-          Al continuar, aceptas nuestros{" "}
-          <a
-            href="/temrs"
-            className="underline hover:text-primaryCustom dark:hover:text-emerald-400"
-          >
-            Términos de Servicio
-          </a>
-          .
-        </p>
       </div>
     </div>
-  );
-}
-
-// Wrapper con Suspense para useSearchParams
-export default function AuthPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen w-full flex items-center justify-center bg-slate-100 dark:bg-slate-900">
-          <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-primaryCustom2 dark:border-emerald-500"></div>
-          <p className="ml-4 text-lg text-slate-700 dark:text-slate-300">
-            Cargando...
-          </p>
-        </div>
-      }
-    >
-      <AuthPageContent />
-    </Suspense>
   );
 }

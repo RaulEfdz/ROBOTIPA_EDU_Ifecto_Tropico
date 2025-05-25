@@ -60,6 +60,10 @@ function CatalogContent() {
   );
   const [sortBy, setSortBy] = useState<SortByType>(initialSortBy);
 
+  const [enrolledCourses, setEnrolledCourses] = useState<
+    Record<string, boolean>
+  >({});
+
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
@@ -94,6 +98,25 @@ function CatalogContent() {
         setAllCategories(
           uniqueCategories.sort((a, b) => a.name.localeCompare(b.name))
         );
+
+        // Fetch enrollment status for each course
+        const enrollmentStatus: Record<string, boolean> = {};
+        await Promise.all(
+          data.map(async (course) => {
+            try {
+              const res = await fetch(`/api/courses/${course.id}/is-enrolled`);
+              if (res.ok) {
+                const json = await res.json();
+                enrollmentStatus[course.id] = json.isEnrolled;
+              } else {
+                enrollmentStatus[course.id] = false;
+              }
+            } catch {
+              enrollmentStatus[course.id] = false;
+            }
+          })
+        );
+        setEnrolledCourses(enrollmentStatus);
       } catch (error: any) {
         console.error("Error fetching catalog data:", error);
         toast.error(
@@ -313,6 +336,7 @@ function CatalogContent() {
                   categoryName: apiCourse.category?.name || null,
                   shortDescription: apiCourse.description || null,
                   slug: apiCourse.slug,
+                  isEnrolled: enrolledCourses[apiCourse.id] || false,
                 };
                 return (
                   <PublicCourseCard

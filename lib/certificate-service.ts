@@ -65,7 +65,10 @@ export async function prepareCertificateData(
  * Genera un certificado para un usuario y curso si no existe.
  * Devuelve el registro plano del certificado (sin relaciones anidadas).
  */
-import { generateCertificatePdf } from "../services/certificateGeneratorService";
+import {
+  uploadCertificateImageToCloudinary,
+  generateAndUploadCertificateImage,
+} from "../services/certificateGeneratorService";
 
 export async function generateCertificate(
   userId: string,
@@ -80,52 +83,44 @@ export async function generateCertificate(
 
   // 2) Buscar certificado existente
   const existing = await db.certificate.findFirst({
-    where: { userId, courseId },
+    where: { userId },
   });
 
-  // 3) Generar código y metadatos
-  const code = existing
-    ? existing.code
-    : await generateUniqueCertificateCode(courseId, userId);
-  const templateVersion =
-    process.env.DEFAULT_CERTIFICATE_TEMPLATE_VERSION || "v1.0";
-  const templateId = "default_v1";
-  const institution =
-    process.env.NEXT_PUBLIC_NAME_APP || "Tu Plataforma Educativa";
+  if (
+    existing &&
+    typeof existing.data === "object" &&
+    !Array.isArray(existing.data) &&
+    existing.data?.courseId === courseId
+  ) {
+    return existing;
+  }
 
-  // 4) Preparar datos para el PDF
-  const issuedAt = existing ? existing.issuedAt : new Date();
-  const certificateData = {
-    studentName: user.fullName,
-    courseName: course.title,
-    issueDate: format(new Date(issuedAt), "dd/MM/yyyy"),
-    certificateCode: code,
-    backgroundImageUrl: "/public/Certificado-de-Participación-Animales.png", // Ajusta si tienes una lógica dinámica
-    // qrCodeDataUrl: undefined, // Agrega si tienes QR
-  };
+  // 3) Generar código único
+  const code = await generateUniqueCertificateCode(courseId, userId);
 
-  // 5) Generar PDF y obtener la URL
-  const pdfUrl = await generateCertificatePdf(certificateData);
+  // 4) Aquí deberías generar la imagen del certificado en otro lugar o tenerla ya generada
+  // Por ahora, asumimos que la imagen ya está generada y disponible para subir
 
-  // 6) Crear o actualizar el certificado en la base de datos
-  const cert = await db.certificate.upsert({
-    where: existing ? { id: existing.id } : { code }, // Si no existe, usará el código generado
-    update: {
-      pdfUrl,
-      templateId,
-      data: { templateVersion },
-      // Puedes actualizar otros campos si lo deseas
-    },
-    create: {
+  // 5) Subir imagen a Cloudinary
+  const { secure_url, public_id } = await generateAndUploadCertificateImage(
+    userId,
+    courseId
+  );
+
+  // 6) Crear nuevo registro Certificate
+  const cert = await db.certificate.create({
+    data: {
       userId,
       courseId,
       title: course.title,
-      institution,
-      issuedAt,
+      institution:
+        process.env.NEXT_PUBLIC_NAME_APP || "Tu Plataforma Educativa",
+      issuedAt: new Date(),
+      fileUrl: secure_url,
       code,
-      pdfUrl,
-      templateId,
-      data: { templateVersion },
+      data: {
+        cloudinaryId: public_id,
+      },
     },
   });
 

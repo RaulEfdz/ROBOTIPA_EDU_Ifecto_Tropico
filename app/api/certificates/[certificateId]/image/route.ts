@@ -1,29 +1,23 @@
 import { NextRequest } from "next/server";
-import { getCertificateById } from "@/lib/certificate-service";
-import fs from "fs";
-import path from "path";
+import { db } from "@/lib/db";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ certificateId: string }> }
 ) {
-  const paramsResolved = await params;
-  const cert = await getCertificateById(paramsResolved.certificateId);
+  const { certificateId } = await params;
+  const cert = await db.certificate.findUnique({
+    where: { code: certificateId },
+  });
+
   if (!cert) {
     return new Response("Not found", { status: 404 });
   }
 
-  // Por ahora, devuelve una imagen estática de ejemplo
-  const imagePath = path.join(
-    process.cwd(),
-    "public",
-    "Certificado-de-Participación-Animales.png"
-  );
-  const imageBuffer = fs.readFileSync(imagePath);
-
-  return new Response(imageBuffer, {
+  return new Response(JSON.stringify({ imageUrl: cert.fileUrl }), {
+    status: 200,
     headers: {
-      "Content-Type": "image/png",
+      "Content-Type": "application/json",
       "Cache-Control": "public, max-age=86400",
     },
   });

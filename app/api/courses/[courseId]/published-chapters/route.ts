@@ -36,10 +36,23 @@ export async function GET(
       return new NextResponse("Course not found", { status: 404 });
     }
 
-    // Permitir solo si es admin (por ID) o dueño del curso
+    // Permitir solo si es admin (por ID), dueño del curso o usuario inscrito
     const isAdmin = translateRole(user.role) === "admin";
     const isOwner = course.userId === user.id;
-    if (!isAdmin && !isOwner) {
+
+    // Verificar si el usuario está inscrito
+    const purchase = await db.purchase.findUnique({
+      where: {
+        userId_courseId: {
+          userId: user.id,
+          courseId: courseId,
+        },
+      },
+    });
+
+    const isEnrolled = !!purchase;
+
+    if (!isAdmin && !isOwner && !isEnrolled) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

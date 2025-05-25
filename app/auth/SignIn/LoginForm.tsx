@@ -153,7 +153,7 @@ export default function LoginForm({
       </div>
       <Button
         type="submit"
-        className="w-full h-10 sm:h-11 font-semibold bg-primaryCustom2 hover:bg-primaryCustom2/90 text-white dark:bg-emerald-500 dark:hover:bg-emerald-600" // Estilos aplicados
+        className="w-full h-10 sm:h-11 font-semibold bg-emerald-900 hover:bg-emerald-950 text-white dark:bg-emerald-500 dark:hover:bg-emerald-600" // Estilos aplicados
         disabled={isLoading}
       >
         {isLoading ? (

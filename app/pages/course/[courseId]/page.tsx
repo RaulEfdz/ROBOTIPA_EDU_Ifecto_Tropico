@@ -304,7 +304,7 @@ export default function CoursePage() {
       <Header user={user} courseTitle={title} />
 
       {/* --- Hero Section --- */}
-      <header className="bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-700 text-white py-12 md:py-16">
+      <header className="bg-gradient-to-r from-emerald-700 via-emerald-700 to-emerald-700 text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-8 md:gap-12">
           {/* Columna Izquierda: Texto */}
           <div className="flex-1 space-y-3 md:space-y-4">
@@ -531,9 +531,9 @@ export default function CoursePage() {
               <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2">
                 Este curso incluye:
               </h4>
-              <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+              {/* <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                 <Clock size={16} /> Acceso de por vida
-              </div>
+              </div> */}
               <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                 <BookOpen size={16} /> Materiales descargables (si aplica)
               </div>

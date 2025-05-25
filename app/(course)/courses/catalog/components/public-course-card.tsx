@@ -23,6 +23,7 @@ export interface PublicCourseCardProps {
   categoryName: string | null;
   shortDescription?: string | null;
   slug?: string;
+  isEnrolled?: boolean;
 }
 
 export const PublicCourseCard = ({
@@ -34,13 +35,19 @@ export const PublicCourseCard = ({
   categoryName,
   shortDescription,
   slug,
+  isEnrolled = false,
 }: PublicCourseCardProps) => {
   const courseLink = slug ? `/pages/course/${slug}` : `/pages/course/${id}`;
+
+  const resolvedCourseLink = isEnrolled ? `/courses/${id}` : courseLink;
 
   return (
     <Card className="group h-full overflow-hidden rounded-xl border bg-white shadow-sm transition-all hover:shadow-lg dark:bg-slate-800 dark:border-slate-700 flex flex-col">
       <CardHeader className="p-0">
-        <Link href={courseLink} aria-label={`Ver detalles del curso ${title}`}>
+        <Link
+          href={resolvedCourseLink}
+          aria-label={`Ver detalles del curso ${title}`}
+        >
           <div className="relative aspect-video w-full overflow-hidden">
             <Image
               fill
@@ -103,8 +110,8 @@ export const PublicCourseCard = ({
           size="sm"
           className="w-full bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
         >
-          <Link href={courseLink}>
-            Ver Detalles
+          <Link href={resolvedCourseLink}>
+            {isEnrolled ? "Ir al curso" : "Ver Detalles"}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>

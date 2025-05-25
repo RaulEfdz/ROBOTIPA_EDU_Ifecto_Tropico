@@ -1,60 +1,56 @@
 "use client";
 
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FaWhatsapp } from "react-icons/fa"; // Usando react-icons
+import { FaWhatsapp } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import {
   getCurrentUserFromDB,
   UserDB,
 } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { format } from "date-fns";
+import { toast } from "sonner";
+import Image from "next/image";
 
 interface ManualRegistrationButtonProps {
   courseId: string;
   courseTitle: string;
 }
 
-const ManualRegistrationButton: React.FC<ManualRegistrationButtonProps> = ({
+export default function ManualRegistrationCard({
   courseId,
   courseTitle,
-}) => {
+}: ManualRegistrationButtonProps) {
   const [currentUser, setCurrentUser] = useState<UserDB | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
-  const router = useRouter();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [manualUserId, setManualUserId] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
 
+  const router = useRouter();
   const separator = process.env.NEXT_PUBLIC_MANUAL_ACCESS_ID_SEPARATOR || "|";
   const salesWhatsAppNumber = process.env.NEXT_PUBLIC_WHATSAPP_SALES_NUMBER;
+  const appName = process.env.NEXT_PUBLIC_NAME_APP || "nuestra plataforma";
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const user = await getCurrentUserFromDB();
-        setCurrentUser(user);
-      } catch (error) {
-        console.warn(
-          "Error fetching current user for manual registration button:",
-          error
-        );
-        setCurrentUser(null);
-      } finally {
-        setIsLoadingUser(false);
-      }
-    };
-    fetchUser();
+    getCurrentUserFromDB()
+      .then((user) => setCurrentUser(user))
+      .catch(() => setCurrentUser(null))
+      .finally(() => setIsLoadingUser(false));
   }, []);
 
-  const handleRequestManualRegistration = () => {
-    if (isLoadingUser) {
-      toast.info("Verificando información de usuario...");
-      return;
-    }
-
-    if (!currentUser || !currentUser.id) {
-      toast.error("Debes iniciar sesión para solicitar un registro manual.", {
+  const handleOpenModal = () => {
+    if (!currentUser && !isLoadingUser) {
+      toast.error("Debes iniciar sesión para continuar.", {
         action: {
-          label: "Iniciar Sesión",
+          label: "Iniciar sesión",
           onClick: () =>
             router.push(
               "/auth?redirectUrl=" +
@@ -66,48 +62,207 @@ const ManualRegistrationButton: React.FC<ManualRegistrationButtonProps> = ({
     }
 
     if (!salesWhatsAppNumber) {
-      toast.error(
-        "La opción de solicitud por WhatsApp no está disponible actualmente.",
-        {
-          description: "Por favor, contacta a soporte.",
-        }
-      );
-      console.error(
-        "MANUAL REG: NEXT_PUBLIC_WHATSAPP_SALES_NUMBER no está definido."
-      );
+      toast.error("El canal de WhatsApp no está disponible.");
       return;
     }
 
-    const today = format(new Date(), "yyyyMMdd");
-    const requestId = `${courseId}${separator}${currentUser.id}${separator}${today}`;
-    const appName = process.env.NEXT_PUBLIC_NAME_APP || "nuestra plataforma";
-    const message = `Hola equipo de ${appName},\n\nSolicito el registro manual al curso \"${courseTitle}\".\n\nID de solicitud: ${requestId}\n\nGracias.`;
-    const whatsappUrl = `https://wa.me/${salesWhatsAppNumber}?text=${encodeURIComponent(message)}`;
-
-    window.open(whatsappUrl, "_blank");
-    toast.success(
-      "Se ha generado tu mensaje para WhatsApp. Por favor, envíalo para procesar tu solicitud.",
-      {
-        duration: 7000, // Más tiempo para que el usuario lo vea bien
-      }
-    );
+    setModalOpen(true);
   };
 
-  if (!salesWhatsAppNumber && !isLoadingUser) {
-    return null;
-  }
+  const handleOpenWhatsApp = () => {
+    if (!currentUser || !salesWhatsAppNumber) return;
+
+    const today = format(new Date(), "dd/MM/yyyy");
+    const rawId = `${courseTitle}${separator}${currentUser.fullName}${separator}${today}`;
+    const requestId = rawId.replace(/\s+/g, "_");
+
+    const rId = `${courseId}${separator}${currentUser.id}${separator}${today}`;
+
+    const message = `
+Hola equipo de ${appName},
+
+Quisiera solicitar el acceso manual al curso:
+*${courseTitle}*
+
+Nombre: ${currentUser.fullName}
+Fecha de solicitud: ${today}
+
+
+Por favor, indíquenme los pasos a seguir para completar el pago por otro medio (Yappy, efectivo, etc.).
+
+¡Muchas gracias!
+`;
+
+    const whatsappUrl = `https://wa.me/${salesWhatsAppNumber}?text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.open(whatsappUrl, "_blank");
+    toast.success("Mensaje generado para WhatsApp.");
+    setModalOpen(false);
+  };
+
+  const handleManualRegister = async () => {
+    if (!manualUserId) {
+      toast.error("Por favor, ingresa el ID del usuario a registrar.");
+      return;
+    }
+    if (!currentUser) {
+      toast.error("No se pudo obtener el usuario actual.");
+      return;
+    }
+    setIsRegistering(true);
+    try {
+      const response = await fetch("/api/admin/manual-access/confirm", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          courseId,
+          userId: manualUserId,
+          date: new Date().toISOString(),
+          processedByUserId: currentUser.id,
+          processedByUserEmail: currentUser.email,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success("Usuario registrado manualmente y correo enviado.");
+        setManualUserId("");
+        setModalOpen(false);
+      } else {
+        toast.error(`Error: ${data.error || "Error desconocido"}`);
+      }
+    } catch (error) {
+      toast.error("Error al registrar usuario manualmente.");
+    } finally {
+      setIsRegistering(false);
+    }
+  };
+
+  const handleManualRevoke = async () => {
+    if (!manualUserId) {
+      toast.error("Por favor, ingresa el ID del usuario para quitar acceso.");
+      return;
+    }
+    if (!currentUser) {
+      toast.error("No se pudo obtener el usuario actual.");
+      return;
+    }
+    setIsRegistering(true);
+    try {
+      const response = await fetch("/api/admin/manual-access/revoke", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          courseId,
+          userId: manualUserId,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success("Acceso manual eliminado correctamente.");
+        setManualUserId("");
+        setModalOpen(false);
+      } else {
+        toast.error(`Error: ${data.error || "Error desconocido"}`);
+      }
+    } catch (error) {
+      toast.error("Error al eliminar acceso manual.");
+    } finally {
+      setIsRegistering(false);
+    }
+  };
 
   return (
-    <Button
-      variant="outline"
-      onClick={handleRequestManualRegistration}
-      disabled={isLoadingUser}
-      className="w-full sm:w-auto border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700 flex items-center gap-2"
-    >
-      <FaWhatsapp className="h-5 w-5" />
-      Solicitar por WhatsApp
-    </Button>
-  );
-};
+    <>
+      <Card className="w-full max-w-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            Otros medios de pago
+            <span className="text-xl">💵</span>
+            <Image
+              width={100}
+              height={100}
+              src="/yappy.webp"
+              alt="Yappy"
+              className="h-5 w-auto object-contain"
+            />
+          </CardTitle>
+          <CardDescription className="text-sm text-gray-600 dark:text-gray-300">
+            Puedes pagar por Yappy, transferencia, efectivo u otros métodos.
+            Toca el botón para ver instrucciones y completar tu solicitud
+            manual.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button
+            onClick={handleOpenModal}
+            disabled={isLoadingUser}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
+            Ver instrucciones
+          </Button>
+        </CardContent>
+      </Card>
 
-export default ManualRegistrationButton;
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-md relative">
+            <h2 className="text-xl font-bold mb-2 text-slate-800 dark:text-slate-100">
+              ¿Quieres pagar por otros medios?
+            </h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+              Puedes pagar por Yappy, efectivo u otro medio. Haz clic en el
+              botón de abajo para generar un mensaje y contactarnos por
+              WhatsApp.
+            </p>
+
+            <input
+              type="text"
+              placeholder="ID del usuario a registrar"
+              value={manualUserId}
+              onChange={(e) => setManualUserId(e.target.value)}
+              className="w-full mb-4 px-3 py-2 border rounded"
+            />
+
+            <div className="flex justify-between gap-2">
+              <Button
+                variant="ghost"
+                onClick={() => setModalOpen(false)}
+                className="text-gray-600 hover:text-gray-900 dark:text-gray-300"
+                disabled={isRegistering}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleManualRegister}
+                className="bg-blue-600 text-white hover:bg-blue-700"
+                disabled={isRegistering}
+              >
+                {isRegistering ? "Registrando..." : "Registrar Usuario"}
+              </Button>
+              <Button
+                onClick={handleManualRevoke}
+                className="bg-red-600 text-white hover:bg-red-700"
+                disabled={isRegistering}
+              >
+                {isRegistering ? "Procesando..." : "Quitar Acceso Manual"}
+              </Button>
+              <Button
+                onClick={handleOpenWhatsApp}
+                className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
+              >
+                <FaWhatsapp className="w-4 h-4" />
+                Contactar por WhatsApp
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

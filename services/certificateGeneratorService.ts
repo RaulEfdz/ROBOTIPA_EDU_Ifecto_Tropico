@@ -1,113 +1,78 @@
-import puppeteer from "puppeteer";
-import DefaultCertificateTemplate from "../templates/certificates/DefaultCertificateTemplate";
 import cloudinary from "../lib/cloudinary";
-import QRCode from "qrcode";
+import puppeteer from "puppeteer";
+import { prepareCertificateData } from "../lib/certificate-service";
+import { getCertificateTemplateHtml } from "../lib/certificate-image-generator";
 
-type CertificateData = {
-  studentName: string;
-  courseName: string;
-  issueDate: string;
-  certificateCode: string;
-  backgroundImageUrl: string;
-  qrCodeDataUrl?: string;
-};
-
-export async function generateCertificatePdf(
-  data: CertificateData
-): Promise<string> {
-  // Generate QR code data URL
-  const qrUrl = `https://tuapp.com/certificates/view/${data.certificateCode}`;
-  const qrCodeDataUrl = await QRCode.toDataURL(qrUrl);
-
-  // Add qrCodeDataUrl to data
-  const dataWithQr = { ...data, qrCodeDataUrl };
-
-  // Importar React y ReactDOMServer dinámicamente solo en el servidor
-  const React = (await import("react")).default;
-  const ReactDOMServer = (await import("react-dom/server")).default;
-
-  // Render React component to static HTML
-  const html = ReactDOMServer.renderToStaticMarkup(
-    React.createElement(DefaultCertificateTemplate, dataWithQr)
-  );
-
-  // Wrap in a full HTML document
-  const fullHtml = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charSet="utf-8" />
-        <title>Certificado</title>
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            background: #f5f5f5;
-          }
-        </style>
-      </head>
-      <body>
-        ${html}
-      </body>
-    </html>
-  `;
-
-  // Launch Puppeteer and generate PDF
-  const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+export async function uploadCertificateImageToCloudinary(
+  imageBuffer: Buffer,
+  publicId: string
+): Promise<{ secure_url: string; public_id: string }> {
   try {
-    const page = await browser.newPage();
-    await page.setContent(fullHtml, { waitUntil: "networkidle0" });
-
-    // Set PDF options: A4 landscape, print background
-    const pdfUint8Array = await page.pdf({
-      format: "A4",
-      landscape: true,
-      printBackground: true,
-      width: "1123px",
-      height: "794px",
-      margin: { top: "0px", right: "0px", bottom: "0px", left: "0px" },
+    const uploadResult = await new Promise<any>((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            resource_type: "image",
+            public_id: `certificates/${publicId}`,
+            overwrite: true,
+            format: "png",
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        )
+        .end(imageBuffer);
     });
-
-    await page.close();
-    // Convert Uint8Array to Buffer for Node.js compatibility
-    const pdfBuffer = Buffer.from(pdfUint8Array);
-
-    // Upload PDF to Cloudinary and return the URL
-    const url = await uploadPdfToCloud(pdfBuffer, data.certificateCode);
-    return url;
-  } finally {
-    await browser.close();
+    return {
+      secure_url: uploadResult.secure_url,
+      public_id: uploadResult.public_id,
+    };
+  } catch (error) {
+    console.error("Error uploading certificate image to Cloudinary:", error);
+    throw error;
   }
 }
 
 /**
- * Uploads a PDF buffer to Cloudinary and returns the URL.
- * @param pdfBuffer Buffer containing the PDF data.
- * @param certificateCode Unique code to use as the public_id in Cloudinary.
- * @returns The URL of the uploaded PDF.
+ * Generates a certificate image buffer from HTML using Puppeteer.
  */
-async function uploadPdfToCloud(
-  pdfBuffer: Buffer,
-  certificateCode: string
-): Promise<string> {
-  const uploadResult = await new Promise<any>((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream(
-        {
-          resource_type: "raw",
-          public_id: `certificates/${certificateCode}`,
-          format: "pdf",
-          overwrite: true,
-        },
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result);
-        }
-      )
-      .end(pdfBuffer);
-  });
+export async function generateCertificateImageBuffer(
+  html: string
+): Promise<Buffer> {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: "networkidle0" });
+  const element = await page.$("body");
+  if (!element) {
+    await browser.close();
+    throw new Error("Failed to find body element for screenshot");
+  }
+  const screenshotBuffer = await element.screenshot({ type: "png" });
+  await browser.close();
+  return Buffer.from(screenshotBuffer);
+}
 
-  return uploadResult.secure_url;
+/**
+ * Generates and uploads a certificate image for a user and course.
+ * Returns the secure_url and public_id from Cloudinary.
+ */
+export async function generateAndUploadCertificateImage(
+  userId: string,
+  courseId: string
+): Promise<{ secure_url: string; public_id: string }> {
+  const certificateData = await prepareCertificateData(userId, courseId);
+  if (!certificateData) {
+    throw new Error("Invalid user or course data for certificate");
+  }
+  const templateHtml = getCertificateTemplateHtml(
+    certificateData.fullName,
+    certificateData.courseTitle
+  );
+  const imageBuffer = await generateCertificateImageBuffer(templateHtml);
+  const uploadResult = await uploadCertificateImageToCloudinary(
+    imageBuffer,
+    certificateData.certificateCode
+  );
+  return uploadResult;
 }
