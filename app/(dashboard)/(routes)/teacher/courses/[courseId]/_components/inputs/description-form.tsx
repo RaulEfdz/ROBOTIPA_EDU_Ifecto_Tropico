@@ -156,7 +156,7 @@ export const DescriptionForm = ({
             onClick={toggleEdit}
             variant="ghost"
             size="sm"
-            className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg h-8"
+            className="text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg h-8"
           >
             <Pencil className="h-4 w-4" />
           </Button>

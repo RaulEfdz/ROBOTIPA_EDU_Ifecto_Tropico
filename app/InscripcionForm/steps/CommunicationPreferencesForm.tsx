@@ -1,4 +1,3 @@
-
 // Step3.js
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,17 +9,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-const CommunicationPreferencesForm = ({ form }:any) => {
+const CommunicationPreferencesForm = ({ form }: any) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">Paso 3: Preferencias de Comunicación y Consentimientos</h3>
+      <h3 className="text-lg font-medium">
+        Paso 3: Preferencias de Comunicación y Consentimientos
+      </h3>
 
       <FormField
         control={form.control}
         name="preferenciasComunicacion"
         render={() => (
           <FormItem>
-            <FormLabel className="text-base">Preferencias de Comunicación</FormLabel>
+            <FormLabel className="text-base">
+              Preferencias de Comunicación
+            </FormLabel>
             {["Email", "WhatsApp"].map((medio) => (
               <FormField
                 key={medio}
@@ -29,10 +32,7 @@ const CommunicationPreferencesForm = ({ form }:any) => {
                 render={({ field }) => {
                   const checked = field.value.includes(medio);
                   return (
-                    <FormItem
-                      key={medio}
-                      className="flex flex-row space-x-3"
-                    >
+                    <FormItem key={medio} className="flex flex-row space-x-3">
                       <FormControl>
                         <Checkbox
                           checked={checked}
@@ -78,7 +78,7 @@ const CommunicationPreferencesForm = ({ form }:any) => {
                   href="/terminos-y-condiciones"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-500 underline hover:text-blue-700"
+                  className="text-emerald-500 underline hover:text-emerald-700"
                 >
                   términos y condiciones
                 </a>

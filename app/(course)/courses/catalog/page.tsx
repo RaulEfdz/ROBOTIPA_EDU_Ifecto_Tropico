@@ -195,11 +195,11 @@ function CatalogContent() {
         <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
           <Toaster position="top-center" richColors />
 
-          <section className="text-center py-8 mb-8 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-lg shadow-lg">
+          <section className="text-center py-8 mb-8 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg shadow-lg">
             <h1 className="text-4xl md:text-5xl font-bold text-white">
               Encuentra Tu Próximo Desafío
             </h1>
-            <p className="text-lg text-sky-100 mt-2 max-w-2xl mx-auto px-4">
+            <p className="text-lg text-emerald-100 mt-2 max-w-2xl mx-auto px-4">
               Explora nuestra amplia gama de cursos diseñados para potenciar tus
               habilidades.
             </p>
@@ -247,7 +247,7 @@ function CatalogContent() {
                   id="sort-by"
                   value={sortBy}
                   onChange={handleSortChange}
-                  className="w-full p-2 border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:text-white"
+                  className="w-full p-2 border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
                 >
                   <option value="recent">Más Recientes</option>
                   <option value="title_asc">Título (A-Z)</option>
@@ -336,7 +336,7 @@ function CatalogContent() {
                     setSearchTerm("");
                     updateUrlParams();
                   }}
-                  className="text-sky-600 hover:underline dark:text-sky-400"
+                  className="text-emerald-600 hover:underline dark:text-emerald-400"
                 >
                   categorías
                 </button>

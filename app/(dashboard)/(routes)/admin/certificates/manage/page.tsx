@@ -220,7 +220,7 @@ const ManageCertificatesPage = () => {
                   <Button
                     onClick={handleReissueCertificate}
                     disabled={isLoadingReissue || isLoadingPreview}
-                    className="w-full bg-sky-600 hover:bg-sky-700"
+                    className="w-full bg-emerald-600 hover:bg-emerald-700"
                   >
                     {isLoadingReissue ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

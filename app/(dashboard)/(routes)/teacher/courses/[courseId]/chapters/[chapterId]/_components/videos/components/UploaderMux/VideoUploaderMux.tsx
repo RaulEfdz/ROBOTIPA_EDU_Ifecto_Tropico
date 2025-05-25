@@ -7,7 +7,8 @@ import { Upload, Loader2, XCircle, CircleOff } from "lucide-react";
 // Textos para internacionalización (i18n)
 const texts = {
   es: {
-    dropzoneIdle: "Arrastra un video aquí o haz clic para seleccionar (.mp4, .webm)",
+    dropzoneIdle:
+      "Arrastra un video aquí o haz clic para seleccionar (.mp4, .webm)",
     dropzoneDragging: "Suelta el video aquí",
     uploadingState: "Subiendo video...",
     processingState: "Video enviado, procesando...",
@@ -21,7 +22,8 @@ const texts = {
     selectVideo: "Seleccionar otro video",
   },
   en: {
-    dropzoneIdle: "Drag 'n' drop a video here, or click to select (.mp4, .webm)",
+    dropzoneIdle:
+      "Drag 'n' drop a video here, or click to select (.mp4, .webm)",
     dropzoneDragging: "Drop the video here",
     uploadingState: "Uploading video...",
     processingState: "Video sent, processing...",
@@ -219,7 +221,7 @@ export const VideoUploaderMux = ({
         className={`
           border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
           transition-colors duration-200 ease-in-out relative group
-          ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"}
+          ${isDragging ? "border-emerald-500 bg-emerald-50" : "border-gray-300 hover:border-gray-400"}
           ${status === "error" ? "border-red-500 bg-red-50" : ""}
           ${status === "uploading" ? "cursor-not-allowed border-gray-300 bg-gray-50" : ""}
         `}
@@ -265,21 +267,27 @@ export const VideoUploaderMux = ({
                   {uploadProgress !== null && (
                     <div className="w-full bg-gray-600 rounded-full h-2.5 mt-2">
                       <div
-                        className="bg-blue-500 h-2.5 rounded-full transition-all duration-150 ease-linear"
+                        className="bg-emerald-500 h-2.5 rounded-full transition-all duration-150 ease-linear"
                         style={{ width: `${uploadProgress}%` }}
                       ></div>
                     </div>
                   )}
-                  {uploadProgress !== null && <span className="text-xs mt-1">{uploadProgress}%</span>}
+                  {uploadProgress !== null && (
+                    <span className="text-xs mt-1">{uploadProgress}%</span>
+                  )}
                 </div>
               )}
               {/* Overlay de error */}
               {status === "error" && (
                 <div className="absolute inset-0 bg-red-900 bg-opacity-70 flex flex-col items-center justify-center rounded-md text-TextCustom p-4 space-y-2">
                   <XCircle className="h-8 w-8 mb-1" />
-                  <span className="text-center text-sm font-semibold">{t.error}</span>
+                  <span className="text-center text-sm font-semibold">
+                    {t.error}
+                  </span>
                   {videoFile && (
-                    <span className="text-xs text-center truncate w-full px-2">{videoFile.name}</span>
+                    <span className="text-xs text-center truncate w-full px-2">
+                      {videoFile.name}
+                    </span>
                   )}
                   <span className="text-xs text-center">{t.invalidType}</span>
                   <button

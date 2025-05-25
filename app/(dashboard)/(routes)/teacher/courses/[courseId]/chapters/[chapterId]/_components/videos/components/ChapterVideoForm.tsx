@@ -244,7 +244,7 @@ export const ChapterVideoForm = ({
             onClick={toggleEdit}
             variant="ghost"
             size="sm"
-            className="text-sm text-gray-500 hover:text-blue-600 transition-colors dark:text-gray-400 dark:hover:text-blue-500"
+            className="text-sm text-gray-500 hover:text-emerald-600 transition-colors dark:text-gray-400 dark:hover:text-emerald-500"
           >
             {initialData.video?.url ? (
               <>

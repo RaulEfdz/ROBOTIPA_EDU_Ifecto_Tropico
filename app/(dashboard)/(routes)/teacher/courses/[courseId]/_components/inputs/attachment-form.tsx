@@ -131,7 +131,7 @@ export const AttachmentForm = ({
             onClick={toggleEdit}
             variant="ghost"
             size="sm"
-            className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg h-8"
+            className="text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg h-8"
           >
             {isEditing ? (
               <X className="h-4 w-4" />
@@ -153,7 +153,7 @@ export const AttachmentForm = ({
                 {initialData.attachments.map((attachment) => (
                   <div
                     key={attachment.id}
-                    className="flex items-center p-3 w-full bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 rounded-md"
+                    className="flex items-center p-3 w-full bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-md"
                   >
                     <File className="h-4 w-4 mr-2 flex-shrink-0" />
                     <p className="text-xs truncate flex-1">
@@ -163,7 +163,7 @@ export const AttachmentForm = ({
                       variant="ghost"
                       size="icon"
                       onClick={() => handlePreview(attachment.url)}
-                      className="text-blue-500"
+                      className="text-emerald-500"
                     >
                       <Eye className="w-4 h-4" />
                     </Button>

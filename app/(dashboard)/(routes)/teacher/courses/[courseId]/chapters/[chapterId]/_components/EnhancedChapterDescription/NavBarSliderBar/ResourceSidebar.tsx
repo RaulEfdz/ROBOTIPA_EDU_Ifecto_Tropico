@@ -60,7 +60,7 @@ const ResourceSidebar: React.FC<ResourceSidebarProps> = ({
       <Sheet>
         <SheetTrigger>
           <Button
-            className="bg-[#386329] flex items-center gap-2 text-TextCustom px-4 py-2 rounded-md hover:bg-blue-600 focus:ring focus:ring-blue-300 shadow-md transition duration-200"
+            className="bg-[#386329] flex items-center gap-2 text-TextCustom px-4 py-2 rounded-md hover:bg-emerald-600 focus:ring focus:ring-emerald-300 shadow-md transition duration-200"
             aria-label={texts[lang].openResources}
           >
             <FileBox className="w-5 h-5" />
@@ -90,9 +90,9 @@ const ResourceSidebar: React.FC<ResourceSidebarProps> = ({
                           variant="ghost"
                           size="sm"
                           onClick={() => {
-                            const formattedId = `@[Resource_${
-                              formatText(item.name)
-                            }_&!${formatTitle(formmatedFile(item.id))}]`;
+                            const formattedId = `@[Resource_${formatText(
+                              item.name
+                            )}_&!${formatTitle(formmatedFile(item.id))}]`;
                             const richText = `
                                 <b style="color:blue; margin-block: 2vh; font-weight:bold;">
                                   <i>${formattedId}</i>

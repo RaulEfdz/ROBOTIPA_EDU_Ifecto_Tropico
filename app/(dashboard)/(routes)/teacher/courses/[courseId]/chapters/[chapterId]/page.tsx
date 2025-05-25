@@ -188,7 +188,7 @@ export default function ChapterIdPage() {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-pulse flex flex-col items-center">
-          <div className="h-12 w-12 border-4 border-t-blue-500 border-b-blue-500 border-l-transparent border-r-transparent rounded-full animate-spin"></div>
+          <div className="h-12 w-12 border-4 border-t-emerald-500 border-b-emerald-500 border-l-transparent border-r-transparent rounded-full animate-spin"></div>
           <p className="mt-4 text-gray-600">Cargando capítulo...</p>
         </div>
       </div>

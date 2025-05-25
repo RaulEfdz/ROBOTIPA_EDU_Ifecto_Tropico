@@ -1,5 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Check, X, AlertCircle, Loader2, ArrowLeft, Youtube, ExternalLink, Maximize2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Check,
+  X,
+  AlertCircle,
+  Loader2,
+  ArrowLeft,
+  Youtube,
+  ExternalLink,
+  Maximize2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -44,7 +53,7 @@ export const YouTubeInput = ({
       /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/i,
       /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^?]+)/i,
       /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([^?]+)/i,
-      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^?]+)/i
+      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^?]+)/i,
     ];
 
     for (const pattern of patterns) {
@@ -62,10 +71,10 @@ export const YouTubeInput = ({
       setVideoId(null);
       return;
     }
-    
+
     const valid = validateUrl(debouncedUrl);
     setIsValid(valid);
-    
+
     if (valid) {
       const id = extractVideoId(debouncedUrl);
       setVideoId(id);
@@ -79,7 +88,7 @@ export const YouTubeInput = ({
   };
 
   const handleClearInput = () => {
-    setVideoUrl('');
+    setVideoUrl("");
     setIsValid(null);
     setVideoId(null);
   };
@@ -91,7 +100,7 @@ export const YouTubeInput = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && isValid === true && !isSaving) {
+    if (e.key === "Enter" && isValid === true && !isSaving) {
       handleSubmit();
     }
   };
@@ -112,7 +121,7 @@ export const YouTubeInput = ({
       return "border-green-500 focus:ring-green-500 focus:border-green-500";
     }
     if (isFocused) {
-      return "border-blue-500 focus:ring-blue-500 focus:border-blue-500";
+      return "border-emerald-500 focus:ring-emerald-500 focus:border-emerald-500";
     }
     return "border-gray-300 dark:border-gray-700";
   };
@@ -120,15 +129,17 @@ export const YouTubeInput = ({
   // Crear una vista previa con iframe de YouTube
   const renderVideoPreview = () => {
     if (!videoId) return null;
-    
+
     // URL para el iframe de YouTube (con autoplay desactivado, controles habilitados)
     const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1&modestbranding=1`;
-    
+
     return (
-      <div className={`mt-4 rounded-md overflow-hidden border border-gray-200 dark:border-gray-700 ${showFullPreview ? '' : 'max-h-60'}`}>
+      <div
+        className={`mt-4 rounded-md overflow-hidden border border-gray-200 dark:border-gray-700 ${showFullPreview ? "" : "max-h-60"}`}
+      >
         <div className="relative group">
           {/* Contenedor del iframe con relación de aspecto 16:9 */}
-          <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
             <iframe
               className="absolute top-0 left-0 w-full h-full"
               src={embedUrl}
@@ -138,7 +149,7 @@ export const YouTubeInput = ({
               allowFullScreen
             />
           </div>
-          
+
           {/* Información del video */}
           <div className="p-3 bg-TextCustom dark:bg-gray-800 flex items-center justify-between">
             <div className="flex items-center">
@@ -150,18 +161,22 @@ export const YouTubeInput = ({
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <button 
+              <button
                 onClick={togglePreviewSize}
                 className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
-                title={showFullPreview ? "Reducir vista previa" : "Ampliar vista previa"}
+                title={
+                  showFullPreview
+                    ? "Reducir vista previa"
+                    : "Ampliar vista previa"
+                }
               >
                 <Maximize2 className="h-4 w-4" />
               </button>
-              <a 
-                href={videoUrl} 
-                target="_blank" 
+              <a
+                href={videoUrl}
+                target="_blank"
                 rel="noopener noreferrer"
-                className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 transition-colors"
+                className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-emerald-600 dark:text-emerald-400 transition-colors"
                 title="Abrir en YouTube"
               >
                 <ExternalLink className="h-4 w-4" />
@@ -186,7 +201,10 @@ export const YouTubeInput = ({
       {/* Grupos de entrada */}
       <div className="space-y-5">
         <div className="space-y-2">
-          <label htmlFor="youtube-url" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="youtube-url"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             URL del video
           </label>
           <div className="relative">
@@ -233,7 +251,10 @@ export const YouTubeInput = ({
 
           {/* Mensaje de Error */}
           {displayError && (
-            <div id="youtube-url-error" className="flex items-center text-red-500 text-xs mt-1.5">
+            <div
+              id="youtube-url-error"
+              className="flex items-center text-red-500 text-xs mt-1.5"
+            >
               <AlertCircle className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
               <span>{displayError}</span>
             </div>
@@ -270,13 +291,13 @@ export const YouTubeInput = ({
           <ArrowLeft className="h-4 w-4 mr-2" />
           {backText}
         </Button>
-        
+
         <Button
           type="button"
           onClick={handleSubmit}
           disabled={!videoUrl.trim() || isValid !== true || isSaving}
           size="sm"
-          className="h-10 bg-blue-600 hover:bg-blue-700 text-TextCustom disabled:opacity-60 disabled:cursor-not-allowed transition-colors" 
+          className="h-10 bg-emerald-600 hover:bg-emerald-700 text-TextCustom disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           {isSaving ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />

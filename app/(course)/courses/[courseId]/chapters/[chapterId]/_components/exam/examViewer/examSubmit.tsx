@@ -122,7 +122,7 @@ async function markChapterCompletedAndNavigate(
           ¡Felicidades! Has completado el curso y obtenido tu certificado.{" "}
           <a
             href="/students/my-certificates"
-            className="underline text-sky-700 hover:text-sky-900 ml-1"
+            className="underline text-emerald-700 hover:text-emerald-900 ml-1"
             target="_blank"
             rel="noopener noreferrer"
           >

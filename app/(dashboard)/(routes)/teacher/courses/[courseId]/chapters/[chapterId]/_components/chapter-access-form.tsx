@@ -11,7 +11,12 @@ import { Lock, Unlock, Eye } from "lucide-react";
 import { Form, FormField, FormItem, FormControl } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { fetchData } from "../../../../custom/fetchData";
 
 const texts = {
@@ -20,27 +25,31 @@ const texts = {
     subtitle: "Acceso al capítulo",
     publicLabel: "Capítulo Gratis",
     privateLabel: "Capítulo De Pago",
-    publicDescription: "Los usuarios pueden ver este capítulo sin comprar el curso",
-    privateDescription: "Los usuarios necesitan comprar el curso para ver este capítulo",
+    publicDescription:
+      "Los usuarios pueden ver este capítulo sin comprar el curso",
+    privateDescription:
+      "Los usuarios necesitan comprar el curso para ver este capítulo",
     saveButton: "Guardar cambios",
     cancelButton: "Cancelar",
     successMessage: "Configuración de acceso actualizada",
     errorMessage: "Error al actualizar la configuración de acceso",
-    hint: "Permitir acceso gratuito para mostrar parte del contenido antes de comprar"
+    hint: "Permitir acceso gratuito para mostrar parte del contenido antes de comprar",
   },
   en: {
     title: "Access Configuration",
     subtitle: "Chapter Access",
     publicLabel: "Public Chapter",
     privateLabel: "Private Chapter",
-    publicDescription: "Users can view this chapter without purchasing the course",
-    privateDescription: "Users need to purchase the course to view this chapter",
+    publicDescription:
+      "Users can view this chapter without purchasing the course",
+    privateDescription:
+      "Users need to purchase the course to view this chapter",
     saveButton: "Save Changes",
     cancelButton: "Cancel",
     successMessage: "Access configuration updated",
     errorMessage: "Error updating access configuration",
-    hint: "Enable free preview to show part of the content before purchase"
-  }
+    hint: "Enable free preview to show part of the content before purchase",
+  },
 };
 
 const formSchema = z.object({
@@ -141,7 +150,7 @@ export const ChapterAccessForm = ({
     <Card className="mb-6 border border-gray-100 dark:border-gray-700 shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex items-center gap-2">
-          <Eye className="w-5 h-5 text-blue-500" />
+          <Eye className="w-5 h-5 text-emerald-500" />
           <h3 className="text-lg font-medium">{t.title}</h3>
         </div>
         <p className="text-sm text-gray-500">{t.subtitle}</p>
@@ -186,13 +195,21 @@ export const ChapterAccessForm = ({
                 </div>
               </>
             )}
-            <Button variant="outline" size="sm" className="ml-auto" onClick={toggleEdit}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-auto"
+              onClick={toggleEdit}
+            >
               Editar
             </Button>
           </div>
         ) : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4 p-4"
+            >
               <FormField
                 control={form.control}
                 name="isFree"
@@ -225,7 +242,9 @@ export const ChapterAccessForm = ({
                         </FormControl>
                       </FormItem>
                       <p className="text-sm ml-7 text-gray-600 dark:text-gray-300">
-                        {field.value ? t.publicDescription : t.privateDescription}
+                        {field.value
+                          ? t.publicDescription
+                          : t.privateDescription}
                       </p>
                     </div>
 
@@ -243,7 +262,7 @@ export const ChapterAccessForm = ({
                 <Button
                   type="submit"
                   disabled={isSubmitting || !isDirty}
-                  className="bg-blue-600 hover:bg-blue-700 text-TextCustom"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-TextCustom"
                 >
                   {isSaving ? (
                     <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin mr-2" />

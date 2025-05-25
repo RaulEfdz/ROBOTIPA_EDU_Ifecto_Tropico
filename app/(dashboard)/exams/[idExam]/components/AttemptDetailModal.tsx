@@ -344,10 +344,10 @@ export default function AttemptDetailModal({
                       }
                       className={`border-l-4 ${
                         isTextQ
-                          ? "border-blue-500"
+                          ? "border-emerald-500"
                           : isAnsCorrect
-                          ? "border-green-500"
-                          : "border-red-500"
+                            ? "border-green-500"
+                            : "border-red-500"
                       }`}
                     >
                       <CardHeader className="pb-2">
@@ -360,15 +360,15 @@ export default function AttemptDetailModal({
                               isTextQ
                                 ? "outline"
                                 : isAnsCorrect
-                                ? "default"
-                                : "destructive"
+                                  ? "default"
+                                  : "destructive"
                             }
                             className={`text-xs ${
                               isTextQ
                                 ? ""
                                 : isAnsCorrect
-                                ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-700/20 dark:text-green-300 dark:border-green-600"
-                                : ""
+                                  ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-700/20 dark:text-green-300 dark:border-green-600"
+                                  : ""
                             } `}
                           >
                             {isTextQ ? (

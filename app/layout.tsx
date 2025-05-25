@@ -1,19 +1,11 @@
 import "./globals.css";
 import "./theme.css";
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
 import { ToastProvider } from "@/components/providers/toaster-provider";
 import { ConfettiProvider } from "@/components/providers/confetti-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { printDebug, printInitDebug } from "@/utils/debug/log";
-
-const roboto = Roboto({
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Infectotrópico Academy",
@@ -35,12 +27,22 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet"
+        />
         <script
           src="https://secure.paguelofacil.com/HostedFields/vendor/scripts/WALLET/PFScript.js"
           defer
         ></script>
       </head>
-      <body className={roboto.className}>
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

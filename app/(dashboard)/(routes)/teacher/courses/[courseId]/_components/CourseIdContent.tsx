@@ -167,7 +167,7 @@ export default function CourseIdContent({ course, categories, lang }: Props) {
         <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded-md shadow-md border border-gray-200 dark:border-gray-700 text-sm">
           <div className="flex justify-between items-center">
             <span className="font-medium">{texts[lang].completeFields}:</span>
-            <span className="bg-blue-100 dark:bg-blue-900 px-3 py-1 rounded-full font-bold">
+            <span className="bg-emerald-100 dark:bg-emerald-900 px-3 py-1 rounded-full font-bold">
               {completionText}
             </span>
           </div>
@@ -175,7 +175,7 @@ export default function CourseIdContent({ course, categories, lang }: Props) {
           {/* Progress bar */}
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
             <div
-              className="bg-blue-500 h-2 rounded-full"
+              className="bg-emerald-500 h-2 rounded-full"
               style={{ width: `${(completedFields / totalFields) * 100}%` }}
             ></div>
           </div>

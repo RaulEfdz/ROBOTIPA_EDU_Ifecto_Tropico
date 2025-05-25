@@ -91,7 +91,7 @@ export default function CatalogHeader() {
             <div className="ml-4 pl-4 border-l border-slate-200 dark:border-slate-700 hidden md:block">
               <Link
                 href="/courses/catalog"
-                className="text-base font-medium text-slate-600 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400"
+                className="text-base font-medium text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400"
               >
                 Catálogo de Cursos
               </Link>
@@ -104,7 +104,7 @@ export default function CatalogHeader() {
             {user && (
               <Link
                 href="/courses/catalog" // O la ruta principal para usuarios logueados
-                className="text-sm font-medium text-slate-600 hover:text-sky-600 dark:text-slate-300 dark:hover:text-sky-400 flex items-center gap-1"
+                className="text-sm font-medium text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400 flex items-center gap-1"
                 title="Ir al panel principal"
               >
                 <HomeIcon className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -197,7 +197,7 @@ export default function CatalogHeader() {
                 <Button
                   asChild
                   size="sm"
-                  className="bg-sky-600 hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600 text-white"
+                  className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white"
                 >
                   <Link href="/auth?action=sign_up">Registrarse</Link>
                 </Button>

@@ -72,7 +72,7 @@ export function TeacherTable<TData, TValue>({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
-              <Edit2 className="h-4 w-4 text-blue-600" />
+              <Edit2 className="h-4 w-4 text-emerald-600" />
               <span>Editar</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer flex items-center gap-2">

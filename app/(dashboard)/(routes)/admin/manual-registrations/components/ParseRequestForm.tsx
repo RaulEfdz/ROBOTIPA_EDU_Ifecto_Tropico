@@ -99,7 +99,7 @@ export function ParseRequestForm({
           <Button
             onClick={handleParse}
             disabled={loading || !requestCodeValue.trim()}
-            className="bg-sky-600 hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600"
+            className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
           >
             {loading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

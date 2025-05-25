@@ -74,13 +74,13 @@ function AuthPageContent() {
               <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-100 dark:bg-slate-700 p-1 rounded-lg">
                 <TabsTrigger
                   value="login"
-                  className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm data-[state=active]:text-primaryCustom2 dark:data-[state=active]:text-sky-400"
+                  className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm data-[state=active]:text-primaryCustom2 dark:data-[state=active]:text-emerald-400"
                 >
                   Iniciar Sesión
                 </TabsTrigger>
                 <TabsTrigger
                   value="signup"
-                  className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm data-[state=active]:text-primaryCustom2 dark:data-[state=active]:text-sky-400"
+                  className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm data-[state=active]:text-primaryCustom2 dark:data-[state=active]:text-emerald-400"
                 >
                   Crear Cuenta
                 </TabsTrigger>
@@ -98,7 +98,7 @@ function AuthPageContent() {
           Al continuar, aceptas nuestros{" "}
           <a
             href="/temrs"
-            className="underline hover:text-primaryCustom dark:hover:text-sky-400"
+            className="underline hover:text-primaryCustom dark:hover:text-emerald-400"
           >
             Términos de Servicio
           </a>
@@ -115,7 +115,7 @@ export default function AuthPage() {
     <Suspense
       fallback={
         <div className="min-h-screen w-full flex items-center justify-center bg-slate-100 dark:bg-slate-900">
-          <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-primaryCustom2 dark:border-sky-500"></div>
+          <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-primaryCustom2 dark:border-emerald-500"></div>
           <p className="ml-4 text-lg text-slate-700 dark:text-slate-300">
             Cargando...
           </p>

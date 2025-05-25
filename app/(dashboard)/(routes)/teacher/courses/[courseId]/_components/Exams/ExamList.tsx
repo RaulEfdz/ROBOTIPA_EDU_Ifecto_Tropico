@@ -21,9 +21,9 @@ export const ExamList: React.FC<ExamListProps> = ({
     return (
       <div className="py-8 flex justify-center">
         <div className="animate-pulse flex space-x-2">
-          <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
-          <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
-          <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
+          <div className="h-2 w-2 bg-emerald-500 rounded-full"></div>
+          <div className="h-2 w-2 bg-emerald-500 rounded-full"></div>
+          <div className="h-2 w-2 bg-emerald-500 rounded-full"></div>
         </div>
       </div>
     );
@@ -33,7 +33,7 @@ export const ExamList: React.FC<ExamListProps> = ({
     return (
       <div className="py-4 text-center">
         <p className="text-red-500">{error}</p>
-        <button className="mt-2 text-blue-500 underline text-sm">
+        <button className="mt-2 text-emerald-500 underline text-sm">
           Reintentar
         </button>
       </div>

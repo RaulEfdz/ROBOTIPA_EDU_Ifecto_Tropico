@@ -78,7 +78,7 @@ const CertificateCard: React.FC<{
         </div>
       )}
       <CardHeader className="pb-3 pt-4">
-        <CardTitle className="text-lg font-semibold text-slate-800 dark:text-slate-100 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+        <CardTitle className="text-lg font-semibold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
           {certificate.courseName}
         </CardTitle>
         <CardDescription className="text-xs text-slate-500 dark:text-slate-400">
@@ -95,7 +95,7 @@ const CertificateCard: React.FC<{
         <Button
           onClick={() => onViewCertificate(certificate)}
           variant="ghost"
-          className="w-full justify-start text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-900/30"
+          className="w-full justify-start text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/30"
         >
           <Eye className="w-4 h-4 mr-2" />
           Ver Certificado
@@ -281,7 +281,7 @@ const MyCertificatesPage: React.FC = () => {
                       href={selectedCertificate.pdfUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-md shadow-sm transition-colors text-xs font-medium"
+                      className="inline-flex items-center px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md shadow-sm transition-colors text-xs font-medium"
                       download={true}
                     >
                       <Download className="w-3.5 h-3.5 mr-1.5" />

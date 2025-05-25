@@ -29,8 +29,8 @@ export default function ThankYouPage() {
     statusParam?.toLowerCase() === "success"
       ? "SUCCESS"
       : statusParam?.toLowerCase() === "error"
-      ? "ERROR"
-      : undefined;
+        ? "ERROR"
+        : undefined;
 
   useEffect(() => {
     const enrollUser = async () => {
@@ -89,8 +89,8 @@ export default function ThankYouPage() {
           <div className="flex flex-col items-center space-y-4">
             <div className="relative w-20 h-20 flex items-center justify-center">
               <div className="absolute w-16 h-16 border-4 border-gray-200 rounded-full"></div>
-              <div className="absolute w-16 h-16 border-4 border-t-blue-500 rounded-full animate-spin"></div>
-              <Loader2 className="w-8 h-8 text-blue-500 animate-pulse" />
+              <div className="absolute w-16 h-16 border-4 border-t-emerald-500 rounded-full animate-spin"></div>
+              <Loader2 className="w-8 h-8 text-emerald-500 animate-pulse" />
             </div>
             <h1 className="text-2xl font-bold text-gray-800">
               Procesando tu inscripción
@@ -170,7 +170,7 @@ export default function ThankYouPage() {
             <div className="flex flex-col sm:flex-row gap-3 w-full">
               <Button
                 onClick={() => router.push("/courses")}
-                className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1"
               >
                 <BookOpen className="mr-2 h-5 w-5" />
                 Ver otros cursos

@@ -17,12 +17,12 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="p-2 rounded-full dark:bg-yellow-200 bg-blue-200 transition-colors duration-200"
+      className="p-2 rounded-full dark:bg-yellow-200 bg-emerald-200 transition-colors duration-200"
     >
       {theme === "dark" ? (
         <Sun className="w-4 h-4 text-yellow-500 transition-transform duration-900 ease-in-out hover:rotate-90" />
       ) : (
-        <Moon className="w-4 h-4 text-blue-500 transition-transform duration-900 ease-in-out hover:-rotate-90" />
+        <Moon className="w-4 h-4 text-emerald-500 transition-transform duration-900 ease-in-out hover:-rotate-90" />
       )}
     </button>
   );

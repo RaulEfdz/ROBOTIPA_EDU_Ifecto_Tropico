@@ -263,7 +263,7 @@ export const CategoryForm = ({
             onClick={() => setIsEditing(true)}
             variant="ghost"
             size="sm"
-            className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg h-8"
+            className="text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg h-8"
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -301,7 +301,7 @@ export const CategoryForm = ({
                         <div
                           key={option.value}
                           onClick={() => handleSelect(option.value)}
-                          className="cursor-pointer px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm"
+                          className="cursor-pointer px-4 py-2 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-sm"
                         >
                           {option.label}
                         </div>
@@ -332,7 +332,7 @@ export const CategoryForm = ({
                       <Input
                         {...field}
                         placeholder={t.newCategoryPlaceholder}
-                        className="pl-10 h-10 text-sm border-blue-300"
+                        className="pl-10 h-10 text-sm border-emerald-300"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -355,7 +355,7 @@ export const CategoryForm = ({
                 type="submit"
                 disabled={isSaving || isSubmitting}
                 size="icon"
-                className="h-10 w-10 bg-blue-600 hover:bg-blue-700"
+                className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700"
               >
                 {isSaving ? (
                   <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin" />

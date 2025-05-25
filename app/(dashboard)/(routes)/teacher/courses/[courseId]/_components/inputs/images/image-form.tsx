@@ -131,7 +131,7 @@ export const ImageForm = ({
             onClick={toggleEdit}
             variant="ghost"
             size="sm"
-            className="text-gray-500 hover:text-blue-600"
+            className="text-gray-500 hover:text-emerald-600"
           >
             {imageUrl ? (
               <Pencil className="h-4 w-4" />
@@ -236,7 +236,7 @@ export const ImageForm = ({
         <div className="mt-4 pt-4 border-t text-sm text-gray-500">
           <div className="flex items-center">
             <div className="flex items-center mr-4">
-              <div className="w-2 h-2 rounded-full bg-blue-400 mr-2"></div>
+              <div className="w-2 h-2 rounded-full bg-emerald-400 mr-2"></div>
               <span>16:9</span>
             </div>
             <div className="flex items-center">

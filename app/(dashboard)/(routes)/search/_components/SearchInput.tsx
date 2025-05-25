@@ -39,7 +39,10 @@ export const SearchInput = ({ className = "" }: SearchInputProps) => {
   };
 
   return (
-    <form onSubmit={handleSearch} className={`flex items-center gap-2 ${className}`}>
+    <form
+      onSubmit={handleSearch}
+      className={`flex items-center gap-2 ${className}`}
+    >
       <div className="relative flex-grow">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
         <input
@@ -47,7 +50,7 @@ export const SearchInput = ({ className = "" }: SearchInputProps) => {
           placeholder="Buscar cursos..."
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          className="w-full bg-TextCustom rounded-full border border-slate-200 pl-10 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full bg-TextCustom rounded-full border border-slate-200 pl-10 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
         {inputValue && (
           <X

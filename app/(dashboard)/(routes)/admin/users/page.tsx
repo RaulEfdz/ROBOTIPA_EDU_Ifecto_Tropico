@@ -98,7 +98,7 @@ const StudentNavigation: React.FC = () => {
                 <Card className="relative w-72 bg-white border shadow-md hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden">
                   <CardContent className="flex flex-col items-center justify-center p-6 gap-4 min-h-[150px]">
                     <motion.div
-                      className="p-3 text-blue-600 bg-blue-50 rounded-full group-hover:bg-blue-100 transition-all duration-300"
+                      className="p-3 text-emerald-600 bg-emerald-50 rounded-full group-hover:bg-emerald-100 transition-all duration-300"
                       whileHover={{ rotate: 3, scale: 1.05 }}
                     >
                       <IconComponent />

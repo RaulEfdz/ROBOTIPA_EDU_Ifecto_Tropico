@@ -6,7 +6,7 @@ import "quill/dist/quill.snow.css";
 import { toast } from "sonner";
 import { useUploadThing } from "@/utils/uploadthing";
 import { getQuillSafeFileBlockHtml } from "./htmlBlocks";
-import 'quill-paste-smart';
+import "quill-paste-smart";
 
 interface CloudinaryUploadResponse {
   success: boolean;
@@ -59,10 +59,10 @@ const EditorText: React.FC<EditorTextProps> = ({
         },
         clipboard: {
           allowed: {
-            tags: ['a'],
-            attributes: ['href', 'target', 'rel', 'style', 'class']
-          }
-        }
+            tags: ["a"],
+            attributes: ["href", "target", "rel", "style", "class"],
+          },
+        },
       },
       history: {
         delay: 2000,
@@ -150,12 +150,6 @@ const EditorText: React.FC<EditorTextProps> = ({
     };
   }, [quill, cloudinaryFolderName]);
 
-
-
-
-
-  
-
   const fileHandler = useCallback(() => {
     if (!quill) return;
     const input = document.createElement("input");
@@ -190,7 +184,7 @@ const EditorText: React.FC<EditorTextProps> = ({
         const fileBlockHtml = getQuillSafeFileBlockHtml(fileUrl, fileName);
 
         quill.clipboard.dangerouslyPasteHTML(cursorIndex, fileBlockHtml);
-        
+
         quill.setSelection(cursorIndex + 1);
 
         const html = quill.root.innerHTML;
@@ -321,7 +315,7 @@ const EditorText: React.FC<EditorTextProps> = ({
         </span>
         <button
           onClick={() => setSaveAsHtml((prev) => !prev)}
-          className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+          className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline"
         >
           Cambiar a {saveAsHtml ? "texto plano" : "HTML"}
         </button>
@@ -339,5 +333,4 @@ const EditorText: React.FC<EditorTextProps> = ({
 
 export default EditorText;
 
-
-// el toolbar de la herrmaienta , en actulizacion debe estar fltante 
+// el toolbar de la herrmaienta , en actulizacion debe estar fltante

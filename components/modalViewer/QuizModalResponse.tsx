@@ -153,7 +153,7 @@
 
 //   if (loading) {
 //     return (
-//       <div className="flex items-center justify-center h-[85vh] bg-blue-300">
+//       <div className="flex items-center justify-center h-[85vh] bg-emerald-300">
 //         <SkeletonCard />
 //       </div>
 //     );

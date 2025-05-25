@@ -24,13 +24,18 @@ import { fetchData } from "../../../custom/fetchData";
 // API endpoints constants
 const ENDPOINTS = {
   api: {
-    createChapter: (courseId: string) => `/api/courses/${courseId}/chapters/create`,
-    reorderChapters: (courseId: string) => `/api/courses/${courseId}/chapters/reorder`,
-    updateChapter: (courseId: string, chapterId: string) => `/api/courses/${courseId}/chapters/update/${chapterId}/edit`,
-    deleteChapter: (courseId: string, chapterId: string) => `/api/courses/${courseId}/chapters/update/${chapterId}/delete`,
+    createChapter: (courseId: string) =>
+      `/api/courses/${courseId}/chapters/create`,
+    reorderChapters: (courseId: string) =>
+      `/api/courses/${courseId}/chapters/reorder`,
+    updateChapter: (courseId: string, chapterId: string) =>
+      `/api/courses/${courseId}/chapters/update/${chapterId}/edit`,
+    deleteChapter: (courseId: string, chapterId: string) =>
+      `/api/courses/${courseId}/chapters/update/${chapterId}/delete`,
   },
   ui: {
-    editChapterPage: (courseId: string, chapterId: string) => `/teacher/courses/${courseId}/chapters/${chapterId}`,
+    editChapterPage: (courseId: string, chapterId: string) =>
+      `/teacher/courses/${courseId}/chapters/${chapterId}`,
   },
 };
 
@@ -165,7 +170,7 @@ export const ChaptersForm = ({
       {/* Loading overlay */}
       {isUpdating && (
         <div className="absolute inset-0 bg-TextCustom/60 dark:bg-black/50 flex items-center justify-center z-10 rounded-xl">
-          <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
+          <Loader2 className="h-6 w-6 text-emerald-600 animate-spin" />
         </div>
       )}
 
@@ -180,7 +185,7 @@ export const ChaptersForm = ({
             onClick={toggleCreating}
             variant="ghost"
             size="sm"
-            className="text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
+            className="text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg"
           >
             <PlusCircle className="h-4 w-4 mr-2" />
             {t.addButton}
@@ -190,7 +195,7 @@ export const ChaptersForm = ({
 
       {/* Add new chapter form */}
       {isCreating && (
-        <div className="mb-6 bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg">
+        <div className="mb-6 bg-emerald-50 dark:bg-emerald-900/10 p-4 rounded-lg">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -226,7 +231,7 @@ export const ChaptersForm = ({
                   disabled={!isValid || isSubmitting || !isDirty}
                   type="submit"
                   size="sm"
-                  className="rounded-lg bg-blue-600 hover:bg-blue-700"
+                  className="rounded-lg bg-emerald-600 hover:bg-emerald-700"
                 >
                   {isSaving ? (
                     <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin mr-2" />
@@ -254,7 +259,9 @@ export const ChaptersForm = ({
               />
             ) : (
               <div className="flex items-center justify-center h-24 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                <p className="text-gray-500 dark:text-gray-400">{t.noChapters}</p>
+                <p className="text-gray-500 dark:text-gray-400">
+                  {t.noChapters}
+                </p>
               </div>
             )}
           </>
@@ -267,14 +274,18 @@ export const ChaptersForm = ({
           <p className="text-xs text-gray-500 dark:text-gray-400">
             {t.reorderInfo}
           </p>
-          
+
           <div className="flex items-center text-xs text-gray-500">
             <div className="flex items-center mr-3">
               <div className="w-2 h-2 rounded-full bg-green-400 mr-1"></div>
-              <span>{chapters.length} {t.chaptersCount}</span>
+              <span>
+                {chapters.length} {t.chaptersCount}
+              </span>
             </div>
             <div className="flex items-center text-gray-400">
-              <span>{t.idLabel}: {courseId.substring(0, 8)}</span>
+              <span>
+                {t.idLabel}: {courseId.substring(0, 8)}
+              </span>
             </div>
           </div>
         </div>

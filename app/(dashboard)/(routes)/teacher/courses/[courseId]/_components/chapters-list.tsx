@@ -94,7 +94,7 @@ export const ChaptersList = React.memo(function ChaptersList({
     <div className="relative">
       {isLoading && (
         <div className="absolute inset-0 bg-white/60 dark:bg-black/40 flex items-center justify-center z-10 rounded-lg">
-          <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+          <Loader2 className="h-8 w-8 text-emerald-600 animate-spin" />
         </div>
       )}
       <DragDropContext onDragEnd={onDragEnd}>
@@ -121,7 +121,7 @@ export const ChaptersList = React.memo(function ChaptersList({
                           "flex items-center gap-x-2 bg-TextCustom border border-gray-200 text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow relative",
                           chapter.isPublished &&
                             "border-l-4 border-l-green-500",
-                          isEditing && "ring-2 ring-blue-400"
+                          isEditing && "ring-2 ring-emerald-400"
                         )}
                         ref={provided.innerRef}
                         {...provided.draggableProps}
@@ -172,7 +172,7 @@ export const ChaptersList = React.memo(function ChaptersList({
                             {/* Free or Paid indicator */}
                             <div className="flex items-center mr-2">
                               {chapter.isFree ? (
-                                <Badge className="bg-blue-100 text-green-700 hover:bg-green-200 flex items-center gap-1 px-2">
+                                <Badge className="bg-emerald-100 text-green-700 hover:bg-green-200 flex items-center gap-1 px-2">
                                   <Unlock className="h-3 w-3" />
                                   <span>Gratis</span>
                                 </Badge>
@@ -208,10 +208,10 @@ export const ChaptersList = React.memo(function ChaptersList({
                           </button>
                           <button
                             onClick={() => onEdit(chapter.id)}
-                            className="h-8 w-8 rounded-full flex items-center justify-center bg-blue-100 hover:bg-blue-200 transition-colors"
+                            className="h-8 w-8 rounded-full flex items-center justify-center bg-emerald-100 hover:bg-emerald-200 transition-colors"
                             aria-label="Editar detalles"
                           >
-                            <ArrowRight className="w-4 h-4 text-blue-600" />
+                            <ArrowRight className="w-4 h-4 text-emerald-600" />
                           </button>
                         </div>
                       </div>

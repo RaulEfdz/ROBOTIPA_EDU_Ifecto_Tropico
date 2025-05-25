@@ -43,7 +43,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            className="p-0 h-auto hover:bg-transparent text-slate-600 hover:text-sky-700 transition-colors flex items-center gap-1"
+            className="p-0 h-auto hover:bg-transparent text-slate-600 hover:text-emerald-700 transition-colors flex items-center gap-1"
             onClick={() => router.push(`/courses/${courseId}`)}
           >
             <ArrowLeft className="h-4 w-4" /> {courseTitle}
@@ -68,7 +68,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = ({
           {isCompleted && (
             <Badge
               variant="outline"
-              className="bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100"
+              className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
             >
               <CheckCircle className="h-3 w-3 mr-1" /> Completado
             </Badge>
@@ -95,7 +95,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = ({
             onClick={() =>
               router.push(`/courses/${courseId}/chapters/${nextChapterId}`)
             }
-            className="text-sm flex items-center gap-1 shadow-sm hover:shadow bg-sky-600 hover:bg-sky-700 text-TextCustom transition-colors"
+            className="text-sm flex items-center gap-1 shadow-sm hover:shadow bg-emerald-600 hover:bg-emerald-700 text-TextCustom transition-colors"
           >
             Siguiente <ChevronRight className="h-4 w-4" />
           </Button>

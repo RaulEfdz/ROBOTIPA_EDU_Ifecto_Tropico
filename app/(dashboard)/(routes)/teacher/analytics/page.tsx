@@ -38,7 +38,7 @@ interface AnalyticsResponse {
 type Tab = "overview" | "courses" | "revenue" | "exams";
 type TimeRange = "week" | "month" | "year";
 
-const AnalyticsDashboard=()=> {
+const AnalyticsDashboard = () => {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
@@ -47,7 +47,7 @@ const AnalyticsDashboard=()=> {
 
   const t: TFunction = (key) =>
     texts[key][language] ?? texts[key][defaultLanguage];
-  
+
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
@@ -61,54 +61,70 @@ const AnalyticsDashboard=()=> {
         setLoading(false);
       }
     };
-  
+
     fetchAnalytics();
     // solo corre una vez
   }, []);
-  
 
-  const { courseData, chapterData, barData, trendData, examChartData } = useMemo(() => {
-    if (!data) {
-      return {
-        courseData: [],
-        chapterData: [],
-        barData: [],
-        trendData: [],
-        examChartData: [],
-      };
-    }
-    const courseData = [
-      { name: t("published"), value: data.courses.published },
-      { name: t("unpublished"), value: data.courses.unpublished },
-    ];
-    const chapterData = [
-      { name: t("free"), value: data.chapters.free },
-      { name: t("premium"), value: data.chapters.premium },
-    ];
-    const barData = [
-      { name: t("users"), total: data.users.total, color: "#4F46E5" },
-      { name: t("courses"), total: data.courses.total, color: "#10B981" },
-      { name: t("chapters"), total: data.chapters.total, color: "#F59E0B" },
-      { name: t("purchases"), total: data.purchases.total, color: "#EF4444" },
-      { name: t("invoices"), total: data.revenue.invoicesIssued, color: "#8B5CF6" },
-      { name: t("exams"), total: data.exams.total, color: "#EC4899" },
-      { name: t("attempts"), total: data.exams.totalAttempts, color: "#06B6D4" },
-    ];
-    const trendData = [
-      { month: t("monthJan"), users: 650, revenue: 4200, courses: 12 },
-      { month: t("monthFeb"), users: 730, revenue: 5100, courses: 14 },
-      { month: t("monthMar"), users: 810, revenue: 6300, courses: 15 },
-      { month: t("monthApr"), users: 920, revenue: 7200, courses: 17 },
-      { month: t("monthMay"), users: 1050, revenue: 8400, courses: 22 },
-      { month: t("monthJun"), users: 1250, revenue: 10200, courses: 24 },
-    ];
-    const examChartData = [
-      { name: t("totalExams"), value: data.exams.total, color: "#8B5CF6" },
-      { name: t("publishedExams"), value: data.exams.published, color: "#EC4899" },
-      { name: t("totalAttempts"), value: data.exams.totalAttempts, color: "#06B6D4" },
-    ];
-    return { courseData, chapterData, barData, trendData, examChartData };
-  }, [data, t]);
+  const { courseData, chapterData, barData, trendData, examChartData } =
+    useMemo(() => {
+      if (!data) {
+        return {
+          courseData: [],
+          chapterData: [],
+          barData: [],
+          trendData: [],
+          examChartData: [],
+        };
+      }
+      const courseData = [
+        { name: t("published"), value: data.courses.published },
+        { name: t("unpublished"), value: data.courses.unpublished },
+      ];
+      const chapterData = [
+        { name: t("free"), value: data.chapters.free },
+        { name: t("premium"), value: data.chapters.premium },
+      ];
+      const barData = [
+        { name: t("users"), total: data.users.total, color: "#4F46E5" },
+        { name: t("courses"), total: data.courses.total, color: "#10B981" },
+        { name: t("chapters"), total: data.chapters.total, color: "#F59E0B" },
+        { name: t("purchases"), total: data.purchases.total, color: "#EF4444" },
+        {
+          name: t("invoices"),
+          total: data.revenue.invoicesIssued,
+          color: "#8B5CF6",
+        },
+        { name: t("exams"), total: data.exams.total, color: "#EC4899" },
+        {
+          name: t("attempts"),
+          total: data.exams.totalAttempts,
+          color: "#06B6D4",
+        },
+      ];
+      const trendData = [
+        { month: t("monthJan"), users: 650, revenue: 4200, courses: 12 },
+        { month: t("monthFeb"), users: 730, revenue: 5100, courses: 14 },
+        { month: t("monthMar"), users: 810, revenue: 6300, courses: 15 },
+        { month: t("monthApr"), users: 920, revenue: 7200, courses: 17 },
+        { month: t("monthMay"), users: 1050, revenue: 8400, courses: 22 },
+        { month: t("monthJun"), users: 1250, revenue: 10200, courses: 24 },
+      ];
+      const examChartData = [
+        { name: t("totalExams"), value: data.exams.total, color: "#8B5CF6" },
+        {
+          name: t("publishedExams"),
+          value: data.exams.published,
+          color: "#EC4899",
+        },
+        {
+          name: t("totalAttempts"),
+          value: data.exams.totalAttempts,
+          color: "#06B6D4",
+        },
+      ];
+      return { courseData, chapterData, barData, trendData, examChartData };
+    }, [data, t]);
 
   const statsCards = useMemo(() => {
     if (!data) return [];
@@ -119,7 +135,7 @@ const AnalyticsDashboard=()=> {
         icon: "👥",
         change: "+12%",
         changeColor: "text-green-500",
-        bgColor: "bg-indigo-50",
+        bgColor: "bg-emerald-50",
       },
       {
         title: t("revenue"),
@@ -148,13 +164,20 @@ const AnalyticsDashboard=()=> {
     ];
   }, [data, t]);
 
-  const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8B5CF6", "#EC4899"];
+  const COLORS = [
+    "#10b981",
+    "#3b82f6",
+    "#f59e0b",
+    "#ef4444",
+    "#8B5CF6",
+    "#EC4899",
+  ];
 
   if (loading || !data) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-t-blue-500 border-b-blue-500 border-l-transparent border-r-transparent rounded-full animate-spin" />
+          <div className="w-16 h-16 border-4 border-t-emerald-500 border-b-emerald-500 border-l-transparent border-r-transparent rounded-full animate-spin" />
           <p className="mt-4 text-gray-600 dark:text-gray-300">
             {t("loadingMessage")}
           </p>
@@ -185,7 +208,7 @@ const AnalyticsDashboard=()=> {
                   onClick={() => setTimeRange(range)}
                   className={`rounded-md px-4 py-2 ${
                     timeRange === range
-                      ? "bg-blue-500 text-white"
+                      ? "bg-emerald-500 text-white"
                       : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
                   }`}
                 >
@@ -195,19 +218,21 @@ const AnalyticsDashboard=()=> {
             </div>
           </div>
           <div className="mt-6 flex space-x-4 border-b border-gray-200 dark:border-gray-700">
-            {(["overview", "courses", "revenue", "exams"] as Tab[]).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`pb-4 px-1 ${
-                  activeTab === tab
-                    ? "border-b-2 border-blue-500 text-blue-500 font-medium"
-                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                }`}
-              >
-                {t(tab as keyof typeof texts)}
-              </button>
-            ))}
+            {(["overview", "courses", "revenue", "exams"] as Tab[]).map(
+              (tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`pb-4 px-1 ${
+                    activeTab === tab
+                      ? "border-b-2 border-emerald-500 text-emerald-500 font-medium"
+                      : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                  }`}
+                >
+                  {t(tab as keyof typeof texts)}
+                </button>
+              )
+            )}
           </div>
         </div>
       </header>
@@ -305,10 +330,7 @@ const AnalyticsDashboard=()=> {
                           }
                         >
                           {courseData.map((_, i) => (
-                            <Cell
-                              key={i}
-                              fill={COLORS[i % COLORS.length]}
-                            />
+                            <Cell key={i} fill={COLORS[i % COLORS.length]} />
                           ))}
                         </Pie>
                         <Tooltip />
@@ -433,9 +455,7 @@ const AnalyticsDashboard=()=> {
                     <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
                       {t("free")}
                     </p>
-                    <p className="text-2xl font-bold">
-                      {data.chapters.free}
-                    </p>
+                    <p className="text-2xl font-bold">{data.chapters.free}</p>
                   </div>
                   <div className="rounded-lg bg-white p-4 dark:bg-gray-800">
                     <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
@@ -491,7 +511,7 @@ const AnalyticsDashboard=()=> {
                   +8.5% {t("vsLastPeriod")}
                 </p>
               </div>
-              <div className="rounded-lg bg-blue-50 p-6 dark:bg-gray-700">
+              <div className="rounded-lg bg-emerald-50 p-6 dark:bg-gray-700">
                 <h3 className="mb-2 text-lg font-medium">
                   {t("invoicesIssued")}
                 </h3>
@@ -537,9 +557,7 @@ const AnalyticsDashboard=()=> {
             </h2>
             <div className="mb-6 grid gap-6 md:grid-cols-3">
               <div className="rounded-lg bg-purple-50 p-6 dark:bg-gray-700">
-                <h3 className="mb-2 text-lg font-medium">
-                  {t("totalExams")}
-                </h3>
+                <h3 className="mb-2 text-lg font-medium">{t("totalExams")}</h3>
                 <p className="text-3xl font-bold">{data.exams.total}</p>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   {t("allExamsInSystem")}
@@ -558,9 +576,7 @@ const AnalyticsDashboard=()=> {
                 <h3 className="mb-2 text-lg font-medium">
                   {t("totalAttempts")}
                 </h3>
-                <p className="text-3xl font-bold">
-                  {data.exams.totalAttempts}
-                </p>
+                <p className="text-3xl font-bold">{data.exams.totalAttempts}</p>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   {t("examSubmissions")}
                 </p>
@@ -579,7 +595,7 @@ const AnalyticsDashboard=()=> {
                       border: "none",
                     }}
                   />
-                  <Bar dataKey="value" >
+                  <Bar dataKey="value">
                     {examChartData.map((entry, i) => (
                       <Cell key={i} fill={entry.color} />
                     ))}
@@ -602,5 +618,5 @@ const AnalyticsDashboard=()=> {
       </footer>
     </div>
   );
-}
+};
 export default AnalyticsDashboard;

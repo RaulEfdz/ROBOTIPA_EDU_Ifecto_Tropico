@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { CheckCircle, AlertCircle, Loader2, Settings, RotateCcw } from "lucide-react";
+import {
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+  Settings,
+  RotateCcw,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Chapter } from "@prisma/client";
@@ -25,7 +31,8 @@ const texts = {
     savedMessage: "Guardado",
     errorMessage: "Ocurrió un error al guardar",
     errorHint: "Error al guardar. Cambios no guardados.",
-    hintMessage: "Los cambios se guardan automáticamente si la opción está activa.",
+    hintMessage:
+      "Los cambios se guardan automáticamente si la opción está activa.",
     autoSaveLabel: "Auto Guardado",
     intervalLabel: "Intervalo (seg):",
     settingsTooltip: "Configurar Auto Guardado",
@@ -53,12 +60,9 @@ interface EnhancedChapterDescriptionProps {
   lang?: "es" | "en";
 }
 
-export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProps> = ({
-  initialData,
-  courseId,
-  chapterId,
-  lang = "es",
-}) => {
+export const EnhancedChapterDescription: React.FC<
+  EnhancedChapterDescriptionProps
+> = ({ initialData, courseId, chapterId, lang = "es" }) => {
   const t = texts[lang];
   const router = useRouter();
 
@@ -77,20 +81,30 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
 
   useEffect(() => {
     try {
-      const storedEnabled = localStorage.getItem(`autoSaveEnabled_${chapterId}`);
-      const storedInterval = localStorage.getItem(`autoSaveInterval_${chapterId}`);
+      const storedEnabled = localStorage.getItem(
+        `autoSaveEnabled_${chapterId}`
+      );
+      const storedInterval = localStorage.getItem(
+        `autoSaveInterval_${chapterId}`
+      );
 
       if (storedEnabled !== null) {
         setAutoSaveEnabled(JSON.parse(storedEnabled));
       } else {
-        localStorage.setItem(`autoSaveEnabled_${chapterId}`, JSON.stringify(autoSaveEnabled));
+        localStorage.setItem(
+          `autoSaveEnabled_${chapterId}`,
+          JSON.stringify(autoSaveEnabled)
+        );
       }
 
       if (storedInterval !== null) {
         const interval = Number(storedInterval);
         setAutoSaveInterval(interval > 0 ? interval : 3);
       } else {
-        localStorage.setItem(`autoSaveInterval_${chapterId}`, autoSaveInterval.toString());
+        localStorage.setItem(
+          `autoSaveInterval_${chapterId}`,
+          autoSaveInterval.toString()
+        );
       }
     } catch (error) {
       console.error("Error reading auto-save config from localStorage:", error);
@@ -102,8 +116,14 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
   useEffect(() => {
     if (isMounted.current) {
       try {
-        localStorage.setItem(`autoSaveEnabled_${chapterId}`, JSON.stringify(autoSaveEnabled));
-        localStorage.setItem(`autoSaveInterval_${chapterId}`, autoSaveInterval.toString());
+        localStorage.setItem(
+          `autoSaveEnabled_${chapterId}`,
+          JSON.stringify(autoSaveEnabled)
+        );
+        localStorage.setItem(
+          `autoSaveInterval_${chapterId}`,
+          autoSaveInterval.toString()
+        );
       } catch (error) {
         console.error("Error writing auto-save config to localStorage:", error);
       }
@@ -113,9 +133,12 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
   useEffect(() => {
     const loadDescriptionFromApi = async () => {
       try {
-        const res = await fetch(`/api/courses/${courseId}/chapters/${chapterId}/description`, {
-          method: "GET",
-        });
+        const res = await fetch(
+          `/api/courses/${courseId}/chapters/${chapterId}/description`,
+          {
+            method: "GET",
+          }
+        );
         const data = await res.json();
 
         if (data?.description !== undefined && data?.description !== null) {
@@ -144,52 +167,67 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
     }
   }, [description, originalDescription]);
 
-  const callDescriptionApi = useCallback(async (currentDescription: string) => {
-    if (currentDescription === originalDescription) {
-      setIsProcessing(false);
-      setHasError(false);
-      return;
-    }
-
-    setIsProcessing(true);
-    setHasError(false);
-
-    try {
-      const response = await fetch(`/api/courses/${courseId}/chapters/${chapterId}/description`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: currentDescription }),
-      });
-      const data = await response.json();
-
-      if (data?.description !== undefined) {
-        router.refresh();
-        setOriginalDescription(data.description || "");
-        setHasUnsavedChanges(false);
-      } else {
-        toast.error(data?.message || t.errorMessage);
-        setHasError(true);
+  const callDescriptionApi = useCallback(
+    async (currentDescription: string) => {
+      if (currentDescription === originalDescription) {
+        setIsProcessing(false);
+        setHasError(false);
+        return;
       }
-    } catch (err: any) {
-      console.error("handleSave error:", err);
-      toast.error(err?.message || t.errorMessage);
-      setHasError(true);
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [courseId, chapterId, originalDescription, router, t.errorMessage]);
+
+      setIsProcessing(true);
+      setHasError(false);
+
+      try {
+        const response = await fetch(
+          `/api/courses/${courseId}/chapters/${chapterId}/description`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ description: currentDescription }),
+          }
+        );
+        const data = await response.json();
+
+        if (data?.description !== undefined) {
+          router.refresh();
+          setOriginalDescription(data.description || "");
+          setHasUnsavedChanges(false);
+        } else {
+          toast.error(data?.message || t.errorMessage);
+          setHasError(true);
+        }
+      } catch (err: any) {
+        console.error("handleSave error:", err);
+        toast.error(err?.message || t.errorMessage);
+        setHasError(true);
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [courseId, chapterId, originalDescription, router, t.errorMessage]
+  );
 
   useEffect(() => {
     if (!isMounted.current || !autoSaveEnabled) return;
 
     if (description !== originalDescription) {
-      const timer = setTimeout(() => {
-        callDescriptionApi(description);
-      }, Math.max(1000, autoSaveInterval * 1000));
+      const timer = setTimeout(
+        () => {
+          callDescriptionApi(description);
+        },
+        Math.max(1000, autoSaveInterval * 1000)
+      );
 
       return () => clearTimeout(timer);
     }
-  }, [description, originalDescription, autoSaveEnabled, autoSaveInterval, callDescriptionApi]);
+  }, [
+    description,
+    originalDescription,
+    autoSaveEnabled,
+    autoSaveInterval,
+    callDescriptionApi,
+  ]);
 
   const handleEditorChange = (content: string) => {
     setDescription(content);
@@ -197,9 +235,12 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
 
   const handleReset = async () => {
     try {
-      const response = await fetch(`/api/courses/${courseId}/chapters/${chapterId}/description`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/courses/${courseId}/chapters/${chapterId}/description`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await response.json();
 
       if (data?.description !== undefined) {
@@ -218,7 +259,10 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
   const getStatusIndicator = () => {
     if (isProcessing) {
       return (
-        <span className="flex items-center text-xs text-blue-600 dark:text-blue-400" title={t.savingMessage}>
+        <span
+          className="flex items-center text-xs text-emerald-600 dark:text-emerald-400"
+          title={t.savingMessage}
+        >
           <Loader2 className="h-3 w-3 mr-1 animate-spin" />
           {t.savingMessage}
         </span>
@@ -226,7 +270,10 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
     }
     if (hasError) {
       return (
-        <span className="flex items-center text-xs text-red-600 dark:text-red-500" title={t.errorHint}>
+        <span
+          className="flex items-center text-xs text-red-600 dark:text-red-500"
+          title={t.errorHint}
+        >
           <AlertCircle className="h-3 w-3 mr-1" />
           {t.errorMessage}
         </span>
@@ -234,7 +281,10 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
     }
     if (!hasUnsavedChanges && isMounted.current) {
       return (
-        <span className="flex items-center text-xs text-green-600 dark:text-green-500" title={t.savedMessage}>
+        <span
+          className="flex items-center text-xs text-green-600 dark:text-green-500"
+          title={t.savedMessage}
+        >
           <CheckCircle className="h-3 w-3 mr-1" />
         </span>
       );
@@ -256,18 +306,33 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
   return (
     <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col">
       <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 flex-shrink-0">
-        <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300">{t.title}</h3>
+        <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300">
+          {t.title}
+        </h3>
         <div className="flex items-center space-x-3">
-          <div className="h-5 w-24 flex items-center justify-end">{getStatusIndicator()}</div>
+          <div className="h-5 w-24 flex items-center justify-end">
+            {getStatusIndicator()}
+          </div>
           {hasUnsavedChanges && (
-            <Button variant="ghost" size="icon" onClick={handleReset} title={t.resetButton}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleReset}
+              title={t.resetButton}
+            >
               <RotateCcw className="h-4 w-4 text-primaryCustom2" />
             </Button>
           )}
-          <span className={`px-2 py-1 rounded text-xs font-medium ${
-            autoSaveEnabled ? "bg-green-500 text-TextCustom" : "bg-red-500 text-TextCustom"
-          }`}>
-            {autoSaveEnabled ? "Auto Guardado Activado" : "Auto Guardado Desactivado"}
+          <span
+            className={`px-2 py-1 rounded text-xs font-medium ${
+              autoSaveEnabled
+                ? "bg-green-500 text-TextCustom"
+                : "bg-red-500 text-TextCustom"
+            }`}
+          >
+            {autoSaveEnabled
+              ? "Auto Guardado Activado"
+              : "Auto Guardado Desactivado"}
           </span>
           <Popover>
             <PopoverTrigger asChild>
@@ -283,11 +348,16 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
             <PopoverContent className="w-60" align="end">
               <div className="grid gap-4">
                 <div className="space-y-2">
-                  <h4 className="font-medium leading-none">{t.settingsTooltip}</h4>
+                  <h4 className="font-medium leading-none">
+                    {t.settingsTooltip}
+                  </h4>
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center justify-between space-x-2">
-                    <Label htmlFor={`autosave-switch-${chapterId}`} className="text-sm flex-grow cursor-pointer">
+                    <Label
+                      htmlFor={`autosave-switch-${chapterId}`}
+                      className="text-sm flex-grow cursor-pointer"
+                    >
                       {t.autoSaveLabel}
                     </Label>
                     <Switch
@@ -299,7 +369,10 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
                   </div>
                   {autoSaveEnabled && (
                     <div className="grid grid-cols-3 items-center gap-2">
-                      <Label htmlFor={`interval-input-${chapterId}`} className="text-sm col-span-2">
+                      <Label
+                        htmlFor={`interval-input-${chapterId}`}
+                        className="text-sm col-span-2"
+                      >
                         {t.intervalLabel}
                       </Label>
                       <Input
@@ -307,7 +380,11 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
                         type="number"
                         min="1"
                         value={autoSaveInterval}
-                        onChange={(e) => setAutoSaveInterval(Math.max(1, Number(e.target.value)))}
+                        onChange={(e) =>
+                          setAutoSaveInterval(
+                            Math.max(1, Number(e.target.value))
+                          )
+                        }
                         className="h-8 col-span-1 dark:bg-gray-700 dark:border-gray-600"
                         aria-label={t.intervalLabel}
                       />
@@ -328,7 +405,9 @@ export const EnhancedChapterDescription: React.FC<EnhancedChapterDescriptionProp
           minHeight="400px"
           placeholder={t.placeholder}
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">• {t.hintMessage}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+          • {t.hintMessage}
+        </p>
       </div>
     </div>
   );

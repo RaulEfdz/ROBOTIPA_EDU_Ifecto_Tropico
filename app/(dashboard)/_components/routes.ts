@@ -82,7 +82,7 @@ export const teacherRoutes: Route[] = [
     //   viewLabel: true,
     //   until: new Date("2025-10-01"),
     //   // textLabel: "Nuevo",
-    //   color: "text-blue-400",
+    //   color: "text-emerald-400",
     // },
   },
   {

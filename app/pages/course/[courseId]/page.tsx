@@ -304,7 +304,7 @@ export default function CoursePage() {
       <Header user={user} courseTitle={title} />
 
       {/* --- Hero Section --- */}
-      <header className="bg-gradient-to-r from-emerald-700 via-teal-700 to-sky-700 text-white py-12 md:py-16">
+      <header className="bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-700 text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-8 md:gap-12">
           {/* Columna Izquierda: Texto */}
           <div className="flex-1 space-y-3 md:space-y-4">
@@ -424,8 +424,8 @@ export default function CoursePage() {
           {chaptersPreview.length > 0 && (
             <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
               <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                <FileText size={24} className="text-sky-500" /> Contenido del
-                curso (Vista Previa)
+                <FileText size={24} className="text-emerald-500" /> Contenido
+                del curso (Vista Previa)
               </h2>
               <div className="space-y-3">
                 {chaptersPreview.map((chapter, idx) => (

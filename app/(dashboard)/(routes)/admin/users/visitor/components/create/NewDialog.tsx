@@ -32,7 +32,7 @@ const roleColors: Record<string, string> = {
   Visitor:
     "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700",
   teacher:
-    "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700",
+    "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700",
   student:
     "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700",
   default:
@@ -191,7 +191,7 @@ export default function NewVisitorDialog({
           <TabsContent value={activeTab} className="mt-0">
             {isLoading ? (
               <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
               </div>
             ) : filteredUsers.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-h-96 overflow-y-auto p-1">
@@ -213,7 +213,7 @@ export default function NewVisitorDialog({
                         }
                         ${
                           selectedUserId === user.id && !isVisitor
-                            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500"
+                            ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 ring-2 ring-emerald-500"
                             : "border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800/50"
                         }`}
                       role="button"
@@ -229,7 +229,7 @@ export default function NewVisitorDialog({
                             className="rounded-full object-cover"
                           />
                           {selectedUserId === user.id && !isVisitor && (
-                            <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white rounded-full p-1 border-2 border-white">
+                            <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full p-1 border-2 border-white">
                               <Check className="w-3 h-3" strokeWidth={3} />
                             </div>
                           )}
@@ -280,7 +280,7 @@ export default function NewVisitorDialog({
             type="button"
             onClick={handleConfirm}
             disabled={!selectedUserId}
-            className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+            className="bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto"
           >
             Confirmar Selección
           </Button>
