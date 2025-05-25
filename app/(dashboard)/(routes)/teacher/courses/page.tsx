@@ -15,19 +15,24 @@ const CoursesPage = async () => {
   }
 
   const courses = await db.course.findMany({
-     where: {
+    where: {
       //  userId,
-       delete: false,
-     },
+      delete: false,
+    },
     orderBy: {
       createdAt: "asc",
+    },
+    include: {
+      category: true,
+      user: true,
+      chapters: true,
     },
   });
 
   return (
-      <TooltipProvider>
-        <TeacherTable columns={courseColumns} data={courses} />
-        </TooltipProvider>
+    <TooltipProvider>
+      <TeacherTable columns={courseColumns} data={courses} />
+    </TooltipProvider>
   );
 };
 

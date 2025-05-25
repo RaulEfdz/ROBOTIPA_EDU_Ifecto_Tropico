@@ -60,7 +60,6 @@ export function TeacherTable<TData, TValue>({
     []
   );
 
-  // Custom action column
   const actionColumn: ColumnDef<TData, any> = {
     id: "actions",
     cell: () => (
@@ -90,7 +89,6 @@ export function TeacherTable<TData, TValue>({
     ),
   };
 
-  // Modificar columnas existentes sin duplicar la columna de acciones
   const enhancedColumns = React.useMemo(() => {
     const hasActions = columns.some((col) => col.id === "actions");
     return hasActions ? columns : [...columns, actionColumn];
@@ -115,7 +113,7 @@ export function TeacherTable<TData, TValue>({
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header with Stats and Search */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Mis Cursos</h1>
@@ -148,7 +146,7 @@ export function TeacherTable<TData, TValue>({
         </div>
       </div>
 
-      {/* Main Card with Table */}
+      {/* Tabla */}
       <Card className="overflow-hidden border-slate-200 rounded-xl shadow-sm">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -159,42 +157,42 @@ export function TeacherTable<TData, TValue>({
                     key={headerGroup.id}
                     className="bg-slate-50 border-b-0"
                   >
-                    {headerGroup.headers &&
-                      headerGroup.headers.map((header) => (
-                        <TableHead
-                          key={header.id}
-                          className="h-11 px-6 text-slate-600 font-medium text-sm"
-                        >
-                          {header.isPlaceholder ? null : (
-                            <div className="flex items-center gap-2">
-                              {header.column.id === "title" && (
-                                <BookOpen className="h-4 w-4 text-emerald-600" />
-                              )}
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                              {header.column.getCanSort() && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="p-0 h-auto ml-1"
-                                  onClick={() =>
-                                    header.column.toggleSorting(
-                                      header.column.getIsSorted() === "asc"
-                                    )
-                                  }
-                                >
-                                  <ArrowUpDown className="h-3 w-3 text-emerald-500" />
-                                </Button>
-                              )}
-                            </div>
-                          )}
-                        </TableHead>
-                      ))}
+                    {headerGroup.headers.map((header) => (
+                      <TableHead
+                        key={header.id}
+                        className="h-11 px-6 text-slate-600 font-medium text-sm"
+                      >
+                        {header.isPlaceholder ? null : (
+                          <div className="flex items-center gap-2">
+                            {header.column.id === "title" && (
+                              <BookOpen className="h-4 w-4 text-emerald-600" />
+                            )}
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {header.column.getCanSort() && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="p-0 h-auto ml-1"
+                                onClick={() =>
+                                  header.column.toggleSorting(
+                                    header.column.getIsSorted() === "asc"
+                                  )
+                                }
+                              >
+                                <ArrowUpDown className="h-3 w-3 text-emerald-500" />
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      </TableHead>
+                    ))}
                   </TableRow>
                 ))}
               </TableHeader>
+
               <TableBody>
                 {table.getRowModel().rows.length ? (
                   table.getRowModel().rows.map((row) => (
@@ -205,24 +203,16 @@ export function TeacherTable<TData, TValue>({
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id} className="px-6 py-3">
                           {cell.column.id === "title" ? (
-                            <div className="font-medium text-slate-800 flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-md bg-emerald-100 flex items-center justify-center text-emerald-700">
-                                {(
-                                  cell.getValue() as string
-                                )?.[0]?.toUpperCase() || "C"}
-                              </div>
-                              <span>{cell.getValue() as string}</span>
+                            <div className="font-medium text-slate-800">
+                              {cell.getValue() as string}
                             </div>
                           ) : cell.column.id === "status" ? (
                             <Badge
-                              className={`
-                                ${
-                                  (cell.getValue() as string) === "Publicado"
-                                    ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
-                                    : "bg-amber-100 text-amber-800 hover:bg-amber-200"
-                                }
-                                rounded-full px-3 py-1.5 font-medium
-                              `}
+                              className={`${
+                                (cell.getValue() as string) === "Publicado"
+                                  ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                                  : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                              } rounded-full px-3 py-1.5 font-medium`}
                             >
                               {(cell.getValue() as string) === "Publicado"
                                 ? "● Publicado"
@@ -258,7 +248,7 @@ export function TeacherTable<TData, TValue>({
             </Table>
           </div>
 
-          {/* Table Footer with Pagination */}
+          {/* Footer paginación */}
           <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-white">
             <div className="flex items-center gap-1 text-sm text-slate-500">
               <span>Mostrando</span>
