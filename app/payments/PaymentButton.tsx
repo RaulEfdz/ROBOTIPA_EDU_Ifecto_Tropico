@@ -1,4 +1,3 @@
-// ✅ PaymentButton.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,6 +8,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import RedirectModal from "../pages/course/[courseId]/components/RedirectModal";
 import DevPaymentControls from "../pages/course/[courseId]/components/dev/DevPaymentControls";
+import MockPaymentButton from "./MockPaymentButton";
 
 interface Props {
   amount: number;
@@ -113,6 +113,10 @@ export default function PaymentButton({
           )}
         </div>
       )}
+
+      <div className="mt-4">
+        <MockPaymentButton amount={2.0} description="Compra simulada" />
+      </div>
 
       {process.env.NODE_ENV === "development" && (
         <DevPaymentControls

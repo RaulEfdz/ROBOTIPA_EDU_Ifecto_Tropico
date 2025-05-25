@@ -51,6 +51,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const accessToken = session?.access_token;
+
+    if (!accessToken) {
+      console.error("[/api/payments/init] Access token not found.");
+      return NextResponse.json(
+        { error: "Token de acceso no encontrado." },
+        { status: 401 }
+      );
+    }
+
     const payload = {
       amount,
       email,
@@ -70,6 +80,7 @@ export async function POST(req: NextRequest) {
       headers: {
         "Content-Type": "application/json",
         "X-API-Key": apiKey,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(payload),
     });
@@ -79,7 +90,7 @@ export async function POST(req: NextRequest) {
     if (!data.success) {
       console.error("[/api/payments/init] PagueloFacil error:", data);
       return NextResponse.json(
-        { error: "Error al crear la orden de pago." },
+        { error: "Error al crear la orden de pago.", details: data },
         { status: 500 }
       );
     }
