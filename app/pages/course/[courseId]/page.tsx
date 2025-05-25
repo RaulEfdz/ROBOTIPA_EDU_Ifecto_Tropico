@@ -159,6 +159,7 @@ export default function CoursePage() {
               description: course.title,
               email: user?.email,
               phone: user?.phone,
+              course: course, // Enviar el curso completo si es necesario
             }),
           });
           if (!paymentResponse.ok) {

@@ -3,14 +3,21 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Course } from "@/prisma/types";
 
 interface Props {
   amount: number;
   description: string;
   onCancel: () => void;
+  course: Course;
 }
 
-export default function PaymentForm({ amount, description, onCancel }: Props) {
+export default function PaymentForm({
+  amount,
+  description,
+  onCancel,
+  course,
+}: Props) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,7 +28,13 @@ export default function PaymentForm({ amount, description, onCancel }: Props) {
       const res = await fetch("/api/payments/init", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount, description, email, phone }),
+        body: JSON.stringify({
+          amount,
+          description,
+          email,
+          phone,
+          course, // Enviar el curso completo si es necesario
+        }),
       });
       const { paymentUrl, error } = await res.json();
       if (paymentUrl) window.location.href = paymentUrl;
