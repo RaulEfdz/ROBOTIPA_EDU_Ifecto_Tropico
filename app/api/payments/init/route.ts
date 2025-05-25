@@ -41,24 +41,34 @@ function getConfig() {
 }
 
 /**
- * Builds the dynamic payment description
+ * Builds the dynamic payment description including custom description, course title, user, and formatted date
+ * Normalizes by removing diacritics, trimming, replacing spaces with hyphens, and stripping special characters
  */
 function buildDynamicDescription(
   user: UserDB,
-  course: Partial<Course>
+  course: Partial<Course>,
+  customDesc: string
 ): string {
-  const date = new Date().toLocaleDateString("es-CO", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
+  const dateISO = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
-  // Ensure course.title is defined as string or fallback
-  const courseTitle = course.title || "[NombreCurso]";
-  const userFullName = user.fullName || "[NombreUsuario]";
-  const formattedDate = date;
+  // Normalize: remove diacritics, trim, replace spaces, remove non-alphanumeric except hyphens
+  const normalize = (value: string) =>
+    value
+      .normalize("NFD") // decompose combined letters into letter + diacritic
+      .replace(/[̀-ͯ]/g, "") // remove diacritic marks
+      .trim()
+      .replace(/\s+/g, "-") // replace spaces with hyphens
+      .replace(/[^a-zA-Z0-9-]/g, ""); // remove all non-alphanumeric/hyphen characters
 
-  return `${courseTitle}-${userFullName}-${formattedDate}`;
+  const courseTitle = normalize(course.title || "[NombreCurso]");
+  const description = normalize(customDesc || "");
+  const userFullName = normalize(user.fullName || "[Usuario]");
+  const formattedDate = normalize(dateISO);
+
+  const parts = [courseTitle, description, userFullName, formattedDate].filter(
+    Boolean
+  );
+  return parts.join("_");
 }
 
 /**
@@ -73,7 +83,8 @@ function buildFormParams(
   const { cclw, returnUrlRaw, cardTypes, expiresIn } = config;
   const CCLW = cclw;
   const CMTN = body.amount.toFixed(2);
-  const CDSC = percentEncodeUTF8(buildDynamicDescription(user, course));
+  const rawDesc = buildDynamicDescription(user, course, body.description);
+  const CDSC = percentEncodeUTF8(rawDesc);
   const RETURN_URL = toHex(returnUrlRaw);
   const PARM_1 = "";
   const CTAX = "";
@@ -146,7 +157,6 @@ export async function POST(req: NextRequest) {
     const userRaw = await db.user.findUnique({
       where: { id: session.user.id },
     });
-
     if (!userRaw) {
       return NextResponse.json(
         { error: "Usuario no encontrado en la base de datos." },
@@ -154,12 +164,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Convert Date fields to string and ensure metadata is an object to match UserDB type
+    // Adapt DB record to UserDB
     const user: UserDB = {
       ...userRaw,
-      lastSignInAt: userRaw.lastSignInAt
-        ? userRaw.lastSignInAt.toISOString()
-        : null,
+      lastSignInAt: userRaw.lastSignInAt?.toISOString() || null,
       createdAt: userRaw.createdAt.toISOString(),
       updatedAt: userRaw.updatedAt.toISOString(),
       metadata:
@@ -177,8 +185,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Load config
-    const { apiUrl, apiKey, cclw, returnUrlRaw, cardTypes, expiresIn } =
-      getConfig();
+    const config = getConfig();
 
     // Ensure access token
     const accessToken = session.access_token;
@@ -191,14 +198,19 @@ export async function POST(req: NextRequest) {
 
     // Build form payload
     const formParams = buildFormParams(
-      { apiUrl, cclw, apiKey, returnUrlRaw, cardTypes, expiresIn },
+      config,
       { amount, description, email, phone },
       user,
       course
     );
 
     // Call the external API
-    const data = await callPaymentApi(apiUrl, apiKey, accessToken, formParams);
+    const data = await callPaymentApi(
+      config.apiUrl,
+      config.apiKey,
+      accessToken,
+      formParams
+    );
 
     // Log and respond
     console.log("Payment URL:", data.data.url);
@@ -210,9 +222,10 @@ export async function POST(req: NextRequest) {
     );
   } catch (err: any) {
     console.error("[/api/payments/init] Error:", err.message || err);
-    const status = err.message.includes("HTTP")
-      ? parseInt(err.message.split(" ")[1])
-      : 500;
+    const status =
+      typeof err.message === "string" && err.message.startsWith("HTTP")
+        ? parseInt(err.message.split(" ")[1], 10)
+        : 500;
     return NextResponse.json({ error: err.message }, { status });
   }
 }
