@@ -27,6 +27,7 @@ const publicRoutes = [
   "/contact",
   "/faq",
   "/courses/catalog", // El catálogo debe ser público
+  "/courses/course/[courseId]", // Detalles del curso, puede ser público
   "/payments", // Página de pagos podría ser pública si el flujo lo requiere
   "/temrs", // Términos y condiciones
   // Si /pages/course/[courseId] debe ser parcialmente público (ver info) y

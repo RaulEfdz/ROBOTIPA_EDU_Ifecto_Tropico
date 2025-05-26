@@ -103,7 +103,7 @@ export default function CatalogHeader() {
             {/* Botón de Inicio (solo si hay sesión) */}
             {user && (
               <Link
-                href="/courses/catalog" // O la ruta principal para usuarios logueados
+                href="/" // O la ruta principal para usuarios logueados
                 className="text-sm font-medium text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400 flex items-center gap-1"
                 title="Ir al panel principal"
               >
@@ -123,7 +123,7 @@ export default function CatalogHeader() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full p-0"
+                    className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full p-0 bg-white "
                   >
                     <Avatar className="h-9 w-9 sm:h-10 sm:w-10">
                       <AvatarImage
@@ -138,7 +138,12 @@ export default function CatalogHeader() {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-60" align="end" forceMount>
+                <DropdownMenuContent
+                  // className=""
+                  align="end"
+                  forceMount
+                  className="w-60 bg-white dark:bg-slate-800 shadow-lg rounded-lg"
+                >
                   {" "}
                   {/* Aumentado ancho */}
                   <DropdownMenuLabel className="font-normal">

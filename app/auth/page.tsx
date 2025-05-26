@@ -4,6 +4,7 @@
 import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Logo } from "@/utils/logo";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import LoginForm from "./SignIn/LoginForm";
 import SignupForm from "./SignUp/SignupForm";
+import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 
 export default function AuthPage() {
   return (
@@ -47,20 +49,31 @@ function AuthPageContent() {
       {/* Left Panel */}
       <div className="relative hidden lg:flex items-center justify-center bg-gradient-to-br from-emerald-600 to-emerald-500 p-12">
         <Image
-          src="/auth-background.jpg"
-          alt="Decorative background"
+          src="/rbtpbasic.png"
+          alt=""
           fill
           style={{ objectFit: "cover" }}
           className="opacity-10"
         />
-        <div className="relative z-10 text-center text-white">
+        <div className="relative z-10 text-left text-white">
           <Logo version="light" width={180} height={90} />
           <h1 className="mt-6 text-5xl font-extrabold tracking-tight">
             {process.env.NEXT_PUBLIC_NAME_APP || "Tu Plataforma Educativa"}
+            {" ACADEMY"}
           </h1>
           <p className="mt-4 text-lg opacity-80">
-            Aprende, crece y alcanza tus metas con nosotros.
+            Cursos online y presenciales, webinars y eventos sobre enfermedades
+            tropicales
           </p>
+          <div className="mt-6 text-left w-full font-semibold rounded-lg p-4">
+            <Link
+              href="/courses/catalog"
+              className="data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400"
+            >
+              Ver cursos
+            </Link>
+            <ArrowBigRight className="inline-block ml-2 h-5 w-5" />
+          </div>
         </div>
       </div>
 
@@ -106,6 +119,14 @@ function AuthPageContent() {
                 <SignupForm redirectUrl={redirectUrl} />
               </TabsContent>
             </Tabs>
+            {/* <div className="mt-6 text-center">
+              <Link
+                href="/courses/catalog"
+                className="data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400"
+              >
+                Ir al Catálogo
+              </Link>
+            </div> */}
           </CardContent>
 
           {/* <div className="px-8 pb-8">

@@ -1,12 +1,30 @@
-// app/auth/SignUp/SignupForm.tsx
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { createClient } from "../../../utils/supabase/client";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { Label } from "../../../components/ui/label";
 import { toast } from "sonner";
+
+import { countries } from "../../data/countries";
+
+function useOutsideAlerter(
+  ref: React.RefObject<HTMLDivElement>,
+  callback: () => void
+) {
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        callback();
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref, callback]);
+}
 
 // Define la interfaz para las props del componente
 interface SignupFormProps {
@@ -18,8 +36,24 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
   const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [pais, setPais] = useState("");
+  const [profesion, setProfesion] = useState("");
+  const [institucion, setInstitucion] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [filter, setFilter] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const filteredCountries = countries.filter((country) =>
+    country.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  useOutsideAlerter(dropdownRef, () => setIsOpen(false));
 
   const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,8 +66,12 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
       options: {
         data: {
           full_name: fullName, // Supabase Auth permite 'user_metadata' o 'app_metadata'
+          pais,
+          profesion,
+          institucion,
+          telefono,
           // Aquí asumimos que 'full_name' se mapea a user_metadata.full_name
-        },
+        } as any,
         emailRedirectTo: `${
           window.location.origin
         }/auth/confirm-action?next=${encodeURIComponent(redirectUrl)}`,
@@ -87,43 +125,191 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
           id="fullName-signup"
           type="text"
           value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setFullName(e.target.value)
+          }
           required
           placeholder="Juan Pérez"
           autoComplete="name"
         />
       </div>
+      <div className="space-y-2 relative" ref={dropdownRef}>
+        <Label htmlFor="pais-signup">País</Label>
+        <div className="flex items-center space-x-2">
+          {pais && (
+            <span className="text-2xl select-none">
+              {countries.find((c) => c.name === pais)?.flag}
+            </span>
+          )}
+          <input
+            id="pais-signup"
+            type="text"
+            value={filter}
+            onChange={(e) => {
+              setFilter(e.target.value);
+              setIsOpen(true);
+            }}
+            onFocus={() => setIsOpen(true)}
+            placeholder="Seleccione un país"
+            className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
+            autoComplete="off"
+            aria-autocomplete="list"
+            aria-controls="country-listbox"
+            aria-expanded={isOpen}
+            aria-haspopup="listbox"
+            role="combobox"
+            required
+          />
+        </div>
+        {isOpen && (
+          <ul
+            id="country-listbox"
+            role="listbox"
+            className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white py-1 text-base shadow-lg focus:outline-none sm:text-sm"
+          >
+            {filteredCountries.length > 0 ? (
+              filteredCountries.map((country) => (
+                <li
+                  key={country.code}
+                  role="option"
+                  aria-selected={pais === country.name}
+                  className={`relative cursor-pointer select-none py-2 pl-3 pr-9 ${
+                    pais === country.name
+                      ? "bg-primary-600 text-white"
+                      : "text-gray-900"
+                  }`}
+                  onClick={() => {
+                    setPais(country.name);
+                    if (!telefono.startsWith(country.phone)) {
+                      setTelefono(country.phone + " ");
+                    }
+                    setFilter(country.name);
+                    setIsOpen(false);
+                  }}
+                >
+                  <span className="block truncate">
+                    {country.flag} {country.name}
+                  </span>
+                </li>
+              ))
+            ) : (
+              <li className="relative cursor-default select-none py-2 px-3 text-gray-700">
+                No se encontraron países
+              </li>
+            )}
+          </ul>
+        )}
+      </div>
       <div className="space-y-2">
-        <Label htmlFor="email-signup">Correo Electrónico</Label>
+        <Label htmlFor="profesion-signup">Profesión</Label>
+        <select
+          id="profesion-signup"
+          value={profesion}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            setProfesion(e.target.value)
+          }
+          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
+          autoComplete="organization-title"
+        >
+          <option value="">Seleccione una opción</option>
+          <option value="Estudiante">Estudiante</option>
+          <option value="Particular">Particular</option>
+          <option value="Profesional">Profesional</option>
+        </select>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="institucion-signup">
+          {profesion === "Estudiante"
+            ? "Institución/Universidad"
+            : profesion === "Particular"
+              ? "Empresa/Organización"
+              : profesion === "Profesional"
+                ? "Institución/Empresa"
+                : "Institución/Universidad"}
+        </Label>
+        <Input
+          id="institucion-signup"
+          type="text"
+          value={institucion}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setInstitucion(e.target.value)
+          }
+          placeholder={
+            profesion === "Estudiante"
+              ? "Universidad de Panamá"
+              : profesion === "Particular"
+                ? "Empresa XYZ"
+                : profesion === "Profesional"
+                  ? "Institución ABC"
+                  : "Institución/Universidad"
+          }
+          autoComplete="organization"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="telefono-signup">Teléfono</Label>
+        <Input
+          id="telefono-signup"
+          type="tel"
+          value={telefono}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setTelefono(e.target.value)
+          }
+          placeholder="+507 1234 5678"
+          autoComplete="tel"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="email-signup">
+          Correo Electrónico <span className="text-red-600">*</span>
+        </Label>
         <Input
           id="email-signup"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setEmail(e.target.value)
+          }
           required
-          placeholder="tu@email.com"
+          placeholder="correo@ejemplo.com"
           autoComplete="email"
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password-signup">Contraseña</Label>
+        <Label htmlFor="password-signup">
+          Contraseña <span className="text-red-600">*</span>
+        </Label>
         <Input
           id="password-signup"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setPassword(e.target.value)
+          }
           required
-          placeholder="•••••••• (mínimo 6 caracteres)"
-          minLength={6}
+          placeholder="********"
           autoComplete="new-password"
         />
       </div>
-      <Button
-        type="submit"
-        className="w-full h-10 sm:h-11 font-semibold bg-emerald-900 hover:bg-emerald-950 text-white dark:bg-emerald-500 dark:hover:bg-emerald-600" // Estilos aplicados
-        disabled={isLoading}
-      >
-        {isLoading ? "Creando..." : "Crear Cuenta"}
+      <div className="space-y-2">
+        <Label htmlFor="confirmPassword-signup">
+          Confirmar Contraseña <span className="text-red-600">*</span>
+        </Label>
+        <Input
+          id="confirmPassword-signup"
+          type="password"
+          value={confirmPassword}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setConfirmPassword(e.target.value)
+          }
+          required
+          placeholder="********"
+          autoComplete="new-password"
+        />
+      </div>
+      {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? "Creando cuenta..." : "Registrarse"}
       </Button>
     </form>
   );

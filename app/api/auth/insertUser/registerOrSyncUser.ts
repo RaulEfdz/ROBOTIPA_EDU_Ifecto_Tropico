@@ -13,7 +13,9 @@ export const registerOrSyncUser = async (
   const route = "registerOrSyncUser";
 
   try {
-    printDebug(`${route} > Verificando existencia del usuario con ID: ${user.id}`);
+    printDebug(
+      `${route} > Verificando existencia del usuario con ID: ${user.id}`
+    );
 
     const existingUser = await db.user.findUnique({
       where: { id: user.id },
@@ -28,16 +30,35 @@ export const registerOrSyncUser = async (
     }
 
     // Serializar metadata de forma segura
-    const serializedMetadata = JSON.parse(JSON.stringify(user.user_metadata));
+    const userMetadata = user.user_metadata || {};
+
+    // Extraer campos que coinciden con columnas de la tabla User
+    const fullName =
+      userMetadata.full_name || identity?.identity_data?.full_name || "No name";
+    const phone = (userMetadata as any).telefono || user.phone || null;
+
+    // Construir metadata excluyendo los campos que se guardarán en columnas separadas
+    // Para evitar error TS, usar index signature para acceder a propiedades dinámicas
+    const {
+      full_name,
+      // @ts-ignore
+      telefono,
+      // Excluir otros campos que se guardan en columnas si es necesario
+      ...restMetadata
+    } = userMetadata;
+
+    const serializedMetadata = JSON.parse(JSON.stringify(restMetadata));
 
     const newUserData = {
       email: user.email,
-      fullName: identity?.identity_data?.full_name || "No name",
+      fullName,
       username: identity?.identity_data?.username || "no-username",
-      phone: user.phone || null,
+      phone,
       customRole,
       provider: identity?.provider || "unknown",
-      lastSignInAt: user.last_sign_in_at ? new Date(user.last_sign_in_at) : new Date(),
+      lastSignInAt: user.last_sign_in_at
+        ? new Date(user.last_sign_in_at)
+        : new Date(),
       metadata: serializedMetadata,
     };
 
@@ -61,11 +82,13 @@ export const registerOrSyncUser = async (
       });
       //codigo sirve para detectar coambios en la info de auth y la user y igualar la tabal user a la auth
       if (hasChanges) {
-        printDebug(`${route} > 🔄 Diferencias encontradas, actualizando usuario`);
-      
+        printDebug(
+          `${route} > 🔄 Diferencias encontradas, actualizando usuario`
+        );
+
         // Excluir el campo `customRole` de la sincronización
         const { customRole: _, ...newUserDataWithoutCustomRole } = newUserData;
-      
+
         await db.user.update({
           where: { id: user.id },
           data: {
@@ -73,7 +96,7 @@ export const registerOrSyncUser = async (
             updatedAt: new Date(),
           },
         });
-      
+
         printDebug(`${route} > ✅ Usuario actualizado correctamente`);
         callback();
         return "updated";
@@ -82,7 +105,6 @@ export const registerOrSyncUser = async (
         callback();
         return "unchanged";
       }
-      
     }
   } catch (error) {
     printDebug(`${route} > ❌ Error: ${(error as Error).message}`);
