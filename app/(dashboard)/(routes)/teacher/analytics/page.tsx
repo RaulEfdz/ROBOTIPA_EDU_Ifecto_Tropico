@@ -44,6 +44,9 @@ const AnalyticsDashboard = () => {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [timeRange, setTimeRange] = useState<TimeRange>("month");
   const [language, setLanguage] = useState<Language>(defaultLanguage);
+  const [trendData, setTrendData] = useState<
+    { month: string; users: number; revenue: number; courses: number }[]
+  >([]);
 
   const t: TFunction = (key) =>
     texts[key][language] ?? texts[key][defaultLanguage];
@@ -62,69 +65,72 @@ const AnalyticsDashboard = () => {
       }
     };
 
+    const fetchTrendData = async () => {
+      try {
+        const res = await fetch("/api/analytics/trends");
+        const json = await res.json();
+        if (json.status === "success") {
+          setTrendData(json.data);
+        }
+      } catch (error) {
+        console.error("Error fetching trend data", error);
+      }
+    };
+
     fetchAnalytics();
+    fetchTrendData();
     // solo corre una vez
   }, []);
 
-  const { courseData, chapterData, barData, trendData, examChartData } =
-    useMemo(() => {
-      if (!data) {
-        return {
-          courseData: [],
-          chapterData: [],
-          barData: [],
-          trendData: [],
-          examChartData: [],
-        };
-      }
-      const courseData = [
-        { name: t("published"), value: data.courses.published },
-        { name: t("unpublished"), value: data.courses.unpublished },
-      ];
-      const chapterData = [
-        { name: t("free"), value: data.chapters.free },
-        { name: t("premium"), value: data.chapters.premium },
-      ];
-      const barData = [
-        { name: t("users"), total: data.users.total, color: "#4F46E5" },
-        { name: t("courses"), total: data.courses.total, color: "#10B981" },
-        { name: t("chapters"), total: data.chapters.total, color: "#F59E0B" },
-        { name: t("purchases"), total: data.purchases.total, color: "#EF4444" },
-        {
-          name: t("invoices"),
-          total: data.revenue.invoicesIssued,
-          color: "#8B5CF6",
-        },
-        { name: t("exams"), total: data.exams.total, color: "#EC4899" },
-        {
-          name: t("attempts"),
-          total: data.exams.totalAttempts,
-          color: "#06B6D4",
-        },
-      ];
-      const trendData = [
-        { month: t("monthJan"), users: 650, revenue: 4200, courses: 12 },
-        { month: t("monthFeb"), users: 730, revenue: 5100, courses: 14 },
-        { month: t("monthMar"), users: 810, revenue: 6300, courses: 15 },
-        { month: t("monthApr"), users: 920, revenue: 7200, courses: 17 },
-        { month: t("monthMay"), users: 1050, revenue: 8400, courses: 22 },
-        { month: t("monthJun"), users: 1250, revenue: 10200, courses: 24 },
-      ];
-      const examChartData = [
-        { name: t("totalExams"), value: data.exams.total, color: "#8B5CF6" },
-        {
-          name: t("publishedExams"),
-          value: data.exams.published,
-          color: "#EC4899",
-        },
-        {
-          name: t("totalAttempts"),
-          value: data.exams.totalAttempts,
-          color: "#06B6D4",
-        },
-      ];
-      return { courseData, chapterData, barData, trendData, examChartData };
-    }, [data, t]);
+  const { courseData, chapterData, barData, examChartData } = useMemo(() => {
+    if (!data) {
+      return {
+        courseData: [],
+        chapterData: [],
+        barData: [],
+        examChartData: [],
+      };
+    }
+    const courseData = [
+      { name: t("published"), value: data.courses.published },
+      { name: t("unpublished"), value: data.courses.unpublished },
+    ];
+    const chapterData = [
+      { name: t("free"), value: data.chapters.free },
+      { name: t("premium"), value: data.chapters.premium },
+    ];
+    const barData = [
+      { name: t("users"), total: data.users.total, color: "#4F46E5" },
+      { name: t("courses"), total: data.courses.total, color: "#10B981" },
+      { name: t("chapters"), total: data.chapters.total, color: "#F59E0B" },
+      { name: t("purchases"), total: data.purchases.total, color: "#EF4444" },
+      {
+        name: t("invoices"),
+        total: data.revenue.invoicesIssued,
+        color: "#8B5CF6",
+      },
+      { name: t("exams"), total: data.exams.total, color: "#EC4899" },
+      {
+        name: t("attempts"),
+        total: data.exams.totalAttempts,
+        color: "#06B6D4",
+      },
+    ];
+    const examChartData = [
+      { name: t("totalExams"), value: data.exams.total, color: "#8B5CF6" },
+      {
+        name: t("publishedExams"),
+        value: data.exams.published,
+        color: "#EC4899",
+      },
+      {
+        name: t("totalAttempts"),
+        value: data.exams.totalAttempts,
+        color: "#06B6D4",
+      },
+    ];
+    return { courseData, chapterData, barData, examChartData };
+  }, [data, t]);
 
   const statsCards = useMemo(() => {
     if (!data) return [];
