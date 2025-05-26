@@ -4,7 +4,6 @@
 import { useEffect, useState, Suspense, useMemo } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { toast, Toaster } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { AlertTriangle, ListFilter, Search, XCircle } from "lucide-react"; // Importado BookOpen desde lucide

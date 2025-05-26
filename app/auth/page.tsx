@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import LoginForm from "./SignIn/LoginForm";
 import SignupForm from "./SignUp/SignupForm";
+import EmailValidationTab from "./EmailValidationTab";
 import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 
 export default function AuthPage() {
@@ -110,6 +111,12 @@ function AuthPageContent() {
                 >
                   Crear Cuenta
                 </TabsTrigger>
+                {/* <TabsTrigger
+                  value="emailValidation"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400"
+                >
+                  Validar Correo
+                </TabsTrigger> */}
               </TabsList>
 
               <TabsContent value="login">
@@ -117,6 +124,9 @@ function AuthPageContent() {
               </TabsContent>
               <TabsContent value="signup">
                 <SignupForm redirectUrl={redirectUrl} />
+              </TabsContent>
+              <TabsContent value="emailValidation">
+                <EmailValidationTab />
               </TabsContent>
             </Tabs>
             {/* <div className="mt-6 text-center">

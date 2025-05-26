@@ -11,7 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import { getChapterU } from "./handler/getChapter";
-import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
+// import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 import EditorTextPreview from "@/components/preview";
 import ChapterHeader from "./_components/ChapterHeader";
 import ChapterVideoSection from "./_components/ChapterVideoSection";
@@ -19,6 +19,7 @@ import CustomProgressButton from "./_components/CustomProgressButton";
 import { CourseEnrollButton } from "./_components/course-enroll-button";
 import ExamViewer from "./_components/exam/examViewer/ExamViewer"; // Asegúrate que el nombre del componente sea correcto
 import ChapterHeaderBar from "./_components/customs/ChapterHeaderBar";
+import { getCurrentUserFromDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 
 // Para el toast de bienvenida "una sola vez por curso"
 const WELCOME_TOAST_SHOWN_KEY_PREFIX = "welcomeToastShown_course_";
@@ -39,22 +40,17 @@ const ChapterIdPage: React.FC = () => {
       setIsSequentiallyLocked(false);
 
       try {
-        const user = await getCurrentUserFromDB();
-        if (!user?.id) {
-          router.push(
-            "/auth?redirectUrl=" +
-              encodeURIComponent(
-                window.location.pathname + window.location.search
-              )
-          );
-          return;
-        }
-
         const { courseId, chapterId } = params;
         if (!courseId || !chapterId) {
           toast.error("Curso o capítulo no especificado.");
           setLoading(false);
           return;
+        }
+
+        // Assuming `user` should be retrieved from a function or context
+        const user = await getCurrentUserFromDB(); // Ensure this function is imported and available
+        if (!user?.id) {
+          throw new Error("Usuario no autenticado.");
         }
 
         const chapterData = await getChapterU({

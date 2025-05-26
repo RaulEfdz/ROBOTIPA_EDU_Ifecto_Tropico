@@ -180,9 +180,10 @@ export default function CoursePage() {
       }
     } else {
       // --- Usuario NO Logueado ---
-      // Redirigir a la página de autenticación, pasando la ruta de retorno deseada
-      const redirectUrl = encodeURIComponent(`/courses/${courseId}`); // Volver a la vista interna post-login
-      router.push(`/auth?redirect=${redirectUrl}&courseId=${courseId}`); // Tu ruta de login/registro
+      // Ruta pública: permitir acceso sin redirección ni error
+      // Simplemente acceder a la vista interna del curso
+      router.push(`/courses/${courseId}`);
+      setIsActionLoading(false);
     }
     // La navegación usualmente se encarga, pero reseteamos si hubo error sin navegación
   };

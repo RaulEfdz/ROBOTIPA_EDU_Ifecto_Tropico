@@ -112,8 +112,8 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
         "¡Cuenta creada! Revisa tu correo electrónico para confirmar tu cuenta y completar el registro.",
         { duration: 8000 }
       );
-      // Opcional: redirigir a una página informativa
-      // router.push("/auth/check-email"); // Crea esta página si quieres
+      // Redirigir a la página de espera de confirmación de correo
+      router.push("/auth/check-email");
     }
   };
 
