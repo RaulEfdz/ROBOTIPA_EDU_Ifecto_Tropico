@@ -9,22 +9,32 @@ export interface Chapter {
 
 export interface Course {
   id: string;
+  userId: string;
   chapters: Chapter[];
 }
 
-export async function getCourseWithPublishedChapters(courseId: string): Promise<Course | null> {
+export async function getCourseWithPublishedChapters(
+  courseId: string
+): Promise<Course | null> {
   const course = await db.course.findUnique({
     where: {
       delete: false,
       id: courseId,
     },
-    include: {
+    select: {
+      id: true,
+      userId: true,
       chapters: {
         where: {
           isPublished: true,
         },
         orderBy: {
           position: "asc",
+        },
+        select: {
+          id: true,
+          isPublished: true,
+          position: true,
         },
       },
     },

@@ -1,6 +1,5 @@
 // middleware.ts
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "./utils/supabase/server";
 
 // Rutas protegidas (requieren sesión)
@@ -37,8 +36,14 @@ const publicRoutes = [
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const response = NextResponse.next();
-  const supabase = createServerClient();
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
+  const supabase = createServerClient(request, response);
+
   const {
     data: { session },
   } = await supabase.auth.getSession();

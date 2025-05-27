@@ -9,6 +9,44 @@ import { toast } from "sonner";
 
 import { countries } from "../../data/countries";
 
+const cookies = {
+  getAll() {
+    // Parse document.cookie string into array of cookie objects
+    return document.cookie
+      .split("; ")
+      .filter(Boolean)
+      .map((cookieStr) => {
+        const [name, ...rest] = cookieStr.split("=");
+        const value = rest.join("=");
+        return { name, value };
+      });
+  },
+  setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
+    try {
+      cookiesToSet.forEach(({ name, value, options }) => {
+        let cookieString = `${name}=${value}; path=/`;
+        if (options) {
+          if (options.secure) cookieString += "; Secure";
+          if (options.sameSite)
+            cookieString += `; SameSite=${options.sameSite}`;
+          if (options.expires) {
+            const expires =
+              options.expires instanceof Date
+                ? options.expires.toUTCString()
+                : options.expires;
+            cookieString += `; Expires=${expires}`;
+          }
+        }
+        document.cookie = cookieString;
+      });
+    } catch {
+      // The `setAll` method was called from a Server Component.
+      // This can be ignored if you have middleware refreshing
+      // user sessions.
+    }
+  },
+};
+
 function useOutsideAlerter(
   ref: React.RefObject<HTMLDivElement>,
   callback: () => void
@@ -95,6 +133,21 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
     } else if (signUpData.session) {
       // Esto sucede si la confirmación por correo está deshabilitada
       toast.success("¡Cuenta creada e iniciada sesión!");
+
+      // Set cookies to maintain session
+      cookies.setAll([
+        {
+          name: "sb-access-token",
+          value: signUpData.session.access_token,
+          options: { path: "/", secure: true, sameSite: "lax" },
+        },
+        {
+          name: "sb-refresh-token",
+          value: signUpData.session.refresh_token,
+          options: { path: "/", secure: true, sameSite: "lax" },
+        },
+      ]);
+
       try {
         await fetch("/api/auth/insertUser", { method: "POST" });
       } catch (syncError) {

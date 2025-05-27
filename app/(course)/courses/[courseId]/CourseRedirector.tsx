@@ -41,6 +41,20 @@ const CourseRedirector = () => {
         }
 
         const data: Course = await res.json();
+        console.log(
+          "CourseRedirector - Datos recibidos de API:",
+          JSON.stringify(data, null, 2)
+        );
+        if (data.chapters && data.chapters.length > 0) {
+          console.log(
+            "CourseRedirector - Primer capítulo para redirigir:",
+            data.chapters[0]
+          );
+        } else {
+          console.log(
+            "CourseRedirector - No hay capítulos publicados o data.chapters está vacío/undefined."
+          );
+        }
         setCourse(data);
 
         if (!data.chapters.length) return;
