@@ -1,7 +1,5 @@
 // app/courses/[courseId]/layout.tsx
-import { ReactNode } from "react";
 import { CourseSidebar } from "./_components/course-sidebar";
-import { CourseNavbar } from "./_components/course-navbar";
 import { getCourseLayoutData } from "./getCourseLayoutData";
 
 const CourseLayout = async ({ children, params }: any) => {

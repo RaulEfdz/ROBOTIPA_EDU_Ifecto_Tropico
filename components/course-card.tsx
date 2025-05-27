@@ -63,7 +63,9 @@ export const CourseCard = ({ course, setLoading }: CourseCardProps) => {
       return null; // No navegar si no hay ID
     }
     const isEnrolled = progress !== null; // Determina si el usuario está inscrito
-    return isEnrolled ? `/courses/${id}` : `/pages/course/${id}`;
+    return isEnrolled
+      ? `/courses/${id}/chapters/${chapters[0].id}`
+      : `/pages/course/${id}/chapters/${chapters[0].id}`;
   };
 
   const handleNavigate = () => {

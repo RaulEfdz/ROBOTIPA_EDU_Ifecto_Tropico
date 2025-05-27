@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/client";
+import { createServerClient } from "@/utils/supabase/server";
 
 // Tipos
 export interface IdentityData {
@@ -59,18 +59,18 @@ export interface SupabaseSession {
 
 // Función principal
 export async function getUserDataServerAuth(): Promise<SupabaseSession | null> {
-  const supabase = createClient();
+  const supabase = createServerClient();
 
   const {
     data: { user },
     error,
-  } = await (await supabase).auth.getUser();
+  } = await supabase.auth.getUser();
 
   if (error || !user) return null;
 
   const {
     data: { session },
-  } = await (await supabase).auth.getSession();
+  } = await supabase.auth.getSession();
 
   return session as SupabaseSession | null;
 }

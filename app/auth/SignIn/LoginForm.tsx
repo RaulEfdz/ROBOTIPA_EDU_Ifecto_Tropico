@@ -1,5 +1,6 @@
 // app/auth/SignIn/LoginForm.tsx
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -8,12 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react"; // Importar iconos para mostrar/ocultar contraseña
+import { Eye, EyeOff } from "lucide-react";
 
-// Definir la interfaz para las props del componente
 interface LoginFormProps {
   redirectUrl: string;
-  // Opcional: Si necesitas pasar setIsPasswordRecovery desde el padre
   setIsPasswordRecovery?: (value: boolean) => void;
 }
 
@@ -23,155 +22,142 @@ export default function LoginForm({
 }: LoginFormProps) {
   const router = useRouter();
   const supabase = createClient();
-  // Estado local para email y contraseña
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsLoading(true);
-    toast.loading("Iniciando sesión...");
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isLoading) return;
 
-    // Quitar espacios extra del email, pero NO de la contraseña
-    const emailToSubmit = email.trim();
-    const passwordToSubmit = password;
-
-    if (!emailToSubmit || !passwordToSubmit) {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !password) {
       toast.error("Por favor, ingresa tu correo y contraseña.");
-      setIsLoading(false);
-      toast.dismiss(); // Quitar el loading toast
       return;
     }
 
-    const { error, data } = await supabase.auth.signInWithPassword({
-      email: emailToSubmit,
-      password: passwordToSubmit,
+    setIsLoading(true);
+    const loadingToastId = toast.loading("Iniciando sesión...");
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: trimmedEmail,
+      password,
     });
 
     setIsLoading(false);
-    toast.dismiss();
+    toast.dismiss(loadingToastId);
 
     if (error) {
-      // Manejo más específico de errores comunes
+      const msg =
+        error.message || "Ocurrió un problema inesperado. Inténtalo de nuevo.";
       if (error.message === "Invalid login credentials") {
-        toast.error("Credenciales Inválidas", {
-          description: "El correo electrónico o la contraseña son incorrectos.",
+        toast.error("Credenciales inválidas", {
+          description: "El correo o la contraseña son incorrectos.",
         });
-      } else if (error.message.toLowerCase().includes("email not confirmed")) {
+      } else if (msg.toLowerCase().includes("email not confirmed")) {
         toast.warning("Correo no confirmado", {
-          description:
-            "Revisa tu bandeja de entrada para confirmar tu correo antes de iniciar sesión.",
+          description: "Revisa tu bandeja de entrada para confirmar tu correo.",
           duration: 6000,
         });
       } else {
-        toast.error("Error al iniciar sesión", {
-          description:
-            error.message ||
-            "Ocurrió un problema inesperado. Inténtalo de nuevo.",
-        });
+        toast.error("Error al iniciar sesión", { description: msg });
       }
-    } else {
-      toast.success("¡Inicio de sesión exitoso!");
-      // Sincronizar con la base de datos local después del login
-      try {
-        await fetch("/api/auth/insertUser", { method: "POST" });
-      } catch (syncError) {
-        console.error("Error sincronizando usuario con DB local:", syncError);
-        toast.warning("No se pudo sincronizar completamente la sesión.", {
-          duration: 5000,
-        });
-      }
-
-      router.push(redirectUrl);
-      setTimeout(() => router.refresh(), 100); // Refrescar para actualizar estado del servidor
+      return;
     }
+
+    toast.success("¡Inicio de sesión exitoso!");
+
+    // Sincronizar sesión con DB local
+    fetch("/api/auth/insertUser", { method: "POST" }).catch((syncErr) => {
+      console.error("Sync error:", syncErr);
+      toast.warning("No se pudo sincronizar la sesión completamente.", {
+        duration: 5000,
+      });
+    });
+
+    router.push(redirectUrl);
+    setTimeout(() => router.refresh(), 100);
   };
 
   return (
-    <form onSubmit={handleSignIn} className="space-y-5">
-      {" "}
-      {/* Ajustado space-y */}
-      <div className="space-y-1.5">
-        {" "}
-        {/* Ajustado space-y */}
+    <form onSubmit={handleSignIn} className="space-y-6">
+      <div className="space-y-2">
         <Label
-          htmlFor="email-login"
+          htmlFor="email"
           className="text-sm font-medium text-slate-700 dark:text-slate-300"
         >
           Correo Electrónico
         </Label>
         <Input
-          id="email-login"
+          id="email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
           placeholder="tu@email.com"
+          required
           autoComplete="email"
-          className="h-10 sm:h-11 px-3 dark:bg-slate-700 dark:border-slate-600" // Ajustada altura y estilos dark
+          className="h-10 px-3 dark:bg-slate-700 dark:border-slate-600"
         />
       </div>
-      <div className="space-y-1.5">
-        {" "}
-        {/* Ajustado space-y */}
+
+      <div className="space-y-2">
         <Label
-          htmlFor="password-login"
+          htmlFor="password"
           className="text-sm font-medium text-slate-700 dark:text-slate-300"
         >
           Contraseña
         </Label>
         <div className="relative">
           <Input
-            id="password-login"
+            id="password"
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
             placeholder="••••••••"
+            required
             autoComplete="current-password"
-            className="h-10 sm:h-11 px-3 pr-10 dark:bg-slate-700 dark:border-slate-600" // Ajustada altura, padding y estilos dark
+            className="h-10 px-3 pr-10 dark:bg-slate-700 dark:border-slate-600"
           />
-          <Button
+          <button
             type="button"
-            variant="ghost"
-            size="icon"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 h-7 w-7 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700" // Ajustado tamaño y posición
-            onClick={() => setShowPassword(!showPassword)}
+            onClick={() => setShowPassword((v) => !v)}
             aria-label={
               showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
             }
+            className="absolute inset-y-0 right-2 flex items-center justify-center p-1"
           >
             {showPassword ? (
-              <EyeOff className="h-4 w-4" />
+              <EyeOff className="h-5 w-5 text-slate-500" />
             ) : (
-              <Eye className="h-4 w-4" />
+              <Eye className="h-5 w-5 text-slate-500" />
             )}
-          </Button>
+          </button>
         </div>
       </div>
+
       <Button
         type="submit"
-        className="w-full h-10 sm:h-11 font-semibold bg-emerald-900 hover:bg-emerald-950 text-white dark:bg-emerald-500 dark:hover:bg-emerald-600" // Estilos aplicados
+        className="w-full h-10 font-semibold bg-emerald-900 hover:bg-emerald-950 text-white dark:bg-emerald-500 dark:hover:bg-emerald-600"
         disabled={isLoading}
       >
         {isLoading ? (
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+          <span className="flex items-center justify-center">
+            <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
             Ingresando...
-          </div>
+          </span>
         ) : (
           "Ingresar"
         )}
       </Button>
-      {/* Mostrar enlace de recuperación si la función setIsPasswordRecovery fue pasada */}
+
       {setIsPasswordRecovery && (
         <div className="text-center text-sm pt-2">
           <button
-            type="button" // Importante que sea type="button" para no enviar el form
+            type="button"
             onClick={() => setIsPasswordRecovery(true)}
-            className="font-medium text-primaryCustom hover:underline dark:text-emerald-400 dark:hover:text-emerald-300"
+            className="font-medium text-primaryCustom hover:underline dark:text-emerald-400"
           >
             ¿Olvidaste tu contraseña?
           </button>
