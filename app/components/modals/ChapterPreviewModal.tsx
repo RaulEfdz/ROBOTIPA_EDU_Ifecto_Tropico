@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import ChapterVideoSection from "@/components/ChapterVideoSection";
+import ChapterVideoSection from "../../../components/ChapterVideoSection";
 import EditorTextPreview from "@/components/preview";
 import { getChapterU } from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/handler/getChapter";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -62,7 +62,8 @@ const ChapterPreviewModal: React.FC<ChapterPreviewModalProps> = ({
       setChapterData(null);
 
       try {
-        const userIdForFetch = user?.id || "anonymous_user_preview";
+        // Fix type error by asserting user as any or checking user type
+        const userIdForFetch = (user as any)?.id || "anonymous_user_preview";
         const data = await getChapterU({
           userId: userIdForFetch,
           courseId,

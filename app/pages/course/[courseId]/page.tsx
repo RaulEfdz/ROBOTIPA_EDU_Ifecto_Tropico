@@ -61,6 +61,26 @@ export default function CoursePage() {
   const [hasPurchased, setHasPurchased] = useState(false); // ¿El usuario ha comprado este curso?
   const [isPurchaseCheckLoading, setIsPurchaseCheckLoading] = useState(true); // ¿Se está verificando la compra?
 
+  // Estados para el modal de vista previa de capítulos gratuitos
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [selectedChapterForPreview, setSelectedChapterForPreview] = useState<{
+    id: string;
+    title: string;
+    isFree?: boolean;
+  } | null>(null);
+
+  // Función para abrir el modal de vista previa solo para capítulos gratuitos
+  const handleOpenPreview = (chapter: {
+    id: string;
+    title: string;
+    isFree?: boolean;
+  }) => {
+    if (chapter.isFree) {
+      setSelectedChapterForPreview(chapter);
+      setIsPreviewModalOpen(true);
+    }
+  };
+
   // Efecto para cargar datos de sesión y estado de compra al montar o si courseId cambia
   useEffect(() => {
     const fetchDataAndSession = async () => {
@@ -305,6 +325,19 @@ export default function CoursePage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header user={user} courseTitle={title} />
 
+      {selectedChapterForPreview && course?.id && (
+        <ChapterPreviewModal
+          isOpen={isPreviewModalOpen}
+          onClose={() => {
+            setIsPreviewModalOpen(false);
+            setSelectedChapterForPreview(null);
+          }}
+          courseId={course.id}
+          chapterId={selectedChapterForPreview.id}
+          chapterTitle={selectedChapterForPreview.title}
+        />
+      )}
+
       {/* --- Hero Section --- */}
       <header className="bg-gradient-to-r from-emerald-700 via-emerald-700 to-emerald-700 text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-8 md:gap-12">
@@ -435,6 +468,13 @@ export default function CoursePage() {
                     key={chapter.id}
                     chapter={chapter}
                     index={idx}
+                    onPreviewClick={(ch) =>
+                      handleOpenPreview({
+                        id: ch.id,
+                        title: ch.title,
+                        isFree: ch.isFree,
+                      })
+                    }
                   />
                 ))}
               </div>

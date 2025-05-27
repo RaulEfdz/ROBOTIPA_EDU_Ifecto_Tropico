@@ -11,11 +11,17 @@ interface PublicChapterItemProps {
     // podrías añadir más, como 'durationPreview', etc.
   };
   index: number; // Para numeración
+  onPreviewClick?: (chapter: {
+    id: string;
+    title: string;
+    isFree?: boolean;
+  }) => void;
 }
 
 export default function PublicChapterItem({
   chapter,
   index,
+  onPreviewClick,
 }: PublicChapterItemProps) {
   // Determina si se puede previsualizar. Si 'isFree' no viene, asumimos que no es previsualizable
   // o podrías tener otra lógica (ej. solo los primeros N capítulos son preview)
@@ -39,10 +45,14 @@ export default function PublicChapterItem({
       </div>
       <div className="ml-auto pl-2">
         {isPreviewAvailable ? (
-          <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+          <button
+            type="button"
+            onClick={() => onPreviewClick && onPreviewClick(chapter)}
+            className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium hover:underline"
+          >
             <PlayCircle size={16} />
             <span>Vista Previa</span>
-          </div>
+          </button>
         ) : (
           <Lock size={16} className="text-slate-400 dark:text-slate-500" />
         )}
