@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
 
     // Check if user exists
     const { data: users, error: fetchError } = await supabase

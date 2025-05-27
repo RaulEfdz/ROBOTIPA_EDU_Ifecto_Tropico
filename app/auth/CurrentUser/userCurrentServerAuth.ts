@@ -59,7 +59,7 @@ export interface SupabaseSession {
 
 // Función principal
 export async function getUserDataServerAuth(): Promise<SupabaseSession | null> {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const {
     data: { user },

@@ -37,8 +37,8 @@ export function createMiddlewareClient(
  * Create a Supabase client for Server Components or Route Handlers.
  * Uses next/headers cookies() API.
  */
-export function createServerComponentClient() {
-  const cookieStore = nextCookies();
+export async function createServerComponentClient() {
+  const cookieStore = await nextCookies();
   return createSupabaseServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {

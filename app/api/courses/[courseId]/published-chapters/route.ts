@@ -1,18 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getCourseWithPublishedChapters } from "@/app/(course)/courses/[courseId]/getCourseData";
 import { translateRole } from "@/utils/roles/translate";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
-import { db } from "@/lib/db";
 
 export async function GET(
-  request: Request,
-  { params }: { params: { courseId: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
+  const { courseId } = await params;
   console.log(
-    `[API_COURSE_PUBLISHED_CHAPTERS_GET] Iniciando para courseId: ${params.courseId}`
+    `[API_COURSE_PUBLISHED_CHAPTERS_GET] Iniciando para courseId: ${courseId}`
   );
   try {
-    const courseId = params.courseId;
     if (!courseId) {
       console.error(
         "[API_COURSE_PUBLISHED_CHAPTERS_GET] Error: Course ID faltante en params."

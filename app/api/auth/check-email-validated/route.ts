@@ -3,7 +3,7 @@ import { createServerClient } from "../../../../utils/supabase/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
 
     // Get user session from Supabase cookie or header (adjust as per your auth setup)
     const {
