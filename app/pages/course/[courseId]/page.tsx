@@ -35,6 +35,7 @@ import {
 import { createClient } from "@/utils/supabase/client";
 import { formatPrice } from "@/lib/format"; // Importar formatPrice
 import ManualRegistrationButton from "./components/ManualRegistrationButton";
+import ChapterPreviewModal from "@/app/components/modals/ChapterPreviewModal"; // Importar el modal para vista previa
 
 const supabase = createClient();
 
