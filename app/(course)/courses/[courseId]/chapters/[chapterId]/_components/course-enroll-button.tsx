@@ -2,9 +2,10 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface CourseEnrollButtonProps {
   price: number;
@@ -13,17 +14,25 @@ interface CourseEnrollButtonProps {
 export const CourseEnrollButton: React.FC<CourseEnrollButtonProps> = ({
   price,
 }) => {
-  // useParams() te devuelve { courseId, chapterId }
   const { courseId } = useParams() as { courseId: string };
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { user, loading: userLoading } = useCurrentUser();
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const onClick = async () => {
+  const handleEnroll = async () => {
+    if (userLoading) return;
+    if (!user) {
+      // Redirigir a login con URL de retorno
+      router.push(`/auth?redirectUrl=/courses/${courseId}`);
+      return;
+    }
+
     if (!courseId) {
       console.error("No courseId encontrado en useParams()");
       return toast.error("Error interno: falta courseId");
     }
 
-    setIsLoading(true);
+    setIsProcessing(true);
     try {
       const res = await fetch(`/api/courses/${courseId}/enroll`, {
         method: "POST",
@@ -42,20 +51,24 @@ export const CourseEnrollButton: React.FC<CourseEnrollButtonProps> = ({
       console.error("Error en inscripción:", error);
       toast.error("No se pudo completar la inscripción.");
     } finally {
-      setIsLoading(false);
+      setIsProcessing(false);
     }
   };
 
-  const buttonLabel = isLoading
+  const buttonLabel = isProcessing
     ? "Procesando..."
-    : price > 0
-    ? `Comprar por $${price}`
-    : "Inscríbete Gratis";
+    : userLoading
+      ? "Cargando..."
+      : user
+        ? price > 0
+          ? `Comprar por $${price}`
+          : "Inscríbete Gratis"
+        : "Iniciar sesión para comprar";
 
   return (
     <Button
-      onClick={onClick}
-      disabled={isLoading}
+      onClick={handleEnroll}
+      disabled={isProcessing || userLoading}
       size="sm"
       className="w-full md:w-auto"
     >
