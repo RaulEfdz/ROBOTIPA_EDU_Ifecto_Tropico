@@ -5,57 +5,52 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 import { db } from "@/lib/db";
 
 export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
+  request: Request,
+  { params }: { params: { courseId: string } }
 ) {
-  const { courseId } = await params;
-  console.log("API published-chapters - courseId recibido:", courseId);
+  console.log(
+    `[API_COURSE_PUBLISHED_CHAPTERS_GET] Iniciando para courseId: ${params.courseId}`
+  );
   try {
-    const user = (await getUserDataServerAuth())?.user;
-    if (!user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+    const courseId = params.courseId;
+    if (!courseId) {
+      console.error(
+        "[API_COURSE_PUBLISHED_CHAPTERS_GET] Error: Course ID faltante en params."
+      );
+      return new NextResponse("Course ID missing", { status: 400 });
     }
 
     console.log(
-      "API published-chapters - Antes de llamar a getCourseWithPublishedChapters"
+      `[API_COURSE_PUBLISHED_CHAPTERS_GET] Llamando a getCourseWithPublishedChapters con courseId: ${courseId}`
     );
     const course = await getCourseWithPublishedChapters(courseId);
     console.log(
-      "API published-chapters - Resultado de getCourseWithPublishedChapters:",
+      "[API_COURSE_PUBLISHED_CHAPTERS_GET] Resultado de getCourseWithPublishedChapters:",
       JSON.stringify(course, null, 2)
     );
 
     if (!course) {
+      console.warn(
+        `[API_COURSE_PUBLISHED_CHAPTERS_GET] Curso no encontrado para courseId: ${courseId}`
+      );
       return new NextResponse("Course not found", { status: 404 });
     }
 
-    // Permitir solo si es admin (por ID), dueño del curso o usuario inscrito
-    const isAdmin = translateRole(user.role) === "admin";
-    const isOwner = course.userId === user.id;
-
-    // Verificar si el usuario está inscrito
-    const purchase = await db.purchase.findUnique({
-      where: {
-        userId_courseId: {
-          userId: user.id,
-          courseId: courseId,
-        },
-      },
-    });
-
-    const isEnrolled = !!purchase;
-
-    if (!isAdmin && !isOwner && !isEnrolled) {
-      return new NextResponse("Unauthorized", { status: 401 });
+    if (!course.chapters || course.chapters.length === 0) {
+      console.warn(
+        `[API_COURSE_PUBLISHED_CHAPTERS_GET] Curso encontrado pero sin capítulos publicados para courseId: ${courseId}`
+      );
     }
 
     console.log(
-      "API published-chapters - Respuesta final JSON:",
-      JSON.stringify(course, null, 2)
+      `[API_COURSE_PUBLISHED_CHAPTERS_GET] Devolviendo curso para courseId: ${courseId}`
     );
     return NextResponse.json(course);
-  } catch (error) {
-    console.error("[API_GET_COURSE]", error);
-    return new NextResponse("Internal error", { status: 500 });
+  } catch (error: any) {
+    console.error("[API_COURSE_PUBLISHED_CHAPTERS_GET] Error Interno:", error);
+    return new NextResponse(
+      `Internal Server Error: ${error.message || "Unknown error"}`,
+      { status: 500 }
+    );
   }
 }

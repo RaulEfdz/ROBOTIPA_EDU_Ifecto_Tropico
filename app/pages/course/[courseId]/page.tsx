@@ -322,12 +322,12 @@ export default function CoursePage() {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight">
               {title}
             </h1>
-            {description && (
+            {/* {description && (
               <p className="text-base md:text-lg text-emerald-100 line-clamp-3">
                 {description.substring(0, 150)}
                 {description.length > 150 && "..."}
               </p>
-            )}
+            )} */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-emerald-50">
               {/* <div className="flex items-center gap-1">
                 <Star size={16} className="text-yellow-400 fill-yellow-400" />{" "}
