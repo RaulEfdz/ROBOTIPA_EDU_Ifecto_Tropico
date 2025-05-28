@@ -5,19 +5,13 @@ import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerA
 
 export async function POST(
   req: Request,
-  {
-    params,
-  }: {
-    params: {
-      courseId: string;
-      chapterId: string;
-    };
-  }
+
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
 ) {
   try {
     const body = await req.json();
     const { isPreview } = body;
-    const { courseId, chapterId } = params;
+    const { courseId, chapterId } = await params;
 
     // Si no es preview, requerir autenticación
     if (!isPreview) {
