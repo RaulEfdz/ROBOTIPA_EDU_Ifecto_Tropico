@@ -10,7 +10,6 @@ const protectedRoutes = [
   "/teacher",
   "/settings",
   "/admin",
-  "/pages/course", // Si esta es la ruta donde se ven detalles y se puede comprar
   "/search", // Asumiendo que "Mis Cursos" o búsqueda de cursos requiere sesión
 ];
 
@@ -29,6 +28,8 @@ const publicRoutes = [
   "/courses/course/[courseId]", // Detalles del curso, puede ser público
   "/payments", // Página de pagos podría ser pública si el flujo lo requiere
   "/temrs", // Términos y condiciones
+  "/pages/course", // Si esta es la ruta donde se ven detalles y se puede comprar
+
   // Si /pages/course/[courseId] debe ser parcialmente público (ver info) y
   // solo la compra/inscripción requiere login, se maneja en el botón de compra.
   // Por ahora, lo mantendremos como protegido si la acción de compra está allí.

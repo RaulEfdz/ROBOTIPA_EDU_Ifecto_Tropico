@@ -335,6 +335,7 @@ export default function CoursePage() {
           courseId={course.id}
           chapterId={selectedChapterForPreview.id}
           chapterTitle={selectedChapterForPreview.title}
+          isPreview={true}
         />
       )}
 

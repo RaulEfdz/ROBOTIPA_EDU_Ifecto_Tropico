@@ -2,6 +2,7 @@ interface GetChapterProps {
   userId: string;
   courseId: string;
   chapterId: string;
+  isPreview?: boolean; // Indica si es una vista previa del capítulo
 }
 
 // Define el tipo de respuesta esperada del backend
@@ -22,13 +23,15 @@ export async function getChapterU(
   data: GetChapterProps
 ): Promise<GetChapterResponse> {
   try {
-    const { userId, courseId, chapterId } = data;
+    const { userId, courseId, chapterId, isPreview } = data;
 
     if (!userId) throw new Error("The 'userId' field is required.");
     if (!courseId) throw new Error("The 'courseId' field is required.");
     if (!chapterId) throw new Error("The 'chapterId' field is required.");
 
-    const url = `/api/courses/${courseId}/chapters/${chapterId}/getChapter`;
+    const url = isPreview
+      ? `/api/courses/${courseId}/chapters/${chapterId}/getChapter/preview`
+      : `/api/courses/${courseId}/chapters/${chapterId}/getChapter`;
 
     const response = await fetch(url, {
       method: "POST",

@@ -9,10 +9,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import ChapterVideoSection from "../../../components/ChapterVideoSection";
-import EditorTextPreview from "@/components/preview";
 import { getChapterU } from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/handler/getChapter";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { VideoDisplayPreview } from "@/components/VideoDisplayPreview";
 
 interface ChapterPreviewModalProps {
   isOpen: boolean;
@@ -20,21 +19,7 @@ interface ChapterPreviewModalProps {
   courseId: string;
   chapterId: string;
   chapterTitle: string;
-}
-
-interface ChapterPreviewData {
-  chapter: {
-    id: string;
-    title: string;
-    description?: string;
-    video?: {
-      url?: string;
-    };
-    isFree: boolean;
-  };
-  muxData?: {
-    playbackId?: string;
-  };
+  isPreview: boolean;
 }
 
 const ChapterPreviewModal: React.FC<ChapterPreviewModalProps> = ({
@@ -43,54 +28,48 @@ const ChapterPreviewModal: React.FC<ChapterPreviewModalProps> = ({
   courseId,
   chapterId,
   chapterTitle,
+  isPreview,
 }) => {
-  const [chapterData, setChapterData] = useState<ChapterPreviewData | null>(
-    null
-  );
+  const [chapterVideoUrl, setChapterVideoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useCurrentUser();
 
   useEffect(() => {
-    if (!isOpen || !courseId || !chapterId) {
-      return;
-    }
+    if (!isOpen || !courseId || !chapterId) return;
 
     const fetchChapterContent = async () => {
       setLoading(true);
       setError(null);
-      setChapterData(null);
+      setChapterVideoUrl(null);
 
       try {
-        // Fix type error by asserting user as any or checking user type
         const userIdForFetch = (user as any)?.id || "anonymous_user_preview";
         const data = await getChapterU({
           userId: userIdForFetch,
           courseId,
           chapterId,
+          isPreview,
         });
 
-        if (!data.chapter.isFree) {
+        if (!data || !("videoUrl" in data)) {
           setError("Este capítulo no está disponible para vista previa.");
-          setChapterData(null);
-        } else {
-          setChapterData(data);
+          return;
         }
+
+        setChapterVideoUrl(data.videoUrl ? (data.videoUrl as string) : null);
       } catch (err) {
         setError("Error al cargar el contenido del capítulo.");
-        setChapterData(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchChapterContent();
-  }, [isOpen, courseId, chapterId, user]);
+  }, [isOpen, courseId, chapterId, user, isPreview]);
 
   const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      onClose();
-    }
+    if (!open) onClose();
   };
 
   return (
@@ -109,22 +88,8 @@ const ChapterPreviewModal: React.FC<ChapterPreviewModalProps> = ({
 
           {error && <p className="text-red-600 dark:text-red-400">{error}</p>}
 
-          {!loading && !error && chapterData?.chapter && (
-            <>
-              <ChapterVideoSection
-                videoUrl={chapterData.chapter.video?.url}
-                playbackId={chapterData.muxData?.playbackId}
-                courseImageUrl="" // You can pass a fallback image URL if needed
-                isLocked={false}
-              />
-              {chapterData.chapter.description && (
-                <div className="mt-4">
-                  <EditorTextPreview
-                    htmlContent={chapterData.chapter.description}
-                  />
-                </div>
-              )}
-            </>
+          {!loading && !error && chapterVideoUrl && (
+            <VideoDisplayPreview videoUrl={chapterVideoUrl} />
           )}
         </div>
 
