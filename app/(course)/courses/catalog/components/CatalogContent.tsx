@@ -159,12 +159,8 @@ export default function CatalogContent() {
           <Toaster position="top-center" richColors />
           <section className="text-center py-8 mb-8 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg shadow-lg">
             <h1 className="text-4xl md:text-5xl font-bold text-white">
-              Encuentra Tu Próximo Desafío
+              Infectotrópico Academy
             </h1>
-            <p className="text-lg text-emerald-100 mt-2 max-w-2xl mx-auto px-4">
-              Explora nuestra amplia gama de cursos diseñados para potenciar tus
-              habilidades.
-            </p>
           </section>
 
           <CatalogSearch
