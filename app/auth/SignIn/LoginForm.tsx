@@ -206,17 +206,14 @@ export default function LoginForm({
         )}
       </Button>
 
-      {setIsPasswordRecovery && (
-        <div className="text-center text-sm pt-2">
-          <button
-            type="button"
-            onClick={() => setIsPasswordRecovery(true)}
-            className="font-medium text-primaryCustom hover:underline dark:text-emerald-400"
-          >
-            ¿Olvidaste tu contraseña?
-          </button>
-        </div>
-      )}
+      <div className="text-center text-sm pt-2">
+        <a
+          href="/auth/forgot-password"
+          className="font-medium text-primaryCustom hover:underline dark:text-emerald-400"
+        >
+          ¿Olvidaste tu contraseña?
+        </a>
+      </div>
     </form>
   );
 }

@@ -24,7 +24,7 @@ export default function CategoryFilter({
         <ListFilter className="h-5 w-5 mr-2 text-slate-500 dark:text-slate-400" />
         Filtrar por Categoría
       </h3>
-      <div className="flex flex-wrap gap-2 items-center">
+      <div className="flex flex-wrap gap-2 items-center pb-12">
         <CategoryItem
           label="Todas"
           value={undefined}

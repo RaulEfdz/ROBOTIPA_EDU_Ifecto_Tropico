@@ -509,11 +509,6 @@ export default function CoursePage() {
               <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">
                 {priceDisplay}
               </div>
-              {!isFree && (
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Pago único, acceso de por vida
-                </p>
-              )}
             </div>
 
             <div className="space-y-3">

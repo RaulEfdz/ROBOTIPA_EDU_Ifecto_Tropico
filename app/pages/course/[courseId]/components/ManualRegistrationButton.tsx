@@ -33,6 +33,7 @@ export default function ManualRegistrationCard({
   const [modalOpen, setModalOpen] = useState(false);
   const [manualUserId, setManualUserId] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
+  const isAdmin = currentUser?.customRole === "admin";
 
   const router = useRouter();
   const separator = process.env.NEXT_PUBLIC_MANUAL_ACCESS_ID_SEPARATOR || "|";
@@ -221,40 +222,10 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
               WhatsApp.
             </p>
 
-            <input
-              type="text"
-              placeholder="ID del usuario a registrar"
-              value={manualUserId}
-              onChange={(e) => setManualUserId(e.target.value)}
-              className="w-full mb-4 px-3 py-2 border rounded"
-            />
-
-            <div className="flex justify-between gap-2">
-              <Button
-                variant="ghost"
-                onClick={() => setModalOpen(false)}
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-300"
-                disabled={isRegistering}
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleManualRegister}
-                className="bg-blue-600 text-white hover:bg-blue-700"
-                disabled={isRegistering}
-              >
-                {isRegistering ? "Registrando..." : "Registrar Usuario"}
-              </Button>
-              <Button
-                onClick={handleManualRevoke}
-                className="bg-red-600 text-white hover:bg-red-700"
-                disabled={isRegistering}
-              >
-                {isRegistering ? "Procesando..." : "Quitar Acceso Manual"}
-              </Button>
+            <div className="flex justify-center">
               <Button
                 onClick={handleOpenWhatsApp}
-                className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
+                className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2 whitespace-nowrap"
               >
                 <FaWhatsapp className="w-4 h-4" />
                 Contactar por WhatsApp

@@ -97,12 +97,7 @@ export default function PaymentButton({
 
   return (
     <>
-      {!alreadyPurchased ? (
-        <Button onClick={handlePaidCourse} disabled={loading}>
-          <ShoppingCart className="mr-2 h-4 w-4" />
-          {loading ? "Procesando..." : "Comprar Ahora"}
-        </Button>
-      ) : (
+      {!alreadyPurchased ? null : (
         <div className="w-full text-center border border-gray-200 rounded-lg p-2 text-sm text-gray-600 bg-gray-50">
           <ShieldCheck className="inline-block mr-1 text-emerald-500 w-4 h-4" />
           Ya estás inscrito en este curso
@@ -115,7 +110,7 @@ export default function PaymentButton({
       )}
 
       <div className="mt-4">
-        <MockPaymentButton amount={2.0} description="Compra simulada" />
+        {/* Removed MockPaymentButton as it is not appropriate here */}
       </div>
 
       {process.env.NODE_ENV === "development" && (

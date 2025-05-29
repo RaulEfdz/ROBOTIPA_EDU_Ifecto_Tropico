@@ -39,7 +39,7 @@ export const loginConfig = {
   logo: {
     show: true,                        // Mostrar logo arriba del panel izquierdo
     src: "/images/logo-infectotropico.png", // Ruta local al logo (en /public)
-    alt: "InfectoTrópico",            // Alt text para accesibilidad
+    alt: "Infectotrópico",            // Alt text para accesibilidad
     width: 160,                       // Ancho del logo
   },
 

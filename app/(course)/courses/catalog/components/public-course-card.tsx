@@ -12,6 +12,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card"; // Removido CardTitle si no se usa aquí
+import PaymentButton from "@/app/payments/PaymentButton";
 import { formatPrice } from "@/lib/format";
 
 export interface PublicCourseCardProps {
@@ -104,7 +105,7 @@ export const PublicCourseCard = ({
         </div>
       </CardContent>
 
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-4 pt-0 flex flex-col gap-2">
         <Button
           asChild
           size="sm"

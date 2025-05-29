@@ -17,14 +17,14 @@ import {
 import LoginForm from "./SignIn/LoginForm";
 import SignupForm from "./SignUp/SignupForm";
 import EmailValidationTab from "./EmailValidationTab";
-import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 
 export default function AuthPage() {
   return (
     <Suspense
       fallback={
         <div className="flex h-screen w-full items-center justify-center bg-gray-100 dark:bg-gray-900">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-700-500"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-500"></div>
           <p className="ml-4 text-lg text-gray-700 dark:text-gray-300">
             Cargando...
           </p>
@@ -46,112 +46,108 @@ function AuthPageContent() {
   const initialAction = searchParams.get("action");
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
-      {/* Left Panel */}
-      <div className="relative hidden lg:flex items-center justify-center bg-gradient-to-br from-emerald-600 to-emerald-500 p-12">
-        <Image
-          src="/rbtpbasic.png"
-          alt=""
-          fill
-          style={{ objectFit: "cover" }}
-          className="opacity-10"
-        />
-        <div className="relative z-10 text-left text-white">
-          <Logo version="light" width={180} height={90} />
-          <h1 className="mt-6 text-5xl font-extrabold tracking-tight">
-            {process.env.NEXT_PUBLIC_NAME_APP || "Tu Plataforma Educativa"}
-            {" ACADEMY"}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Mobile Header with Logo and Course Link */}
+      <div className="lg:hidden bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 py-8 text-white">
+        <div className="flex flex-col items-center text-center space-y-4">
+          <Logo version="light" width={140} height={70} />
+          <h1 className="text-2xl font-bold tracking-tight">
+            Infectotrópico Academy
           </h1>
-          <p className="mt-4 text-lg opacity-80">
-            Cursos online y presenciales, webinars y eventos sobre enfermedades
-            tropicales
+          <p className="text-emerald-100 text-sm max-w-sm">
+            Accede a cursos especializados en medicina tropical
           </p>
-          <div className="mt-6 text-left w-full font-semibold rounded-lg p-4">
-            <Link
-              href="/courses/catalog"
-              className="data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400"
-            >
-              Ver cursos
-            </Link>
-            <ArrowBigRight className="inline-block ml-2 h-5 w-5" />
-          </div>
+          <Link
+            href="/courses/catalog"
+            className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-lg text-sm font-medium backdrop-blur-sm border border-white/20"
+          >
+            <BookOpen className="h-4 w-4" />
+            Ver cursos disponibles
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
 
-      {/* Right Panel */}
-      <div className="flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-6 sm:p-12">
-        <Card className="w-full max-w-md bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
-          <CardHeader className="p-8 text-center">
-            <div className="block lg:hidden">
-              <Logo version="original" width={120} height={60} />
-            </div>
-            <CardTitle className="mt-4 text-3xl font-bold text-gray-800 dark:text-white">
-              Bienvenido
-            </CardTitle>
-            <CardDescription className="mt-2 text-gray-600 dark:text-gray-400">
-              Accede o crea tu cuenta para continuar.
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="p-8">
-            <Tabs
-              defaultValue={initialAction === "sign_up" ? "signup" : "login"}
-              className="w-full"
-            >
-              <TabsList className="grid grid-cols-2 mb-6 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
-                <TabsTrigger
-                  value="login"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400"
-                >
-                  Iniciar Sesión
-                </TabsTrigger>
-                <TabsTrigger
-                  value="signup"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400"
-                >
-                  Crear Cuenta
-                </TabsTrigger>
-                {/* <TabsTrigger
-                  value="emailValidation"
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400"
-                >
-                  Validar Correo
-                </TabsTrigger> */}
-              </TabsList>
-
-              <TabsContent value="login">
-                <LoginForm redirectUrl={redirectUrl} />
-              </TabsContent>
-              <TabsContent value="signup">
-                <SignupForm redirectUrl={redirectUrl} />
-              </TabsContent>
-              <TabsContent value="emailValidation">
-                <EmailValidationTab />
-              </TabsContent>
-            </Tabs>
-            {/* <div className="mt-6 text-center">
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+        {/* Desktop Left Panel */}
+        <div className="relative hidden lg:flex items-center justify-center bg-gradient-to-br from-emerald-600 to-emerald-500 p-12">
+          <Image
+            src="/rbtpbasic.png"
+            alt=""
+            fill
+            style={{ objectFit: "cover" }}
+            className="opacity-10"
+          />
+          <div className="relative z-10 text-left text-white max-w-lg">
+            <Logo version="light" width={180} height={90} />
+            <h1 className="mt-6 text-5xl font-extrabold tracking-tight leading-tight">
+              Infectotrópico Academy
+            </h1>
+            <p className="mt-4 text-xl text-emerald-100">
+              Formación especializada en medicina tropical y enfermedades
+              infecciosas
+            </p>
+            <div className="mt-8">
               <Link
                 href="/courses/catalog"
-                className="data-[state=active]:bg-white data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400"
+                className="inline-flex items-center gap-3 bg-white text-emerald-600 hover:bg-emerald-50 transition-colors px-6 py-3 rounded-lg font-semibold shadow-lg"
               >
-                Ir al Catálogo
+                <BookOpen className="h-5 w-5" />
+                Explorar cursos
+                <ArrowRight className="h-5 w-5" />
               </Link>
-            </div> */}
-          </CardContent>
+            </div>
+          </div>
+        </div>
 
-          {/* <div className="px-8 pb-8">
-            <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-              Al continuar, aceptas nuestros{" "}
-              <a
-                href="/terms"
-                className="underline hover:text-emerald-600 dark:hover:text-emerald-400"
+        {/* Right Panel - Form */}
+        <div className="flex items-center justify-center p-4 sm:p-6 lg:p-12">
+          <Card className="w-full max-w-md bg-white dark:bg-gray-800 shadow-xl rounded-2xl border-0 overflow-hidden">
+            <CardHeader className="p-6 sm:p-8 text-center">
+              <div className="hidden lg:block">
+                <Logo version="original" width={120} height={60} />
+              </div>
+              <CardTitle className="mt-4 text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
+                Bienvenido
+              </CardTitle>
+              <CardDescription className="mt-2 text-gray-600 dark:text-gray-400 text-sm sm:text-base">
+                Accede o crea tu cuenta para continuar
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="p-6 sm:p-8 pt-0">
+              <Tabs
+                defaultValue={initialAction === "sign_up" ? "signup" : "login"}
+                className="w-full"
               >
-                Términos de Servicio
-              </a>
-              .
-            </p>
-          </div> */}
-        </Card>
+                <TabsList className="grid grid-cols-2 mb-6 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl h-12">
+                  <TabsTrigger
+                    value="login"
+                    className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400 rounded-lg transition-all duration-200 text-sm font-medium"
+                  >
+                    Iniciar Sesión
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="signup"
+                    className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-emerald-600 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-emerald-400 rounded-lg transition-all duration-200 text-sm font-medium"
+                  >
+                    Crear Cuenta
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="login" className="mt-0">
+                  <LoginForm redirectUrl={redirectUrl} />
+                </TabsContent>
+                <TabsContent value="signup" className="mt-0">
+                  <SignupForm redirectUrl={redirectUrl} />
+                </TabsContent>
+                <TabsContent value="emailValidation" className="mt-0">
+                  <EmailValidationTab />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

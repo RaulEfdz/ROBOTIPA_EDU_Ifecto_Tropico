@@ -78,6 +78,7 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
   const [fullName, setFullName] = useState("");
   const [pais, setPais] = useState("");
   const [profesion, setProfesion] = useState("");
+  const [otraProfesion, setOtraProfesion] = useState("");
   const [institucion, setInstitucion] = useState("");
   const [telefono, setTelefono] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -95,24 +96,34 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
 
   const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!profesion) {
+      setError("Por favor, selecciona tu profesión.");
+      return;
+    }
+    if (profesion === "Otros" && !otraProfesion) {
+      setError(
+        "Por favor, especifica tu profesión en el campo correspondiente."
+      );
+      return;
+    }
     setIsLoading(true);
     toast.loading("Creando cuenta...");
 
+    const profesionFinal = profesion === "Otros" ? otraProfesion : profesion;
     const { data: signUpData, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
-          full_name: fullName, // Supabase Auth permite 'user_metadata' o 'app_metadata'
+          full_name: fullName,
           pais,
-          profesion,
+          profesion: profesionFinal,
           institucion,
           telefono,
-          // Aquí asumimos que 'full_name' se mapea a user_metadata.full_name
         } as any,
-        emailRedirectTo: `${
-          window.location.origin
-        }/auth/confirm-action?next=${encodeURIComponent(redirectUrl)}`,
+        emailRedirectTo: `${window.location.origin}/auth/confirm-action?next=${encodeURIComponent(
+          redirectUrl
+        )}`,
       },
     });
 
@@ -254,22 +265,47 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
         )}
       </div>
       <div className="space-y-2">
-        <Label htmlFor="profesion-signup">Profesión</Label>
+        <Label htmlFor="profesion-signup">
+          Profesión <span className="text-red-600">*</span>
+        </Label>
         <select
           id="profesion-signup"
           value={profesion}
           onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
             setProfesion(e.target.value)
           }
+          required
           className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
           autoComplete="organization-title"
         >
           <option value="">Seleccione una opción</option>
+          <option value="Médico">Médico</option>
+          <option value="Veterinario">Veterinario</option>
+          <option value="Biólogo">Biólogo</option>
+          <option value="Tecnólogo Médico">Tecnólogo Médico</option>
+          <option value="Biotecnología">Biotecnología</option>
+          <option value="Control de Vectores">Control de Vectores</option>
           <option value="Estudiante">Estudiante</option>
-          <option value="Particular">Particular</option>
-          <option value="Profesional">Profesional</option>
+          <option value="Otros">Otros</option>
         </select>
       </div>
+      {profesion === "Otros" && (
+        <div className="space-y-2">
+          <Label htmlFor="otraProfesion-signup">
+            Especifique su profesión <span className="text-red-600">*</span>
+          </Label>
+          <Input
+            id="otraProfesion-signup"
+            type="text"
+            value={otraProfesion}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setOtraProfesion(e.target.value)
+            }
+            required
+            placeholder="Ingrese su profesión"
+          />
+        </div>
+      )}
       <div className="space-y-2">
         <Label htmlFor="institucion-signup">
           {profesion === "Estudiante"

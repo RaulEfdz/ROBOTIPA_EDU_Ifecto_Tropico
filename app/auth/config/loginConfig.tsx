@@ -118,7 +118,7 @@ export const loginConfig: LoginConfig = {
   logo: {
     show: false,
     src: "/images/logo-infectotropico.png",
-    alt: "InfectoTrópico",
+    alt: "Infectotrópico",
     width: 160,
   },
 
@@ -137,7 +137,7 @@ export const loginConfig: LoginConfig = {
   rightPanel: {
     createAccount: {
       show: true,
-      title: "Registro en InfectoTrópico Academy",
+      title: "Registro en Infectotrópico Academy",
       subtitle: {
         text: "¿Ya tienes una cuenta?",
         linkText: "Inicia sesión",

@@ -65,16 +65,6 @@ export default function ChapterHeaderBar() {
                 <span className="text-xs sm:text-sm text-gray-600 hidden sm:inline max-w-32 lg:max-w-full truncate">
                   {user.fullName || user.username}
                 </span>
-                <form method="POST" action="/api/auth/logout">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    title="Cerrar sesión"
-                    className="text-gray-500 hover:text-red-500 hover:bg-red-50 transition-colors p-1 sm:p-2"
-                  >
-                    <LogOut size={16} className="sm:size-18" />
-                  </Button>
-                </form>
               </div>
             ) : (
               <Link href="/login">
