@@ -47,18 +47,27 @@ export async function GET() {
       },
     });
 
-    // Query total revenue grouped by month from paid invoices
-    const revenueByMonthRaw = await db.invoice.groupBy({
-      by: ["issuedAt"],
-      _sum: {
-        amount: true,
-      },
-      where: {
-        status: "paid",
-        issuedAt: {
-          gte: sixMonthsAgo,
-        },
-      },
+    // Calcular ingresos por mes: suma de (precio del curso * compras de ese curso en ese mes)
+    // 1. Obtener todos los cursos con su precio
+    const allCourses = await db.course.findMany({
+      select: { id: true, price: true },
+    });
+    // 2. Obtener todas las compras de los últimos 6 meses
+    const purchases = await db.purchase.findMany({
+      where: { createdAt: { gte: sixMonthsAgo } },
+      select: { courseId: true, createdAt: true },
+    });
+    // 3. Mapear compras por mes y sumar ingresos
+    const revenueByMonth: Record<string, number> = {};
+    months.forEach((month) => (revenueByMonth[month] = 0));
+    purchases.forEach((purchase) => {
+      const course = allCourses.find((c) => c.id === purchase.courseId);
+      if (!course) return;
+      const date = new Date(purchase.createdAt);
+      const ym = formatYearMonth(date);
+      if (revenueByMonth[ym] !== undefined) {
+        revenueByMonth[ym] += course.price || 0;
+      }
     });
 
     // Helper to convert raw groupBy results to map of YYYY-MM to count/sum
@@ -88,12 +97,12 @@ export async function GET() {
       "id",
       null
     );
-    const revenueByMonth = toMonthMap(
-      revenueByMonthRaw,
-      "issuedAt",
-      null,
-      "amount"
-    );
+    // const revenueByMonth = toMonthMap(
+    //   revenueByMonthRaw,
+    //   "issuedAt",
+    //   null,
+    //   "amount"
+    // );
 
     // Build final trend data array for last 6 months
     const trendData = months.map((month) => ({

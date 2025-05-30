@@ -23,11 +23,20 @@ import { toast } from "sonner";
 import { texts, defaultLanguage, Language, TFunction } from "./locales/locales";
 
 interface AnalyticsData {
-  users: { total: number };
-  courses: { published: number; unpublished: number; total: number };
+  users: { total: number; change?: number };
+  courses: {
+    published: number;
+    unpublished: number;
+    total: number;
+    change?: number;
+  };
   chapters: { free: number; premium: number; total: number };
-  purchases: { total: number };
-  revenue: { invoicesIssued: number; totalPaidInvoices: number };
+  purchases: { total: number; change?: number };
+  revenue: {
+    invoicesIssued: number;
+    totalPaidInvoices: number;
+    change?: number;
+  };
   exams: { total: number; published: number; totalAttempts: number };
 }
 
@@ -35,13 +44,16 @@ interface AnalyticsResponse {
   data: AnalyticsData;
 }
 
-type Tab = "overview" | "courses" | "revenue" | "exams";
+import { TrackingTab } from "./TrackingTab";
+
+type Tab = "overview" | "courses" | "revenue" | "exams" | "tracking";
 type TimeRange = "week" | "month" | "year";
 
 const AnalyticsDashboard = () => {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
+
   const [timeRange, setTimeRange] = useState<TimeRange>("month");
   const [language, setLanguage] = useState<Language>(defaultLanguage);
   const [trendData, setTrendData] = useState<
@@ -49,7 +61,9 @@ const AnalyticsDashboard = () => {
   >([]);
 
   const t: TFunction = (key) =>
-    texts[key][language] ?? texts[key][defaultLanguage];
+    (texts[key] && texts[key][language]) ??
+    texts[key]?.[defaultLanguage] ??
+    key;
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -139,32 +153,72 @@ const AnalyticsDashboard = () => {
         title: t("users"),
         value: data.users.total,
         icon: "👥",
-        change: "+12%",
-        changeColor: "text-green-500",
+        change:
+          data.users.change !== undefined
+            ? `${data.users.change > 0 ? "+" : ""}${data.users.change.toFixed(1)}%`
+            : "-",
+        changeColor:
+          data.users.change !== undefined
+            ? data.users.change > 0
+              ? "text-green-500"
+              : data.users.change < 0
+                ? "text-red-500"
+                : "text-gray-500"
+            : "text-gray-500",
         bgColor: "bg-emerald-50",
       },
       {
         title: t("revenue"),
         value: `$${data.revenue.totalPaidInvoices.toFixed(2)}`,
         icon: "💰",
-        change: "+8.5%",
-        changeColor: "text-green-500",
+        change:
+          data.revenue.change !== undefined
+            ? `${data.revenue.change > 0 ? "+" : ""}${data.revenue.change.toFixed(1)}%`
+            : "-",
+        changeColor:
+          data.revenue.change !== undefined
+            ? data.revenue.change > 0
+              ? "text-green-500"
+              : data.revenue.change < 0
+                ? "text-red-500"
+                : "text-gray-500"
+            : "text-gray-500",
         bgColor: "bg-green-50",
       },
       {
         title: t("courses"),
         value: data.courses.total,
         icon: "📚",
-        change: "+5%",
-        changeColor: "text-green-500",
+        change:
+          data.courses.change !== undefined
+            ? `${data.courses.change > 0 ? "+" : ""}${data.courses.change.toFixed(1)}%`
+            : "-",
+        changeColor:
+          data.courses.change !== undefined
+            ? data.courses.change > 0
+              ? "text-green-500"
+              : data.courses.change < 0
+                ? "text-red-500"
+                : "text-gray-500"
+            : "text-gray-500",
         bgColor: "bg-amber-50",
       },
       {
         title: t("purchases"),
         value: data.purchases.total,
         icon: "🛒",
-        change: "+15%",
-        changeColor: "text-green-500",
+        change:
+          data.purchases.change !== undefined
+            ? `${data.purchases.change > 0 ? "+" : ""}${data.purchases.change.toFixed(1)}%`
+            : "-",
+        changeColor:
+          data.purchases.change !== undefined
+            ? data.purchases.change > 0
+              ? "text-green-500"
+              : data.purchases.change < 0
+                ? "text-red-500"
+                : "text-gray-500"
+            : "text-gray-500",
         bgColor: "bg-red-50",
       },
     ];
@@ -224,21 +278,21 @@ const AnalyticsDashboard = () => {
             </div>
           </div>
           <div className="mt-6 flex space-x-4 border-b border-gray-200 dark:border-gray-700">
-            {(["overview", "courses", "revenue", "exams"] as Tab[]).map(
-              (tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`pb-4 px-1 ${
-                    activeTab === tab
-                      ? "border-b-2 border-emerald-500 text-emerald-500 font-medium"
-                      : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                  }`}
-                >
-                  {t(tab as keyof typeof texts)}
-                </button>
-              )
-            )}
+            {(
+              ["overview", "courses", "revenue", "exams", "tracking"] as Tab[]
+            ).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`pb-4 px-1 ${
+                  activeTab === tab
+                    ? "border-b-2 border-emerald-500 text-emerald-500 font-medium"
+                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                }`}
+              >
+                {t(tab as keyof typeof texts)}
+              </button>
+            ))}
           </div>
         </div>
       </header>
@@ -275,9 +329,10 @@ const AnalyticsDashboard = () => {
         {activeTab === "overview" && (
           <>
             <div className="mb-8 grid gap-6 lg:grid-cols-3">
-              <div className="lg:col-span-2 rounded-xl bg-white p-6 shadow dark:bg-gray-800">
+              {/* Gráfica de Usuarios */}
+              <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800">
                 <h2 className="mb-4 text-xl font-semibold">
-                  {t("growthTrends")}
+                  {t("growthTrends")} - {t("users")}
                 </h2>
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
@@ -300,6 +355,29 @@ const AnalyticsDashboard = () => {
                         strokeWidth={2}
                         dot={{ r: 4 }}
                       />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              {/* Gráfica de Ingresos */}
+              <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800">
+                <h2 className="mb-4 text-xl font-semibold">
+                  {t("growthTrends")} - {t("revenue")}
+                </h2>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={trendData}>
+                      <CartesianGrid stroke="#374151" strokeDasharray="3 3" />
+                      <XAxis dataKey="month" stroke="#6B7280" />
+                      <YAxis stroke="#6B7280" domain={[0, "auto"]} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#1F2937",
+                          borderRadius: "0.5rem",
+                          border: "none",
+                        }}
+                      />
+                      <Legend />
                       <Line
                         dataKey="revenue"
                         name={t("revenue")}
@@ -307,6 +385,29 @@ const AnalyticsDashboard = () => {
                         strokeWidth={2}
                         dot={{ r: 4 }}
                       />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              {/* Gráfica de Cursos */}
+              <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800">
+                <h2 className="mb-4 text-xl font-semibold">
+                  {t("growthTrends")} - {t("courses")}
+                </h2>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={trendData}>
+                      <CartesianGrid stroke="#374151" strokeDasharray="3 3" />
+                      <XAxis dataKey="month" stroke="#6B7280" />
+                      <YAxis stroke="#6B7280" />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#1F2937",
+                          borderRadius: "0.5rem",
+                          border: "none",
+                        }}
+                      />
+                      <Legend />
                       <Line
                         dataKey="courses"
                         name={t("courses")}
@@ -316,61 +417,6 @@ const AnalyticsDashboard = () => {
                       />
                     </LineChart>
                   </ResponsiveContainer>
-                </div>
-              </div>
-              <div className="flex flex-col gap-6">
-                <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800">
-                  <h2 className="mb-4 text-xl font-semibold">
-                    {t("courseStatus")}
-                  </h2>
-                  <div className="h-40">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={courseData}
-                          dataKey="value"
-                          nameKey="name"
-                          outerRadius={60}
-                          label={({ name, percent }) =>
-                            `${name} ${(percent * 100).toFixed(0)}%`
-                          }
-                        >
-                          {courseData.map((_, i) => (
-                            <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-                <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800">
-                  <h2 className="mb-4 text-xl font-semibold">
-                    {t("chapterTypes")}
-                  </h2>
-                  <div className="h-40">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={chapterData}
-                          dataKey="value"
-                          nameKey="name"
-                          outerRadius={60}
-                          label={({ name, percent }) =>
-                            `${name} ${(percent * 100).toFixed(0)}%`
-                          }
-                        >
-                          {chapterData.map((_, i) => (
-                            <Cell
-                              key={i}
-                              fill={COLORS[(i + 2) % COLORS.length]}
-                            />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
                 </div>
               </div>
             </div>
@@ -611,6 +657,7 @@ const AnalyticsDashboard = () => {
             </div>
           </div>
         )}
+        {activeTab === "tracking" && <TrackingTab />}
       </main>
 
       {/* Footer */}
