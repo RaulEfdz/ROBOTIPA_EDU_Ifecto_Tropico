@@ -6,6 +6,7 @@ import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react"; // Importar iconos
 
 import { countries } from "../../data/countries";
 
@@ -83,6 +84,10 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
   const [telefono, setTelefono] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Estados para mostrar/ocultar contraseñas
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [filter, setFilter] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -195,6 +200,7 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
           required
           placeholder="Juan Pérez"
           autoComplete="name"
+          className="border-2 border-yellow-400 focus:border-yellow-500 focus:ring-yellow-500"
         />
       </div>
       <div className="space-y-2 relative" ref={dropdownRef}>
@@ -368,33 +374,63 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
         <Label htmlFor="password-signup">
           Contraseña <span className="text-red-600">*</span>
         </Label>
-        <Input
-          id="password-signup"
-          type="password"
-          value={password}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setPassword(e.target.value)
-          }
-          required
-          placeholder="********"
-          autoComplete="new-password"
-        />
+        <div className="relative">
+          <Input
+            id="password-signup"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setPassword(e.target.value)
+            }
+            required
+            placeholder="********"
+            autoComplete="new-password"
+            className="pr-10"
+          />
+          <button
+            type="button"
+            className="absolute inset-y-0 right-0 flex items-center pr-3"
+            onClick={() => setShowPassword(!showPassword)}
+            tabIndex={-1}
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+            ) : (
+              <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+            )}
+          </button>
+        </div>
       </div>
       <div className="space-y-2">
         <Label htmlFor="confirmPassword-signup">
           Confirmar Contraseña <span className="text-red-600">*</span>
         </Label>
-        <Input
-          id="confirmPassword-signup"
-          type="password"
-          value={confirmPassword}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setConfirmPassword(e.target.value)
-          }
-          required
-          placeholder="********"
-          autoComplete="new-password"
-        />
+        <div className="relative">
+          <Input
+            id="confirmPassword-signup"
+            type={showConfirmPassword ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setConfirmPassword(e.target.value)
+            }
+            required
+            placeholder="********"
+            autoComplete="new-password"
+            className="pr-10"
+          />
+          <button
+            type="button"
+            className="absolute inset-y-0 right-0 flex items-center pr-3"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            tabIndex={-1}
+          >
+            {showConfirmPassword ? (
+              <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+            ) : (
+              <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+            )}
+          </button>
+        </div>
       </div>
       {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
       <Button type="submit" disabled={isLoading}>
