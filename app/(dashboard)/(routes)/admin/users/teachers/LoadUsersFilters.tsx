@@ -101,7 +101,7 @@ export default function LoadUsersFilters() {
           </Button>
           <Button onClick={() => setIsDialogOpen(true)}>
             <PlusCircle className="mr-2 h-4 w-4" />
-            Nuevor
+            Nuevo
           </Button>
         </div>
       </div>
@@ -129,7 +129,7 @@ export default function LoadUsersFilters() {
         </>
       )}
 
-      {/* Diálogo para crear Nuevor */}
+      {/* Diálogo para crear Nuevo */}
       <NewTeacherDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
