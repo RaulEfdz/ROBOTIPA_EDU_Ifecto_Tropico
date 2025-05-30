@@ -126,7 +126,7 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
           institucion,
           telefono,
         } as any,
-        emailRedirectTo: `${window.location.origin}/auth/confirm-action?next=${encodeURIComponent(
+        emailRedirectTo: `${window.location.origin}/auth/SignUp/confirm-action?next=${encodeURIComponent(
           redirectUrl
         )}`,
       },
