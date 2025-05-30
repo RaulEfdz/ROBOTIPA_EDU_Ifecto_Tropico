@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow public write access to tracking collections without authentication
+    match /user_clicks/{document=**} {
+      allow write: if true;
+      allow read: if false;
+    }
+    match /user_pageviews/{document=**} {
+      allow write: if true;
+      allow read: if false;
+    }
+    match /user_anonymous_supabase_links/{document=**} {
+      allow write: if true;
+      allow read: if false;
+    }
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

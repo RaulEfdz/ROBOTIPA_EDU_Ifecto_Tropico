@@ -13,11 +13,11 @@ export async function GET() {
       freeChapters,
       paidChapters,
       totalPurchases,
-      totalRevenue,
+      // Reemplazar la línea de totalRevenue en el array de Promise.all por null y usar el valor calculado arriba
       totalInvoices,
       totalExams,
       publishedExams,
-      totalExamAttempts
+      totalExamAttempts,
     ] = await Promise.all([
       db.user.count(),
       db.course.count(),
@@ -27,19 +27,26 @@ export async function GET() {
       db.chapter.count({ where: { isFree: true } }),
       db.chapter.count({ where: { isFree: false } }),
       db.purchase.count(),
-      db.invoice.aggregate({
-        _sum: {
-          amount: true,
-        },
-        where: {
-          status: "paid",
-        },
-      }),
+      null, // totalRevenue ahora se calcula abajo
       db.invoice.count(),
       db.exam.count(),
       db.exam.count({ where: { isPublished: true } }),
       db.examAttempt.count(),
     ]);
+
+    // Calcular ingresos: suma de (precio del curso * número de compras por curso)
+    const courses = await db.course.findMany({
+      select: {
+        id: true,
+        price: true,
+        purchases: true,
+      },
+    });
+    const totalRevenue = courses.reduce((acc, course) => {
+      const price = course.price || 0;
+      const subscribers = course.purchases.length;
+      return acc + price * subscribers;
+    }, 0);
 
     return NextResponse.json({
       status: "success",
@@ -61,7 +68,7 @@ export async function GET() {
           total: totalPurchases,
         },
         revenue: {
-          totalPaidInvoices: totalRevenue._sum.amount || 0,
+          totalPaidInvoices: totalRevenue,
           invoicesIssued: totalInvoices,
         },
         exams: {
