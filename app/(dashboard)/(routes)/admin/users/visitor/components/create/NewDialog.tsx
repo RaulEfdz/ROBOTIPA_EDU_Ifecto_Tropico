@@ -181,7 +181,7 @@ export default function NewVisitorDialog({
           value={activeTab}
         >
           <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 mb-4">
-            <TabsTrigger value="default">Usuarios</TabsTrigger>
+            <TabsTrigger value="default">Visitantes</TabsTrigger>
             <TabsTrigger value="all">Todos</TabsTrigger>
             <TabsTrigger value="visitor">Visitantees</TabsTrigger>
             <TabsTrigger value="teacher">Profesores</TabsTrigger>

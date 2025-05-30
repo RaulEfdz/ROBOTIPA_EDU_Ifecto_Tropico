@@ -181,7 +181,7 @@ export default function NewstudentDialog({
         >
           <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 mb-4">
             <TabsTrigger value="all">Todos</TabsTrigger>
-            <TabsTrigger value="default">Usuarios</TabsTrigger>
+            <TabsTrigger value="default">Visitantes</TabsTrigger>
             <TabsTrigger value="admin">Administradores</TabsTrigger>
             <TabsTrigger value="teacher">Profesores</TabsTrigger>
             <TabsTrigger value="student">Estudiantes</TabsTrigger>
