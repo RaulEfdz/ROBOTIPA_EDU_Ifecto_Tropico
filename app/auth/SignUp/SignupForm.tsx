@@ -181,6 +181,27 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
         "¡Cuenta creada! Revisa tu correo electrónico para confirmar tu cuenta y completar el registro.",
         { duration: 8000 }
       );
+
+      // Send notification email to info@infectotropico.com
+      try {
+        await fetch("/api/sendRegistrationEmail", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fullName,
+            email,
+            pais,
+            profesion: profesionFinal,
+            institucion,
+            telefono,
+          }),
+        });
+      } catch (error) {
+        console.error("Error sending registration notification email:", error);
+      }
+
       // Redirigir a la página de espera de confirmación de correo
       router.push("/auth/check-email");
     }
