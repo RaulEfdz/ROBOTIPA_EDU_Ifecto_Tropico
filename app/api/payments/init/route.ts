@@ -29,7 +29,8 @@ function getConfig() {
   const cclw = process.env.PAGUELOFACIL_CCLW;
   const apiKey = process.env.PAGUELOFACIL_API_KEY;
   const returnUrlRaw =
-    process.env.NEXT_PUBLIC_RETURN_URL || "https://example.com/return";
+    process.env.NEXT_PUBLIC_RETURN_URL ||
+    "https:/academy.infectotropico.com/return";
   const cardTypes = process.env.PAGUELOFACIL_CARD_TYPES || "";
   const expiresIn = process.env.PAGUELOFACIL_EXPIRES_IN || "3600";
 
