@@ -155,7 +155,7 @@ export default function NewTeacherDialog({
       <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            Seleccionar Nuevo Profesor
+            Seleccionar Nuevor
           </DialogTitle>
         </DialogHeader>
 

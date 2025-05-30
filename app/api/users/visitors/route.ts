@@ -1,9 +1,6 @@
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-const TEACHER_ID = process.env.TEACHER_ID;
-const STUDENT_ID = process.env.STUDENT_ID;
-const ADMIN_ID = process.env.ADMIN_ID;
 const VISITOR_ID = process.env.VISITOR_ID;
 
 // GET /api/visitor - Devuelve todos los profesores
