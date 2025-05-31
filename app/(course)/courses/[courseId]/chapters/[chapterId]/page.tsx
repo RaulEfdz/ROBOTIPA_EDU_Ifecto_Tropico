@@ -328,7 +328,7 @@ const ChapterIdPage: React.FC = () => {
               {isSubscribed && !hasExam && !isLockedForPayment && (
                 <CustomProgressButton
                   chapterId={chapter.id}
-                  courseId={course.id}
+                  courseId={params.courseId}
                   nextChapterId={nextChapter?.id}
                   isCompleted={isCompleted}
                 />

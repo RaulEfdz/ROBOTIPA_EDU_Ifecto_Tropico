@@ -108,7 +108,7 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
       {isLoading
         ? "Cargando..."
         : isCompleted
-          ? "Continuar"
+          ? "Continuar ."
           : "Marcar como completado"}
     </Button>
   );
