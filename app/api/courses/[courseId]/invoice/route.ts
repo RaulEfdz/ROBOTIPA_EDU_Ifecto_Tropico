@@ -2,11 +2,9 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
-export async function POST(
-  req: Request,
-  { params }: { params: { courseId: string } }
-) {
-  const { courseId } = params;
+export async function POST(req: Request) {
+  const url = new URL(req.url);
+  const courseId = url.pathname.split("/")[3]; // Adjust index as needed based on URL structure
 
   try {
     const session = await getUserDataServerAuth();

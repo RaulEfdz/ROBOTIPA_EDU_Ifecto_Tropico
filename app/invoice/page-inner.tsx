@@ -1,25 +1,24 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { InvoiceDisplay } from "../components/InvoiceDisplay";
 import { Button } from "@/components/ui/button";
 
-function InvoicePage() {
+export default function InvoicePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [invoiceData, setInvoiceData] = React.useState<any>(null);
-  const [userData, setUserData] = React.useState<{
-    fullName: string;
-    email: string;
-  }>({
-    fullName: "",
-    email: "",
-  });
-  const [courseTitle, setCourseTitle] = React.useState<string>("");
+  const [invoiceData, setInvoiceData] = useState<any>(null);
+  const [userData, setUserData] = useState<{ fullName: string; email: string }>(
+    {
+      fullName: "",
+      email: "",
+    }
+  );
+  const [courseTitle, setCourseTitle] = useState<string>("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     const invoiceId = searchParams.get("invoiceId");
     const userFullName = searchParams.get("userFullName") || "";
     const userEmail = searchParams.get("userEmail") || "";
@@ -86,13 +85,5 @@ function InvoicePage() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function InvoicePageWithSuspense() {
-  return (
-    <Suspense fallback={<div>Cargando factura...</div>}>
-      <InvoicePage />
-    </Suspense>
   );
 }

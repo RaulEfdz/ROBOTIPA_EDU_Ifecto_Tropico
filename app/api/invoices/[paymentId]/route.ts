@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { paymentId: string } }
-) {
-  const { paymentId } = params;
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const paymentId = url.pathname.split("/")[3]; // Adjust index as needed based on URL structure
 
   try {
     const invoice = await db.invoice.findFirst({
