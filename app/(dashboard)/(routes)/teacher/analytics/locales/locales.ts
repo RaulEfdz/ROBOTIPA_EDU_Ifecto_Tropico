@@ -115,7 +115,7 @@ export const texts: AnalyticsDashboardTexts = {
   vsLastPeriod: { es: "vs período anterior", en: "vs last period" },
 
   growthTrends: {
-    es: "Tendencias de Crecimiento (------T-----)",
+    es: "",
     en: "Growth Trends",
   },
   courseStatus: { es: "Estado del Curso", en: "Course Status" },

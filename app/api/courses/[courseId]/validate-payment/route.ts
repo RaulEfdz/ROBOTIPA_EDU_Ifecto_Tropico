@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
 // 🔄 Refactorizado a nueva sintaxis de params (Promise<T>)
 export async function GET(
@@ -10,16 +9,57 @@ export async function GET(
   const { courseId } = await params;
 
   try {
-    const user = (await getUserDataServerAuth())?.user;
+    // Extraer query params para validación sin autenticación
+    const url = new URL(req.url);
+    const query = url.searchParams;
 
-    if (!user?.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
+    // Validar estado y curso
+    const status = query.get("status")?.toLowerCase();
+    const razonField = query.get("Razon") || query.get("razon") || "";
+    const razonDecoded = decodeURIComponent(razonField.replace(/\+/g, " "));
+
+    if (!status || !courseId) {
+      return NextResponse.json(
+        { valid: false, message: "Faltan parámetros status o courseId" },
+        { status: 400 }
+      );
     }
 
-    // Buscar un pago exitoso que contenga el courseId en el campo description
+    // Validar status success
+    if (status !== "success") {
+      return NextResponse.json(
+        { valid: false, message: `Estado del pago: ${status}. No exitoso.` },
+        { status: 400 }
+      );
+    }
+
+    // Validar razon aprobado
+    const isRazonApproved =
+      razonDecoded.includes("00 - Aprobado") ||
+      razonDecoded.includes("Aprobado");
+    if (!isRazonApproved && razonField) {
+      return NextResponse.json(
+        {
+          valid: false,
+          message: `Razón del pago: ${razonDecoded}. No aprobado.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validar oper y estado
+    const operCode = query.get("Oper");
+    const estado = query.get("Estado");
+    if (!operCode || estado?.toLowerCase() !== "aprobada") {
+      return NextResponse.json(
+        { valid: false, message: "Oper o Estado inválidos" },
+        { status: 400 }
+      );
+    }
+
+    // Buscar pago en DB que coincida con courseId
     const payment = await db.payment.findFirst({
       where: {
-        userId: user.id,
         status: "APPROVED",
         description: {
           contains: courseId,
@@ -28,7 +68,10 @@ export async function GET(
     });
 
     if (!payment) {
-      return NextResponse.json({ valid: false }, { status: 403 });
+      return NextResponse.json(
+        { valid: false, message: "Pago no encontrado en base de datos" },
+        { status: 403 }
+      );
     }
 
     return NextResponse.json({ valid: true });

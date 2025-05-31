@@ -30,7 +30,7 @@ function getConfig() {
   const apiKey = process.env.PAGUELOFACIL_API_KEY;
   const returnUrlRaw =
     process.env.NEXT_PUBLIC_RETURN_URL ||
-    "https:/academy.infectotropico.com/return";
+    "https://academy.infectotropico.com/return";
   const cardTypes = process.env.PAGUELOFACIL_CARD_TYPES || "";
   const expiresIn = process.env.PAGUELOFACIL_EXPIRES_IN || "3600";
 
@@ -61,12 +61,12 @@ function buildDynamicDescription(
       .replace(/\s+/g, "-") // replace spaces with hyphens
       .replace(/[^a-zA-Z0-9-]/g, ""); // remove all non-alphanumeric/hyphen characters
 
-  const courseTitle = normalize(course.title || "[NombreCurso]");
+  const courseId = normalize(course.id || "[IdCurso]");
   const description = normalize(customDesc || "");
   const userFullName = normalize(user.fullName || "[Usuario]");
   const formattedDate = normalize(dateISO);
 
-  const parts = [courseTitle, description, userFullName, formattedDate].filter(
+  const parts = [courseId, description, userFullName, formattedDate].filter(
     Boolean
   );
   return parts.join("_");
@@ -77,16 +77,24 @@ function buildDynamicDescription(
  */
 function buildFormParams(
   config: ReturnType<typeof getConfig>,
-  body: { amount: number; description: string; email: string; phone: string },
+  body: {
+    amount: number;
+    description: string;
+    email: string;
+    phone: string;
+    returnUrl: string;
+  },
   user: UserDB,
   course: Partial<Course>
 ): URLSearchParams {
-  const { cclw, returnUrlRaw, cardTypes, expiresIn } = config;
+  const { cclw, cardTypes, expiresIn } = config;
   const CCLW = cclw;
   const CMTN = body.amount.toFixed(2);
   const rawDesc = buildDynamicDescription(user, course, body.description);
   const CDSC = percentEncodeUTF8(rawDesc);
-  const RETURN_URL = toHex(returnUrlRaw);
+  const RETURN_URL = body.returnUrl
+    ? toHex(body.returnUrl)
+    : toHex(config.returnUrlRaw);
   const PARM_1 = "";
   const CTAX = "";
   const PF_CF = toHex(JSON.stringify({ email: body.email, phone: body.phone }));
@@ -115,6 +123,12 @@ async function callPaymentApi(
   accessToken: string,
   formParams: URLSearchParams
 ) {
+  // Print the decoded RETURN_URL value for inspection
+  const returnUrlEncoded = formParams.get("RETURN_URL") || "";
+  const returnUrlDecoded = decodeURIComponent(returnUrlEncoded);
+  console.log("Calling PagueloFacil API with params:", formParams.toString());
+  console.log("Decoded RETURN_URL:", returnUrlDecoded.replace(/%/g, "\\x"));
+
   const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
@@ -141,9 +155,22 @@ async function callPaymentApi(
 /**
  * Main handler for POST /api/payments/init
  */
+
+interface PaymentInitPayload {
+  amount: number;
+  description: string;
+  email: string;
+  phone: string;
+  course: Partial<Course>;
+  returnUrl: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { amount, description, email, phone, course } = await req.json();
+    const { amount, description, email, phone, course, returnUrl } =
+      await req.json();
+
+    console.log("[/api/payments/init] Received request:", returnUrl);
 
     // Authenticate user
     const session = await getUserDataServerAuth();
@@ -200,10 +227,12 @@ export async function POST(req: NextRequest) {
     // Build form payload
     const formParams = buildFormParams(
       config,
-      { amount, description, email, phone },
+      { amount, description, email, phone, returnUrl },
       user,
       course
     );
+
+    console.log("[/api/payments/init] config:", returnUrl);
 
     // Call the external API
     const data = await callPaymentApi(

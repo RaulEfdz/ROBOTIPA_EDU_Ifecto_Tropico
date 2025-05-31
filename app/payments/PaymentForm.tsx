@@ -25,15 +25,43 @@ export default function PaymentForm({
   const submit = async () => {
     setLoading(true);
     try {
+      // Fetch first chapter ID
+      const courseRes = await fetch(
+        `/api/courses/${course.id}/published-chapters`,
+        {
+          method: "GET",
+          cache: "no-store",
+        }
+      );
+      if (!courseRes.ok) {
+        alert("No se pudo obtener información del curso.");
+        setLoading(false);
+        return;
+      }
+      const courseData = await courseRes.json();
+      const firstChapterId =
+        courseData.chapters && courseData.chapters.length > 0
+          ? courseData.chapters[0].id
+          : null;
+
+      if (!firstChapterId) {
+        alert("No se encontró el primer capítulo del curso.");
+        setLoading(false);
+        return;
+      }
+      // const returnUrl = `${window.location.origin}/courses/${course.id}?status=SUCCESS&course=${course.id}`;
+      const returnUrl = `${window.location.origin}/pages/thank-you?status=SUCCESS&course=${course.id}`; // Mantener en la misma ruta
+
       const res = await fetch("/api/payments/init", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount,
-          description,
+          description: `${description} ${course.id}`, // Append course ID to description for validation
           email,
           phone,
           course, // Enviar el curso completo si es necesario
+          returnUrl,
         }),
       });
       const { paymentUrl, error } = await res.json();

@@ -170,6 +170,10 @@ export default function CoursePage() {
       } else {
         // Curso de pago, no comprado -> Iniciar pago
         try {
+          // ejemeplo d ruta: http://localhost:3000/pages/thank-you?status=SUCCESS&course=courses/e4681025-588a-40d3-be3a-fb3488b1a66f
+          // const returnUrl = `${window.location.origin}/courses/${course.id}?status=SUCCESS&course=${course.id}`;
+          const returnUrl = `${window.location.origin}/pages/thank-you?status=SUCCESS&course=${course.id}`; // Mantener en la misma ruta
+
           const paymentResponse = await fetch("/api/payments/init", {
             // Llama a tu API para iniciar pago
             method: "POST",
@@ -180,7 +184,8 @@ export default function CoursePage() {
               description: course.title,
               email: user?.email,
               phone: user?.phone,
-              course: course, // Enviar el curso completo si es necesario
+              course: course, // Enviar el curso completo si es necesario,
+              returnUrl: returnUrl,
             }),
           });
           if (!paymentResponse.ok) {

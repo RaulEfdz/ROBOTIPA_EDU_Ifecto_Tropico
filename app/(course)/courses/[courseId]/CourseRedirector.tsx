@@ -59,7 +59,19 @@ const CourseRedirector = () => {
 
         if (!data.chapters.length) return;
 
-        router.push(`/courses/${data.id}/chapters/${data.chapters[0].id}`);
+        // Check if user is enrolled
+        const enrollRes = await fetch(`/api/courses/${courseId}/is-enrolled`, {
+          method: "GET",
+          cache: "no-store",
+        });
+        const enrollData = await enrollRes.json();
+
+        if (enrollRes.ok && enrollData.isEnrolled) {
+          router.push(`/courses/${data.id}/chapters/${data.chapters[0].id}`);
+        } else {
+          toast.error("No estás inscrito en este curso.");
+          router.push("/courses"); // Redirect to catalog or purchase page
+        }
       } catch (error) {
         console.error("Error al obtener curso:", error);
         toast.error("No se pudo cargar el curso.");

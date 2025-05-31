@@ -12,7 +12,7 @@ export async function POST(req: Request, { params }: any) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const courseId = await params.courseId;
+    const { courseId } = params;
 
     if (!courseId) {
       return new NextResponse("Bad Request: courseId is required", {

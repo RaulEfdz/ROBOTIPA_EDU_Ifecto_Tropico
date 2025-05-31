@@ -44,7 +44,7 @@ interface AnalyticsResponse {
   data: AnalyticsData;
 }
 
-import { TrackingTab } from "./TrackingTab";
+import TrackingTab from "./TrackingTab";
 
 type Tab = "overview" | "courses" | "revenue" | "exams" | "tracking";
 type TimeRange = "week" | "month" | "year";

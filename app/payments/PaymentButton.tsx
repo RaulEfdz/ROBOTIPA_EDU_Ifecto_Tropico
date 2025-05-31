@@ -59,11 +59,38 @@ export default function PaymentButton({
         return;
       }
 
+      // Fetch first chapter ID
+      const courseRes = await fetch(
+        `/api/courses/${courseId}/published-chapters`,
+        {
+          method: "GET",
+          cache: "no-store",
+        }
+      );
+      if (!courseRes.ok) {
+        toast.error("No se pudo obtener información del curso.");
+        setLoading(false);
+        return;
+      }
+      const courseData = await courseRes.json();
+      const firstChapterId =
+        courseData.chapters && courseData.chapters.length > 0
+          ? courseData.chapters[0].id
+          : null;
+
+      if (!firstChapterId) {
+        toast.error("No se encontró el primer capítulo del curso.");
+        setLoading(false);
+        return;
+      }
+
+      const returnUrl = `${window.location.origin}/courses/${courseId}/chapters/${firstChapterId}?status=SUCCESS&course=${courseId}`;
+
       const payload = {
         amount,
         description,
         customParam1: user.id,
-        returnUrl: `${process.env.NEXT_PUBLIC_RETURN_URL}?status=SUCCESS&course=${courseId}`,
+        returnUrl,
         pfCf: {
           email: user.email,
           phone: user.phone || "",

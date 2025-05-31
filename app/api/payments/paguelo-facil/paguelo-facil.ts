@@ -53,6 +53,9 @@ export async function createPagueloFacilLink(
   };
 
   if (params.returnUrl) {
+    console.log(
+      `Generando enlace de pago con URL de retorno: ${params.returnUrl}`
+    );
     data.RETURN_URL = toHex(params.returnUrl);
   }
   if (params.customParam1) {

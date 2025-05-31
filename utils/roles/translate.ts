@@ -3,6 +3,7 @@ interface Roles {
   student: string;
   admin: string;
   visitor: string;
+  authenticated: string;
 }
 
 // Rol => UUID desde env
@@ -11,6 +12,7 @@ const roles: Roles = {
   student: process.env.NEXT_PUBLIC_STUDENT_ID || "",
   admin: process.env.NEXT_PUBLIC_ADMIN_ID || "",
   visitor: process.env.NEXT_PUBLIC_VISITOR_ID || "",
+  authenticated: process.env.NEXT_PUBLIC_AUTHENTICATED_ID || "",
 };
 
 // ✅ Traduce nombre ↔ UUID
