@@ -57,24 +57,13 @@ export async function GET(
       );
     }
 
-    // Buscar pago en DB que coincida con courseId
-    const payment = await db.payment.findFirst({
-      where: {
-        status: "APPROVED",
-        description: {
-          contains: courseId,
-        },
-      },
-    });
+    // Asignar paymentId desde RelatedTx
+    const paymentId = query.get("RelatedTx") || null;
 
-    if (!payment) {
-      return NextResponse.json(
-        { valid: false, message: "Pago no encontrado en base de datos" },
-        { status: 403 }
-      );
-    }
+    // Asignar userId si está disponible en query (ejemplo: Usuario)
+    const userId = query.get("Usuario") || null;
 
-    return NextResponse.json({ valid: true });
+    return NextResponse.json({ valid: true, paymentId, userId });
   } catch (error) {
     console.error("Error en validación de pago:", error);
     return new NextResponse("Internal Server Error", { status: 500 });

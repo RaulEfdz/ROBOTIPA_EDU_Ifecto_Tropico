@@ -377,7 +377,7 @@ model Payment {
   amount        Float
   currency      String // Ej: "USD"
   status        String // Ej: "pending", "completed", "failed"
-  referenceCode String? // Código de transacción (banco, Stripe, etc.)
+  referenceCode String?
   description   String?
   metadata      Json? // ✅ Payloads, errores, response raw
 
