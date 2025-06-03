@@ -56,8 +56,13 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     // Call Supabase to send reset password email with redirectTo option
+    const redirectUrl =
+      process.env.STATUS_DEVELOPMENT === "true"
+        ? "http://localhost:3000/auth/recover"
+        : `${window.location.origin}/auth/recover`;
+
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth`,
+      redirectTo: redirectUrl,
     });
 
     setLoading(false);
