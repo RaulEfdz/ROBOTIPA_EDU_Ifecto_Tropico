@@ -94,7 +94,7 @@ export default function ForgotPasswordPage() {
       <Card className="w-full max-w-md bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
         <CardHeader className="p-8 text-center">
           <CardTitle className="text-3xl font-bold text-gray-800 dark:text-white">
-            Olvidé mi contraseña
+            Olvidé mi contraseña.
           </CardTitle>
           <CardDescription className="mt-2 text-gray-600 dark:text-gray-400">
             Ingresa tu correo electrónico para recibir un enlace de

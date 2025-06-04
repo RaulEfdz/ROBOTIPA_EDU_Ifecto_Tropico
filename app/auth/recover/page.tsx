@@ -16,57 +16,37 @@ export default function RecoverPage() {
   useEffect(() => {
     async function getSessionFromUrl() {
       try {
-        // Extraer tokens del fragmento de la URL
+        // Buscar tokens en el fragmento (#...) de la URL
         const hashParams = new URLSearchParams(
           window.location.hash.substring(1)
         );
         const access_token = hashParams.get("access_token");
         const refresh_token = hashParams.get("refresh_token");
 
-        if (!access_token || !refresh_token) {
-          // Intentar extraer tokens de query params por si están ahí
-          const queryParams = new URLSearchParams(window.location.search);
-          const accessTokenQuery = queryParams.get("access_token");
-          const refreshTokenQuery = queryParams.get("refresh_token");
-
-          if (accessTokenQuery && refreshTokenQuery) {
-            const { error: sessionError } = await supabase.auth.setSession({
-              access_token: accessTokenQuery,
-              refresh_token: refreshTokenQuery,
-            });
-            if (sessionError) {
-              setErrorMsg("Error al restaurar la sesión desde query params.");
-              setSession(null);
-            } else {
-              setSession({
-                access_token: accessTokenQuery,
-                refresh_token: refreshTokenQuery,
-              });
-            }
-          } else {
-            setErrorMsg("No se encontraron tokens en la URL.");
-            setSession(null);
-          }
-        } else {
-          // Restaurar sesión manualmente desde fragmento
-          const { error: sessionError } = await supabase.auth.setSession({
+        if (access_token && refresh_token) {
+          const { error } = await supabase.auth.setSession({
             access_token,
             refresh_token,
           });
-          if (sessionError) {
+
+          if (error) {
             setErrorMsg("Error al restaurar la sesión.");
             setSession(null);
           } else {
             setSession({ access_token, refresh_token });
           }
+        } else {
+          setErrorMsg("No se encontraron tokens de recuperación en la URL.");
+          setSession(null);
         }
-      } catch {
-        setErrorMsg("Error inesperado al obtener la sesión.");
+      } catch (err) {
+        setErrorMsg("Error inesperado al procesar la URL.");
         setSession(null);
       } finally {
         setLoading(false);
       }
     }
+
     getSessionFromUrl();
   }, []);
 
