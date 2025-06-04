@@ -1,141 +1,140 @@
 "use client";
 
-import React, { useState } from "react";
-import { createClient } from "../../../utils/supabase/client";
-import { toast } from "sonner";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useEffect, useState, FormEvent } from "react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
 
-export default function ForgotPasswordPage() {
-  const supabase = createClient();
+export default function RecoverPage() {
+  const supabase = createClientComponentClient();
+  const router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [session, setSession] = useState<any>(null);
 
-  // Simple email format validation regex
-  const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email.toLowerCase());
-  };
+  useEffect(() => {
+    async function getSessionFromUrl() {
+      try {
+        const queryParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(
+          window.location.hash.substring(1)
+        );
 
-  React.useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (cooldown > 0) {
-      timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+        // Verifica si hay un error devuelto por Supabase
+        const error = queryParams.get("error") || hashParams.get("error");
+        const errorDescription =
+          queryParams.get("error_description") ||
+          hashParams.get("error_description");
+
+        if (error || errorDescription) {
+          setErrorMsg(
+            decodeURIComponent(errorDescription || "Error de recuperación.")
+          );
+          setSession(null);
+          return;
+        }
+
+        // Intentar obtener los tokens del hash de la URL
+        const access_token = hashParams.get("access_token");
+        const refresh_token = hashParams.get("refresh_token");
+
+        if (access_token && refresh_token) {
+          const { error: sessionError } = await supabase.auth.setSession({
+            access_token,
+            refresh_token,
+          });
+
+          if (sessionError) {
+            setErrorMsg("Error al restaurar la sesión.");
+            setSession(null);
+          } else {
+            setSession({ access_token, refresh_token });
+          }
+        } else {
+          setErrorMsg("No se encontraron tokens de recuperación en la URL.");
+          setSession(null);
+        }
+      } catch {
+        setErrorMsg("Error inesperado al procesar la URL.");
+        setSession(null);
+      } finally {
+        setLoading(false);
+      }
     }
-    return () => clearTimeout(timer);
-  }, [cooldown]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+    getSessionFromUrl();
+  }, []);
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setMessage(null);
-    setError(null);
+    setErrorMsg(null);
 
-    if (!validateEmail(email)) {
-      setError("Por favor, ingresa un email válido.");
-      toast.error("Por favor, ingresa un email válido.");
+    if (newPassword.length < 6) {
+      setErrorMsg("La contraseña debe tener al menos 6 caracteres.");
       return;
     }
 
-    if (cooldown > 0) {
-      toast.error(`Por favor espera ${cooldown} segundos antes de reenviar.`);
-      return;
-    }
-
-    setLoading(true);
-
-    // Call Supabase to send reset password email with redirectTo option
-    const redirectUrl =
-      process.env.STATUS_DEVELOPMENT === "true"
-        ? "http://localhost:3000/auth/recover"
-        : `${window.location.origin}/auth/recover`;
-
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectUrl,
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
     });
 
-    setLoading(false);
-
     if (error) {
-      // Handle specific error messages
-      if (error.message.includes("User not found")) {
-        setError("Email no registrado.");
-        toast.error("Email no registrado.");
-      } else if (error.message.includes("network")) {
-        setError("Error de red. Intenta nuevamente.");
-        toast.error("Error de red. Intenta nuevamente.");
-      } else if (error.message.toLowerCase().includes("rate limit")) {
-        setError("Se ha excedido el límite de correos. Intenta más tarde.");
-        toast.error("Se ha excedido el límite de correos. Intenta más tarde.");
-      } else {
-        setError(error.message);
-        toast.error(error.message);
-      }
+      setErrorMsg("Error al actualizar la contraseña: " + error.message);
     } else {
-      setMessage("Revisa tu correo para restablecer la contraseña.");
-      toast.success("Revisa tu correo para restablecer la contraseña.");
-      setCooldown(60);
+      router.push("/login");
     }
   };
 
+  if (loading) {
+    return <p>Verificando enlace de recuperación…</p>;
+  }
+
+  if (!session) {
+    return (
+      <div style={{ maxWidth: 400, margin: "auto", padding: "2rem" }}>
+        <h1>Restablecer contraseña</h1>
+        <p style={{ color: "red" }}>
+          {errorMsg || "El enlace no es válido o ya expiró."}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-6 sm:p-12">
-      <Card className="w-full max-w-md bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden">
-        <CardHeader className="p-8 text-center">
-          <CardTitle className="text-3xl font-bold text-gray-800 dark:text-white">
-            Olvidé mi contraseña.
-          </CardTitle>
-          <CardDescription className="mt-2 text-gray-600 dark:text-gray-400">
-            Ingresa tu correo electrónico para recibir un enlace de
-            restablecimiento
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-8">
-          <form onSubmit={handleSubmit} noValidate className="space-y-6">
-            <div className="space-y-2">
-              <Label
-                htmlFor="email"
-                className="text-sm font-medium text-slate-700 dark:text-slate-300"
-              >
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="tuemail@ejemplo.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="dark:bg-slate-700 dark:border-slate-600"
-              />
-            </div>
-            <Button
-              type="submit"
-              disabled={loading || cooldown > 0}
-              className="w-full"
-            >
-              {loading
-                ? "Enviando..."
-                : cooldown > 0
-                  ? `Espera ${cooldown}s`
-                  : "Enviar enlace de restablecimiento"}
-            </Button>
-          </form>
-          {message && <p className="mt-4 text-green-600">{message}</p>}
-          {error && <p className="mt-4 text-red-600">{error}</p>}
-        </CardContent>
-      </Card>
+    <div style={{ maxWidth: 400, margin: "auto", padding: "2rem" }}>
+      <h1>Restablecer contraseña</h1>
+      {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
+
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="password">Nueva contraseña:</label>
+        <input
+          id="password"
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          required
+          style={{
+            display: "block",
+            width: "100%",
+            padding: "0.5rem",
+            marginTop: "0.5rem",
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            marginTop: "1rem",
+            padding: "0.5rem 1rem",
+            backgroundColor: "#2563eb",
+            color: "white",
+            border: "none",
+            borderRadius: 4,
+          }}
+        >
+          Actualizar contraseña
+        </button>
+      </form>
     </div>
   );
 }
