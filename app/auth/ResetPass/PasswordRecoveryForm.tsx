@@ -17,7 +17,6 @@ export const PasswordRecoveryForm = () => {
   const supabase = createClient();
 
   const validateEmail = (email: string): boolean => {
-    
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
@@ -37,21 +36,42 @@ export const PasswordRecoveryForm = () => {
     setSuccessMessage(null);
 
     try {
-      const { error: passwordRecoveryError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
-      });
+      // Antes de llamar a resetPasswordForEmail, limpiamos cualquier código verificador previo
+      localStorage.removeItem("supabase.auth.code_verifier");
+
+      const { error: passwordRecoveryError } =
+        await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth/reset-password`,
+        });
 
       if (passwordRecoveryError) {
         if (passwordRecoveryError.message === "User not found") {
-          setError("No pudimos encontrar una cuenta asociada a este correo electrónico. Por favor, verifica que el correo electrónico esté correctamente escrito.");
+          setError(
+            "No pudimos encontrar una cuenta asociada a este correo electrónico. Por favor, verifica que el correo electrónico esté correctamente escrito."
+          );
         } else {
           throw passwordRecoveryError;
         }
       } else {
-        setSuccessMessage("Si existe una cuenta asociada a este correo, te enviaremos un email con instrucciones para restablecer tu contraseña.");
+        // Guardar el código verificador generado por Supabase en localStorage para el flujo PKCE
+        const codeVerifier = localStorage.getItem(
+          "supabase.auth.code_verifier"
+        );
+        if (!codeVerifier) {
+          console.warn(
+            "No se encontró el código verificador PKCE en localStorage después de resetPasswordForEmail"
+          );
+        }
+        setSuccessMessage(
+          "Si existe una cuenta asociada a este correo, te enviaremos un email con instrucciones para restablecer tu contraseña."
+        );
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Ocurrió un error al solicitar la recuperación de contraseña.");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Ocurrió un error al solicitar la recuperación de contraseña."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -74,10 +94,14 @@ export const PasswordRecoveryForm = () => {
                 setEmail(e.target.value);
               }}
               required
-              className={isEmailValid === false ? "border-destructive" : undefined}
+              className={
+                isEmailValid === false ? "border-destructive" : undefined
+              }
             />
             {isEmailValid === false && (
-              <p className="text-sm text-destructive">Por favor, introduce un correo electrónico válido.</p>
+              <p className="text-sm text-destructive">
+                Por favor, introduce un correo electrónico válido.
+              </p>
             )}
           </div>
           {error && (
@@ -94,11 +118,16 @@ export const PasswordRecoveryForm = () => {
               <AlertDescription>
                 {successMessage}
                 <p className="text-sm mt-2">
-                    Si no tienes una cuenta, te recomendamos crear una.</p> 
+                  Si no tienes una cuenta, te recomendamos crear una.
+                </p>
               </AlertDescription>
             </Alert>
           )}
-          <Button type="submit" className="w-full" disabled={isLoading || isEmailValid === false}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isLoading || isEmailValid === false}
+          >
             {isLoading ? "Enviando Correo..." : "Recuperar Contraseña"}
           </Button>
           {isEmailValid === true && email && !isLoading && (

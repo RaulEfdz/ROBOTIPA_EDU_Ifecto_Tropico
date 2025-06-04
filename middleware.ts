@@ -1,49 +1,41 @@
-// middleware.ts
 import { NextResponse, type NextRequest } from "next/server";
-import { createMiddlewareClient } from "./utils/supabase/server";
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 
 // Rutas protegidas (requieren sesión)
 const protectedRoutes = [
   "/catalog",
   "/profile",
-  // "/courses", // Asegúrate que la ruta base del curso esté aquí
   "/teacher",
   "/settings",
   "/admin",
-  "/search", // Asumiendo que "Mis Cursos" o búsqueda de cursos requiere sesión
+  "/search",
+  "/",
 ];
 
 // Rutas públicas (no requieren sesión)
 const publicRoutes = [
-  "/",
   "/auth",
-  "/auth/login", // Si tienes rutas específicas, aunque /auth puede ser suficiente
+  "/auth/login",
   "/auth/register",
   "/auth/confirm-action",
   "/auth/ResetPass",
+  "/account/update-password",
+  "/auth/ResetPass/reset-password",
   "/about",
   "/contact",
   "/faq",
-  "/courses/catalog", // El catálogo debe ser público
-  "/courses/course/[courseId]", // Detalles del curso, puede ser público
-  "/payments", // Página de pagos podría ser pública si el flujo lo requiere
-  "/temrs", // Términos y condiciones
-  "/pages/course", // Si esta es la ruta donde se ven detalles y se puede comprar
-
-  // Si /pages/course/[courseId] debe ser parcialmente público (ver info) y
-  // solo la compra/inscripción requiere login, se maneja en el botón de compra.
-  // Por ahora, lo mantendremos como protegido si la acción de compra está allí.
+  "/courses/catalog",
+  "/courses/course/[courseId]",
+  "/payments",
+  "/temrs",
+  "/pages/course",
 ];
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
+  const { pathname, search } = request.nextUrl;
+  const response = NextResponse.next();
 
-  const supabase = createMiddlewareClient(request, response);
+  const supabase = createMiddlewareClient({ req: request, res: response });
 
   const {
     data: { session },
@@ -54,7 +46,7 @@ export async function middleware(request: NextRequest) {
       const baseRoute = route.substring(0, route.indexOf("["));
       return pathname.startsWith(baseRoute);
     }
-    return pathname === route || pathname.startsWith(route + "/"); // Para cubrir /auth y /auth/algo
+    return pathname === route || pathname.startsWith(route + "/");
   });
 
   const isProtectedRoute = protectedRoutes.some((route) => {
@@ -65,50 +57,44 @@ export async function middleware(request: NextRequest) {
     return pathname === route || pathname.startsWith(route + "/");
   });
 
-  // Si el usuario está en una ruta de autenticación y ya tiene sesión
+  // Usuario ya autenticado intenta acceder a /auth
   if (
     session &&
     pathname.startsWith("/auth") &&
     pathname !== "/auth/clearSiteData" &&
-    pathname !== "/auth/confirm-action"
+    pathname !== "/auth/confirm-action" &&
+    pathname !== "/auth/ResetPass/reset-password"
   ) {
     const redirectUrlAfterAuth =
       request.nextUrl.searchParams.get("redirectUrl");
     if (redirectUrlAfterAuth && redirectUrlAfterAuth.startsWith("/")) {
       return NextResponse.redirect(new URL(redirectUrlAfterAuth, request.url));
     }
-
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Si es una ruta pública y no es /auth (ya que /auth se maneja arriba si hay sesión), dejamos pasar
+  // Ruta pública y no es parte del sistema de auth → permitir
   if (isPublicRoute && !pathname.startsWith("/auth")) {
     return response;
   }
 
-  // Si es una ruta protegida y NO hay sesión, redirigimos a /auth con redirectUrl
+  // Ruta protegida y usuario no autenticado → redirigir a login
   if (isProtectedRoute && !session) {
     const loginUrl = new URL("/auth", request.url);
-    loginUrl.searchParams.set("redirectUrl", pathname + request.nextUrl.search);
-
+    loginUrl.searchParams.set("redirectUrl", pathname + search);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Si el usuario está intentando acceder a una ruta de autenticación (/auth, /auth/login, etc.) y NO tiene sesión, permitir
+  // Rutas de /auth → permitir si no hay sesión
   if (pathname.startsWith("/auth") && !session) {
     return response;
   }
 
-  // Para cualquier otra ruta no explícitamente pública o protegida:
-  // Si no hay sesión, redirigir a /auth (podría ser un catch-all para rutas desconocidas)
-  // Si hay sesión, permitir el acceso (asumiendo que si no está en protegida, y tiene sesión, está bien).
-  // O podrías ser más estricto y redirigir a 404 si la ruta no está definida.
-  // Por ahora, si llega aquí y tiene sesión, se asume que es una ruta válida no listada (ej. interna del dashboard).
-  // Si no tiene sesión y no es pública, ya debería haber sido redirigido por el bloque `isProtectedRoute && !session`.
-
+  // Ruta desconocida, permitir si hay sesión
   return response;
 }
 
+// Configura las rutas que interceptará el middleware
 export const config = {
   matcher: [
     "/((?!_next/static|_next/image|favicon.ico|logo.png|api/auth/logout|api/paguelofacil/webhook).*)",

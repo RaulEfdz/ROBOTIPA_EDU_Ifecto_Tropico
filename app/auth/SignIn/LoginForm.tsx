@@ -208,7 +208,7 @@ export default function LoginForm({
 
       <div className="text-center text-sm pt-2">
         <a
-          href="/auth/forgot-password"
+          href="/auth/ResetPass"
           className="font-medium text-primaryCustom hover:underline dark:text-emerald-400"
         >
           ¿Olvidaste tu contraseña?
