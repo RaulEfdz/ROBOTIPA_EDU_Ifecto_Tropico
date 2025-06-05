@@ -79,11 +79,11 @@ export async function middleware(request: NextRequest) {
   }
 
   // Ruta protegida y usuario no autenticado → redirigir a login
-  if (isProtectedRoute && !session) {
-    const loginUrl = new URL("/auth", request.url);
-    loginUrl.searchParams.set("redirectUrl", pathname + search);
-    return NextResponse.redirect(loginUrl);
-  }
+  // if (isProtectedRoute && !session) {
+  //   const loginUrl = new URL("/auth", request.url);
+  //   loginUrl.searchParams.set("redirectUrl", pathname + search);
+  //   return NextResponse.redirect(loginUrl);
+  // }
 
   // Rutas de /auth → permitir si no hay sesión
   if (pathname.startsWith("/auth") && !session) {
