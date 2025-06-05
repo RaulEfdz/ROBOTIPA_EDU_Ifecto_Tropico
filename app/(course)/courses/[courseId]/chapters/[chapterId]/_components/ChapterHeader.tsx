@@ -36,6 +36,15 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = ({
 }) => {
   const router = useRouter();
 
+  const courseIdPath = location.pathname.split("/")[2];
+
+  function beforChapter() {
+    // alert(`URL: /courses/${courseIdPath}/chapters/${prevChapterId}`);
+    if (prevChapterId) {
+      router.push(`/courses/${courseIdPath}/chapters/${prevChapterId}`);
+    }
+  }
+
   return (
     <div className="py-4 flex flex-col md:flex-row md:items-center md:justify-between">
       <div>
@@ -81,25 +90,12 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() =>
-              router.push(`/courses/${courseId}/chapters/${prevChapterId}`)
-            }
+            onClick={() => beforChapter()}
             className="text-sm flex items-center gap-1 shadow-sm hover:shadow"
           >
             <ChevronLeft className="h-4 w-4" /> Anterior
           </Button>
         )}
-        {/* {nextChapterId && (
-          <Button
-            size="sm"
-            onClick={() =>
-              router.push(`/courses/${courseId}/chapters/${nextChapterId}`)
-            }
-            className="text-sm flex items-center gap-1 shadow-sm hover:shadow bg-emerald-600 hover:bg-emerald-700 text-TextCustom transition-colors"
-          >
-            Siguiente <ChevronRight className="h-4 w-4" />
-          </Button>
-        )} */}
       </div>
     </div>
   );
