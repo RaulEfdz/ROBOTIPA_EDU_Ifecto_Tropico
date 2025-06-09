@@ -1,4 +1,3 @@
-// File: ExamViewer.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -52,6 +51,7 @@ export default function ExamViewer({
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [open, setOpen] = useState(false);
   const [isFetchingExam, setIsFetchingExam] = useState(false);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
 
   useEffect(() => {
     if (open) setAnswers({});
@@ -151,23 +151,53 @@ export default function ExamViewer({
 
   return (
     <>
-      <Button className="w-full" onClick={() => setOpen(true)}>
-        Realizar Examen
-      </Button>
+      {!isCompleted ? (
+        <Button className="w-full" onClick={() => setOpen(true)}>
+          Realizar Examen
+        </Button>
+      ) : (
+        <>
+          <Button
+            className="w-full"
+            onClick={() => setShowCertificateModal(true)}
+          >
+            Ya terminé
+          </Button>
+          <Dialog
+            open={showCertificateModal}
+            onOpenChange={setShowCertificateModal}
+          >
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Certificado en proceso</DialogTitle>
+                <DialogDescription>
+                  ¡Felicidades! Has completado el curso. Tu certificado será
+                  enviado a tu correo electrónico pronto.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button onClick={() => setShowCertificateModal(false)}>
+                  Cerrar
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-3xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl">
           <DialogHeader className="pb-4 border-b">
             <DialogTitle className="text-xl font-semibold">
-              {exam.title}
+              {exam?.title}
             </DialogTitle>
-            {exam.description && (
+            {exam?.description && (
               <DialogDescription className="text-sm text-muted-foreground pt-1">
                 {exam.description}
               </DialogDescription>
             )}
           </DialogHeader>
           <div className="py-4 space-y-6 max-h-[60vh] overflow-y-auto px-1 custom-scrollbar">
-            {exam.questions.map((q, i) => {
+            {exam?.questions.map((q, i) => {
               const selected = (answers[q.id] as string[]) || [];
               const maxSel =
                 q.type === QuestionType.MULTIPLE && q.correctAnswers.length > 0

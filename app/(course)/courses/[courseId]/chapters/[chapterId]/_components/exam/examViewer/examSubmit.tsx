@@ -112,8 +112,21 @@ async function markChapterCompletedAndNavigate(
     if (!res.ok) throw new Error("No se pudo completar el capítulo");
     const apiResponse = await res.json();
 
-    // Notificación y confetti por certificado
-    if (
+    // Mostrar modal si el certificado se enviará por correo (no generado aún)
+    if (apiResponse.courseCompleted && !apiResponse.certificateGenerated) {
+      // Mostrar toast personalizado en lugar de alert
+      toast(
+        "¡Felicidades! Has completado el curso. Tu certificado será enviado a tu correo electrónico pronto.",
+        {
+          duration: 8000,
+          style: {
+            backgroundColor: "#d1fae5",
+            color: "#065f46",
+            fontWeight: "bold",
+          },
+        }
+      );
+    } else if (
       apiResponse.courseCompleted &&
       (apiResponse.certificateGenerated || apiResponse.certificateId)
     ) {

@@ -39,34 +39,43 @@ export async function PUT(
     let certificateId: string | null = null;
     // --- Lógica de generación de certificado ---
     if (isCompleted) {
-      // Buscar todos los capítulos publicados y no eliminados del curso
+      // Buscar todos los capítulos publicados y no eliminados del curso, ordenados por posición
       const courseChapters = await db.chapter.findMany({
         where: { courseId: courseId, isPublished: true, delete: false },
         select: { id: true },
+        orderBy: { position: "asc" },
       });
+
       if (courseChapters.length > 0) {
-        const completedChaptersCount = await db.userProgress.count({
-          where: {
-            userId: user.id,
-            chapterId: { in: courseChapters.map((c) => c.id) },
-            isCompleted: true,
-          },
-        });
-        if (completedChaptersCount === courseChapters.length) {
-          courseCompleted = true;
-          // Centralizado: Llama a generateCertificate
-          const cert = await generateCertificate(user.id, courseId);
-          if (cert) {
-            certificateGenerated = true;
-            certificateId = cert.id;
-            console.log(
-              `CERT_GEN: Certificado generado/obtenido para usuario ${user.id} en curso ${courseId} con código ${cert.code}`
-            );
-          } else {
-            console.log(
-              `CERT_GEN: No se pudo generar/obtener certificado para usuario ${user.id} en curso ${courseId}.`
-            );
+        // Verificar si el capítulo actual es el último capítulo
+        const lastChapter = courseChapters[courseChapters.length - 1];
+        if (lastChapter.id === chapterId) {
+          // Marcar todos los capítulos como completados para el usuario
+          for (const chapter of courseChapters) {
+            await db.userProgress.upsert({
+              where: {
+                userId_chapterId: {
+                  userId: user.id,
+                  chapterId: chapter.id,
+                },
+              },
+              update: { isCompleted: true },
+              create: {
+                userId: user.id,
+                chapterId: chapter.id,
+                isCompleted: true,
+              },
+            });
           }
+          courseCompleted = true;
+          // No generar certificado aquí, solo indicar que se enviará por correo
+          certificateGenerated = false;
+          certificateId = null;
+        } else {
+          // Solo marcar el capítulo actual como completado
+          courseCompleted = false;
+          certificateGenerated = false;
+          certificateId = null;
         }
       }
     }
