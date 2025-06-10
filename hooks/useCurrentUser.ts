@@ -1,8 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
 
+// Mejorar tipado para user
+export interface UserSession {
+  id: string;
+  email?: string;
+  fullName?: string;
+  [key: string]: any;
+}
+
 export function useCurrentUser() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<UserSession | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

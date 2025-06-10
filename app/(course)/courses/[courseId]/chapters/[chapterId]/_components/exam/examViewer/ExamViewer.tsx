@@ -24,12 +24,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import CertificateCard from "./certi/CertificateCard";
+import PreCertificateCard from "./certi/PreCertificateCard";
 import {
   useProcessAndSubmitExam,
   QuestionType,
   type Exam,
   type Question,
 } from "./examSubmit";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function ExamViewer({
   onScore,
@@ -46,6 +49,7 @@ export default function ExamViewer({
   };
 
   const { submit: processAndSubmit, isLoading } = useProcessAndSubmitExam();
+  const { user } = useCurrentUser();
 
   const [exam, setExam] = useState<Exam | null>(null);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
@@ -167,15 +171,12 @@ export default function ExamViewer({
             open={showCertificateModal}
             onOpenChange={setShowCertificateModal}
           >
-            <DialogContent className="max-w-lg">
-              <DialogHeader>
-                <DialogTitle>Certificado en proceso</DialogTitle>
-                <DialogDescription>
-                  ¡Felicidades! Has completado el curso. Tu certificado será
-                  enviado a tu correo electrónico pronto.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
+            <DialogContent className="w-[900px] h-[600px] bg-white shadow-lg rounded-md flex justify-center items-center">
+              <DialogFooter className="w-full flex flex-col justify-center">
+                <PreCertificateCard
+                  name={user?.fullName || user?.email || "Usuario"}
+                />
+
                 <Button onClick={() => setShowCertificateModal(false)}>
                   Cerrar
                 </Button>
