@@ -78,6 +78,8 @@ export default function ThankYouPage() {
     const fullUrl = window.location.href;
     const detalles = obtenerParametrosDeUrl(fullUrl);
 
+    console.log("Detalles de pago extraídos:", detalles);
+
     // Guardamos todos los parámetros para poder listarlos en la UI
     setPaymentDetails(detalles);
 
@@ -239,6 +241,33 @@ export default function ThankYouPage() {
     processPayment();
   }, [statusVisual, courseId, validationMessage, invoiceData]);
 
+  // Polling para consultar el estado del pago usando el ID de operación (Oper)
+  useEffect(() => {
+    const operId = paymentDetails["Oper"] || paymentDetails["oper"];
+    if (
+      !operId ||
+      statusVisual === "success" ||
+      statusVisual === "invalid-params"
+    )
+      return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/invoices/${operId}`);
+        const data = await res.json();
+        if (data.found && data.invoice?.status === "APROBADA") {
+          setInvoiceData(data.invoice);
+          setStatusVisual("success");
+          setValidationMessage("¡Pago aprobado! Aquí está tu comprobante.");
+        }
+      } catch (e) {
+        // Ignorar errores de polling
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [paymentDetails, statusVisual]);
+
   // Componente para mostrar los detalles de la URL
   const PaymentDetailsSection = () => {
     // Lista de campos a excluir
@@ -356,6 +385,15 @@ export default function ThankYouPage() {
               Estamos registrando tu inscripción al curso{" "}
               {courseName || courseId}, por favor espera un momento...
             </p>
+            {/* Mensaje adicional mientras se consulta el estado del pago */}
+            <div className="mt-2 text-sm text-blue-600 text-center animate-pulse">
+              <span>
+                Verificando el estado de tu pago. Esto puede tardar unos minutos
+                si tu banco aún no ha confirmado la transacción.
+                <br />
+                No cierres esta ventana.
+              </span>
+            </div>
             <PaymentDetailsSection />
           </div>
         );

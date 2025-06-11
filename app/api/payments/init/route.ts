@@ -31,14 +31,14 @@ function getConfig() {
   const returnUrlRaw =
     process.env.NEXT_PUBLIC_RETURN_URL ||
     "https://academy.infectotropico.com/return";
-  const cardTypes = process.env.PAGUELOFACIL_CARD_TYPES || "";
+  // const cardTypes = process.env.PAGUELOFACIL_CARD_TYPES || "0";
   const expiresIn = process.env.PAGUELOFACIL_EXPIRES_IN || "3600";
 
   if (!cclw || !apiKey) {
     throw new Error("Payment credentials (CCLW/API_KEY) not configured.");
   }
 
-  return { apiUrl, cclw, apiKey, returnUrlRaw, cardTypes, expiresIn };
+  return { apiUrl, cclw, apiKey, returnUrlRaw, expiresIn };
 }
 
 /**
@@ -87,9 +87,10 @@ function buildFormParams(
   user: UserDB,
   course: Partial<Course>
 ): URLSearchParams {
-  const { cclw, cardTypes, expiresIn } = config;
+  const { cclw, expiresIn } = config;
   const CCLW = cclw;
-  const CMTN = body.amount.toFixed(2);
+  // const CMTN = body.amount.toFixed(2);
+  const CMTN = "1.0";
   const rawDesc = buildDynamicDescription(user, course, body.description);
   const CDSC = percentEncodeUTF8(rawDesc);
   const RETURN_URL = body.returnUrl
@@ -98,7 +99,7 @@ function buildFormParams(
   const PARM_1 = "";
   const CTAX = "";
   const PF_CF = toHex(JSON.stringify({ email: body.email, phone: body.phone }));
-  const CARD_TYPE = cardTypes;
+  // const CARD_TYPE = cardTypes;
   const EXPIRES_IN = expiresIn;
 
   return new URLSearchParams({
@@ -109,7 +110,7 @@ function buildFormParams(
     PARM_1,
     CTAX,
     PF_CF,
-    CARD_TYPE,
+    // CARD_TYPE,
     EXPIRES_IN,
   });
 }

@@ -36,7 +36,10 @@ export async function GET(
     // Validar razon aprobado
     const isRazonApproved =
       razonDecoded.includes("00 - Aprobado") ||
-      razonDecoded.includes("Aprobado");
+      razonDecoded.includes("Aprobado") ||
+      razonDecoded.includes("Aprobada") ||
+      razonDecoded.includes("AUTHORIZED");
+    // Si la razón no está aprobada, retornar error
     if (!isRazonApproved && razonField) {
       return NextResponse.json(
         {
