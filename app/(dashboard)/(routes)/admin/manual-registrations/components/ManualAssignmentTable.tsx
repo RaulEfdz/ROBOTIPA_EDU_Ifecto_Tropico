@@ -251,6 +251,7 @@ export function ManualAssignmentTable() {
               <span className="text-emerald-600">{selectedUser.fullName}</span>
             </h3>
             <select
+              title="Selecciona un curso para asignar"
               className="w-full border border-gray-300 dark:border-gray-700 rounded px-3 py-2 mb-4 dark:bg-gray-800"
               value={selectedCourseId}
               onChange={(e) => setSelectedCourseId(e.target.value)}
@@ -304,12 +305,13 @@ export function ManualAssignmentTable() {
               </span>
             </h3>
             <select
+              title="Selecciona un curso para revocar"
               className="w-full border border-gray-300 dark:border-gray-700 rounded px-3 py-2 mb-4 dark:bg-gray-800"
               value={selectedCourseId}
               onChange={(e) => setSelectedCourseId(e.target.value)}
             >
               <option value="">Seleccione un curso</option>
-              {selectedUser.assignedCourses.map((course) => (
+              {selectedUser.assignedCourses.map((course: Course) => (
                 <option key={course.id} value={course.id}>
                   {course.title}
                 </option>
