@@ -1,6 +1,7 @@
 import { resend } from "@/lib/resend";
 import { User, Course } from "@prisma/client"; // Asumiendo que los tipos de Prisma están disponibles
 import { getCurrentUserFromDBServer as getCurrentUser } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
+import { db } from "@/lib/db";
 
 // Cargar variables de entorno de forma segura
 const EMAIL_FROM = process.env.EMAIL_FROM_ADDRESS;
@@ -113,28 +114,48 @@ export async function sendEnrollmentConfirmationEmails({
   const currentUser = await getCurrentUser();
   const adminEmail = currentUser?.email;
 
-  if (adminEmail) {
-    const adminEmailSubject = isManualFlow
-      ? `Notificación: Acceso Manual a Curso - ${course.title}`
-      : `Nueva Inscripción Registrada: ${course.title}`;
-    const adminEmailHtmlBody = `
-      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h1 style="color: #333;">Notificación de Acceso Manual a Curso</h1>
-        <p>Se ha otorgado acceso manual a un curso en la plataforma ${appName}:</p>
-        <h2 style="color: #555;">Detalles:</h2>
-        <ul style="list-style-type: none; padding-left: 0;">
-          <li><strong>Usuario:</strong> ${userName} (<a href="mailto:${user.email || ""}">${user.email || "N/A"}</a>)</li>
-          <li><strong>ID Usuario:</strong> ${user.id}</li>
-          <li><strong>Curso:</strong> ${course.title}</li>
-          <li><strong>ID Curso:</strong> ${course.id}</li>
-          <li><strong>Referencia de Compra/Acceso:</strong> ${purchaseId}</li>
-          ${transactionDetails ? `<li><strong>Proceso:</strong> ${transactionDetails}</li>` : ""}
-        </ul>
-        <p>Puedes revisar este registro en el panel de administración.</p>
-      </div>
-    `;
-
+  // Enviar a info@infectotropico.com (mensaje detallado)
+  try {
+    // Buscar si ya tenía acceso
+    let yaTeniaAcceso = false;
     try {
+      const existing = await db.purchase.findFirst({
+        where: { userId: user.id, courseId: course.id },
+      });
+      yaTeniaAcceso = !!existing && existing.createdAt < new Date();
+    } catch {}
+    // Buscar detalles de pago si existen
+    let paymentDetails = "No disponible";
+    try {
+      const payment = await db.payment.findFirst({
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" },
+      });
+      if (payment) {
+        paymentDetails = `Monto: $${payment.amount} USD<br>Estado: ${payment.status}<br>ID Pago: ${payment.id}<br>Fecha: ${payment.createdAt.toLocaleString()}`;
+      }
+    } catch {}
+    await resend.emails.send({
+      from: `Notificaciones ${appName} <${EMAIL_FROM}>`,
+      to: "info@infectotropico.com",
+      subject: `Nuevo inscrito: ${userName} en ${course.title}`,
+      html: `<p>Hay un nuevo inscrito en el curso <b>${course.title}</b>.<br>
+      <b>Nombre:</b> ${userName}<br>
+      <b>Email:</b> ${user.email || "N/A"}<br>
+      <b>Acceso al curso:</b> ${yaTeniaAcceso ? "Ya tenía acceso" : "Acceso recién otorgado"}<br>
+      <b>Detalles del pago:</b><br>${paymentDetails}
+      </p>`,
+    });
+  } catch (error) {
+    console.error(
+      "Error al enviar correo detallado a info@infectotropico.com:",
+      error
+    );
+  }
+
+  if (adminEmail) {
+    // Se elimina el envío del correo detallado al administrador, ya que ahora se envía un resumen a info@
+    /*try {
       await resend.emails.send({
         from: `Notificaciones ${appName} <${EMAIL_FROM}>`,
         to: adminEmail,
@@ -146,7 +167,7 @@ export async function sendEnrollmentConfirmationEmails({
         `Error al enviar notificación de acceso manual al administrador:`,
         error
       );
-    }
+    }*/
   } else {
     console.warn(
       "No se pudo obtener el correo del administrador. No se enviará correo de notificación."

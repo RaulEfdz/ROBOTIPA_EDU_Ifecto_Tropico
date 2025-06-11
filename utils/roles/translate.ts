@@ -36,21 +36,37 @@ export function getAllRoles(): { name: string; id: string }[] {
   return Object.entries(roles).map(([name, id]) => ({ name, id }));
 }
 
-// ✅ Accesos rápidos a cada rol por ID
+// Traduce el ID de rol a un nombre legible para UI
+export function getRoleLabel(roleKey: string | null | undefined): string {
+  if (!roleKey) return "Visitante";
+  switch (roleKey) {
+    case roles.admin:
+      return "Administrador";
+    case roles.teacher:
+      return "Profesor";
+    case roles.student:
+      return "Estudiante";
+    case roles.visitor:
+      return "Visitante";
+    case roles.authenticated:
+      return "Autenticado";
+    default:
+      return roleKey;
+  }
+}
+
+// Mejorar los accesos rápidos para nunca retornar string vacío
 export function getTeacherId(): string {
-  return roles.teacher;
+  return roles.teacher || "rol_teacher";
 }
-
 export function getStudentId(): string {
-  return roles.student;
+  return roles.student || "rol_student";
 }
-
 export function getAdminId(): string {
-  return roles.admin;
+  return roles.admin || "rol_admin";
 }
-
 export function getVisitorId(): string {
-  return roles.visitor;
+  return roles.visitor || "rol_visitor";
 }
 
 export function isValidRole(roleId: string): boolean {
