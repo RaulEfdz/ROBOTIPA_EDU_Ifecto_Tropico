@@ -89,8 +89,8 @@ function buildFormParams(
 ): URLSearchParams {
   const { cclw, expiresIn } = config;
   const CCLW = cclw;
-  // const CMTN = body.amount.toFixed(2);
-  const CMTN = "1.0";
+  const CMTN = body.amount.toFixed(2);
+  // const CMTN = "1.0";
   const rawDesc = buildDynamicDescription(user, course, body.description);
   const CDSC = percentEncodeUTF8(rawDesc);
   const RETURN_URL = body.returnUrl

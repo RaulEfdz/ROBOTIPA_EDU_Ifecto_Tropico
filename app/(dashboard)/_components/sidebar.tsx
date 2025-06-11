@@ -82,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             ROBOTIPA_LMS
           </span>
           <span className="text-brand-primary font-light text-xs">
-            v29.5.25
+            v 25.11.05
           </span>
         </div>
       </div>
