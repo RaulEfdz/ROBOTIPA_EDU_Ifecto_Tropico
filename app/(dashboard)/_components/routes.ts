@@ -115,6 +115,11 @@ export const teacherRoutes: Route[] = [
         href: "/admin/users/visitor",
         // superAdmin: true,
       },
+      {
+        icon: UserCheck,
+        label: "Todos los Usuarios",
+        href: "/admin/users/all",
+      },
       // --- NUEVA SUB-RUTA PARA REGISTRO MANUAL ---
       {
         icon: FileSignature,
