@@ -3,109 +3,145 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { BookOpen } from "lucide-react"; // Solo BookOpen es necesario aquí
+import { BookOpen, Clock, Users, Star } from "lucide-react";
 import { IconBadge } from "@/components/icon-badge";
 import { CourseProgress } from "@/components/course-progress";
-// Asegúrate que la ruta y los tipos sean correctos según tu proyecto Prisma
 import type { Course, Category, Chapter } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
-import { formatPrice } from "@/lib/format"; // Asegúrate de que esta utilidad exista y funcione
+import { formatPrice } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import { formatText } from "@/utils/formatTextMS";
 
 /**
  * Extiende el tipo Course base con propiedades opcionales que pueden o no venir
  * y la propiedad 'progress' que indica si el usuario está inscrito.
  */
 export interface CourseWithProgress extends Course {
-  progress?: number | null; // null o undefined si no está inscrito, número si lo está
-  // Tipos flexibles para category y chapters porque pueden venir completos o simplificados
+  progress?: number | null;
   category?: Category | { id: string; name: string } | null;
   chapters?: Chapter[] | { id: string }[];
 }
 
 interface CourseCardProps {
-  course: CourseWithProgress; // Usa el tipo específico CourseWithProgress
-  setLoading: (value: boolean) => void; // Función para indicar estado de carga al navegar
+  course: CourseWithProgress;
+  setLoading: (value: boolean) => void;
+  className?: string;
+  variant?: "default" | "compact" | "featured";
 }
 
-export const CourseCard = ({ course, setLoading }: CourseCardProps) => {
-  // Desestructura las propiedades necesarias del objeto 'course'
-  // Usa valores por defecto seguros para evitar errores si alguna propiedad falta inesperadamente
+export const CourseCard = ({
+  course,
+  setLoading,
+  className,
+  variant = "default",
+}: CourseCardProps) => {
   const {
-    id = "unknown-id", // ID es crucial, fallback por si acaso
+    id = "unknown-id",
     title = "Curso sin título",
-    imageUrl = null, // Permitir null
-    price = null, // Permitir null
-    isPublished = false, // Asumir no publicado si no se especifica
+    imageUrl = null,
+    price = null,
+    isPublished = false,
     category = null,
-    chapters = [], // Array vacío por defecto
-    progress = null, // null por defecto
-  } = course || {}; // Añadir objeto vacío como fallback si 'course' fuera undefined
+    chapters = [],
+    progress = null,
+    description = null,
+  } = course || {};
 
-  // Manejo seguro de valores y cálculo de derivados
-  const imageSrc: string = imageUrl ?? "/images/course_placeholder.jpg"; // Placeholder obligatorio
-  // Extrae el nombre de la categoría de forma segura, sea objeto completo o simplificado
+  const imageSrc: string = imageUrl ?? "/images/course_placeholder.jpg";
   const categoryName: string =
     typeof category === "object" && category !== null && "name" in category
       ? category.name
       : "Sin categoría";
   const chaptersCount: number = Array.isArray(chapters) ? chapters.length : 0;
   const priceDisplay: string =
-    price !== null && price > 0 ? formatPrice(price) : "Gratis"; // Usa la función formatPrice
+    price !== null && price > 0 ? formatPrice(price) : "Gratis";
 
   const router = useRouter();
 
-  // Lógica para manejar la navegación al hacer clic en la tarjeta
   const determineTargetPath = () => {
     if (id === "unknown-id") {
       console.error(
         "CourseCard: No se puede navegar sin un ID de curso válido."
       );
-      return null; // No navegar si no hay ID
+      return null;
     }
-    const isEnrolled = progress !== null; // Determina si el usuario está inscrito
+    const isEnrolled = progress !== null;
     return isEnrolled
-      ? `/courses/${id}/chapters/${chapters[0].id}`
-      : `/pages/course/${id}/chapters/${chapters[0].id}`;
+      ? `/courses/${id}/chapters/${chapters[0]?.id}`
+      : `/pages/course/${id}/chapters/${chapters[0]?.id}`;
   };
 
   const handleNavigate = () => {
     const targetPath = determineTargetPath();
     if (!targetPath) return;
-    setLoading(true); // Indica que la navegación/carga ha comenzado
-    router.push(targetPath); // Navega a la ruta destino
-    // setLoading(false) no se llama aquí; la nueva página manejará su propio estado de carga.
+    setLoading(true);
+    router.push(targetPath);
   };
 
-  // Componente interno para renderizar la insignia de categoría
+  // Componente de insignia de categoría mejorado
   const CategoryBadge = () => {
-    // No renderizar si no hay nombre de categoría o es el valor por defecto
     if (!categoryName || categoryName === "Sin categoría") return null;
     return (
-      <Badge
-        variant="outline"
-        className="absolute top-2 right-2 z-10 bg-bg-base/80 dark:bg-brand-primary/80 backdrop-blur-sm border-border-default dark:border-brand-primary text-text-heading dark:text-text-body text-xs font-medium px-2 py-0.5 rounded-full shadow-sm"
-      >
-        {categoryName}
-      </Badge>
+      <div className="absolute top-3 right-3 z-20">
+        <Badge
+          variant="outline"
+          className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-white/20 text-gray-700 dark:text-gray-200 text-xs font-semibold px-3 py-1 rounded-full shadow-lg hover:bg-white/95 dark:hover:bg-gray-900/95 transition-all duration-200"
+        >
+          {categoryName}
+        </Badge>
+      </div>
     );
   };
 
-  // Renderizado especial si el curso no está publicado
+  // Componente de overlay con gradiente
+  const ImageOverlay = () => (
+    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-xl" />
+  );
+
+  // Indicador de progreso visual
+  const ProgressIndicator = () => {
+    if (progress === null) return null;
+    return (
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 dark:bg-gray-700">
+        <div
+          className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    );
+  };
+
+  // Renderizado para cursos no publicados
   if (!isPublished) {
     return (
-      <div className="card-base group relative opacity-70 cursor-not-allowed shadow-md shadow-slate-400 dark:shadow-slate-900">
-        <div className="relative w-full aspect-video overflow-hidden rounded-t-lg bg-bg-card">
+      <div
+        className={cn(
+          "group relative overflow-hidden rounded-xl",
+          "bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900",
+          "border border-gray-200 dark:border-gray-700",
+          "opacity-60 cursor-not-allowed",
+          "shadow-sm",
+          className
+        )}
+      >
+        <div className="relative w-full aspect-video overflow-hidden">
           <Image
             fill
-            className="object-cover opacity-40 grayscale"
+            className="object-cover opacity-40 grayscale filter blur-[1px]"
             alt={`(No publicado) ${title}`}
             src={imageSrc}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
+          <div className="absolute inset-0 bg-gray-900/20" />
         </div>
-        <div className="flex flex-col p-3">
-          <h3 className="title-h3 line-clamp-2 mb-1">{title}</h3>
-          <p className="text-xs text-text-body mb-2">{categoryName}</p>
-          <Badge variant="secondary" className="self-start text-xs">
+        <div className="p-4">
+          <h3 className="font-bold text-gray-600 dark:text-gray-400 text-lg line-clamp-2 mb-2">
+            {title}
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-500 mb-3">
+            {categoryName}
+          </p>
+          <Badge variant="secondary" className="text-xs font-medium">
             No publicado
           </Badge>
         </div>
@@ -113,68 +149,149 @@ export const CourseCard = ({ course, setLoading }: CourseCardProps) => {
     );
   }
 
-  // Renderizado normal para cursos publicados
+  // Estilos base del componente
+  const cardStyles = cn(
+    "group relative overflow-hidden rounded-xl cursor-pointer",
+    "bg-white dark:bg-gray-900",
+    "border border-gray-200 dark:border-gray-800",
+    "shadow-lg hover:shadow-2xl",
+    "transform transition-all duration-300 ease-out",
+    "hover:-translate-y-2 hover:scale-[1.02]",
+    "focus:outline-none focus:ring-4 focus:ring-blue-500/20",
+    "h-full flex flex-col",
+    {
+      "max-w-sm": variant === "compact",
+      "max-w-md": variant === "default",
+      "max-w-lg border-2 border-gradient-to-r from-blue-500 to-purple-600":
+        variant === "featured",
+    },
+    className
+  );
+
   return (
     <div
       onClick={handleNavigate}
-      className="cursor-pointer h-full block focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 rounded-lg shadow-lg shadow-slate-300 dark:shadow-slate-900 hover:shadow-2xl transition-shadow duration-300"
-      role="link"
+      className={cardStyles}
+      role="button"
       aria-label={`Ver detalles del curso ${title}`}
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") handleNavigate();
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleNavigate();
+        }
       }}
     >
-      <div className="card-base group relative flex flex-col h-full">
-        {/* Sección de Imagen */}
-        <div className="relative w-full aspect-video overflow-hidden rounded-t-lg">
-          <Image
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            alt={`Portada del curso ${title}`}
-            src={imageSrc}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            priority={false}
-          />
-          <CategoryBadge />
-        </div>
+      {/* Sección de Imagen con efectos mejorados */}
+      <div className="relative w-full aspect-video overflow-hidden">
+        <Image
+          fill
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+          alt={`Portada del curso ${title}`}
+          src={imageSrc}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          priority={variant === "featured"}
+        />
+        <ImageOverlay />
+        <CategoryBadge />
+        <ProgressIndicator />
 
-        {/* Sección de Contenido */}
-        <div className="flex flex-col flex-grow p-3">
+        {/* Indicador de curso gratuito/premium */}
+        {price === 0 && (
+          <div className="absolute top-3 left-3 z-20">
+            <Badge className="bg-green-500 hover:bg-green-600 text-white border-0 font-semibold">
+              GRATIS
+            </Badge>
+          </div>
+        )}
+      </div>
+
+      {/* Sección de Contenido mejorada */}
+      <div className="flex flex-col flex-grow p-5 space-y-3">
+        {/* Título del curso */}
+        <div className="space-y-2">
           <h3
-            className="title-h3 group-hover:text-brand-primary transition-colors duration-200 line-clamp-2 mb-1"
+            className="font-bold text-xl text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 line-clamp-2 leading-tight"
             title={title}
           >
             {title}
           </h3>
-          {/* Detalles (Número de Capítulos) */}
-          <div className="flex items-center gap-x-1 text-text-body text-xs mt-1 mb-3">
-            <IconBadge size="sm" icon={BookOpen} />
-            <span>
-              {chaptersCount} {chaptersCount === 1 ? "Capítulo" : "Capítulos"}
-            </span>
-          </div>
-          {/* Footer de la tarjeta: Muestra Progreso o Precio */}
-          <div className="mt-auto pt-2">
-            {progress !== null ? (
-              <div className="space-y-1">
-                <span className="text-xs text-text-body">Progreso</span>
-                <CourseProgress
-                  variant={progress === 100 ? "success" : "default"}
-                  size="sm"
-                  value={progress}
-                />
+        </div>
+
+        {/* Metadatos del curso */}
+        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              <IconBadge size="sm" icon={BookOpen} />
+              <span className="font-medium">
+                {chaptersCount} {chaptersCount === 1 ? "Capítulo" : "Capítulos"}
+              </span>
+            </div>
+
+            {/* Indicador adicional para cursos con progreso */}
+            {progress !== null && (
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4 text-amber-500" />
+                <span className="text-xs">En progreso</span>
               </div>
-            ) : (
-              <Badge
-                variant={price === 0 ? "secondary" : "default"}
-                className="text-sm font-semibold"
-              >
-                {priceDisplay}
-              </Badge>
             )}
           </div>
         </div>
+
+        {/* Separador sutil */}
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
+
+        {/* Footer de la tarjeta mejorado */}
+        <div className="mt-auto pt-2">
+          {progress !== null ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Progreso del curso
+                </span>
+                <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                  {Math.round(progress)}%
+                </span>
+              </div>
+              {/* <CourseProgress
+                variant={progress === 100 ? "success" : "default"}
+                size="sm"
+                value={progress}
+              /> */}
+              <div className="h-2 bg-gray-200 dark:bg-gray-700" />
+              {progress === 100 && (
+                <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                  <Star className="w-4 h-4 fill-current" />
+                  <span className="text-xs font-semibold">¡Completado!</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <Badge
+                variant={price === 0 ? "secondary" : "default"}
+                className={cn(
+                  "text-lg font-bold px-4 py-2 rounded-lg",
+                  price === 0
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                    : "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
+                )}
+              >
+                {priceDisplay}
+              </Badge>
+
+              {/* Indicador de llamada a la acción */}
+              <div className="text-xs text-gray-500 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Clic para ver →
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Efecto de brillo en hover */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
       </div>
     </div>
   );
