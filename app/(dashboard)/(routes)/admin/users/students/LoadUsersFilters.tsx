@@ -84,6 +84,19 @@ export default function LoadUsersFilters() {
     await loadUsersFilters(); // Refresca la lista de Estudiantes
   };
 
+  // Calcular estadísticas generales
+  const overallStats = {
+    totalStudents: filteredData.length,
+    activeStudents: filteredData.filter(s => s.isActive).length,
+    studentsWithCourses: filteredData.filter(s => (s as any).studentStats?.totalCourses > 0).length,
+    averageProgressAllStudents: filteredData.length > 0
+      ? Math.round(
+          filteredData.reduce((sum, s) => sum + ((s as any).studentStats?.averageProgress || 0), 0) / 
+          filteredData.length
+        )
+      : 0,
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
@@ -103,6 +116,46 @@ export default function LoadUsersFilters() {
             <PlusCircle className="mr-2 h-4 w-4" />
             Nuevo
           </Button>
+        </div>
+      </div>
+
+      {/* Tarjetas de resumen de estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Total Estudiantes</div>
+          <div className="text-2xl font-bold">{overallStats.totalStudents}</div>
+          <div className="text-xs text-gray-400">
+            {overallStats.activeStudents} activos
+          </div>
+        </div>
+        
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Con Cursos</div>
+          <div className="text-2xl font-bold">{overallStats.studentsWithCourses}</div>
+          <div className="text-xs text-gray-400">
+            {overallStats.totalStudents > 0 
+              ? `${Math.round((overallStats.studentsWithCourses / overallStats.totalStudents) * 100)}%`
+              : '0%'
+            } del total
+          </div>
+        </div>
+        
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Progreso Promedio</div>
+          <div className="text-2xl font-bold">{overallStats.averageProgressAllStudents}%</div>
+          <div className="text-xs text-gray-400">
+            En todos los cursos
+          </div>
+        </div>
+        
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400">Estudiantes Destacados</div>
+          <div className="text-2xl font-bold">
+            {filteredData.filter(s => (s as any).studentStats?.averageProgress >= 80).length}
+          </div>
+          <div className="text-xs text-gray-400">
+            Progreso ≥ 80%
+          </div>
         </div>
       </div>
 

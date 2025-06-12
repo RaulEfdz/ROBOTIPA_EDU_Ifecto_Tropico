@@ -1,20 +1,24 @@
 export const columnVisibility: { [key: string]: boolean } = {
-  id: false,               // Mostrar columna ID
+  id: false,               // Ocultar columna ID
   fullName: true,         // Mostrar columna Nombre
   email: true,            // Mostrar columna Email
-  username: true,         // Mostrar columna Nombre de usuario
+  username: false,        // Ocultar columna Nombre de usuario
   phone: false,           // Ocultar columna Teléfono
-  customRole: true,       // Mostrar columna Rol
+  totalCourses: true,     // Mostrar columna Cursos Totales
+  studentsEnrolled: true, // Mostrar columna Estudiantes
+  revenue: true,          // Mostrar columna Ingresos Generados
+  coursesDetail: true,    // Mostrar columna Cursos Principales
+  customRole: false,      // Ocultar columna Rol (ya sabemos que son profesores)
   provider: false,        // Ocultar columna Proveedor
   lastSignInAt: true,     // Mostrar columna Último inicio
   metadata: false,        // Ocultar columna Metadatos
   isActive: true,         // Mostrar columna Activo
-  isBanned: true,         // Mostrar columna Baneado
+  isBanned: false,        // Ocultar columna Baneado
   isDeleted: false,       // Ocultar columna Eliminado
   additionalStatus: false, // Ocultar columna Estado adicional
-  createdAt: true,        // Mostrar columna Creado
-  updatedAt: true,        // Mostrar columna Actualizado
-  courses: true,          // Mostrar columna Cursos
+  createdAt: false,       // Ocultar columna Creado
+  updatedAt: false,       // Ocultar columna Actualizado
+  courses: false,         // Ocultar columna Cursos (reemplazada)
   purchases: false,       // Ocultar columna Compras
   userProgress: false,    // Ocultar columna Progreso
   invoices: false,        // Ocultar columna Facturas

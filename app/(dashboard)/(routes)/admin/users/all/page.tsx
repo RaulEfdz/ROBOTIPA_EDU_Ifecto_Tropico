@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { getRoleLabel } from "@/utils/roles/translate";
+import { getRoleLabel, getAdminId, getTeacherId, getStudentId, getVisitorId } from "@/utils/roles/translate";
 import {
   User as UserIcon,
   Search,
@@ -45,13 +45,27 @@ interface User {
   LegalDocument: any[];
 }
 
-const roleOptions = [
-  { value: "", label: "Todos los roles" },
-  { value: "admin", label: getRoleLabel("admin") },
-  { value: "teacher", label: getRoleLabel("teacher") },
-  { value: "student", label: getRoleLabel("student") },
-  { value: "visitor", label: getRoleLabel("visitor") },
-];
+// Función helper para obtener las opciones de rol de forma segura
+function getRoleOptions() {
+  try {
+    return [
+      { value: "", label: "Todos los roles" },
+      { value: getAdminId(), label: getRoleLabel(getAdminId()) },
+      { value: getTeacherId(), label: getRoleLabel(getTeacherId()) },
+      { value: getStudentId(), label: getRoleLabel(getStudentId()) },
+      { value: getVisitorId(), label: getRoleLabel(getVisitorId()) },
+    ];
+  } catch (error) {
+    console.warn("Error getting role options:", error);
+    return [
+      { value: "", label: "Todos los roles" },
+      { value: "admin", label: "Administrador" },
+      { value: "teacher", label: "Profesor" },
+      { value: "student", label: "Estudiante" },
+      { value: "visitor", label: "Visitante" },
+    ];
+  }
+}
 const statusOptions = [
   { value: "", label: "Todos" },
   { value: "active", label: "Activo" },
@@ -292,7 +306,17 @@ const UsersAllPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [onlyWithCourses, setOnlyWithCourses] = useState(false);
+  const [onlyActiveToday, setOnlyActiveToday] = useState(false);
+  const [onlyWithSubscription, setOnlyWithSubscription] = useState(false);
   const [modalUser, setModalUser] = useState<User | null>(null);
+
+  const [globalStats, setGlobalStats] = useState<any>(null);
+  const [roleOptions, setRoleOptions] = useState<{value: string, label: string}[]>([]);
+
+  // Inicializar opciones de rol
+  useEffect(() => {
+    setRoleOptions(getRoleOptions());
+  }, []);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -302,7 +326,8 @@ const UsersAllPage: React.FC = () => {
           throw new Error("Failed to fetch users");
         }
         const data = await res.json();
-        setUsers(data);
+        setUsers(data.users || data); // Handle both old and new format
+        setGlobalStats(data.globalStats);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -326,7 +351,7 @@ const UsersAllPage: React.FC = () => {
       case "phone":
         return user.phone || "";
       case "customRole":
-        return user.customRole;
+        return getRoleLabel(user.customRole);
       case "provider":
         return user.provider;
       case "lastSignInAt":
@@ -349,6 +374,24 @@ const UsersAllPage: React.FC = () => {
         return user.courses?.length || 0;
       case "certificates":
         return user.certificates?.length || 0;
+      case "roleStats":
+        const roleStats = (user as any).roleStats;
+        if (!roleStats) return 0;
+        switch (roleStats.type) {
+          case 'teacher':
+            return roleStats.totalStudents || 0;
+          case 'student':
+            return roleStats.overallProgress || 0;
+          case 'admin':
+            return roleStats.daysSinceCreation || 0;
+          case 'visitor':
+            return roleStats.engagementScore || 0;
+          default:
+            return 0;
+        }
+      case "generalStats":
+        const generalStats = (user as any).generalStats;
+        return generalStats?.totalPayments || 0;
       default:
         return "";
     }
@@ -415,12 +458,24 @@ const UsersAllPage: React.FC = () => {
       const searchText = search.toLowerCase();
       const visibleRow = getVisibleRowString(u);
       const matchesSearch = visibleRow.includes(searchText);
-      // Filtra por label traducido del rol
-      const roleLabel = getRoleLabel(u.customRole);
-      const matchesRole =
-        !roleFilter ||
-        (roleLabel &&
-          roleLabel.toLowerCase() === getRoleLabel(roleFilter).toLowerCase());
+      // Filtra por ID del rol - manejamos tanto IDs como nombres legacy
+      const matchesRole = !roleFilter || (() => {
+        // Si el filtro es un ID, comparar directamente
+        if (u.customRole === roleFilter) return true;
+        
+        // Si el filtro es un nombre legacy, convertir y comparar
+        try {
+          const roleIdByName: { [key: string]: string } = {
+            'admin': getAdminId(),
+            'teacher': getTeacherId(), 
+            'student': getStudentId(),
+            'visitor': getVisitorId()
+          };
+          return u.customRole === roleIdByName[roleFilter];
+        } catch (error) {
+          return false;
+        }
+      })();
       let matchesStatus = true;
       if (statusFilter === "active") matchesStatus = u.isActive;
       if (statusFilter === "banned") matchesStatus = u.isBanned;
@@ -431,7 +486,19 @@ const UsersAllPage: React.FC = () => {
           (u.courses && u.courses.length > 0) ||
           (u.purchases && u.purchases.length > 0);
       }
-      return matchesSearch && matchesRole && matchesStatus && hasCourses;
+      
+      let isActiveToday = true;
+      if (onlyActiveToday) {
+        isActiveToday = u.lastSignInAt && 
+          new Date(u.lastSignInAt).toDateString() === new Date().toDateString();
+      }
+      
+      let hasSubscription = true;
+      if (onlyWithSubscription) {
+        hasSubscription = (u as any).generalStats?.hasActiveSubscription || false;
+      }
+      
+      return matchesSearch && matchesRole && matchesStatus && hasCourses && isActiveToday && hasSubscription;
     });
     filtered = filtered.sort((a, b) => {
       let aVal = getSortValue(a, sortBy);
@@ -453,6 +520,8 @@ const UsersAllPage: React.FC = () => {
     sortBy,
     sortDir,
     onlyWithCourses,
+    onlyActiveToday,
+    onlyWithSubscription,
   ]);
 
   // Mejorar el botón de descarga CSV para exportar los datos visibles y formateados
@@ -535,6 +604,52 @@ const UsersAllPage: React.FC = () => {
       <h1 className="text-3xl font-extrabold mb-6 flex items-center gap-2 text-emerald-700">
         <UserIcon className="w-8 h-8 text-emerald-500" /> Todos los Usuarios
       </h1>
+
+      {/* Dashboard de estadísticas globales */}
+      {globalStats && (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div className="text-sm text-gray-500 dark:text-gray-400">Total Usuarios</div>
+            <div className="text-2xl font-bold text-emerald-600">{globalStats.totalUsers}</div>
+            <div className="text-xs text-gray-400">{globalStats.activeUsers} activos</div>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div className="text-sm text-gray-500 dark:text-gray-400">Administradores</div>
+            <div className="text-2xl font-bold text-yellow-600">{globalStats.usersByRole.admins}</div>
+            <div className="text-xs text-gray-400">Acceso completo</div>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div className="text-sm text-gray-500 dark:text-gray-400">Profesores</div>
+            <div className="text-2xl font-bold text-blue-600">{globalStats.usersByRole.teachers}</div>
+            <div className="text-xs text-gray-400">Creadores de contenido</div>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div className="text-sm text-gray-500 dark:text-gray-400">Estudiantes</div>
+            <div className="text-2xl font-bold text-purple-600">{globalStats.usersByRole.students}</div>
+            <div className="text-xs text-gray-400">Aprendiendo activamente</div>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div className="text-sm text-gray-500 dark:text-gray-400">Visitantes</div>
+            <div className="text-2xl font-bold text-gray-600">{globalStats.usersByRole.visitors}</div>
+            <div className="text-xs text-gray-400">Potenciales estudiantes</div>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div className="text-sm text-gray-500 dark:text-gray-400">Con Compras</div>
+            <div className="text-2xl font-bold text-green-600">{globalStats.usersWithPurchases}</div>
+            <div className="text-xs text-gray-400">
+              {globalStats.totalUsers > 0 
+                ? `${Math.round((globalStats.usersWithPurchases / globalStats.totalUsers) * 100)}%`
+                : '0%'
+              } conversión
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex flex-wrap gap-4 mb-6 items-end bg-white/80 dark:bg-slate-900/60 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
         <div className="flex flex-col">
           <label className="block text-xs font-semibold mb-1 text-gray-600 dark:text-gray-300">
@@ -551,8 +666,6 @@ const UsersAllPage: React.FC = () => {
             <Search className="absolute right-2 top-2.5 w-4 h-4 text-gray-400" />
           </div>
         </div>
-        {/* Filtro por Rol oculto intencionalmente */}
-        {/*
         <div className="flex flex-col">
           <label className="block text-xs font-semibold mb-1 text-gray-600 dark:text-gray-300">
             Rol
@@ -570,7 +683,6 @@ const UsersAllPage: React.FC = () => {
             ))}
           </select>
         </div>
-        */}
         <div className="flex flex-col">
           <label className="block text-xs font-semibold mb-1 text-gray-600 dark:text-gray-300">
             Estado
@@ -588,20 +700,52 @@ const UsersAllPage: React.FC = () => {
             ))}
           </select>
         </div>
-        <div className="flex items-center mt-6">
-          <input
-            id="onlyWithCourses"
-            type="checkbox"
-            checked={onlyWithCourses}
-            onChange={() => setOnlyWithCourses((v) => !v)}
-            className="accent-emerald-600 w-4 h-4 mr-2"
-          />
-          <label
-            htmlFor="onlyWithCourses"
-            className="text-sm text-gray-700 dark:text-gray-200 select-none"
-          >
-            Solo con cursos
-          </label>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center">
+            <input
+              id="onlyWithCourses"
+              type="checkbox"
+              checked={onlyWithCourses}
+              onChange={() => setOnlyWithCourses((v) => !v)}
+              className="accent-emerald-600 w-4 h-4 mr-2"
+            />
+            <label
+              htmlFor="onlyWithCourses"
+              className="text-sm text-gray-700 dark:text-gray-200 select-none"
+            >
+              Solo con cursos
+            </label>
+          </div>
+          <div className="flex items-center">
+            <input
+              id="onlyActiveToday"
+              type="checkbox"
+              checked={onlyActiveToday}
+              onChange={() => setOnlyActiveToday((v) => !v)}
+              className="accent-emerald-600 w-4 h-4 mr-2"
+            />
+            <label
+              htmlFor="onlyActiveToday"
+              className="text-sm text-gray-700 dark:text-gray-200 select-none"
+            >
+              Activos hoy
+            </label>
+          </div>
+          <div className="flex items-center">
+            <input
+              id="onlyWithSubscription"
+              type="checkbox"
+              checked={onlyWithSubscription}
+              onChange={() => setOnlyWithSubscription((v) => !v)}
+              className="accent-emerald-600 w-4 h-4 mr-2"
+            />
+            <label
+              htmlFor="onlyWithSubscription"
+              className="text-sm text-gray-700 dark:text-gray-200 select-none"
+            >
+              Con suscripción
+            </label>
+          </div>
         </div>
         <Button
           onClick={downloadCSV}
@@ -621,17 +765,11 @@ const UsersAllPage: React.FC = () => {
                 { key: "username", label: "Username" },
                 { key: "phone", label: "Teléfono" },
                 { key: "customRole", label: "Rol" },
-                { key: "provider", label: "Proveedor" },
+                { key: "roleStats", label: "Métricas del Rol" },
                 { key: "lastSignInAt", label: "Último acceso" },
                 { key: "isActive", label: "Activo" },
-                { key: "isBanned", label: "Baneado" },
-                { key: "isDeleted", label: "Eliminado" },
-                { key: "additionalStatus", label: "Estado adicional" },
-                { key: "createdAt", label: "Creado" },
-                { key: "updatedAt", label: "Actualizado" },
-                { key: "purchases", label: "Cursos comprados" },
-                { key: "courses", label: "Cursos creados" },
-                { key: "certificates", label: "Certificados" },
+                { key: "generalStats", label: "Actividad General" },
+                { key: "createdAt", label: "Registrado" },
               ].map((col) => (
                 <th
                   key={col.key}
@@ -678,20 +816,101 @@ const UsersAllPage: React.FC = () => {
                 <td className="px-4 py-3">{user.phone || "-"}</td>
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold ${
-                      user.customRole === "admin"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : user.customRole === "teacher"
-                          ? "bg-blue-100 text-blue-700"
-                          : user.customRole === "student"
-                            ? "bg-purple-100 text-purple-700"
-                            : "bg-gray-100 text-gray-600"
-                    }`}
+                    className={(() => {
+                      try {
+                        const isAdmin = user.customRole === getAdminId();
+                        const isTeacher = user.customRole === getTeacherId();
+                        const isStudent = user.customRole === getStudentId();
+                        
+                        return `inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold ${
+                          isAdmin
+                            ? "bg-emerald-100 text-emerald-700"
+                            : isTeacher
+                              ? "bg-blue-100 text-blue-700"
+                              : isStudent
+                                ? "bg-purple-100 text-purple-700"
+                                : "bg-gray-100 text-gray-600"
+                        }`;
+                      } catch (error) {
+                        // Fallback para comparación por nombres si fallan los IDs
+                        const roleLabel = getRoleLabel(user.customRole).toLowerCase();
+                        return `inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold ${
+                          roleLabel.includes('admin')
+                            ? "bg-emerald-100 text-emerald-700"
+                            : roleLabel.includes('profesor') || roleLabel.includes('teacher')
+                              ? "bg-blue-100 text-blue-700"
+                              : roleLabel.includes('estudiante') || roleLabel.includes('student')
+                                ? "bg-purple-100 text-purple-700"
+                                : "bg-gray-100 text-gray-600"
+                        }`;
+                      }
+                    })()}
                   >
                     {getRoleLabel(user.customRole)}
                   </span>
                 </td>
-                <td className="px-4 py-3">{user.provider}</td>
+                {/* Métricas específicas del rol */}
+                <td className="px-4 py-3">
+                  {(user as any).roleStats ? (() => {
+                    const stats = (user as any).roleStats;
+                    switch (stats.type) {
+                      case 'teacher':
+                        return (
+                          <div className="text-xs space-y-1">
+                            <div className="flex items-center gap-1">
+                              <span className="font-medium">{stats.totalCourses}</span> cursos
+                              <span className="text-blue-600">({stats.publishedCourses} publicados)</span>
+                            </div>
+                            <div className="text-gray-600">
+                              {stats.totalStudents} estudiantes • ${stats.totalRevenue}
+                            </div>
+                          </div>
+                        );
+                      case 'student':
+                        return (
+                          <div className="text-xs space-y-1">
+                            <div className="flex items-center gap-1">
+                              <span className="font-medium">{stats.enrolledCourses}</span> cursos
+                              <span className="text-purple-600">({stats.overallProgress}% progreso)</span>
+                            </div>
+                            <div className="text-gray-600">
+                              {stats.certificatesEarned} certificados
+                            </div>
+                          </div>
+                        );
+                      case 'admin':
+                        return (
+                          <div className="text-xs space-y-1">
+                            <div className="flex items-center gap-1">
+                              <span className="font-medium">{stats.daysSinceCreation}</span> días
+                              {stats.lastActiveToday && <span className="text-green-600">(Activo hoy)</span>}
+                            </div>
+                            <div className="text-gray-600">Acceso completo</div>
+                          </div>
+                        );
+                      case 'visitor':
+                        return (
+                          <div className="text-xs space-y-1">
+                            <div className="flex items-center gap-1">
+                              <span className="font-medium">{stats.engagementScore}%</span> engagement
+                              <span className={
+                                stats.potentialValue === 'Alto' ? 'text-green-600' :
+                                stats.potentialValue === 'Medio' ? 'text-yellow-600' : 
+                                'text-gray-600'
+                              }>
+                                ({stats.potentialValue})
+                              </span>
+                            </div>
+                            <div className="text-gray-600">
+                              {stats.daysSinceRegistration} días registrado
+                            </div>
+                          </div>
+                        );
+                      default:
+                        return <span className="text-gray-400">-</span>;
+                    }
+                  })() : <span className="text-gray-400">-</span>}
+                </td>
                 <td className="px-4 py-3">
                   {user.lastSignInAt
                     ? new Date(user.lastSignInAt).toLocaleString()
@@ -704,59 +923,30 @@ const UsersAllPage: React.FC = () => {
                     <XCircle className="w-5 h-5 text-gray-400" />
                   )}
                 </td>
+                {/* Actividad general */}
                 <td className="px-4 py-3">
-                  {user.isBanned ? (
-                    <Ban className="w-5 h-5 text-red-500" />
-                  ) : (
-                    <CheckCircle className="w-5 h-5 text-emerald-500" />
-                  )}
+                  {(user as any).generalStats ? (() => {
+                    const stats = (user as any).generalStats;
+                    return (
+                      <div className="text-xs space-y-1">
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium">{stats.totalPayments}</span> pagos
+                          <span className="text-gray-600">• {stats.totalInvoices} facturas</span>
+                        </div>
+                        {stats.hasActiveSubscription && (
+                          <div className="text-green-600">Suscripción activa</div>
+                        )}
+                        {stats.unreadNotifications > 0 && (
+                          <div className="text-orange-600">
+                            {stats.unreadNotifications} notificaciones sin leer
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })() : <span className="text-gray-400">-</span>}
                 </td>
-                <td className="px-4 py-3">
-                  {user.isDeleted ? (
-                    <UserX className="w-5 h-5 text-gray-400" />
-                  ) : (
-                    <UserCheck className="w-5 h-5 text-emerald-500" />
-                  )}
-                </td>
-                <td className="px-4 py-3">{user.additionalStatus}</td>
                 <td className="px-4 py-3">
                   {new Date(user.createdAt).toLocaleString()}
-                </td>
-                <td className="px-4 py-3">
-                  {new Date(user.updatedAt).toLocaleString()}
-                </td>
-                {/* Cursos comprados */}
-                <td className="px-4 py-3">
-                  {user.purchases && user.purchases.length > 0 ? (
-                    user.purchases
-                      .map((p: any) => p.course?.title)
-                      .filter(Boolean)
-                      .join(", ")
-                  ) : (
-                    <span className="text-gray-400 italic">Ninguno</span>
-                  )}
-                </td>
-                {/* Cursos creados */}
-                <td className="px-4 py-3">
-                  {user.courses && user.courses.length > 0 ? (
-                    user.courses
-                      .map((c: any) => c.title)
-                      .filter(Boolean)
-                      .join(", ")
-                  ) : (
-                    <span className="text-gray-400 italic">Ninguno</span>
-                  )}
-                </td>
-                {/* Certificados */}
-                <td className="px-4 py-3">
-                  {user.certificates && user.certificates.length > 0 ? (
-                    user.certificates
-                      .map((cert: any) => cert.title)
-                      .filter(Boolean)
-                      .join(", ")
-                  ) : (
-                    <span className="text-gray-400 italic">Ninguno</span>
-                  )}
                 </td>
               </tr>
             ))}

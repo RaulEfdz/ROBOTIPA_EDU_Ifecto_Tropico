@@ -2,10 +2,31 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { translateRole } from '@/utils/roles/translate';
 import { User } from '@/prisma/types';
+import { Badge } from '@/components/ui/badge';
+import { Shield, Activity, Calendar } from 'lucide-react';
 
+// Extender el tipo User para incluir estadísticas de admin
+interface AdminWithStats extends User {
+  adminStats?: {
+    daysSinceCreation: number;
+    lastActiveToday: boolean;
+    systemStats: {
+      totalUsers: number;
+      totalCourses: number;
+      totalPurchases: number;
+      totalRevenue: number;
+      usersByRole: {
+        teachers: number;
+        students: number;
+        admins: number;
+        visitors: number;
+      };
+    };
+  };
+}
 
 // Definición de columnas
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<AdminWithStats>[] = [
   {
     accessorKey: 'id',
     header: 'ID',
@@ -39,7 +60,57 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'lastSignInAt',
     header: 'Último inicio',
-    cell: info => (info.getValue() ? new Date(info.getValue() as string).toLocaleString() : 'Nunca'),
+    cell: ({ row }) => {
+      const lastSignIn = row.getValue('lastSignInAt') as string;
+      const isActiveToday = row.original.adminStats?.lastActiveToday;
+      
+      return (
+        <div className="flex items-center gap-2">
+          <span>{lastSignIn ? new Date(lastSignIn).toLocaleString() : 'Nunca'}</span>
+          {isActiveToday && (
+            <Badge variant="default" className="h-5">
+              <Activity className="h-3 w-3 mr-1" />
+              Hoy
+            </Badge>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    id: 'accountAge',
+    header: 'Antigüedad',
+    cell: ({ row }) => {
+      const days = row.original.adminStats?.daysSinceCreation || 0;
+      const years = Math.floor(days / 365);
+      const months = Math.floor((days % 365) / 30);
+      
+      return (
+        <div className="flex items-center gap-1">
+          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm">
+            {years > 0 ? `${years} año${years > 1 ? 's' : ''}` : ''}
+            {years > 0 && months > 0 ? ', ' : ''}
+            {months > 0 ? `${months} mes${months > 1 ? 'es' : ''}` : ''}
+            {years === 0 && months === 0 ? `${days} días` : ''}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    id: 'permissions',
+    header: 'Permisos',
+    cell: ({ row }) => {
+      return (
+        <div className="flex items-center gap-2">
+          <Shield className="h-4 w-4 text-yellow-600" />
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
+            Acceso Total
+          </Badge>
+        </div>
+      );
+    },
   },
   {
     accessorKey: 'metadata',
