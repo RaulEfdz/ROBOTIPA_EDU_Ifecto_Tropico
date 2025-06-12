@@ -19,11 +19,14 @@ interface DashboardLayoutProps {
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isUserTeacher, setIsUserTeacher] = useState(false);
   const router = useRouter();
 
   const toggleSidebar = (state?: boolean) =>
     setIsSidebarOpen(state !== undefined ? state : !isSidebarOpen);
+  
+  const toggleSidebarCollapse = () => setIsSidebarCollapsed(!isSidebarCollapsed);
 
   useEffect(() => {
     (async () => {
@@ -76,7 +79,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   return (
     <div className="h-full bg-gradient">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        toggleSidebar={toggleSidebar}
+        isCollapsed={isSidebarCollapsed}
+        toggleCollapse={toggleSidebarCollapse}
+      />
       {/* Mobile only backdrop */}
       {isSidebarOpen && (
         <div
@@ -100,7 +108,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         </button>
       )}
       <main
-        className={`h-full overflow-y-auto transition-all duration-300 md:pl-56`}
+        className={`h-full overflow-y-auto transition-all duration-300 ${
+          isSidebarCollapsed ? 'md:pl-16' : 'md:pl-64'
+        }`}
       >
         {children}
       </main>

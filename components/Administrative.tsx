@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Book, Brain, LogOut, Settings, User } from "lucide-react";
+import { Book, Brain, LogOut, Settings, User, ChevronDown, Monitor, Palette } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 import { getTeacherId, getAdminId } from "@/utils/roles/translate";
@@ -54,50 +54,80 @@ export const Administrative = () => {
 
   return (
     <div
-      className="w-full text-white"
+      className="w-full text-white px-1 sm:px-0"
       role="navigation"
       aria-label="Menú administrativo"
     >
       <Select onValueChange={handleChange}>
         <SelectTrigger
-          className="bg-white/10 text-white hover:bg-white/20 transition-colors duration-200 w-full px-4 py-2 rounded-md text-sm font-medium"
+          className="bg-gradient-to-r from-emerald-800 to-emerald-700 text-white hover:from-emerald-700 hover:to-emerald-600 border border-emerald-600 shadow-lg transition-all duration-300 w-full px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg text-xs sm:text-sm font-medium group [&>svg]:hidden"
           aria-label="Abrir menú administrativo"
         >
-          <div className="flex items-center gap-2">
-            <Settings size={18} aria-hidden="true" />
-            <span>Administrar</span>
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="p-0.5 sm:p-1 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors">
+                <Settings size={14} className="sm:size-4 text-white" aria-hidden="true" />
+              </div>
+              <span className="font-medium truncate text-white">Administrar</span>
+            </div>
+            <ChevronDown size={12} className="sm:size-3.5 text-white/80 group-hover:text-white transition-colors flex-shrink-0" />
           </div>
         </SelectTrigger>
 
-        <SelectContent className="bg-white text-black rounded-md shadow-md">
+        <SelectContent className="bg-gradient-to-b from-emerald-800 to-emerald-700 border border-emerald-600 rounded-lg shadow-2xl backdrop-blur-sm min-w-[200px] sm:min-w-[220px] max-w-[280px]">
           {isTeacherUser && !isTeacherPage && (
-            <SelectItem value="areaTeachers" aria-label="Ir a Profesores">
-              <div className="flex items-center gap-3">
-                <Book size={18} className="text-gray-700" aria-hidden="true" />
-                <span>Profesores</span>
+            <SelectItem 
+              value="areaTeachers" 
+              aria-label="Ir a Profesores"
+              className="hover:bg-emerald-600/40 focus:bg-emerald-600/40 transition-colors duration-200 rounded-md mx-1 my-0.5 text-white text-left justify-start pl-2"
+            >
+              <div className="flex items-center gap-2 sm:gap-3 py-1">
+                <div className="p-1 sm:p-1.5 rounded-md bg-emerald-500/20">
+                  <Book size={14} className="sm:size-4 text-emerald-200" aria-hidden="true" />
+                </div>
+                <span className="text-white font-medium text-sm sm:text-base truncate">Área Profesores</span>
               </div>
             </SelectItem>
           )}
           {!isStudentsPage && (
-            <SelectItem value="areaStudents" aria-label="Ir a Estudiantes">
-              <div className="flex items-center gap-3">
-                <Brain size={18} className="text-gray-700" aria-hidden="true" />
-                <span>Estudiantes</span>
+            <SelectItem 
+              value="areaStudents" 
+              aria-label="Ir a Estudiantes"
+              className="hover:bg-emerald-600/40 focus:bg-emerald-600/40 transition-colors duration-200 rounded-md mx-1 my-0.5 text-white text-left justify-start pl-2"
+            >
+              <div className="flex items-center gap-2 sm:gap-3 py-1">
+                <div className="p-1 sm:p-1.5 rounded-md bg-blue-500/20">
+                  <Brain size={14} className="sm:size-4 text-blue-200" aria-hidden="true" />
+                </div>
+                <span className="text-white font-medium text-sm sm:text-base truncate">Área Estudiantes</span>
               </div>
             </SelectItem>
           )}
           {!isProfilePage && (
-            <SelectItem value="areaProfile" aria-label="Ir a Mis Datos">
-              <div className="flex items-center gap-3">
-                <User size={18} className="text-gray-700" aria-hidden="true" />
-                <span>Mis Datos</span>
+            <SelectItem 
+              value="areaProfile" 
+              aria-label="Ir a Mis Datos"
+              className="hover:bg-emerald-600/40 focus:bg-emerald-600/40 transition-colors duration-200 rounded-md mx-1 my-0.5 text-white text-left justify-start pl-2"
+            >
+              <div className="flex items-center gap-2 sm:gap-3 py-1">
+                <div className="p-1 sm:p-1.5 rounded-md bg-purple-500/20">
+                  <User size={14} className="sm:size-4 text-purple-200" aria-hidden="true" />
+                </div>
+                <span className="text-white font-medium text-sm sm:text-base truncate">Mi Perfil</span>
               </div>
             </SelectItem>
           )}
-          <SelectItem value="logout" aria-label="Cerrar sesión">
-            <div className="flex items-center gap-3">
-              <LogOut size={18} className="text-gray-700" aria-hidden="true" />
-              <span>Cerrar sesión</span>
+          <div className="border-t border-emerald-500/30 my-1"></div>
+          <SelectItem 
+            value="logout" 
+            aria-label="Cerrar sesión"
+            className="hover:bg-red-600/40 focus:bg-red-600/40 transition-colors duration-200 rounded-md mx-1 my-0.5 text-white text-left justify-start pl-2"
+          >
+            <div className="flex items-center gap-2 sm:gap-3 py-1">
+              <div className="p-1 sm:p-1.5 rounded-md bg-red-500/20">
+                <LogOut size={14} className="sm:size-4 text-red-200" aria-hidden="true" />
+              </div>
+              <span className="text-white font-medium text-sm sm:text-base truncate">Cerrar Sesión</span>
             </div>
           </SelectItem>
         </SelectContent>

@@ -34,7 +34,11 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { guestRoutes, Route, SubRoute, teacherRoutes } from "./routes";
 
-export const SidebarRoutes = () => {
+interface SidebarRoutesProps {
+  isCollapsed?: boolean;
+}
+
+export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
   const pathname = usePathname() || "/";
   const isTeacherPage =
     pathname.startsWith("/teacher") || pathname.startsWith("/admin");
@@ -43,7 +47,6 @@ export const SidebarRoutes = () => {
   const [animatedItems, setAnimatedItems] = useState<string[]>([]);
   const [showBadges, setShowBadges] = useState(true);
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredRoutes, setFilteredRoutes] = useState<Route[]>(routes);
 
@@ -129,7 +132,6 @@ export const SidebarRoutes = () => {
     [pathname]
   );
 
-  const toggleCollapse = () => setIsCollapsed((c) => !c);
 
   const variants = {
     hidden: { opacity: 0, x: -20 },
@@ -145,30 +147,17 @@ export const SidebarRoutes = () => {
   };
 
   return (
-    <div
-      className={`pr-4 pl-2 py-2 transition-all duration-300 mr-2 ${
-        isCollapsed ? "w-20" : "w-64"
-      }`}
-    >
-      <div className="flex items-center justify-between mb-4">
-        {!isCollapsed && (
-          <Label className="uppercase text-white text-xs tracking-wide font-semibold">
-            Herramientas
-          </Label>
-        )}
-        <button
-          onClick={toggleCollapse}
-          className="p-1 rounded-md hover:bg-brand-accent/20 transition-colors"
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-4 w-4 text-brand-primary" />
-          ) : (
-            <ChevronLeft className="h-4 w-4 text-brand-primary" />
-          )}
-        </button>
-      </div>
-
-      <Separator className="mb-4 border-default" />
+    <div className={`${isCollapsed ? 'px-2' : 'px-4'} py-2`}>
+      {!isCollapsed && (
+        <>
+          <div className="flex items-center justify-between mb-4">
+            <Label className="uppercase text-emerald-200 text-xs tracking-wider font-semibold">
+              Navegación
+            </Label>
+          </div>
+          <Separator className="mb-4 border-emerald-700/40" />
+        </>
+      )}
 
       {/* {!isCollapsed && (
         <div className="relative mb-4">
@@ -210,41 +199,47 @@ export const SidebarRoutes = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <div
-                    className={`flex items-center px-3 mr-4 py-2 text-sm rounded-lg cursor-pointer transition-colors ${
+                    className={`flex items-center px-3 py-3 text-sm rounded-xl cursor-pointer transition-all duration-200 group ${
                       active
-                        ? "bg-brand-accent/20 text-brand-primary shadow-card"
-                        : "text-heading hover:bg-brand-accent/10 hover:text-brand-primary"
+                        ? "bg-emerald-700/60 text-emerald-100 shadow-lg backdrop-blur-sm"
+                        : "text-emerald-200 hover:bg-emerald-700/30 hover:text-emerald-100"
                     }`}
                     onClick={() => toggleMenu(route.label)}
                   >
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <route.icon className="h-5 w-5 text-brand-primary" />
+                          <route.icon className={`h-5 w-5 flex-shrink-0 transition-colors ${
+                            active ? "text-emerald-100" : "text-emerald-300 group-hover:text-emerald-100"
+                          }`} />
                         </TooltipTrigger>
-                        <TooltipContent side="right">
+                        <TooltipContent side="right" className="bg-emerald-800 text-emerald-100 border-emerald-700">
                           {route.label}
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
 
                     {!isCollapsed && (
-                      <>
-                        <span className="flex-1 ml-3 font-medium truncate">
+                      <div className="flex-1 ml-3 flex items-center justify-between min-w-0">
+                        <span className="font-medium truncate text-sm leading-5">
                           {route.label}
                         </span>
                         {expanded ? (
-                          <ChevronDown className="h-4 w-4 text-brand-primary" />
+                          <ChevronDown className={`h-4 w-4 flex-shrink-0 ml-2 transition-colors ${
+                            active ? "text-emerald-100" : "text-emerald-300 group-hover:text-emerald-100"
+                          }`} />
                         ) : (
-                          <ChevronRight className="h-4 w-4 text-brand-primary" />
+                          <ChevronRight className={`h-4 w-4 flex-shrink-0 ml-2 transition-colors ${
+                            active ? "text-emerald-100" : "text-emerald-300 group-hover:text-emerald-100"
+                          }`} />
                         )}
-                      </>
+                      </div>
                     )}
                   </div>
 
                   {expanded && !isCollapsed && (
                     <motion.div
-                      className="pl-7 space-y-1"
+                      className="pl-8 mt-2 space-y-1 border-l-2 border-emerald-700/30 ml-6"
                       initial="hidden"
                       animate="visible"
                       exit="hidden"
@@ -256,17 +251,16 @@ export const SidebarRoutes = () => {
                             href={sub.href}
                             icon={sub.icon}
                             isAnimated={animated}
+                            isCollapsed={isCollapsed}
                             label={
-                              <div className="flex items-center space-x-3 w-full">
-                                <span className="flex-1 text-sm font-medium truncate">
+                              <div className="flex items-center w-full min-w-0">
+                                <span className="flex-1 text-xs font-medium truncate leading-4">
                                   {sub.label}
                                 </span>
                                 {showBadges &&
                                   sub.badge?.viewLabel &&
                                   isNewFeature(sub.badge.until) && (
-                                    <Badge
-                                      className={`ml-2 ${sub.badge.color}`}
-                                    >
+                                    <Badge className="ml-2 bg-emerald-600 text-emerald-100 text-xs px-2 py-0.5">
                                       {sub.badge.textLabel}
                                     </Badge>
                                   )}
@@ -294,27 +288,16 @@ export const SidebarRoutes = () => {
                   href={route.href || "#"}
                   icon={route.icon}
                   isAnimated={animated}
+                  isCollapsed={isCollapsed}
                   label={
-                    <div className="flex items-center space-x-3 w-full">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipContent side="right">
-                            {route.label}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      {!isCollapsed && (
-                        <Badge className="flex-1 text-sm font-medium truncate ml-3">
-                          {route.label}
-                        </Badge>
-                      )}
-
+                    <div className="flex items-center w-full min-w-0">
+                      <span className="flex-1 text-sm font-medium truncate leading-5">
+                        {route.label}
+                      </span>
                       {showBadges &&
-                        !isCollapsed &&
                         route.badge?.viewLabel &&
                         isNewFeature(route.badge.until) && (
-                          <Badge className={`ml-2 ${route.badge.color}`}>
+                          <Badge className="ml-2 bg-emerald-600 text-emerald-100 text-xs px-2 py-0.5 flex-shrink-0">
                             {route.badge.textLabel}
                           </Badge>
                         )}
