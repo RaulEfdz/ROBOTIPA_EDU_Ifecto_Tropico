@@ -2,7 +2,13 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { getRoleLabel, getAdminId, getTeacherId, getStudentId, getVisitorId } from "@/utils/roles/translate";
+import {
+  getRoleLabel,
+  getAdminId,
+  getTeacherId,
+  getStudentId,
+  getVisitorId,
+} from "@/utils/roles/translate";
 import {
   User as UserIcon,
   Search,
@@ -311,7 +317,9 @@ const UsersAllPage: React.FC = () => {
   const [modalUser, setModalUser] = useState<User | null>(null);
 
   const [globalStats, setGlobalStats] = useState<any>(null);
-  const [roleOptions, setRoleOptions] = useState<{value: string, label: string}[]>([]);
+  const [roleOptions, setRoleOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
 
   // Inicializar opciones de rol
   useEffect(() => {
@@ -378,13 +386,13 @@ const UsersAllPage: React.FC = () => {
         const roleStats = (user as any).roleStats;
         if (!roleStats) return 0;
         switch (roleStats.type) {
-          case 'teacher':
+          case "teacher":
             return roleStats.totalStudents || 0;
-          case 'student':
+          case "student":
             return roleStats.overallProgress || 0;
-          case 'admin':
+          case "admin":
             return roleStats.daysSinceCreation || 0;
-          case 'visitor':
+          case "visitor":
             return roleStats.engagementScore || 0;
           default:
             return 0;
@@ -459,23 +467,25 @@ const UsersAllPage: React.FC = () => {
       const visibleRow = getVisibleRowString(u);
       const matchesSearch = visibleRow.includes(searchText);
       // Filtra por ID del rol - manejamos tanto IDs como nombres legacy
-      const matchesRole = !roleFilter || (() => {
-        // Si el filtro es un ID, comparar directamente
-        if (u.customRole === roleFilter) return true;
-        
-        // Si el filtro es un nombre legacy, convertir y comparar
-        try {
-          const roleIdByName: { [key: string]: string } = {
-            'admin': getAdminId(),
-            'teacher': getTeacherId(), 
-            'student': getStudentId(),
-            'visitor': getVisitorId()
-          };
-          return u.customRole === roleIdByName[roleFilter];
-        } catch (error) {
-          return false;
-        }
-      })();
+      const matchesRole =
+        !roleFilter ||
+        (() => {
+          // Si el filtro es un ID, comparar directamente
+          if (u.customRole === roleFilter) return true;
+
+          // Si el filtro es un nombre legacy, convertir y comparar
+          try {
+            const roleIdByName: { [key: string]: string } = {
+              admin: getAdminId(),
+              teacher: getTeacherId(),
+              student: getStudentId(),
+              visitor: getVisitorId(),
+            };
+            return u.customRole === roleIdByName[roleFilter];
+          } catch (error) {
+            return false;
+          }
+        })();
       let matchesStatus = true;
       if (statusFilter === "active") matchesStatus = u.isActive;
       if (statusFilter === "banned") matchesStatus = u.isBanned;
@@ -486,19 +496,28 @@ const UsersAllPage: React.FC = () => {
           (u.courses && u.courses.length > 0) ||
           (u.purchases && u.purchases.length > 0);
       }
-      
+
       let isActiveToday = true;
       if (onlyActiveToday) {
-        isActiveToday = u.lastSignInAt && 
+        isActiveToday =
+          !!u.lastSignInAt &&
           new Date(u.lastSignInAt).toDateString() === new Date().toDateString();
       }
-      
+
       let hasSubscription = true;
       if (onlyWithSubscription) {
-        hasSubscription = (u as any).generalStats?.hasActiveSubscription || false;
+        hasSubscription =
+          (u as any).generalStats?.hasActiveSubscription || false;
       }
-      
-      return matchesSearch && matchesRole && matchesStatus && hasCourses && isActiveToday && hasSubscription;
+
+      return (
+        matchesSearch &&
+        matchesRole &&
+        matchesStatus &&
+        hasCourses &&
+        isActiveToday &&
+        hasSubscription
+      );
     });
     filtered = filtered.sort((a, b) => {
       let aVal = getSortValue(a, sortBy);
@@ -609,43 +628,69 @@ const UsersAllPage: React.FC = () => {
       {globalStats && (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-            <div className="text-sm text-gray-500 dark:text-gray-400">Total Usuarios</div>
-            <div className="text-2xl font-bold text-emerald-600">{globalStats.totalUsers}</div>
-            <div className="text-xs text-gray-400">{globalStats.activeUsers} activos</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Total Usuarios
+            </div>
+            <div className="text-2xl font-bold text-emerald-600">
+              {globalStats.totalUsers}
+            </div>
+            <div className="text-xs text-gray-400">
+              {globalStats.activeUsers} activos
+            </div>
           </div>
-          
+
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-            <div className="text-sm text-gray-500 dark:text-gray-400">Administradores</div>
-            <div className="text-2xl font-bold text-yellow-600">{globalStats.usersByRole.admins}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Administradores
+            </div>
+            <div className="text-2xl font-bold text-yellow-600">
+              {globalStats.usersByRole.admins}
+            </div>
             <div className="text-xs text-gray-400">Acceso completo</div>
           </div>
-          
+
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-            <div className="text-sm text-gray-500 dark:text-gray-400">Profesores</div>
-            <div className="text-2xl font-bold text-blue-600">{globalStats.usersByRole.teachers}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Profesores
+            </div>
+            <div className="text-2xl font-bold text-blue-600">
+              {globalStats.usersByRole.teachers}
+            </div>
             <div className="text-xs text-gray-400">Creadores de contenido</div>
           </div>
-          
+
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-            <div className="text-sm text-gray-500 dark:text-gray-400">Estudiantes</div>
-            <div className="text-2xl font-bold text-purple-600">{globalStats.usersByRole.students}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Estudiantes
+            </div>
+            <div className="text-2xl font-bold text-purple-600">
+              {globalStats.usersByRole.students}
+            </div>
             <div className="text-xs text-gray-400">Aprendiendo activamente</div>
           </div>
-          
+
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-            <div className="text-sm text-gray-500 dark:text-gray-400">Visitantes</div>
-            <div className="text-2xl font-bold text-gray-600">{globalStats.usersByRole.visitors}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Visitantes
+            </div>
+            <div className="text-2xl font-bold text-gray-600">
+              {globalStats.usersByRole.visitors}
+            </div>
             <div className="text-xs text-gray-400">Potenciales estudiantes</div>
           </div>
-          
+
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-            <div className="text-sm text-gray-500 dark:text-gray-400">Con Compras</div>
-            <div className="text-2xl font-bold text-green-600">{globalStats.usersWithPurchases}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Con Compras
+            </div>
+            <div className="text-2xl font-bold text-green-600">
+              {globalStats.usersWithPurchases}
+            </div>
             <div className="text-xs text-gray-400">
-              {globalStats.totalUsers > 0 
+              {globalStats.totalUsers > 0
                 ? `${Math.round((globalStats.usersWithPurchases / globalStats.totalUsers) * 100)}%`
-                : '0%'
-              } conversión
+                : "0%"}{" "}
+              conversión
             </div>
           </div>
         </div>
@@ -821,7 +866,7 @@ const UsersAllPage: React.FC = () => {
                         const isAdmin = user.customRole === getAdminId();
                         const isTeacher = user.customRole === getTeacherId();
                         const isStudent = user.customRole === getStudentId();
-                        
+
                         return `inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold ${
                           isAdmin
                             ? "bg-emerald-100 text-emerald-700"
@@ -833,13 +878,17 @@ const UsersAllPage: React.FC = () => {
                         }`;
                       } catch (error) {
                         // Fallback para comparación por nombres si fallan los IDs
-                        const roleLabel = getRoleLabel(user.customRole).toLowerCase();
+                        const roleLabel = getRoleLabel(
+                          user.customRole
+                        ).toLowerCase();
                         return `inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold ${
-                          roleLabel.includes('admin')
+                          roleLabel.includes("admin")
                             ? "bg-emerald-100 text-emerald-700"
-                            : roleLabel.includes('profesor') || roleLabel.includes('teacher')
+                            : roleLabel.includes("profesor") ||
+                                roleLabel.includes("teacher")
                               ? "bg-blue-100 text-blue-700"
-                              : roleLabel.includes('estudiante') || roleLabel.includes('student')
+                              : roleLabel.includes("estudiante") ||
+                                  roleLabel.includes("student")
                                 ? "bg-purple-100 text-purple-700"
                                 : "bg-gray-100 text-gray-600"
                         }`;
@@ -851,65 +900,96 @@ const UsersAllPage: React.FC = () => {
                 </td>
                 {/* Métricas específicas del rol */}
                 <td className="px-4 py-3">
-                  {(user as any).roleStats ? (() => {
-                    const stats = (user as any).roleStats;
-                    switch (stats.type) {
-                      case 'teacher':
-                        return (
-                          <div className="text-xs space-y-1">
-                            <div className="flex items-center gap-1">
-                              <span className="font-medium">{stats.totalCourses}</span> cursos
-                              <span className="text-blue-600">({stats.publishedCourses} publicados)</span>
+                  {(user as any).roleStats ? (
+                    (() => {
+                      const stats = (user as any).roleStats;
+                      switch (stats.type) {
+                        case "teacher":
+                          return (
+                            <div className="text-xs space-y-1">
+                              <div className="flex items-center gap-1">
+                                <span className="font-medium">
+                                  {stats.totalCourses}
+                                </span>{" "}
+                                cursos
+                                <span className="text-blue-600">
+                                  ({stats.publishedCourses} publicados)
+                                </span>
+                              </div>
+                              <div className="text-gray-600">
+                                {stats.totalStudents} estudiantes • $
+                                {stats.totalRevenue}
+                              </div>
                             </div>
-                            <div className="text-gray-600">
-                              {stats.totalStudents} estudiantes • ${stats.totalRevenue}
+                          );
+                        case "student":
+                          return (
+                            <div className="text-xs space-y-1">
+                              <div className="flex items-center gap-1">
+                                <span className="font-medium">
+                                  {stats.enrolledCourses}
+                                </span>{" "}
+                                cursos
+                                <span className="text-purple-600">
+                                  ({stats.overallProgress}% progreso)
+                                </span>
+                              </div>
+                              <div className="text-gray-600">
+                                {stats.certificatesEarned} certificados
+                              </div>
                             </div>
-                          </div>
-                        );
-                      case 'student':
-                        return (
-                          <div className="text-xs space-y-1">
-                            <div className="flex items-center gap-1">
-                              <span className="font-medium">{stats.enrolledCourses}</span> cursos
-                              <span className="text-purple-600">({stats.overallProgress}% progreso)</span>
+                          );
+                        case "admin":
+                          return (
+                            <div className="text-xs space-y-1">
+                              <div className="flex items-center gap-1">
+                                <span className="font-medium">
+                                  {stats.daysSinceCreation}
+                                </span>{" "}
+                                días
+                                {stats.lastActiveToday && (
+                                  <span className="text-green-600">
+                                    (Activo hoy)
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-gray-600">
+                                Acceso completo
+                              </div>
                             </div>
-                            <div className="text-gray-600">
-                              {stats.certificatesEarned} certificados
+                          );
+                        case "visitor":
+                          return (
+                            <div className="text-xs space-y-1">
+                              <div className="flex items-center gap-1">
+                                <span className="font-medium">
+                                  {stats.engagementScore}%
+                                </span>{" "}
+                                engagement
+                                <span
+                                  className={
+                                    stats.potentialValue === "Alto"
+                                      ? "text-green-600"
+                                      : stats.potentialValue === "Medio"
+                                        ? "text-yellow-600"
+                                        : "text-gray-600"
+                                  }
+                                >
+                                  ({stats.potentialValue})
+                                </span>
+                              </div>
+                              <div className="text-gray-600">
+                                {stats.daysSinceRegistration} días registrado
+                              </div>
                             </div>
-                          </div>
-                        );
-                      case 'admin':
-                        return (
-                          <div className="text-xs space-y-1">
-                            <div className="flex items-center gap-1">
-                              <span className="font-medium">{stats.daysSinceCreation}</span> días
-                              {stats.lastActiveToday && <span className="text-green-600">(Activo hoy)</span>}
-                            </div>
-                            <div className="text-gray-600">Acceso completo</div>
-                          </div>
-                        );
-                      case 'visitor':
-                        return (
-                          <div className="text-xs space-y-1">
-                            <div className="flex items-center gap-1">
-                              <span className="font-medium">{stats.engagementScore}%</span> engagement
-                              <span className={
-                                stats.potentialValue === 'Alto' ? 'text-green-600' :
-                                stats.potentialValue === 'Medio' ? 'text-yellow-600' : 
-                                'text-gray-600'
-                              }>
-                                ({stats.potentialValue})
-                              </span>
-                            </div>
-                            <div className="text-gray-600">
-                              {stats.daysSinceRegistration} días registrado
-                            </div>
-                          </div>
-                        );
-                      default:
-                        return <span className="text-gray-400">-</span>;
-                    }
-                  })() : <span className="text-gray-400">-</span>}
+                          );
+                        default:
+                          return <span className="text-gray-400">-</span>;
+                      }
+                    })()
+                  ) : (
+                    <span className="text-gray-400">-</span>
+                  )}
                 </td>
                 <td className="px-4 py-3">
                   {user.lastSignInAt
@@ -925,25 +1005,37 @@ const UsersAllPage: React.FC = () => {
                 </td>
                 {/* Actividad general */}
                 <td className="px-4 py-3">
-                  {(user as any).generalStats ? (() => {
-                    const stats = (user as any).generalStats;
-                    return (
-                      <div className="text-xs space-y-1">
-                        <div className="flex items-center gap-1">
-                          <span className="font-medium">{stats.totalPayments}</span> pagos
-                          <span className="text-gray-600">• {stats.totalInvoices} facturas</span>
-                        </div>
-                        {stats.hasActiveSubscription && (
-                          <div className="text-green-600">Suscripción activa</div>
-                        )}
-                        {stats.unreadNotifications > 0 && (
-                          <div className="text-orange-600">
-                            {stats.unreadNotifications} notificaciones sin leer
+                  {(user as any).generalStats ? (
+                    (() => {
+                      const stats = (user as any).generalStats;
+                      return (
+                        <div className="text-xs space-y-1">
+                          <div className="flex items-center gap-1">
+                            <span className="font-medium">
+                              {stats.totalPayments}
+                            </span>{" "}
+                            pagos
+                            <span className="text-gray-600">
+                              • {stats.totalInvoices} facturas
+                            </span>
                           </div>
-                        )}
-                      </div>
-                    );
-                  })() : <span className="text-gray-400">-</span>}
+                          {stats.hasActiveSubscription && (
+                            <div className="text-green-600">
+                              Suscripción activa
+                            </div>
+                          )}
+                          {stats.unreadNotifications > 0 && (
+                            <div className="text-orange-600">
+                              {stats.unreadNotifications} notificaciones sin
+                              leer
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    <span className="text-gray-400">-</span>
+                  )}
                 </td>
                 <td className="px-4 py-3">
                   {new Date(user.createdAt).toLocaleString()}
