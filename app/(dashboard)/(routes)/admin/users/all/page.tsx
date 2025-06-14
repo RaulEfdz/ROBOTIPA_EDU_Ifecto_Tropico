@@ -21,6 +21,18 @@ import {
   UserX,
 } from "lucide-react";
 
+import { countries } from "@/app/data/countries";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+
 interface User {
   id: string;
   email: string;
@@ -49,6 +61,10 @@ interface User {
   Notification: any[];
   UserAccess: any[];
   LegalDocument: any[];
+  metadata?: {
+    pais?: string;
+    [key: string]: any;
+  };
 }
 
 // Función helper para obtener las opciones de rol de forma segura
@@ -90,6 +106,17 @@ function UserDetailModal({
   onClose: () => void;
 }) {
   if (!open || !user) return null;
+  const countryName = user.metadata?.pais || "";
+  interface Country {
+    name: string;
+    flag: string;
+    code: string;
+  }
+
+  const country = countries.find(
+    (c: { name: string }): c is Country =>
+      c.name.toLowerCase() === countryName.toLowerCase()
+  );
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full p-8 relative border border-slate-200 dark:border-slate-700 overflow-y-auto max-h-[95vh]">
@@ -120,6 +147,19 @@ function UserDetailModal({
               <div className="mb-1">
                 <span className="font-semibold">Teléfono:</span>{" "}
                 {user.phone || "-"}
+              </div>
+              <div className="mb-1">
+                <span className="font-semibold">País:</span>{" "}
+                <span className="inline-flex items-center gap-1">
+                  {country ? (
+                    <>
+                      <span>{country.flag}</span>
+                      <span>{country.name}</span>
+                    </>
+                  ) : (
+                    <span>{countryName || "-"}</span>
+                  )}
+                </span>
               </div>
               <div className="mb-1">
                 <span className="font-semibold">Rol:</span>{" "}
@@ -320,6 +360,93 @@ const UsersAllPage: React.FC = () => {
   const [roleOptions, setRoleOptions] = useState<
     { value: string; label: string }[]
   >([]);
+
+  // Compute country distribution and engagement data for charts
+  const countryData = useMemo(() => {
+    if (!users || users.length === 0) return [];
+
+    const counts: Record<string, number> = {};
+    let noCountryCount = 0;
+
+    users.forEach((user) => {
+      const country = user.metadata?.pais?.trim() || "";
+      if (country) {
+        counts[country] = (counts[country] || 0) + 1;
+      } else {
+        noCountryCount++;
+      }
+    });
+
+    const totalUsers = users.length;
+    const data = Object.entries(counts).map(([country, count]) => ({
+      country,
+      count,
+      percentage: parseFloat(((count / totalUsers) * 100).toFixed(2)),
+    }));
+
+    if (noCountryCount > 0) {
+      data.push({
+        country: "Sin País",
+        count: noCountryCount,
+        percentage: parseFloat(
+          ((noCountryCount / totalUsers) * 100).toFixed(2)
+        ),
+      });
+    }
+
+    return data;
+  }, [users]);
+
+  const engagementData = useMemo(() => {
+    if (!users || users.length === 0) return [];
+
+    const engagementMap: Record<
+      string,
+      { totalEngagement: number; count: number }
+    > = {};
+    let noCountryEngagement = { totalEngagement: 0, count: 0 };
+
+    users.forEach((user) => {
+      const country = user.metadata?.pais?.trim() || "";
+      const engagement = (user as any).roleStats?.engagementScore || 0;
+
+      if (country) {
+        if (!engagementMap[country]) {
+          engagementMap[country] = { totalEngagement: 0, count: 0 };
+        }
+        engagementMap[country].totalEngagement += engagement;
+        engagementMap[country].count += 1;
+      } else {
+        noCountryEngagement.totalEngagement += engagement;
+        noCountryEngagement.count += 1;
+      }
+    });
+
+    const data = Object.entries(engagementMap).map(([country, val]) => ({
+      country,
+      engagement:
+        val.count > 0
+          ? parseFloat((val.totalEngagement / val.count).toFixed(2))
+          : 0,
+    }));
+
+    if (noCountryEngagement.count > 0) {
+      data.push({
+        country: "Sin País",
+        engagement:
+          noCountryEngagement.count > 0
+            ? parseFloat(
+                (
+                  noCountryEngagement.totalEngagement /
+                  noCountryEngagement.count
+                ).toFixed(2)
+              )
+            : 0,
+      });
+    }
+
+    return data;
+  }, [users]);
 
   // Inicializar opciones de rol
   useEffect(() => {
@@ -615,11 +742,19 @@ const UsersAllPage: React.FC = () => {
     document.body.removeChild(link);
   }
 
-  if (loading) return <p>Loading users...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-emerald-600"></div>
+        <span className="ml-3 text-emerald-700 font-semibold">
+          Cargando usuarios...
+        </span>
+      </div>
+    );
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="p-6 h-[calc(100vh-4rem)] flex flex-col bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+    <div className="p-6 h-[calc(100vh-4rem)] flex flex-col bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-auto">
       <h1 className="text-3xl font-extrabold mb-6 flex items-center gap-2 text-emerald-700">
         <UserIcon className="w-8 h-8 text-emerald-500" /> Todos los Usuarios
       </h1>
@@ -799,8 +934,8 @@ const UsersAllPage: React.FC = () => {
           Descargar CSV
         </Button>
       </div>
-      <div className="flex-grow overflow-auto border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg bg-white/90 dark:bg-slate-900/70">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700 text-sm">
+      <div className="flex-grow w-full overflow-x-auto min-h-[60vh]  border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg bg-white/90 dark:bg-slate-900/70 ">
+        <table className="min-w-[1200px]  divide-y divide-gray-200 dark:divide-slate-700 text-sm">
           <thead className="bg-emerald-50 dark:bg-slate-800 sticky top-0 z-10">
             <tr>
               {[
@@ -809,6 +944,7 @@ const UsersAllPage: React.FC = () => {
                 { key: "fullName", label: "Nombre completo" },
                 { key: "username", label: "Username" },
                 { key: "phone", label: "Teléfono" },
+                { key: "pais", label: "País" },
                 { key: "customRole", label: "Rol" },
                 { key: "roleStats", label: "Métricas del Rol" },
                 { key: "lastSignInAt", label: "Último acceso" },
@@ -841,7 +977,7 @@ const UsersAllPage: React.FC = () => {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-gray-100 dark:divide-slate-800 h-[1200px] ">
             {filteredUsers.map((user, idx) => (
               <tr
                 key={user.id}
@@ -897,6 +1033,26 @@ const UsersAllPage: React.FC = () => {
                   >
                     {getRoleLabel(user.customRole)}
                   </span>
+                </td>
+                <td className="px-4 py-3">
+                  {(() => {
+                    const countryName = user.metadata?.pais || "";
+                    const country = countries.find(
+                      (c) => c.name.toLowerCase() === countryName.toLowerCase()
+                    );
+                    return (
+                      <span className="inline-flex items-center gap-1">
+                        {country ? (
+                          <>
+                            <span>{country.flag}</span>
+                            <span>{country.name}</span>
+                          </>
+                        ) : (
+                          <span>{countryName || "-"}</span>
+                        )}
+                      </span>
+                    );
+                  })()}
                 </td>
                 {/* Métricas específicas del rol */}
                 <td className="px-4 py-3">
@@ -1050,6 +1206,48 @@ const UsersAllPage: React.FC = () => {
         open={!!modalUser}
         onClose={() => setModalUser(null)}
       />
+      {/* Charts Section */}
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Country Distribution Chart */}
+        <div className="bg-white dark:bg-slate-900 rounded-xl p-6 shadow">
+          <h3 className="text-lg font-semibold mb-4 text-emerald-700">
+            Distribución de Usuarios por País
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={countryData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="country" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#10B981" name="Cantidad" />
+              <Bar dataKey="percentage" fill="#059669" name="Porcentaje (%)" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        {/* Engagement Chart */}
+        <div className="bg-white dark:bg-slate-900 rounded-xl p-6 shadow">
+          <h3 className="text-lg font-semibold mb-4 text-emerald-700">
+            Engagement de Usuarios por País
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={engagementData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="country" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="engagement" fill="#3B82F6" name="Engagement (%)" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 };
