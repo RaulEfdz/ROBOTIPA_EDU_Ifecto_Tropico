@@ -159,15 +159,6 @@ export default function CatalogHeader() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link
-                      href="/courses/catalog"
-                      className="cursor-pointer w-full flex items-center"
-                    >
-                      <LayoutDashboard className="mr-2 h-4 w-4 text-slate-500" />
-                      <span>Mi Panel</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link
                       href="/profile"
                       className="cursor-pointer w-full flex items-center"
                     >
