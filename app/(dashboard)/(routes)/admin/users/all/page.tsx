@@ -944,8 +944,8 @@ const UsersAllPage: React.FC = () => {
                 { key: "fullName", label: "Nombre completo" },
                 { key: "username", label: "Username" },
                 { key: "phone", label: "Teléfono" },
-                { key: "pais", label: "País" },
                 { key: "customRole", label: "Rol" },
+                { key: "pais", label: "País" },
                 { key: "roleStats", label: "Métricas del Rol" },
                 { key: "lastSignInAt", label: "Último acceso" },
                 { key: "isActive", label: "Activo" },
@@ -1219,7 +1219,36 @@ const UsersAllPage: React.FC = () => {
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="country" />
+              <XAxis
+                dataKey="country"
+                tick={({ x, y, payload }) => {
+                  // Buscar la bandera del país
+                  const countryName = payload.value;
+                  const country = countries.find(
+                    (c) => c.name.toLowerCase() === countryName.toLowerCase()
+                  );
+                  return (
+                    <g transform={`translate(${x},${y + 10})`}>
+                      {country ? (
+                        <foreignObject x={-18} y={-8} width={16} height={16}>
+                          <span style={{ fontSize: "16px" }}>
+                            {country.flag}
+                          </span>
+                        </foreignObject>
+                      ) : null}
+                      <text
+                        x={country ? 0 : 0}
+                        y={country ? 16 : 0}
+                        textAnchor="middle"
+                        fill="#334155"
+                        style={{ fontSize: 12 }}
+                      >
+                        {countryName}
+                      </text>
+                    </g>
+                  );
+                }}
+              />
               <YAxis />
               <Tooltip />
               <Legend />
