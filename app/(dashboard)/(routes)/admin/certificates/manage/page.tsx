@@ -86,7 +86,10 @@ export default function ManageCertificatesPage() {
       });
       if (!res.ok) throw new Error(await res.text());
 
-      // Refresh
+      // Esperar un pequeño delay para asegurar que la DB y Cloudinary estén actualizados
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
+      // Refrescar certificados
       const certRes = await fetch("/api/admin/certificates");
       const certData = await certRes.json();
       setCertificates(certData.data);

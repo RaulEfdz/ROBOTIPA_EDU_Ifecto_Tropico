@@ -148,15 +148,31 @@ export const teacherRoutes: Route[] = [
     // },
     superAdmin: true,
   },
-  // { icon: Settings, label: "Configuración", href: "/teacher/settings" },
   {
     icon: FileSignature,
     label: "Gestionar Certificados",
     href: "/admin/certificates/manage",
   },
+  {
+    icon: FileSignature,
+    label: "Certificado Dinámico",
+    href: "/admin/certificates/dynamic-create",
+    badge: {
+      viewLabel: true,
+      until: new Date("2025-12-31"),
+      textLabel: "Nuevo",
+      color: "text-emerald-400",
+    },
+  },
   // {
-  //   icon: Files,
-  //   label: "Catálogo publico",
+  //   icon: FileSignature,
+  //   label: "Crear Certificado Manual",
   //   href: "/admin/certificates/manage",
+  //   badge: {
+  //     viewLabel: true,
+  //     until: new Date("2025-12-31"),
+  //     textLabel: "Manual",
+  //     color: "text-emerald-400",
+  //   },
   // },
 ];
