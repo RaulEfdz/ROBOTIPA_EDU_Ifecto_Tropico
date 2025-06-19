@@ -227,8 +227,8 @@ export default function DynamicCertificateCreatePage() {
     formData.courseName;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-blue-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+    <div className="min-h-screen w-full bg-gradient-to-br from-emerald-50 to-blue-50 py-8">
+      <div className=" mx-auto px-4 md:px-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-emerald-900 mb-2">
@@ -600,51 +600,47 @@ export default function DynamicCertificateCreatePage() {
               {/* Contenedor de vista previa con altura fija y scroll */}
               <div className="relative bg-gray-100" style={{ height: "500px" }}>
                 <div className="absolute inset-0 flex items-center justify-center p-4 overflow-auto">
-                  <div
-                    className="bg-white shadow-xl rounded-lg overflow-hidden"
+                  {/* <div
+                    className="shadow-xl rounded-lg overflow-hidden flex items-center justify-center"
                     style={{
-                      width: "fit-content",
-                      maxWidth: "100%",
-                      maxHeight: "100%",
-                      transform: "scale(0.4)", // Escala fija para vista previa
-                      transformOrigin: "center center",
+                      width: "100%",
+                      height: "100%",
+                      position: "relative",
                     }}
-                  >
-                    <div style={{ width: "1123px", height: "794px" }}>
-                      <CertificateGenerator
-                        certRef={certRef}
-                        studentName={
-                          formData.studentName || "Nombre del Estudiante"
-                        }
-                        certificateId={formData.certificateId || "CERT-XXXX"}
-                        courseName={formData.courseName || "Nombre del Curso"}
-                        templateProps={{
-                          ...formData,
-                          studentName:
-                            formData.studentName || "Nombre del Estudiante",
-                          certificateId: formData.certificateId || "CERT-XXXX",
-                          courseName: formData.courseName || "Nombre del Curso",
-                        }}
-                        unit={settings.unit}
-                        baseRem={settings.baseRem}
-                        positions={settings.positions}
-                        downloadFormat={settings.downloadFormat}
-                        quality={settings.quality}
-                        scale={settings.scale}
-                        backgroundColor={settings.backgroundColor}
-                        onDownloadStart={handleDownloadStart}
-                        onDownloadComplete={handleDownloadComplete}
-                        onDownloadError={handleDownloadError}
-                        showPreview={false} // Desactivar preview interno
-                        maxWidth="1123px"
-                        style={{
-                          width: "1123px",
-                          height: "794px",
-                          overflow: "visible",
-                        }}
-                      />
-                    </div>
-                  </div>
+                  > */}
+                  <CertificateGenerator
+                    certRef={certRef}
+                    studentName={
+                      formData.studentName || "Nombre del Estudiante"
+                    }
+                    certificateId={formData.certificateId || "CERT-XXXX"}
+                    courseName={formData.courseName || "Nombre del Curso"}
+                    templateProps={{
+                      ...formData,
+                      studentName:
+                        formData.studentName || "Nombre del Estudiante",
+                      certificateId: formData.certificateId || "CERT-XXXX",
+                      courseName: formData.courseName || "Nombre del Curso",
+                    }}
+                    unit={settings.unit}
+                    baseRem={settings.baseRem}
+                    positions={settings.positions}
+                    downloadFormat={settings.downloadFormat}
+                    quality={settings.quality}
+                    scale={settings.scale}
+                    backgroundColor={settings.backgroundColor}
+                    onDownloadStart={handleDownloadStart}
+                    onDownloadComplete={handleDownloadComplete}
+                    onDownloadError={handleDownloadError}
+                    showPreview={false} // Desactivar preview interno
+                    // maxWidth="1123px"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      overflow: "visible",
+                    }}
+                  />
+                  {/* </div> */}
                 </div>
                 {/* Indicador de escala */}
                 <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">

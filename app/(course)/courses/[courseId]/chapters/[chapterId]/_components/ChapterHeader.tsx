@@ -53,7 +53,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = ({
             variant="ghost"
             size="sm"
             className="p-0 h-auto hover:bg-transparent text-slate-600 hover:text-emerald-700 transition-colors flex items-center gap-1"
-            onClick={() => router.push(`/courses/${courseId}`)}
+            onClick={() => beforChapter()}
           >
             <ArrowLeft className="h-4 w-4" /> {courseTitle}
           </Button>

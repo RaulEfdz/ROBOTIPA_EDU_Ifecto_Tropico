@@ -4,6 +4,7 @@ import {
   DynamicCert,
   DynamicCertProps as InnerDynamicCertProps,
 } from "@/app/(dashboard)/(routes)/admin/certificates/templatesCertificate/dinamic";
+import Image from "next/image";
 
 // Omitimos 'name' porque lo manejamos como studentName
 // y 'certificateId' porque ya está explícito en CertificateGeneratorProps
@@ -191,13 +192,13 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
   }, [generateCertificateImage, showPreview]);
 
   // --- CLASES CSS ---
-  const containerClass = `certificate-generator-container w-full h-full flex flex-col items-center justify-center p-4 ${className || ""}`;
-  const certClass = `certificate-generator-cert w-full rounded-lg shadow-md overflow-hidden bg-white relative`;
+  const containerClass = `certificate-generator-container max-w-full h-full flex flex-col items-center justify-center p-4 ${className || ""}`;
+  const certClass = `p-2 certificate-generator-cert  shadow-md overflow-hidden bg-white relative`;
   const buttonClass = (color: string) =>
     `mt-4 px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 min-w-[200px] transition-all duration-200 text-white ${isGenerating ? "bg-gray-400 cursor-not-allowed" : color}`;
-  const previewClass = "mt-8 text-center";
+  const previewClass = "text-center";
   const previewImgClass =
-    "max-w-full max-h-[400px] border-2 border-gray-200 rounded-lg shadow";
+    "max-w-full  border-2 border-gray-200 rounded-lg shadow";
   const previewTitleClass = "mb-4 text-lg font-bold text-gray-700";
 
   return (
@@ -257,7 +258,10 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
       {previewUrl && showPreview && (
         <div className={previewClass}>
           <h3 className={previewTitleClass}>Vista previa del certificado</h3>
-          <img
+          <Image
+            width={1123}
+            height={794}
+            loading="lazy"
             src={previewUrl}
             alt="Vista previa del certificado"
             className={previewImgClass}

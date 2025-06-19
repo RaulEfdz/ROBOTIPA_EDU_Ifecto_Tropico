@@ -203,6 +203,7 @@ export default function ManageCertificatesPage() {
               Add Certificate for {selectedUser.fullName}
             </h2>
             <select
+              aria-label="Select a course"
               className="w-full border border-gray-300 rounded p-2 mb-4"
               value={selectedCourseId}
               onChange={(e) => setSelectedCourseId(e.target.value)}

@@ -64,9 +64,15 @@ export const DynamicCert: React.FC<DynamicCertProps> = ({
   return (
     <div
       style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         position: "relative",
-        width: `${W}${unit}`,
-        height: `${H}${unit}`,
+        // width: `${W}${unit}`,
+        //  height: `${H}${unit}`,
+        width: "500px",
+        height: "400px",
+        maxWidth: `${W}${unit}`,
         backgroundImage: `url(${TEMPLATE_URL})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
