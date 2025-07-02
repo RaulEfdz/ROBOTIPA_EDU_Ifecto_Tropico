@@ -168,7 +168,7 @@ export default function CatalogHeader() {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link
-                      href="/search"
+                      href="/catalogo"
                       className="cursor-pointer w-full flex items-center"
                     >
                       <MyCoursesIcon className="mr-2 h-4 w-4 text-slate-500" />
