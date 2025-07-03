@@ -1,5 +1,5 @@
 // lib/yappy/yappy-service.ts
-// Servicio para integración con Yappy
+// Servicio para integración con Yappy - Nueva API 2024
 
 interface YappyPaymentRequest {
   amount: number;
@@ -8,6 +8,10 @@ interface YappyPaymentRequest {
   orderId: string;
   customerEmail?: string;
   customerName?: string;
+  discount?: number;
+  taxes?: number;
+  subtotal?: number;
+  aliasYappy?: string;
 }
 
 interface YappyPaymentResponse {
@@ -17,6 +21,9 @@ interface YappyPaymentResponse {
   expiresAt: Date;
   status: 'pending' | 'completed' | 'failed' | 'expired';
   message?: string;
+  transactionId?: string;
+  token?: string;
+  documentName?: string;
 }
 
 interface YappyPaymentStatus {
@@ -27,18 +34,141 @@ interface YappyPaymentStatus {
   completedAt?: Date;
 }
 
+// Interfaces para la nueva API de Yappy
+interface YappyValidateMerchantRequest {
+  merchantId: string;
+  urlDomain: string;
+}
+
+interface YappyValidateMerchantResponse {
+  status: {
+    code: string;
+    description: string;
+  };
+  body: {
+    epochTime: number;
+    token: string;
+  };
+}
+
+interface YappyCreateOrderRequest {
+  merchantId: string;
+  orderId: string;
+  domain: string;
+  paymentDate: number;
+  aliasYappy?: string;
+  ipnUrl: string;
+  discount: string;
+  taxes: string;
+  subtotal: string;
+  total: string;
+}
+
+interface YappyCreateOrderResponse {
+  status: {
+    code: string;
+    description: string;
+  };
+  body: {
+    transactionId: string;
+    token: string;
+    documentName: string;
+  };
+}
+
 class YappyService {
   private apiUrl: string;
   private merchantId: string;
-  private apiKey: string;
+  private urlDomain: string;
+  private ipnUrl: string;
+  private environment: string;
+  private isAvailable: boolean;
 
   constructor() {
-    this.apiUrl = process.env.YAPPY_API_URL || 'https://api.yappy.com';
+    this.environment = process.env.YAPPY_ENVIRONMENT || 'test';
+    this.isAvailable = process.env.YAPPY_AVAILABLE === 'true';
+    this.apiUrl = this.environment === 'prod' 
+      ? process.env.YAPPY_API_URL_PROD || 'https://apipagosbg.bgeneral.cloud'
+      : process.env.YAPPY_API_URL_TEST || 'https://api-comecom-uat.yappycloud.com';
+    
     this.merchantId = process.env.YAPPY_MERCHANT_ID || '';
-    this.apiKey = process.env.YAPPY_API_KEY || '';
+    this.urlDomain = process.env.YAPPY_URL_DOMAIN || 'https://academy.infectotropico.com';
+    this.ipnUrl = process.env.YAPPY_IPN_URL || 'https://academy.infectotropico.com/api/payments/yappy/webhook';
 
-    if (!this.merchantId || !this.apiKey) {
-      console.warn('Yappy credentials not configured. Set YAPPY_MERCHANT_ID and YAPPY_API_KEY');
+    if (!this.merchantId) {
+      console.warn('Yappy credentials not configured. Set YAPPY_MERCHANT_ID');
+    }
+  }
+
+  /**
+   * Paso 1: Validar merchant y obtener token
+   */
+  private async validateMerchant(): Promise<string> {
+    try {
+      const response = await fetch(`${this.apiUrl}/payments/validate/merchant`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          merchantId: this.merchantId,
+          urlDomain: this.urlDomain,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Yappy validate merchant error: ${response.status}`);
+      }
+
+      const data: YappyValidateMerchantResponse = await response.json();
+      
+      if (!data.body?.token) {
+        throw new Error('No token received from Yappy validation');
+      }
+
+      return data.body.token;
+    } catch (error) {
+      console.error('Error validating Yappy merchant:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Paso 2: Crear orden de pago
+   */
+  private async createOrder(token: string, request: YappyPaymentRequest): Promise<YappyCreateOrderResponse> {
+    try {
+      const paymentDate = Math.floor(Date.now() / 1000); // Epoch time
+      
+      const response = await fetch(`${this.apiUrl}/payments/payment-wc`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          merchantId: this.merchantId,
+          orderId: request.orderId,
+          domain: this.urlDomain,
+          paymentDate,
+          aliasYappy: request.aliasYappy || '',
+          ipnUrl: this.ipnUrl,
+          discount: (request.discount || 0).toFixed(2),
+          taxes: (request.taxes || 0).toFixed(2),
+          subtotal: (request.subtotal || request.amount).toFixed(2),
+          total: request.amount.toFixed(2),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Yappy create order error: ${response.status}`);
+      }
+
+      const data: YappyCreateOrderResponse = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error creating Yappy order:', error);
+      throw error;
     }
   }
 
@@ -47,17 +177,29 @@ class YappyService {
    */
   async createPaymentRequest(request: YappyPaymentRequest): Promise<YappyPaymentResponse> {
     try {
-      // Por ahora simulamos la respuesta de Yappy
-      // En producción, aquí harías la llamada real a la API de Yappy
-      const paymentId = `YAP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      // Generar datos para el QR (formato simplificado)
+      // Validar que tenemos las credenciales necesarias
+      if (!this.merchantId) {
+        throw new Error('YAPPY_MERCHANT_ID is required');
+      }
+
+      // Paso 1: Validar merchant y obtener token
+      const token = await this.validateMerchant();
+
+      // Paso 2: Crear orden
+      const orderResponse = await this.createOrder(token, request);
+
+      if (!orderResponse.body?.transactionId) {
+        throw new Error('No transaction ID received from Yappy');
+      }
+
+      // Generar datos para el QR
       const qrData = this.generateQRData({
-        paymentId,
+        transactionId: orderResponse.body.transactionId,
         amount: request.amount,
         merchantId: this.merchantId,
         orderId: request.orderId,
         description: request.description,
+        documentName: orderResponse.body.documentName,
       });
 
       const expiresAt = new Date();
@@ -65,48 +207,25 @@ class YappyService {
 
       return {
         success: true,
-        paymentId,
+        paymentId: orderResponse.body.transactionId,
         qrData,
         expiresAt,
         status: 'pending',
         message: 'Payment request created successfully',
+        transactionId: orderResponse.body.transactionId,
+        token: orderResponse.body.token,
+        documentName: orderResponse.body.documentName,
       };
 
-      /* 
-      // Implementación real con API de Yappy (a implementar cuando tengas credenciales)
-      const response = await fetch(`${this.apiUrl}/payments/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Merchant-ID': this.merchantId,
-        },
-        body: JSON.stringify({
-          amount: request.amount,
-          currency: request.currency,
-          description: request.description,
-          order_id: request.orderId,
-          customer_email: request.customerEmail,
-          customer_name: request.customerName,
-          webhook_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/yappy/webhook`,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Yappy API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return {
-        success: true,
-        paymentId: data.payment_id,
-        qrData: data.qr_code_data,
-        expiresAt: new Date(data.expires_at),
-        status: 'pending',
-      };
-      */
     } catch (error) {
       console.error('Error creating Yappy payment request:', error);
+      
+      // Fallback a modo simulación si hay error de configuración
+      if (error instanceof Error && error.message.includes('YAPPY_MERCHANT_ID')) {
+        console.warn('Falling back to simulation mode due to missing credentials');
+        return this.createSimulatedPayment(request);
+      }
+
       return {
         success: false,
         paymentId: '',
@@ -119,45 +238,59 @@ class YappyService {
   }
 
   /**
+   * Modo simulación para desarrollo
+   */
+  private createSimulatedPayment(request: YappyPaymentRequest): YappyPaymentResponse {
+    const paymentId = `YAP_SIM_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const qrData = this.generateQRData({
+      transactionId: paymentId,
+      amount: request.amount,
+      merchantId: 'SIMULATION',
+      orderId: request.orderId,
+      description: request.description,
+      documentName: 'simulation-doc',
+    });
+
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+
+    return {
+      success: true,
+      paymentId,
+      qrData,
+      expiresAt,
+      status: 'pending',
+      message: 'Simulation payment created (configure YAPPY_MERCHANT_ID for production)',
+    };
+  }
+
+  /**
    * Verifica el estado de un pago Yappy
    */
   async checkPaymentStatus(paymentId: string): Promise<YappyPaymentStatus> {
     try {
-      // Por ahora simulamos el estado del pago
-      // En desarrollo, puedes cambiar manualmente el estado para pruebas
-      const isCompleted = Math.random() > 0.7; // 30% chance de estar completado para pruebas
+      // Si es simulación, usar lógica de prueba
+      if (paymentId.includes('YAP_SIM_')) {
+        const isCompleted = Math.random() > 0.7; // 30% chance de estar completado
+        return {
+          paymentId,
+          status: isCompleted ? 'completed' : 'pending',
+          amount: isCompleted ? 95 : undefined,
+          transactionId: isCompleted ? `TXN_${Date.now()}` : undefined,
+          completedAt: isCompleted ? new Date() : undefined,
+        };
+      }
+
+      // En producción, aquí implementarías la verificación real del estado
+      // La nueva API de Yappy no especifica un endpoint para verificar estado
+      // Normalmente se haría vía webhook o polling a un endpoint específico
       
       return {
         paymentId,
-        status: isCompleted ? 'completed' : 'pending',
-        amount: isCompleted ? 95 : undefined,
-        transactionId: isCompleted ? `TXN_${Date.now()}` : undefined,
-        completedAt: isCompleted ? new Date() : undefined,
+        status: 'pending',
       };
 
-      /* 
-      // Implementación real con API de Yappy
-      const response = await fetch(`${this.apiUrl}/payments/${paymentId}/status`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Merchant-ID': this.merchantId,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Yappy API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return {
-        paymentId,
-        status: data.status,
-        amount: data.amount,
-        transactionId: data.transaction_id,
-        completedAt: data.completed_at ? new Date(data.completed_at) : undefined,
-      };
-      */
     } catch (error) {
       console.error('Error checking Yappy payment status:', error);
       return {
@@ -171,20 +304,21 @@ class YappyService {
    * Genera los datos para el código QR de Yappy
    */
   private generateQRData(params: {
-    paymentId: string;
+    transactionId: string;
     amount: number;
     merchantId: string;
     orderId: string;
     description: string;
+    documentName: string;
   }): string {
-    // Formato simplificado para desarrollo
-    // En producción, usa el formato específico que requiere Yappy
+    // Formato para el QR de Yappy
     const qrData = {
       merchant: params.merchantId,
       amount: params.amount,
-      payment_id: params.paymentId,
+      transaction_id: params.transactionId,
       order_id: params.orderId,
       description: params.description,
+      document_name: params.documentName,
       timestamp: Date.now(),
     };
 
@@ -192,23 +326,29 @@ class YappyService {
   }
 
   /**
+   * Obtiene la URL del CDN según el ambiente
+   */
+  getCDNUrl(): string {
+    return this.environment === 'prod'
+      ? process.env.YAPPY_CDN_URL_PROD || 'https://bt-cdn.yappycloud.com/v1/cdn/web-component-btn-yappy.js'
+      : process.env.YAPPY_CDN_URL_TEST || 'https://bt-cdn-uat.yappycloud.com/v1/cdn/web-component-btn-yappy.js';
+  }
+
+  /**
+   * Verifica si Yappy está disponible
+   */
+  isYappyAvailable(): boolean {
+    return this.isAvailable;
+  }
+
+  /**
    * Valida un webhook de Yappy
    */
   validateWebhook(payload: string, signature: string): boolean {
     try {
-      // Implementar validación de firma webhook
       // Por ahora retornamos true para desarrollo
+      // En producción implementar validación según especificación de Yappy
       return true;
-      
-      /* 
-      // Implementación real con validación de firma
-      const expectedSignature = crypto
-        .createHmac('sha256', process.env.YAPPY_WEBHOOK_SECRET || '')
-        .update(payload)
-        .digest('hex');
-      
-      return signature === expectedSignature;
-      */
     } catch (error) {
       console.error('Error validating Yappy webhook:', error);
       return false;

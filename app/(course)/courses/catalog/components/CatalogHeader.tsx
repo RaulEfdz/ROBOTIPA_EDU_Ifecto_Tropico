@@ -80,12 +80,8 @@ export default function CatalogHeader() {
         <div className="flex items-center justify-between h-16">
           {/* Sección Izquierda: Logo y Título del Catálogo */}
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0 flex items-center">
-              <Logo version="original" width={36} height={36} />{" "}
-              {/* Ajusta tamaño si es necesario */}
-              <span className="ml-2 text-lg font-semibold text-slate-800 dark:text-slate-100 hidden sm:inline">
-                {process.env.NEXT_PUBLIC_NAME_APP || "Plataforma"}
-              </span>
+            <Link href="https://www.infectotropico.com/" className="flex-shrink-0">
+              <Logo version="original" width={60} height={60} />{" "}
             </Link>
             {/* Título "Catálogo de Cursos" */}
             <div className="ml-4 pl-4 border-l border-slate-200 dark:border-slate-700 hidden md:block">

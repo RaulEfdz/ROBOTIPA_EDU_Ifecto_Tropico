@@ -104,7 +104,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               ROBOTIPA_LMS
             </span>
             <span className="text-emerald-300 font-light text-xs">
-              v 25.11.05
+              v25.7.2
             </span>
           </div>
         </div>

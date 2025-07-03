@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import Image from "next/image";
 import YappyPaymentButton from "@/app/components/payments/YappyPaymentButton";
+import { yappyService } from "@/lib/yappy/yappy-service";
 
 interface ManualRegistrationButtonProps {
   courseId: string;
@@ -203,8 +204,8 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {/* Botón de Yappy si hay precio definido */}
-          {coursePrice && coursePrice > 0 && (
+          {/* Botón de Yappy si hay precio definido y está disponible */}
+          {coursePrice && coursePrice > 0 && yappyService.isYappyAvailable() && (
             <YappyPaymentButton
               courseId={courseId}
               amount={coursePrice}

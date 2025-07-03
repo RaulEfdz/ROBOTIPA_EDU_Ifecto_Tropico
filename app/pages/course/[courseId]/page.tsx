@@ -422,45 +422,6 @@ export default function CoursePage() {
       <main className="max-w-6xl mx-auto px-4 py-8 md:py-12 grid md:grid-cols-3 gap-8">
         {/* Columna Izquierda: Detalles del Curso */}
         <section className="md:col-span-2 space-y-8">
-          {/* Sección: Lo que aprenderás */}
-          {learningObjectives.length > 0 && (
-            <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
-              <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                <Award size={24} className="text-emerald-500" /> Lo que
-                aprenderás
-              </h2>
-              <ul className="space-y-2 columns-1 sm:columns-2">
-                {learningObjectives.map((obj: string, index: number) => (
-                  <li
-                    key={index}
-                    className="flex items-start gap-2.5 text-slate-700 dark:text-slate-300"
-                  >
-                    <CheckCircle
-                      size={18}
-                      className="text-emerald-500 mt-0.5 shrink-0"
-                    />
-                    <span>{obj}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Sección: Descripción */}
-          {description && (
-            <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
-              <h2 className="text-xl font-semibold mb-3 text-slate-800 dark:text-slate-100">
-                Descripción del curso
-              </h2>
-              {/* Usar dangerouslySetInnerHTML solo si confías plenamente en el HTML guardado */}
-              {/* Considera usar librerías como 'react-markdown' o 'marked' si guardas Markdown */}
-              <div
-                className="prose prose-sm sm:prose-base dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-3 prose-li:my-1"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }} // Asegúrate que sanitizeHtml exista y funcione
-              />
-            </div>
-          )}
-
           {/* Sección: Contenido del Curso (Preview) */}
           {chaptersPreview.length > 0 && (
             <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
@@ -501,6 +462,45 @@ export default function CoursePage() {
                     </Button>
                   </div>
                 )}
+            </div>
+          )}
+
+          {/* Sección: Lo que aprenderás */}
+          {learningObjectives.length > 0 && (
+            <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
+              <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <Award size={24} className="text-emerald-500" /> Lo que
+                aprenderás
+              </h2>
+              <ul className="space-y-2 columns-1 sm:columns-2">
+                {learningObjectives.map((obj: string, index: number) => (
+                  <li
+                    key={index}
+                    className="flex items-start gap-2.5 text-slate-700 dark:text-slate-300"
+                  >
+                    <CheckCircle
+                      size={18}
+                      className="text-emerald-500 mt-0.5 shrink-0"
+                    />
+                    <span>{obj}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Sección: Descripción */}
+          {description && (
+            <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
+              <h2 className="text-xl font-semibold mb-3 text-slate-800 dark:text-slate-100">
+                Descripción del curso
+              </h2>
+              {/* Usar dangerouslySetInnerHTML solo si confías plenamente en el HTML guardado */}
+              {/* Considera usar librerías como 'react-markdown' o 'marked' si guardas Markdown */}
+              <div
+                className="prose prose-sm sm:prose-base dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-3 prose-li:my-1"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }} // Asegúrate que sanitizeHtml exista y funcione
+              />
             </div>
           )}
         </section>
