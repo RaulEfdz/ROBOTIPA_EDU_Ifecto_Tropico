@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { generateCertificate } from "@/lib/certificate-service";
+import { sendCourseCompletionEmails } from "@/lib/email-service";
 
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 
@@ -66,6 +67,42 @@ export async function PUT(
             console.log(
               `CERT_GEN: No se pudo generar/obtener certificado para usuario ${user.id} en curso ${courseId}.`
             );
+          }
+
+          // Enviar notificaciones por email cuando se completa el curso
+          try {
+            const course = await db.course.findUnique({
+              where: { id: courseId },
+              select: { id: true, title: true },
+            });
+            
+            // Obtener usuario completo de la base de datos
+            const dbUser = await db.user.findUnique({
+              where: { id: user.id },
+              select: { id: true, email: true, fullName: true, username: true },
+            });
+            
+            if (course && dbUser) {
+              await sendCourseCompletionEmails({
+                user: {
+                  id: dbUser.id,
+                  email: dbUser.email || '',
+                  fullName: dbUser.fullName || '',
+                  username: dbUser.username || '',
+                },
+                course,
+                certificateId: certificateId || undefined,
+              });
+              console.log(
+                `EMAIL_NOTIFICATION: Notificación de finalización enviada para usuario ${user.id} en curso ${courseId}`
+              );
+            }
+          } catch (emailError) {
+            console.error(
+              `EMAIL_NOTIFICATION: Error al enviar notificación de finalización:`,
+              emailError
+            );
+            // No interrumpir el flujo principal si falla el email
           }
         }
       }

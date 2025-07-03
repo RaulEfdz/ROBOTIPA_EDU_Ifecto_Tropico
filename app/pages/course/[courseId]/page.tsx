@@ -545,6 +545,7 @@ export default function CoursePage() {
               <ManualRegistrationButton
                 courseId={courseId}
                 courseTitle={title}
+                coursePrice={price || undefined}
               />
 
               <Button

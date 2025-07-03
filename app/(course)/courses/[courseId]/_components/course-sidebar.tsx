@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { CourseProgress } from "@/components/course-progress";
 import { CourseSidebarItem } from "./course-sidebar-item";
 import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
+import WhatsAppStudentButton from "@/app/components/WhatsAppStudentButton";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -195,7 +196,19 @@ export const CourseSidebar = async ({
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+      <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 space-y-3">
+        {/* WhatsApp Button for Students */}
+        {purchase && (
+          <WhatsAppStudentButton
+            courseTitle={course.title}
+            userName={user.fullName || user.username}
+            userEmail={user.email}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          />
+        )}
+        
         <div className="flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
           <Clock className="w-3 h-3" />
           <span>Aprende a tu ritmo</span>

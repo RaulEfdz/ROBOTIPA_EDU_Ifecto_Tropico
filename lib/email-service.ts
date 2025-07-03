@@ -174,3 +174,127 @@ export async function sendEnrollmentConfirmationEmails({
     );
   }
 }
+
+interface CourseCompletionDetails {
+  user: Pick<User, "id" | "email" | "fullName" | "username">;
+  course: Pick<Course, "id" | "title">;
+  certificateId?: string;
+}
+
+/**
+ * Envía notificación por email cuando un estudiante completa un curso.
+ */
+export async function sendCourseCompletionEmails({
+  user,
+  course,
+  certificateId,
+}: CourseCompletionDetails): Promise<void> {
+  if (!EMAIL_FROM) {
+    console.error(
+      "Cannot send course completion emails: EMAIL_FROM is not configured."
+    );
+    return;
+  }
+
+  if (!user.email) {
+    console.warn(
+      `User ${user.id} does not have an email address. Skipping course completion email.`
+    );
+    return;
+  }
+
+  const userName = user.fullName || user.username || "Valioso Estudiante";
+  const appName = APP_NAME;
+  const appUrl = APP_URL;
+
+  // --- Email para el Usuario ---
+  const userEmailSubject = `¡Felicidades! Has completado el curso: ${course.title}`;
+  const userEmailHtmlBody = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+      <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h1 style="color: #2a9d8f; text-align: center;">🎉 ¡Curso Completado! 🎉</h1>
+        <p>Hola ${userName},</p>
+        <p>¡Felicidades! Has completado exitosamente el curso:</p>
+        <div style="background-color: #f0f8f7; padding: 15px; border-radius: 5px; margin: 15px 0; border-left: 4px solid #2a9d8f;">
+          <h2 style="color: #2a9d8f; font-size: 1.2em; margin: 0;">${course.title}</h2>
+        </div>
+        <p>Has demostrado dedicación y compromiso al completar todos los módulos del curso. ¡Esto es un gran logro!</p>
+        ${certificateId ? `
+        <p style="margin-top: 20px;">Tu certificado ha sido generado automáticamente. Puedes descargarlo desde tu panel de estudiante:</p>
+        <p style="text-align: center; margin: 25px 0;">
+          <a href="${appUrl}/students/my-certificates" 
+             style="background-color: #2a9d8f; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 1.1em; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            Ver Mi Certificado
+          </a>
+        </p>
+        ` : `
+        <p style="margin-top: 20px;">Puedes revisar tu progreso y acceder a todos los materiales del curso cuando desees:</p>
+        <p style="text-align: center; margin: 25px 0;">
+          <a href="${appUrl}/courses/${course.id}" 
+             style="background-color: #2a9d8f; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 1.1em; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            Revisar Curso
+          </a>
+        </p>
+        `}
+        <p>Continúa explorando nuestros otros cursos para seguir ampliando tus conocimientos.</p>
+        <p>¡Gracias por ser parte de ${appName} y por tu dedicación al aprendizaje!</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;"/>
+        <p style="font-size: 0.85em; color: #777; text-align: center;">
+          Este es un mensaje automático. ${appName} © ${new Date().getFullYear()}.
+        </p>
+      </div>
+    </div>
+  `;
+
+  try {
+    await resend.emails.send({
+      from: `${appName} <${EMAIL_FROM}>`,
+      to: user.email,
+      subject: userEmailSubject,
+      html: userEmailHtmlBody,
+    });
+    console.log(
+      `Correo de finalización de curso enviado a: ${user.email} para el curso ${course.title}`
+    );
+  } catch (error) {
+    console.error(
+      `Error al enviar correo de finalización a ${user.email}:`,
+      error
+    );
+  }
+
+  // --- Email para el Administrador (info@infectotropico.com) ---
+  try {
+    await resend.emails.send({
+      from: `Notificaciones ${appName} <${EMAIL_FROM}>`,
+      to: "info@infectotropico.com",
+      subject: `Curso completado: ${userName} finalizó ${course.title}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2 style="color: #2a9d8f;">Curso Completado</h2>
+          <p>Un estudiante ha completado exitosamente un curso:</p>
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 15px;">
+            <ul style="list-style-type: none; padding-left: 0;">
+              <li><strong>Estudiante:</strong> ${userName}</li>
+              <li><strong>Email:</strong> ${user.email}</li>
+              <li><strong>Curso:</strong> ${course.title}</li>
+              <li><strong>Fecha de finalización:</strong> ${new Date().toLocaleString()}</li>
+              ${certificateId ? `<li><strong>Certificado generado:</strong> Sí (ID: ${certificateId})</li>` : `<li><strong>Certificado generado:</strong> No</li>`}
+            </ul>
+          </div>
+          <p style="margin-top: 15px; color: #666; font-size: 0.9em;">
+            Este es un mensaje automático generado cuando un estudiante completa todos los módulos de un curso.
+          </p>
+        </div>
+      `,
+    });
+    console.log(
+      `Notificación de finalización enviada a info@infectotropico.com para el curso ${course.title} completado por ${userName}`
+    );
+  } catch (error) {
+    console.error(
+      "Error al enviar notificación de finalización a info@infectotropico.com:",
+      error
+    );
+  }
+}

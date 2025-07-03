@@ -18,6 +18,7 @@ import {
   X,
   FileSignature,
   Files, // Añadido para Registros Manuales y Certificados
+  CreditCard, // Añadido para Pagos
 } from "lucide-react";
 
 export interface Badge {
@@ -62,6 +63,7 @@ export const teacherRoutes: Route[] = [
   { icon: Compass, label: "Catálogo", href: "/courses/catalog" },
 
   { icon: Layout, label: "Tablero", href: "/teacher" },
+  { icon: CreditCard, label: "Pagos", href: "/payments" },
   { icon: List, label: "Cursos", href: "/teacher/courses" },
   {
     icon: Folder,

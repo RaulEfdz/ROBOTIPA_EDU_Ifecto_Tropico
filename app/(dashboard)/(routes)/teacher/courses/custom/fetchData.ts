@@ -27,8 +27,35 @@ export const fetchData = async <T = any>({
     });
 
     if (!response.ok) {
-      const errorMsg = `Error ${response.status}: ${response.statusText}`;
-      toast.error(errorMsg);
+      let errorMessage = `Error ${response.status}: ${response.statusText}`;
+      
+      // Intentar obtener el mensaje de error específico del servidor
+      try {
+        const errorData = await response.json();
+        if (errorData.error || errorData.message) {
+          errorMessage = errorData.error || errorData.message;
+        }
+      } catch {
+        // Si no se puede parsear el JSON, usar el mensaje por defecto
+      }
+
+      // Mensajes de error más específicos
+      switch (response.status) {
+        case 401:
+          errorMessage = "No tienes permisos para realizar esta acción";
+          break;
+        case 403:
+          errorMessage = "Acceso denegado";
+          break;
+        case 404:
+          errorMessage = "El recurso no fue encontrado";
+          break;
+        case 500:
+          errorMessage = "Error interno del servidor";
+          break;
+      }
+      
+      toast.error(errorMessage);
       return;
     }
 

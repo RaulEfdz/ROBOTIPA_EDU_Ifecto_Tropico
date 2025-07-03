@@ -51,7 +51,7 @@ export const ChapterActions = ({
 
   const handleDelete = async () => {
     setIsLoading(true);
-    const path = `/api/courses/${courseId}/chapters/${chapterId}`;
+    const path = `/api/courses/${courseId}/chapters/${chapterId}/delete`;
 
     try {
       await fetchData({

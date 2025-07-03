@@ -18,15 +18,18 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import Image from "next/image";
+import YappyPaymentButton from "@/app/components/payments/YappyPaymentButton";
 
 interface ManualRegistrationButtonProps {
   courseId: string;
   courseTitle: string;
+  coursePrice?: number;
 }
 
 export default function ManualRegistrationCard({
   courseId,
   courseTitle,
+  coursePrice,
 }: ManualRegistrationButtonProps) {
   const [currentUser, setCurrentUser] = useState<UserDB | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
@@ -199,13 +202,27 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
             manual.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
+          {/* Botón de Yappy si hay precio definido */}
+          {coursePrice && coursePrice > 0 && (
+            <YappyPaymentButton
+              courseId={courseId}
+              amount={coursePrice}
+              courseName={courseTitle}
+              disabled={isLoadingUser || !currentUser}
+              className="w-full"
+            />
+          )}
+          
+          {/* Botón para otros métodos de pago */}
           <Button
             onClick={handleOpenModal}
             disabled={isLoadingUser}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+            variant="outline"
+            className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50"
           >
-            Ver instrucciones
+            <FaWhatsapp className="mr-2 h-4 w-4" />
+            Otros métodos de pago
           </Button>
         </CardContent>
       </Card>

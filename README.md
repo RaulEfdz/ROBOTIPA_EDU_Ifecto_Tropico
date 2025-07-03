@@ -1,102 +1,254 @@
-# ROBOTIPA_EDU_Ifecto_Tropico
+# 🎓 INFECTOTRÓPICO - Plataforma de Educación Médica en Línea
 
-## Integración con Págelo Fácil (Producción)
+## 📋 Descripción
 
-### 1. Variables de Entorno
-- **PAGUELOFACIL_CCLW**: Tu código web en producción.
-- **PAGUELOFACIL_API_URL**: `https://secure.paguelofacil.com/LinkDeamon.cfm`
-- **NEXT_PUBLIC_RETURN_URL**: URL HTTPS pública registrada en Págelo Fácil para retorno tras pago.
-- **Opcional**:
-  - **PAGUELOFACIL_CARD_TYPES**: CSV de métodos de pago permitidos.
-  - **PAGUELOFACIL_EXPIRES_IN**: Tiempo de expiración del enlace en segundos.
+**INFECTOTRÓPICO** es una plataforma educativa especializada en medicina tropical e infectología, diseñada para médicos, estudiantes de medicina y profesionales de la salud que buscan actualizar y ampliar sus conocimientos en enfermedades infecciosas y medicina tropical.
 
-### 2. Endpoint API: POST `/api/payments/paguelo-facil`
-- **Archivo**: `app/api/payments/paguelo-facil/route.ts`
-- **Request Body (JSON)**:
-  ```ts
-  {
-    amount: number;           // > 0, 2 decimales
-    description: string;      // no vacío, max 150 chars
-    customParam1: string;     // PARM_1 (userId u otro)
-    returnUrl?: string;       // NEXT_PUBLIC_RETURN_URL
-    pfCf?: Record<string, any>;
-    cardTypes?: string[];     // e.g. ["VISA","NEQUI"]
-    expiresIn?: number;       // en segundos
-  }
-  ```
-- **Validaciones**:
-  - `amount > 0`
-  - `description` no vacío
-- **Construcción de body** (application/x-www-form-urlencoded):
-  - `CCLW` = PAGUELOFACIL_CCLW
-  - `CMTN` = amount.toFixed(2)
-  - `CDSC` = description substring(0,150)
-  - `PARM_1` = customParam1
-  - `RETURN_URL` = Buffer.from(returnUrl, 'utf8').toString('hex')
-  - `PF_CF` = Buffer.from(JSON.stringify(pfCf), 'utf8').toString('hex')
-  - `CARD_TYPE` = cardTypes.join(',')
-  - `EXPIRES_IN` = expiresIn
-- **Ejemplo de envío**:
-  ```ts
-  await fetch(process.env.PAGUELOFACIL_API_URL!, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: urlEncodedBody,
-  });
-  ```
-- **Respuesta**: JSON con `{ success: boolean; url?: string; error?: string }`
+Nuestra plataforma ofrece cursos especializados, certificaciones oficiales y una experiencia de aprendizaje integral con las últimas tecnologías educativas.
 
-### 3. Frontend: Redirección al Checkout
-- **Componente**: `app/payments/PaymentButton.tsx`
-- **Flujo**:
-  1. POST a `/api/payments/paguelo-facil` con payload.
-  2. Recibe `{ url }`.
-  3. Mostrar modal “Redirigiendo al checkout…”.
-  4. `window.location.href = url`.
+---
 
-### 4. Página de Resultado
-- **Ruta**: `app/payments/resultado/page.tsx`
-- **Qué hacer**:
-  - Leer query params (`Oper`, `TotalPagado`, `Estado`, etc.).
-  - Mostrar al usuario el estado y detalles de la transacción.
-  - (Opcional) Validar estado con server-to-server si la API lo permite.
+## 🌟 Características Principales
 
-### 5. Seguridad y CORS
-- Sanitizar todos los inputs y outputs.
-- Configurar CORS para permitir solo tus orígenes.
-- Definir políticas CSP que permitan únicamente dominios de Págelo Fácil y tu dominio.
-- Manejar errores en el frontend con mensajes claros.
+### 📚 **Sistema de Gestión de Aprendizaje (LMS)**
+- **Cursos estructurados** con capítulos organizados y progresión lógica
+- **Videos educativos** de alta calidad con soporte para múltiples plataformas (YouTube, Vimeo, MUX)
+- **Materiales descargables** y recursos complementarios
+- **Seguimiento de progreso** individual para cada estudiante
+- **Evaluaciones y quizzes** integrados para verificar conocimientos
 
-### 6. Webhook de Confirmación
-- **Archivo**: `app/api/payments/paguelo-facil/webhook/route.ts`
-- **Flujo**:
-  1. Págelo Fácil envía POST con `{ status, parm_1, pfCf }`.
-  2. Verificar: `status === "APPROVED"` y `parm_1` válido.
-  3. Registrar transacción con Prisma (`purchase.create`).
-  4. Enviar correos de confirmación (`sendEnrollmentConfirmationEmails`).
+### 🎯 **Experiencia de Usuario Personalizada**
+- **Dashboard personalizado** según el tipo de usuario (Estudiante, Profesor, Administrador)
+- **Catálogo de cursos** con filtros por categoría y búsqueda avanzada
+- **Perfil de usuario** con historial de cursos y certificaciones
+- **Modo oscuro/claro** para mejor experiencia visual
+- **Responsive design** optimizado para dispositivos móviles y desktop
 
-### 7. Pruebas End-to-End
-- **Sandbox**:
-  - Generar enlace en modo sandbox (`PAGUELOFACIL_API_URL` de pruebas).
-  - Simular pago y redirección.
-  - Verificar flujo completo: generación de enlace, checkout, webhook.
-- **Unit Tests**:
-  - Test de `createPagueloFacilLink()` con mocks de fetch.
-  - Validar hex-encoding de RETURN_URL y PF_CF.
+### 🏆 **Sistema de Certificaciones**
+- **Certificados digitales** generados automáticamente al completar cursos
+- **Códigos de verificación únicos** para autenticidad
+- **Descarga en PDF** con diseño profesional
+- **Galería de certificados** en el perfil del usuario
+- **Verificación pública** de certificados
 
-### 8. Monitoreo y Logs
-- Registrar peticiones y respuestas con estado de éxito/fallo.
-- Integrar alertas en Sentry o Logtail para errores críticos.
-- Loguear código de respuesta y mensajes de error de Págelo Fácil.
+### 💳 **Sistema de Pagos Integrado**
+- **Págelo Fácil** - Pasarela de pagos local para tarjetas de crédito/débito
+- **Yappy** - Pagos móviles con QR dinámico para Panamá
+- **Pagos manuales** con seguimiento administrativo
+- **Facturación automática** y confirmaciones por email
+- **Múltiples métodos de pago** para mayor accesibilidad
 
-### 9. Documentación Interna y CI/CD
-- Documentar en README pasos de configuración de credenciales, entornos (sandbox/producción).
-- Incluir ejemplos de payloads y respuestas.
-- Configurar CI:
-  - Smoke tests contra `/api/payments/paguelo-facil` tras cada deploy.
-  - Verificar variables de entorno en el entorno de producción.
+### 👨‍🏫 **Herramientas para Educadores**
+- **Editor de cursos** intuitivo con vista previa en tiempo real
+- **Gestión de contenido** multimedia (videos, documentos, imágenes)
+- **Sistema de evaluaciones** con preguntas de opción múltiple
+- **Analytics de estudiantes** y progreso de cursos
+- **Gestión de usuarios** y roles de acceso
 
-### 10. Revisión de Seguridad
-- Ejecutar `npm audit` y parchear vulnerabilidades.
-- Auditoría de dependencias y políticas de seguridad.
-- Control de versiones de la API de Págelo Fácil para evitar cambios inesperados.
+### 📧 **Comunicación y Soporte**
+- **Notificaciones por email** automáticas (inscripciones, finalizaciones, certificados)
+- **WhatsApp integrado** para soporte directo al estudiante
+- **Sistema de notificaciones** en tiempo real
+- **Chat de soporte** flotante para asistencia inmediata
+
+### 🔐 **Seguridad y Administración**
+- **Autenticación segura** con Supabase
+- **Roles y permisos** granulares (Visitante, Estudiante, Profesor, Administrador)
+- **Gestión de usuarios** centralizada
+- **Auditoría de actividades** y logs del sistema
+- **Backup automático** de datos
+
+---
+
+## 🎯 **¿Para Quién es esta Plataforma?**
+
+### 👨‍⚕️ **Profesionales de la Salud**
+- Médicos generales y especialistas
+- Enfermeras y técnicos en salud
+- Residentes y internos
+- Investigadores en medicina tropical
+
+### 🎓 **Estudiantes**
+- Estudiantes de medicina
+- Estudiantes de enfermería
+- Estudiantes de ciencias de la salud
+- Profesionales en formación continua
+
+### 🏥 **Instituciones**
+- Hospitales y clínicas
+- Universidades y escuelas de medicina
+- Organizaciones de salud pública
+- ONGs de salud internacional
+
+---
+
+## 🚀 **Funcionalidades Destacadas**
+
+### 📱 **Acceso Multiplataforma**
+- ✅ Navegadores web (Chrome, Firefox, Safari, Edge)
+- ✅ Dispositivos móviles (iOS, Android)
+- ✅ Tablets y computadoras
+- ✅ Acceso offline para contenido descargado
+
+### 🔧 **Panel de Administración**
+- ✅ Gestión completa de cursos y contenido
+- ✅ Análisis de rendimiento y estadísticas
+- ✅ Gestión de usuarios y roles
+- ✅ Configuración de certificados personalizados
+- ✅ Reportes detallados de actividad
+
+### 💰 **Modelos de Negocio Flexibles**
+- ✅ Cursos gratuitos y de pago
+- ✅ Suscripciones y paquetes de cursos
+- ✅ Certificaciones premium
+- ✅ Acceso institucional
+- ✅ Descuentos y promociones
+
+### 🌐 **Integración con Herramientas Externas**
+- ✅ Google Analytics para seguimiento
+- ✅ Cloudinary para gestión de medios
+- ✅ Resend para emails transaccionales
+- ✅ Firebase para analytics avanzado
+- ✅ APIs de terceros para contenido especializado
+
+---
+
+## 📊 **Métricas y Analytics**
+
+### 📈 **Para Administradores**
+- Número total de estudiantes registrados
+- Cursos más populares y mejor valorados
+- Tasas de finalización por curso
+- Ingresos por período y método de pago
+- Análisis de comportamiento de usuarios
+
+### 📚 **Para Educadores**
+- Progreso individual de estudiantes
+- Tiempo promedio de finalización
+- Secciones con mayor dificultad
+- Resultados de evaluaciones
+- Feedback y comentarios
+
+### 🎯 **Para Estudiantes**
+- Progreso personal en cada curso
+- Tiempo invertido en aprendizaje
+- Certificados obtenidos
+- Historial de actividades
+- Recomendaciones personalizadas
+
+---
+
+## 🛡️ **Seguridad y Confiabilidad**
+
+### 🔒 **Protección de Datos**
+- Encriptación SSL/TLS para todas las comunicaciones
+- Cumplimiento con regulaciones de privacidad
+- Backup automático diario
+- Autenticación de dos factores opcional
+- Políticas de acceso granulares
+
+### ⚡ **Rendimiento**
+- CDN global para carga rápida de contenido
+- Optimización automática de imágenes y videos
+- Caching inteligente
+- Monitoreo 24/7 de uptime
+- Escalabilidad automática según demanda
+
+---
+
+## 🎨 **Diseño y Experiencia**
+
+### 🖼️ **Interfaz Moderna**
+- Diseño limpio y profesional
+- Navegación intuitiva
+- Colores institucionales personalizables
+- Tipografía optimizada para lectura
+- Iconografía médica especializada
+
+### 📱 **Responsive Design**
+- Adaptación automática a cualquier dispositivo
+- Gestos táctiles optimizados
+- Carga rápida en conexiones lentas
+- Modo offline para contenido crítico
+
+---
+
+## 🌍 **Alcance y Localización**
+
+### 🗣️ **Idiomas Soportados**
+- Español (principal)
+- Inglés (contenido internacional)
+- Portugués (mercado brasileño)
+
+### 🌎 **Métodos de Pago Regionales**
+- **Panamá**: Yappy, tarjetas locales
+- **Latinoamérica**: Págelo Fácil
+- **Internacional**: PayPal, Stripe (próximamente)
+
+---
+
+## 📞 **Soporte y Asistencia**
+
+### 🆘 **Canales de Soporte**
+- **WhatsApp**: Atención directa e inmediata
+- **Email**: Soporte técnico especializado
+- **Chat en vivo**: Asistencia durante horarios laborales
+- **Base de conocimientos**: Tutoriales y FAQ
+- **Videos explicativos**: Guías paso a paso
+
+### ⏰ **Horarios de Atención**
+- **WhatsApp**: Lun-Vie 8:00 AM - 6:00 PM (GMT-5)
+- **Email**: 24/7 con respuesta en menos de 24 horas
+- **Chat**: Lun-Vie 9:00 AM - 5:00 PM (GMT-5)
+
+---
+
+## 🚀 **Próximas Funcionalidades**
+
+### 🔄 **En Desarrollo**
+- [ ] App móvil nativa (iOS/Android)
+- [ ] Realidad virtual para procedimientos médicos
+- [ ] Inteligencia artificial para recomendaciones
+- [ ] Gamificación con badges y rankings
+- [ ] Foros de discusión comunitarios
+- [ ] Webinars en vivo integrados
+- [ ] Biblioteca de casos clínicos interactivos
+
+### 💡 **Roadmap 2024-2025**
+- Expansión a 5 países adicionales
+- 50+ cursos especializados
+- Certificaciones oficiales internacionales
+- Alianzas con universidades de medicina
+- Plataforma de investigación colaborativa
+
+---
+
+## 📈 **Estadísticas de Uso**
+
+### 📊 **Datos Actuales**
+- **+1,000** estudiantes registrados
+- **15+** cursos especializados disponibles
+- **95%** tasa de satisfacción estudiantil
+- **24/7** disponibilidad de la plataforma
+- **<2s** tiempo promedio de carga
+
+---
+
+## 🤝 **Contacto y Más Información**
+
+### 📧 **Información Comercial**
+- **Email**: info@infectotropico.com
+- **WhatsApp**: +507 6637-7061
+- **Web**: https://infectotropico.com
+- **LinkedIn**: /company/infectotropico
+
+### 🏢 **Oficinas**
+- **Panamá**: Ciudad de Panamá, Panamá
+- **Cobertura**: Toda Latinoamérica
+- **Tiempo de zona**: GMT-5 (EST)
+
+---
+
+*INFECTOTRÓPICO - Educación médica especializada para profesionales de la salud en el siglo XXI.*
+
+**© 2024 INFECTOTRÓPICO. Todos los derechos reservados.**

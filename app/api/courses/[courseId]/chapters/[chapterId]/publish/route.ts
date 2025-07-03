@@ -16,16 +16,29 @@ export async function PUT(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Permitir solo si es admin (por ID) o dueño del curso
-    const chapter = await db.chapter.findUnique({ where: { id: chapterId } });
+    // Verificar que el capítulo pertenece al curso y que el usuario tiene permisos
+    const chapter = await db.chapter.findUnique({ 
+      where: { 
+        id: chapterId,
+        courseId: courseId, // Asegurar que el capítulo pertenece al curso
+      } 
+    });
+    
     if (!chapter) {
       return new NextResponse("Chapter not found", { status: 404 });
     }
+    
     const course = await db.course.findUnique({
-      where: { id: chapter.courseId },
+      where: { id: courseId },
     });
+    
+    if (!course) {
+      return new NextResponse("Course not found", { status: 404 });
+    }
+    
     const isAdmin = translateRole(user.role) === "admin";
-    const isOwner = course?.userId === user.id;
+    const isOwner = course.userId === user.id;
+    
     if (!isAdmin && !isOwner) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
