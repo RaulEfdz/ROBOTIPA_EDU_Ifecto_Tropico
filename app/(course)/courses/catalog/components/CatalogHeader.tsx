@@ -99,12 +99,12 @@ export default function CatalogHeader() {
             {/* Botón de Inicio (solo si hay sesión) */}
             {user && (
               <Link
-                href="/" // O la ruta principal para usuarios logueados
+                href={user.customRole === 'teacher' ? '/teacher' : '/students'}
                 className="text-sm font-medium text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400 flex items-center gap-1"
-                title="Ir al panel principal"
+                title="Ir al tablero"
               >
                 <HomeIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span className="hidden sm:inline">Inicio</span>
+                <span className="hidden sm:inline">Panel</span>
               </Link>
             )}
 

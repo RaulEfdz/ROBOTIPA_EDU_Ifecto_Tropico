@@ -8,8 +8,9 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FaWhatsapp } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { FaWhatsapp } from "react-icons/fa";
+import { X } from "lucide-react";
 import {
   getCurrentUserFromDB,
   UserDB,
@@ -18,8 +19,7 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import Image from "next/image";
-import YappyPaymentButton from "@/app/components/payments/YappyPaymentButton";
-import { yappyService } from "@/lib/yappy/yappy-service";
+import YappyOfficialButton from "@/app/components/payments/YappyOfficialButton";
 
 interface ManualRegistrationButtonProps {
   courseId: string;
@@ -187,50 +187,142 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
       <Card className="w-full max-w-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Otros medios de pago
-            <span className="text-xl">💵</span>
-            <Image
-              width={100}
-              height={100}
-              src="/yappy.webp"
-              alt="Yappy"
-              className="h-5 w-auto object-contain"
-            />
+            <span className="text-xl">💳</span>
+            Opciones de Pago
           </CardTitle>
           <CardDescription className="text-sm text-gray-600 dark:text-gray-300">
-            Puedes pagar por Yappy, transferencia, efectivo u otros métodos.
-            Toca el botón para ver instrucciones y completar tu solicitud
-            manual.
+            Selecciona tu método de pago preferido para completar tu inscripción al curso.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
+          {/* Botón de Pagar con Tarjeta (Paguelo Facil) */}
+          {coursePrice && coursePrice > 0 && (
+            <div className="w-full">
+              <Button
+                onClick={async () => {
+                  try {
+                    const user = await getCurrentUserFromDB();
+                    if (!user || user.isDeleted || user.isBanned) {
+                      toast.error("No se pudo obtener información válida del usuario.");
+                      return;
+                    }
+
+                    // Fetch first chapter ID
+                    const courseRes = await fetch(`/api/courses/${courseId}/published-chapters`, {
+                      method: "GET",
+                      cache: "no-store",
+                    });
+                    if (!courseRes.ok) {
+                      toast.error("No se pudo obtener información del curso.");
+                      return;
+                    }
+                    const courseData = await courseRes.json();
+                    const firstChapterId = courseData.chapters && courseData.chapters.length > 0
+                      ? courseData.chapters[0].id
+                      : null;
+
+                    if (!firstChapterId) {
+                      toast.error("No se encontró el primer capítulo del curso.");
+                      return;
+                    }
+
+                    const returnUrl = `${window.location.origin}/courses/${courseId}/chapters/${firstChapterId}?status=SUCCESS&course=${courseId}`;
+
+                    const payload = {
+                      amount: coursePrice,
+                      description: `Curso: ${courseTitle}`,
+                      customParam1: user.id,
+                      returnUrl,
+                      pfCf: {
+                        email: user.email,
+                        phone: user.phone || "",
+                        fullName: user.fullName,
+                        courseId,
+                      },
+                      metadata: {
+                        courseId,
+                      },
+                      cardTypes: ["VISA", "MASTERCARD", "NEQUI"],
+                    };
+
+                    const res = await fetch("/api/payments/paguelo-facil", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(payload),
+                    });
+
+                    const data = await res.json();
+                    if (res.ok && data.url) {
+                      window.open(data.url, '_blank');
+                    } else {
+                      toast.error(data.error || "No se pudo generar el enlace de pago.");
+                    }
+                  } catch (e) {
+                    toast.error("Error inesperado al conectar con el servidor.");
+                  }
+                }}
+                disabled={isLoadingUser || !currentUser}
+                variant="outline"
+                className="w-full border-slate-600 text-slate-600 hover:bg-slate-50 font-semibold py-3"
+              >
+                <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M2 7h20v2H2V7zm0 6h20v2H2v-2zm0-8h20c.6 0 1 .4 1 1v12c0 .6-.4 1-1 1H2c-.6 0-1-.4-1-1V6c0-.6.4-1 1-1zm2 11h16V8H4v6z"/>
+                </svg>
+                Pagar con Tarjeta ${coursePrice}
+              </Button>
+            </div>
+          )}
+
           {/* Botón de Yappy si hay precio definido y está disponible */}
-          {coursePrice && coursePrice > 0 && yappyService.isYappyAvailable() && (
-            <YappyPaymentButton
+          {coursePrice && coursePrice > 0 && process.env.NEXT_PUBLIC_YAPPY_AVAILABLE === 'true' && (
+            <YappyOfficialButton
               courseId={courseId}
               amount={coursePrice}
               courseName={courseTitle}
               disabled={isLoadingUser || !currentUser}
               className="w-full"
+              theme="blue"
+              rounded={true}
             />
           )}
-          
-          {/* Botón para otros métodos de pago */}
+
+          {/* Botón de Pago Manual (WhatsApp) */}
           <Button
-            onClick={handleOpenModal}
+            onClick={() => setModalOpen(true)}
             disabled={isLoadingUser}
             variant="outline"
-            className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+            className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50 font-semibold py-3"
           >
-            <FaWhatsapp className="mr-2 h-4 w-4" />
-            Otros métodos de pago
+            <FaWhatsapp className="mr-2 h-5 w-5" />
+            Pago Manual (WhatsApp)
           </Button>
+          
+          <div className="text-center">
+            <p className="text-xs text-gray-500">
+              💳 Acepta VISA, MasterCard, American Express
+            </p>
+            <p className="text-xs text-gray-500">
+              📱 Yappy con link directo (abre la app automáticamente)
+            </p>
+            <p className="text-xs text-gray-500">
+              💬 Pago manual: transferencia, efectivo, otros métodos
+            </p>
+          </div>
         </CardContent>
       </Card>
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-md relative">
+            {/* Close button */}
+            <button
+              onClick={() => setModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+              aria-label="Cerrar modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
             <h2 className="text-xl font-bold mb-2 text-slate-800 dark:text-slate-100">
               ¿Quieres pagar por otros medios?
             </h2>
@@ -240,7 +332,14 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
               WhatsApp.
             </p>
 
-            <div className="flex justify-center">
+            <div className="flex justify-center gap-3">
+              <Button
+                onClick={() => setModalOpen(false)}
+                variant="outline"
+                className="border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+              >
+                Cancelar
+              </Button>
               <Button
                 onClick={handleOpenWhatsApp}
                 className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2 whitespace-nowrap"

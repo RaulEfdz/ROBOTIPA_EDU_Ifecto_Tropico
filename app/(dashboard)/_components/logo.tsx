@@ -84,7 +84,7 @@ export const Logo = () => {
           height={100}
           width={100}
           alt="ROBOTIPA Logo"
-          src="/rbtpligth.png"
+          src={process.env.NEXT_PUBLIC_LOGO_LIGHT || "/rbtpligth.png"}
         />
       </div>
 

@@ -17,6 +17,7 @@ import {
 import LoginForm from "./SignIn/LoginForm";
 import SignupForm from "./SignUp/SignupForm";
 import EmailValidationTab from "./EmailValidationTab";
+import PrivacyPolicyModal from "@/components/PrivacyPolicyModal";
 import { ArrowRight, BookOpen } from "lucide-react";
 
 export default function AuthPage() {
@@ -147,6 +148,14 @@ function AuthPageContent() {
               </Tabs>
             </CardContent>
           </Card>
+          
+          {/* Privacy Policy Button */}
+          <div className="mt-6 text-center">
+            <PrivacyPolicyModal 
+              triggerText="Políticas de Privacidad"
+              triggerClassName="text-sm text-gray-500 hover:text-emerald-600 underline"
+            />
+          </div>
         </div>
       </div>
     </div>

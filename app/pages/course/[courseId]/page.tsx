@@ -517,31 +517,6 @@ export default function CoursePage() {
             </div>
 
             <div className="space-y-3">
-              <Button
-                size="lg"
-                onClick={handleMainAction}
-                disabled={isActionLoading || isLoadingInitial} // Deshabilitado mientras carga CUALQUIER cosa inicial
-                className="w-full py-3.5 text-base rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2.5 group transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 disabled:opacity-70 disabled:cursor-not-allowed"
-                aria-live="polite"
-              >
-                {/* Icono de carga más claro */}
-                {isActionLoading || isLoadingInitial ? (
-                  <RefreshCw className="animate-spin h-5 w-5" />
-                ) : (
-                  <MainButtonIcon
-                    size={22}
-                    className="group-hover:scale-105 transition-transform"
-                  />
-                )}
-                <span className="font-semibold">
-                  {isActionLoading
-                    ? "Procesando..."
-                    : isLoadingInitial
-                      ? "Cargando..."
-                      : mainButtonText}
-                </span>
-              </Button>
-
               <ManualRegistrationButton
                 courseId={courseId}
                 courseTitle={title}

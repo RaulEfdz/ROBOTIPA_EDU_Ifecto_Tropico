@@ -18,6 +18,7 @@ interface YappyPaymentResponse {
   success: boolean;
   paymentId: string;
   qrData: string;
+  paymentLink: string;
   expiresAt: Date;
   status: 'pending' | 'completed' | 'failed' | 'expired';
   message?: string;
@@ -86,17 +87,26 @@ class YappyService {
 
   constructor() {
     this.environment = process.env.YAPPY_ENVIRONMENT || 'test';
-    this.isAvailable = process.env.YAPPY_AVAILABLE === 'true';
+    this.isAvailable = process.env.YAPPY_AVAILABLE === 'true' || process.env.NEXT_PUBLIC_YAPPY_AVAILABLE === 'true';
     this.apiUrl = this.environment === 'prod' 
       ? process.env.YAPPY_API_URL_PROD || 'https://apipagosbg.bgeneral.cloud'
       : process.env.YAPPY_API_URL_TEST || 'https://api-comecom-uat.yappycloud.com';
     
-    this.merchantId = process.env.YAPPY_MERCHANT_ID || '';
+    this.merchantId = process.env.YAPPY_MERCHANT_ID || process.env.NEXT_PUBLIC_YAPPY_MERCHANT_ID || '';
     this.urlDomain = process.env.YAPPY_URL_DOMAIN || 'https://academy.infectotropico.com';
     this.ipnUrl = process.env.YAPPY_IPN_URL || 'https://academy.infectotropico.com/api/payments/yappy/webhook';
 
+    console.log('Yappy Service Configuration:', {
+      environment: this.environment,
+      isAvailable: this.isAvailable,
+      apiUrl: this.apiUrl,
+      hasMerchantId: !!this.merchantId,
+      merchantId: this.merchantId ? `${this.merchantId.substring(0, 8)}...` : 'not set',
+      urlDomain: this.urlDomain
+    });
+
     if (!this.merchantId) {
-      console.warn('Yappy credentials not configured. Set YAPPY_MERCHANT_ID');
+      console.warn('Yappy credentials not configured. Set YAPPY_MERCHANT_ID or NEXT_PUBLIC_YAPPY_MERCHANT_ID');
     }
   }
 
@@ -105,6 +115,12 @@ class YappyService {
    */
   private async validateMerchant(): Promise<string> {
     try {
+      console.log('Validating Yappy merchant...', {
+        apiUrl: `${this.apiUrl}/payments/validate/merchant`,
+        merchantId: this.merchantId ? `${this.merchantId.substring(0, 8)}...` : 'not set',
+        urlDomain: this.urlDomain
+      });
+
       const response = await fetch(`${this.apiUrl}/payments/validate/merchant`, {
         method: 'POST',
         headers: {
@@ -116,11 +132,20 @@ class YappyService {
         }),
       });
 
+      console.log('Yappy validate merchant response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`Yappy validate merchant error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Yappy validate merchant error response:', errorText);
+        throw new Error(`Yappy validate merchant error: ${response.status} - ${errorText}`);
       }
 
       const data: YappyValidateMerchantResponse = await response.json();
+      console.log('Yappy validate merchant response:', {
+        statusCode: data.status?.code,
+        statusDescription: data.status?.description,
+        hasToken: !!data.body?.token
+      });
       
       if (!data.body?.token) {
         throw new Error('No token received from Yappy validation');
@@ -161,7 +186,9 @@ class YappyService {
       });
 
       if (!response.ok) {
-        throw new Error(`Yappy create order error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Yappy create order error response:', errorText);
+        throw new Error(`Yappy create order error: ${response.status} - ${errorText}`);
       }
 
       const data: YappyCreateOrderResponse = await response.json();
@@ -179,7 +206,8 @@ class YappyService {
     try {
       // Validar que tenemos las credenciales necesarias
       if (!this.merchantId) {
-        throw new Error('YAPPY_MERCHANT_ID is required');
+        console.log('No merchant ID found, falling back to simulation mode');
+        return this.createSimulatedPayment(request);
       }
 
       // Paso 1: Validar merchant y obtener token
@@ -202,6 +230,15 @@ class YappyService {
         documentName: orderResponse.body.documentName,
       });
 
+      // Generar link de pago
+      const paymentLink = this.generatePaymentLink({
+        transactionId: orderResponse.body.transactionId,
+        amount: request.amount,
+        merchantId: this.merchantId,
+        orderId: request.orderId,
+        description: request.description,
+      });
+
       const expiresAt = new Date();
       expiresAt.setMinutes(expiresAt.getMinutes() + 15); // Expira en 15 minutos
 
@@ -209,6 +246,7 @@ class YappyService {
         success: true,
         paymentId: orderResponse.body.transactionId,
         qrData,
+        paymentLink,
         expiresAt,
         status: 'pending',
         message: 'Payment request created successfully',
@@ -230,6 +268,7 @@ class YappyService {
         success: false,
         paymentId: '',
         qrData: '',
+        paymentLink: '',
         expiresAt: new Date(),
         status: 'failed',
         message: error instanceof Error ? error.message : 'Unknown error',
@@ -252,6 +291,14 @@ class YappyService {
       documentName: 'simulation-doc',
     });
 
+    const paymentLink = this.generatePaymentLink({
+      transactionId: paymentId,
+      amount: request.amount,
+      merchantId: 'SIMULATION',
+      orderId: request.orderId,
+      description: request.description,
+    });
+
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 
@@ -259,6 +306,7 @@ class YappyService {
       success: true,
       paymentId,
       qrData,
+      paymentLink,
       expiresAt,
       status: 'pending',
       message: 'Simulation payment created (configure YAPPY_MERCHANT_ID for production)',
@@ -323,6 +371,31 @@ class YappyService {
     };
 
     return JSON.stringify(qrData);
+  }
+
+  /**
+   * Genera el link de pago directo para Yappy
+   */
+  private generatePaymentLink(params: {
+    transactionId: string;
+    amount: number;
+    merchantId: string;
+    orderId: string;
+    description: string;
+  }): string {
+    // Codificar parámetros para el URL
+    const encodedDescription = encodeURIComponent(params.description);
+    const encodedMerchant = encodeURIComponent(params.merchantId);
+    
+    // Formato del deep link de Yappy
+    // yappy://pay?merchant={merchantId}&amount={amount}&transaction={transactionId}&order={orderId}&description={description}
+    const yappyDeepLink = `yappy://pay?merchant=${encodedMerchant}&amount=${params.amount}&transaction=${params.transactionId}&order=${params.orderId}&description=${encodedDescription}`;
+    
+    // También generar un link universal que funcione en web
+    const webPaymentUrl = `https://pay.yappycloud.com/payment?merchant=${encodedMerchant}&amount=${params.amount}&transaction=${params.transactionId}&order=${params.orderId}&description=${encodedDescription}`;
+    
+    // En móvil usará el deep link, en web el URL universal
+    return `${yappyDeepLink}|${webPaymentUrl}`;
   }
 
   /**

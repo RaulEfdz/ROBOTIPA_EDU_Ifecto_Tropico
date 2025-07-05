@@ -4,6 +4,7 @@ import { yappyService } from '@/lib/yappy/yappy-service';
 import { db } from '@/lib/db';
 import { getUserDataServerAuth } from '@/app/auth/CurrentUser/userCurrentServerAuth';
 import { sendEnrollmentConfirmationEmails } from '@/lib/email-service';
+import { getStudentId, getVisitorId } from '@/utils/roles/translate';
 
 export async function GET(
   req: NextRequest,
@@ -93,6 +94,19 @@ export async function GET(
             },
           });
 
+          // Actualizar rol del usuario de visitor a student si es necesario
+          const dbUser = await db.user.findUnique({
+            where: { id: user.id }
+          });
+
+          if (dbUser && (dbUser.customRole === getVisitorId() || !dbUser.customRole)) {
+            await db.user.update({
+              where: { id: user.id },
+              data: { customRole: getStudentId() },
+            });
+            console.log('User role updated to student');
+          }
+
           // Obtener datos del curso para el email
           const course = await db.course.findUnique({
             where: { id: courseId },
@@ -101,20 +115,20 @@ export async function GET(
 
           if (course) {
             // Obtener usuario completo de la base de datos
-            const dbUser = await db.user.findUnique({
+            const fullDbUser = await db.user.findUnique({
               where: { id: user.id },
               select: { id: true, email: true, fullName: true, username: true },
             });
             
             // Enviar email de confirmación
             try {
-              if (dbUser) {
+              if (fullDbUser) {
                 await sendEnrollmentConfirmationEmails({
                   user: {
-                    id: dbUser.id,
-                    email: dbUser.email || '',
-                    fullName: dbUser.fullName || '',
-                    username: dbUser.username || '',
+                    id: fullDbUser.id,
+                    email: fullDbUser.email || '',
+                    fullName: fullDbUser.fullName || '',
+                    username: fullDbUser.username || '',
                   },
                   course,
                   purchaseId: purchase.id,
