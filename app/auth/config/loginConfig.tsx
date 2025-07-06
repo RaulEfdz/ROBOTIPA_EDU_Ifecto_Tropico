@@ -137,7 +137,7 @@ export const loginConfig: LoginConfig = {
   rightPanel: {
     createAccount: {
       show: true,
-      title: "Registro en Infectotrópico Academy",
+      title: `Registro en ${process.env.NEXT_PUBLIC_NAME_APP || 'Infectotrópico Academy'}`,
       subtitle: {
         text: "¿Ya tienes una cuenta?",
         linkText: "Inicia sesión",

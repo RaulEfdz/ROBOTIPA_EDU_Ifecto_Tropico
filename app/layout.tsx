@@ -9,7 +9,7 @@ import FloatingHelpButton from "@/components/FloatingHelpButton";
 import { printDebug, printInitDebug } from "@/utils/debug/log";
 
 export const metadata: Metadata = {
-  title: "Cursos de Infectotrópico Academy",
+  title: `Cursos de ${process.env.NEXT_PUBLIC_NAME_APP || 'Infectotrópico Academy'}`,
   description:
     "Grupo multidisciplinario comprometido con el avance científico, la generación de conocimiento y el bienestar de las comunidades afectadas por enfermedades infecciosas tropicales y desatendidas, a través de un enfoque integral ofreciendo soluciones que impacten positivamente en la salud global, siguiendo un enfoque de 0ne Health",
 };
@@ -20,6 +20,9 @@ const metaDataPage = {
 };
 printInitDebug(metaDataPage.route);
 
+// NOMBRE DE LA VARIABLE DE ENTORNO: NEXT_PUBLIC_PRIMARY_COLOR
+// Ejemplo de uso en .env:
+// NEXT_PUBLIC_PRIMARY_COLOR=blue
 export default function RootLayout({
   children,
 }: {
@@ -43,7 +46,7 @@ export default function RootLayout({
           defer
         ></script>
       </head>
-      <body>
+      <body style={{ '--primary': (process.env.NEXT_PUBLIC_PRIMARY_COLOR === 'blue' ? '#3b82f6' : process.env.NEXT_PUBLIC_PRIMARY_COLOR === 'rose' ? '#f43f5e' : process.env.NEXT_PUBLIC_PRIMARY_COLOR === 'indigo' ? '#6366f1' : process.env.NEXT_PUBLIC_PRIMARY_COLOR === 'amber' ? '#f59e42' : '#10b981') } as React.CSSProperties}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

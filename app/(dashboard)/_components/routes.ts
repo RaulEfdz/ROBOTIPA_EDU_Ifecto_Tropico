@@ -49,7 +49,7 @@ export interface Route {
 export const guestRoutes: Route[] = [
   { icon: Compass, label: "Catálogo", href: "/courses/catalog" },
 
-  { icon: Layout, label: "Tablero", href: "/" },
+  { icon: Layout, label: "Panel", href: "/" },
   // { icon: Bell, label: "Notificaciones", href: "/notifications" },
   // { icon: HelpCircle, label: "Ayuda", href: "/help" },
   {
@@ -62,7 +62,7 @@ export const guestRoutes: Route[] = [
 export const teacherRoutes: Route[] = [
   { icon: Compass, label: "Catálogo", href: "/courses/catalog" },
 
-  { icon: Layout, label: "Tablero", href: "/teacher" },
+  { icon: Layout, label: "Panel", href: "/teacher" },
   { icon: CreditCard, label: "Pagos", href: "/payments" },
   { icon: List, label: "Cursos", href: "/teacher/courses" },
   {

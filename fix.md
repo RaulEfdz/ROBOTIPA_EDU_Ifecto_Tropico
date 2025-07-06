@@ -19,8 +19,7 @@
   - Validar que el sistema registre correctamente el estado de finalización de los módulos.
 
 ## 🟠 Importantes
-- **Pagos por Yappy:**
-  - Confirmar que los pagos realizados por Yappy asignan correctamente el acceso a los cursos.
+
 
 - **Asignación Automática de Cursos:** ✅
   - Revisar la lógica de asignación automática para asegurar que todos los usuarios que pagan reciban el curso correspondiente.

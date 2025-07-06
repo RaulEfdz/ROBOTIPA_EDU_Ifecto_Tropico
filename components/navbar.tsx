@@ -19,7 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({ buttons }) => {
         <Image
           height={1000}
           width={1000}
-          src={process.env.NEXT_PUBLIC_LOGO_MAIN || "/logo.png"}
+          src={process.env.NEXT_PUBLIC_LOGO || "/LOGO.png"}
           alt="Logo"
           className="h-10 w-auto mr-4"
         />

@@ -107,6 +107,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               v25.7.2
             </span>
           </div>
+          <div className="mt-8 text-center text-xs text-gray-500">
+            {process.env.NEXT_PUBLIC_NAME_APP || "INFECTOTRÓPICO"} v{process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0"}
+          </div>
         </div>
       )}
     </aside>

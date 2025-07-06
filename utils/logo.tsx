@@ -20,10 +20,10 @@ export const Logo: React.FC<LogoProps> = ({
   // Determinar el URL del logo basado en el tema o la versión
   const logoUrl =
     version === "light"
-      ? process.env.NEXT_PUBLIC_LOGO_LIGHT || "/rbtpligth.png"
+      ? process.env.NEXT_PUBLIC_LOGO_LIGHT || "/LOGO_LIGHT.png"
       : theme === "dark"
-        ? process.env.NEXT_PUBLIC_LOGO_LIGHT || "/rbtpligth.png"
-        : process.env.NEXT_PUBLIC_LOGO_DARK || "/rbtpbasic.png";
+        ? process.env.NEXT_PUBLIC_LOGO_LIGHT || "/LOGO_LIGHT.png"
+        : process.env.NEXT_PUBLIC_LOGO || "/LOGO.png";
 
   return <Image width={width} height={height} alt="logo" src={logoUrl} />;
 };

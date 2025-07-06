@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Utilidades para color principal dinámico */
+.bg-primary {
+  background-color: var(--primary) !important;
+}
+.text-primary {
+  color: var(--primary) !important;
+}
+.border-primary {
+  border-color: var(--primary) !important;
+}
+
 /* 
 @font-face {
   src: url('font/RenogareSoft-Regular.ttf') format('truetype');

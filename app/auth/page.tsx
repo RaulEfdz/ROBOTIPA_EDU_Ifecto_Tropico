@@ -53,7 +53,7 @@ function AuthPageContent() {
         <div className="flex flex-col items-center text-center space-y-4">
           <Logo version="light" width={140} height={70} />
           <h1 className="text-2xl font-bold tracking-tight">
-            Infectotrópico Academy
+            {process.env.NEXT_PUBLIC_NAME_APP || 'Infectotrópico Academy'}
           </h1>
           <p className="text-emerald-100 text-sm max-w-sm">
             Accede a cursos especializados en medicina tropical
@@ -82,7 +82,7 @@ function AuthPageContent() {
           <div className="relative z-10 text-left text-white max-w-lg">
             <Logo version="light" width={180} height={90} />
             <h1 className="mt-6 text-5xl font-extrabold tracking-tight leading-tight">
-              Infectotrópico Academy
+              {process.env.NEXT_PUBLIC_NAME_APP || 'Infectotrópico Academy'}
             </h1>
             <p className="mt-4 text-xl text-emerald-100">
               Formación especializada en medicina tropical y enfermedades

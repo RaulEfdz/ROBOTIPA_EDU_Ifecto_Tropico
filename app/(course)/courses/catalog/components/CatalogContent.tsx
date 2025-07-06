@@ -159,7 +159,7 @@ export default function CatalogContent() {
           <Toaster position="top-center" richColors />
           <section className="text-center py-8 mb-8 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg shadow-lg">
             <h1 className="text-4xl md:text-5xl font-bold text-white">
-              Infectotrópico Academy
+              {process.env.NEXT_PUBLIC_NAME_APP || 'Infectotrópico Academy'}
             </h1>
           </section>
 
