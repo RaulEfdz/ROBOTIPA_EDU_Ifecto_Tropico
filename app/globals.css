@@ -4,7 +4,37 @@
 
 /* Utilidades para color principal dinámico */
 .bg-primary {
-  background-color: var(--primary) !important;
+  background: var(--primary) !important;
+}
+.bg-primary-50 {
+  background: color-mix(in srgb, var(--primary), white 95%) !important;
+}
+.bg-primary-100 {
+  background: color-mix(in srgb, var(--primary), white 90%) !important;
+}
+.bg-primary-200 {
+  background: color-mix(in srgb, var(--primary), white 80%) !important;
+}
+.bg-primary-300 {
+  background: color-mix(in srgb, var(--primary), white 60%) !important;
+}
+.bg-primary-400 {
+  background: color-mix(in srgb, var(--primary), white 40%) !important;
+}
+.bg-primary-500 {
+  background: color-mix(in srgb, var(--primary), white 20%) !important;
+}
+.bg-primary-600 {
+  background: var(--primary) !important;
+}
+.bg-primary-700 {
+  background: color-mix(in srgb, var(--primary), black 20%) !important;
+}
+.bg-primary-800 {
+  background: color-mix(in srgb, var(--primary), black 40%) !important;
+}
+.bg-primary-900 {
+  background: color-mix(in srgb, var(--primary), black 60%) !important;
 }
 .text-primary {
   color: var(--primary) !important;
@@ -143,7 +173,7 @@ html, body, :root {
 
 @layer base {
   :root {
-    /* Paleta principal Infectotrópico - NUEVO ESTILO */
+    /* Paleta principal Robotipa Academy - NUEVO ESTILO */
     --background: 48 33% 99%; /* #FCFCF8 */
     --foreground: 210 10% 13%; /* #212529 */
 

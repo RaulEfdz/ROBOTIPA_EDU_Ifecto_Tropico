@@ -35,8 +35,8 @@ export const SidebarItem = ({
         "flex items-center rounded-xl text-sm font-medium transition-all duration-200 group",
         isCollapsed ? "justify-center px-2 py-3" : "gap-x-3 px-3 py-2.5",
         isActive
-          ? "bg-emerald-600/40 text-emerald-100 shadow-lg backdrop-blur-sm border border-emerald-500/30"
-          : "text-emerald-200 hover:bg-emerald-700/40 hover:text-emerald-100",
+          ? "bg-primary/40 text-white shadow-lg backdrop-blur-sm border border-primary/30"
+          : "text-primary/80 hover:bg-primary/40 hover:text-white",
         isAnimated && "animate-fadeIn"
       )}
     >
@@ -44,14 +44,14 @@ export const SidebarItem = ({
         className={cn(
           "h-4 w-4 flex-shrink-0 transition-colors",
           isActive 
-            ? "text-emerald-100" 
-            : "text-emerald-300 group-hover:text-emerald-100"
+            ? "text-white" 
+            : "text-primary/60 group-hover:text-white"
         )}
       />
       {!isCollapsed && (
         <span className={cn(
           "flex-1 truncate transition-colors leading-4",
-          isActive ? "text-emerald-100" : "text-emerald-200 group-hover:text-emerald-100"
+          isActive ? "text-white" : "text-primary/80 group-hover:text-white"
         )}>
           {label}
         </span>
@@ -66,7 +66,7 @@ export const SidebarItem = ({
           <TooltipTrigger asChild>
             {linkContent}
           </TooltipTrigger>
-          <TooltipContent side="right" className="bg-emerald-800 text-emerald-100 border-emerald-700">
+          <TooltipContent side="right" className="bg-primary text-white border-primary">
             {typeof label === 'string' ? label : 'Navegar'}
           </TooltipContent>
         </Tooltip>

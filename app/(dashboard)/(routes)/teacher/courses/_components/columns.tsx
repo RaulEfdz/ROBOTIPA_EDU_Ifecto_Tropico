@@ -25,7 +25,7 @@ export const courseColumns: ColumnDef<CourseWithRelations>[] = [
       <div className="flex justify-end">
         <Link
           href={`/teacher/courses/${row.original.id}`}
-          className="inline-flex items-center gap-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded-md px-2 py-1 transition"
+          className="inline-flex items-center gap-2 text-sm bg-primary-600 hover:bg-primary-700 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-md px-2 py-1 transition"
           aria-label={`Editar curso ${row.original.title}`}
         >
           <Pencil className="h-4 w-4" />

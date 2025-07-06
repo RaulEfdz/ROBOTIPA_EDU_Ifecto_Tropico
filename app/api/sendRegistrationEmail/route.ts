@@ -3,8 +3,8 @@ import { resend } from "@/lib/resend";
 
 const EMAIL_FROM_ADDRESS =
   process.env.EMAIL_FROM_ADDRESS || "no-reply@infectotropico.com";
-const NOTIFY_EMAIL = "info@infectotropico.com";
-const APP_NAME = process.env.NEXT_PUBLIC_NAME_APP || "INFECTOTRÓPICO";
+const NOTIFY_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || "info@infectotropico.com";
+const APP_NAME = process.env.NEXT_PUBLIC_NAME_APP || "Robotipa Academy";
 
 export async function POST(req: NextRequest) {
   try {

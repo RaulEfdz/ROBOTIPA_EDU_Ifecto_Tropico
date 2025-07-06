@@ -170,7 +170,7 @@ export const ChaptersForm = ({
       {/* Loading overlay */}
       {isUpdating && (
         <div className="absolute inset-0 bg-TextCustom/60 dark:bg-black/50 flex items-center justify-center z-10 rounded-xl">
-          <Loader2 className="h-6 w-6 text-emerald-600 animate-spin" />
+          <Loader2 className="h-6 w-6 text-primary-600 animate-spin" />
         </div>
       )}
 
@@ -185,7 +185,7 @@ export const ChaptersForm = ({
             onClick={toggleCreating}
             variant="ghost"
             size="sm"
-            className="text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg"
+            className="text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg"
           >
             <PlusCircle className="h-4 w-4 mr-2" />
             {t.addButton}
@@ -195,7 +195,7 @@ export const ChaptersForm = ({
 
       {/* Add new chapter form */}
       {isCreating && (
-        <div className="mb-6 bg-emerald-50 dark:bg-emerald-900/10 p-4 rounded-lg">
+        <div className="mb-6 bg-primary-50 dark:bg-primary-900/10 p-4 rounded-lg">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -231,7 +231,7 @@ export const ChaptersForm = ({
                   disabled={!isValid || isSubmitting || !isDirty}
                   type="submit"
                   size="sm"
-                  className="rounded-lg bg-emerald-600 hover:bg-emerald-700"
+                  className="rounded-lg bg-primary-600 hover:bg-primary-700"
                 >
                   {isSaving ? (
                     <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin mr-2" />
@@ -277,7 +277,7 @@ export const ChaptersForm = ({
 
           <div className="flex items-center text-xs text-gray-500">
             <div className="flex items-center mr-3">
-              <div className="w-2 h-2 rounded-full bg-green-400 mr-1"></div>
+              <div className="w-2 h-2 rounded-full bg-primary-400 mr-1"></div>
               <span>
                 {chapters.length} {t.chaptersCount}
               </span>

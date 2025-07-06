@@ -221,7 +221,7 @@ export const VideoUploaderMux = ({
         className={`
           border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
           transition-colors duration-200 ease-in-out relative group
-          ${isDragging ? "border-emerald-500 bg-emerald-50" : "border-gray-300 hover:border-gray-400"}
+          ${isDragging ? "border-primary-500 bg-primary-50" : "border-gray-300 hover:border-gray-400"}
           ${status === "error" ? "border-red-500 bg-red-50" : ""}
           ${status === "uploading" ? "cursor-not-allowed border-gray-300 bg-gray-50" : ""}
         `}
@@ -267,7 +267,7 @@ export const VideoUploaderMux = ({
                   {uploadProgress !== null && (
                     <div className="w-full bg-gray-600 rounded-full h-2.5 mt-2">
                       <div
-                        className="bg-emerald-500 h-2.5 rounded-full transition-all duration-150 ease-linear"
+                        className="bg-primary-500 h-2.5 rounded-full transition-all duration-150 ease-linear"
                         style={{ width: `${uploadProgress}%` }}
                       ></div>
                     </div>

@@ -150,7 +150,7 @@ export const ChapterAccessForm = ({
     <Card className="mb-6 border border-gray-100 dark:border-gray-700 shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex items-center gap-2">
-          <Eye className="w-5 h-5 text-emerald-500" />
+          <Eye className="w-5 h-5 text-primary-500" />
           <h3 className="text-lg font-medium">{t.title}</h3>
         </div>
         <p className="text-sm text-gray-500">{t.subtitle}</p>
@@ -160,7 +160,7 @@ export const ChapterAccessForm = ({
         className={`p-0 ${
           !isEditing &&
           (accessState
-            ? "bg-green-50 dark:bg-green-900/10 border-l-4 border-green-500 dark:border-green-500"
+            ? "bg-primary-50 dark:bg-primary-900/10 border-l-4 border-green-500 dark:border-green-500"
             : "bg-red-50 dark:bg-red-900/10 border-l-4 border-red-500 dark:border-red-500")
         }`}
       >
@@ -168,7 +168,7 @@ export const ChapterAccessForm = ({
           <div className="flex items-center gap-4 p-4">
             {accessState ? (
               <>
-                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900">
                   <Unlock className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
@@ -218,7 +218,7 @@ export const ChapterAccessForm = ({
                     <div
                       className={`p-4 rounded-lg transition-all ${
                         field.value
-                          ? "bg-green-50 dark:bg-green-900/20 border-2 border-green-100 dark:border-green-800"
+                          ? "bg-primary-50 dark:bg-primary-900/20 border-2 border-green-100 dark:border-green-800"
                           : "bg-red-50 dark:bg-red-900/20 border-2 border-red-100 dark:border-red-800"
                       }`}
                     >
@@ -237,7 +237,7 @@ export const ChapterAccessForm = ({
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            className="data-[state=checked]:bg-green-500"
+                            className="data-[state=checked]:bg-primary-500"
                           />
                         </FormControl>
                       </FormItem>
@@ -262,7 +262,7 @@ export const ChapterAccessForm = ({
                 <Button
                   type="submit"
                   disabled={isSubmitting || !isDirty}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-TextCustom"
+                  className="bg-primary-600 hover:bg-primary-700 text-TextCustom"
                 >
                   {isSaving ? (
                     <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin mr-2" />
@@ -280,7 +280,7 @@ export const ChapterAccessForm = ({
           <div className="flex items-center gap-1">
             <div
               className={`w-2 h-2 rounded-full ${
-                accessState ? "bg-green-500" : "bg-red-500"
+                accessState ? "bg-primary-500" : "bg-red-500"
               }`}
             />
             <span>ID: {chapterId.slice(0, 8)}</span>

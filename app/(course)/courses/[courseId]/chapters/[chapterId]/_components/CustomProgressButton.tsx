@@ -9,10 +9,10 @@ import { useConfettiStore } from "@/hooks/use-confetti-store";
 // Colores específicos para el botón de progreso
 const courseColors = {
   completed: {
-    button: "bg-emerald-600 hover:bg-emerald-700",
+    button: "bg-primary-600 hover:bg-primary-700",
   },
   progress: {
-    button: "bg-emerald-600 hover:bg-emerald-700",
+    button: "bg-primary-600 hover:bg-primary-700",
   },
 };
 
@@ -59,7 +59,7 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
               ¡Felicidades! Has completado el curso y obtenido tu certificado.{" "}
               <a
                 href="/students/my-certificates"
-                className="underline text-emerald-700 hover:text-emerald-900 ml-1"
+                className="underline text-primary-700 hover:text-primary-900 ml-1"
                 target="_blank"
                 rel="noopener noreferrer"
               >

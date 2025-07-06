@@ -45,7 +45,7 @@ export default function ChapterHeaderBar() {
           <div className="flex items-center gap-2 sm:gap-4 mx-2 sm:mx-4">
             <Link
               href="/search"
-              className="inline-flex items-center gap-1 sm:gap-2 text-emerald-600 font-semibold hover:text-emerald-700 transition-colors text-sm sm:text-base"
+              className="inline-flex items-center gap-1 sm:gap-2 text-primary-600 font-semibold hover:text-primary-700 transition-colors text-sm sm:text-base"
             >
               <ArrowLeft size={16} className="flex-shrink-0" />
               <span className="hidden sm:inline">Volver a cursos</span>
@@ -53,7 +53,7 @@ export default function ChapterHeaderBar() {
 
             <div className="h-5 sm:h-6 w-px bg-gray-200 mx-1 sm:mx-2 hidden sm:block" />
 
-            <div className="flex items-center gap-1 sm:gap-2 font-bold text-emerald-600 text-base sm:text-lg">
+            <div className="flex items-center gap-1 sm:gap-2 font-bold text-primary-600 text-base sm:text-lg">
               <BookOpen size={18} className="flex-shrink-0" />
               <span>Capítulo</span>
             </div>
@@ -74,7 +74,7 @@ export default function ChapterHeaderBar() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs sm:text-sm py-1 px-2 sm:py-2 sm:px-3"
+                  className="text-xs sm:text-sm py-1 px-2 sm:py-2 sm:px-3 bg-primary-600 hover:bg-primary-700"
                 >
                   Iniciar sesión
                 </Button>

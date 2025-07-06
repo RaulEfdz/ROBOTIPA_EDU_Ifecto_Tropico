@@ -138,11 +138,11 @@ export const DescriptionForm = ({
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <span>{t.title}</span>
             <span title={t.hintMessage}>
-              <Info className="w-4 h-4 text-emerald-500" />
+              <Info className="w-4 h-4 text-primary-500" />
             </span>
           </h3>
           {description ? (
-            <Badge className="bg-emerald-100 text-emerald-700 text-base px-3 py-1 ml-2 animate-pulse">
+            <Badge className="bg-primary-100 text-primary-700 text-base px-3 py-1 ml-2 animate-pulse">
               Completado
             </Badge>
           ) : (
@@ -156,7 +156,7 @@ export const DescriptionForm = ({
             onClick={toggleEdit}
             variant="ghost"
             size="sm"
-            className="text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg h-8"
+            className="text-gray-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg h-8"
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -199,7 +199,7 @@ export const DescriptionForm = ({
                     disabled={!isValid || isSubmitting || !isDirty}
                     type="submit"
                     size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    className="bg-primary-600 hover:bg-primary-700 text-white"
                   >
                     Guardar
                   </Button>
@@ -241,7 +241,7 @@ export const DescriptionForm = ({
         <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
           <div className="flex items-center text-sm text-gray-500">
             <div className="flex items-center mr-4">
-              <div className="w-2 h-2 rounded-full bg-green-400 mr-2" />
+              <div className="w-2 h-2 rounded-full bg-primary-400 mr-2" />
               <span>Visible en presentación del curso</span>
             </div>
             <div className="flex items-center">

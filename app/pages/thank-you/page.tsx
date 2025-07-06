@@ -375,8 +375,8 @@ export default function ThankYouPage() {
           <div className="flex flex-col items-center space-y-4 w-full">
             <div className="relative w-20 h-20 flex items-center justify-center">
               <div className="absolute w-16 h-16 border-4 border-gray-200 rounded-full"></div>
-              <div className="absolute w-16 h-16 border-4 border-t-emerald-500 rounded-full animate-spin"></div>
-              <Loader2 className="w-8 h-8 text-emerald-500 animate-pulse" />
+              <div className="absolute w-16 h-16 border-4 border-t-primary-500 rounded-full animate-spin"></div>
+              <Loader2 className="w-8 h-8 text-primary-500 animate-pulse" />
             </div>
             <h1 className="text-2xl font-bold text-gray-800">
               Procesando tu inscripción
@@ -409,9 +409,9 @@ export default function ThankYouPage() {
         return (
           <div className="flex flex-col items-center space-y-6 w-full">
             <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-green-300 to-emerald-500 rounded-full opacity-75 blur"></div>
+              <div className="absolute -inset-1 bg-gradient-to-r from-green-300 to-primary-500 rounded-full opacity-75 blur"></div>
               <div className="relative bg-white p-2 rounded-full">
-                <CheckCircle className="text-emerald-500 w-16 h-16" />
+                <CheckCircle className="text-primary-500 w-16 h-16" />
               </div>
             </div>
 
@@ -466,7 +466,7 @@ export default function ThankYouPage() {
             <div className="flex flex-col sm:flex-row gap-3 w-full">
               <Button
                 onClick={() => router.push("/courses/catalog")}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1"
+                className="bg-primary-600 hover:bg-primary-700 text-white flex-1"
               >
                 <BookOpen className="mr-2 h-5 w-5" />
                 Ver cursos disponibles
@@ -509,7 +509,7 @@ export default function ThankYouPage() {
             <div className="flex flex-col sm:flex-row gap-3 w-full">
               <Button
                 onClick={() => router.push("/courses/catalog")}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1"
+                className="bg-primary-600 hover:bg-primary-700 text-white flex-1"
               >
                 <BookOpen className="mr-2 h-5 w-5" />
                 Ver otros cursos
@@ -584,12 +584,12 @@ export default function ThankYouPage() {
           <div className="w-full max-w-3xl">
             <div className="relative group">
               {/* Glow animado (efecto “pulso”) */}
-              <div className="absolute inset-0 rounded-xl opacity-0 bg-gradient-to-r from-emerald-400 via-green-500 to-emerald-600 blur-lg transition-opacity duration-1000 group-hover:opacity-75 animate-pulse pointer-events-none"></div>
+              <div className="absolute inset-0 rounded-xl opacity-0 bg-gradient-to-r from-primary-400 via-green-500 to-primary-600 blur-lg transition-opacity duration-1000 group-hover:opacity-75 animate-pulse pointer-events-none"></div>
 
               {/* Botón principal */}
               <button
                 onClick={() => router.push(`/courses/${courseId}`)}
-                className="relative z-10 w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md border border-gray-200 transition-all duration-200 hover:shadow-lg overflow-hidden"
+                className="relative z-10 w-full flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md border border-gray-200 transition-all duration-200 hover:shadow-lg overflow-hidden"
               >
                 <div className="bg-white/20 rounded-full p-2">
                   <Play className="h-6 w-6 text-white" />

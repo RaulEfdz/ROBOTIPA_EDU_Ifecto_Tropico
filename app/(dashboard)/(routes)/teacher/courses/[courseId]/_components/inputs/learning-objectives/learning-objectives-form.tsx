@@ -84,15 +84,15 @@ export function LearningObjectivesForm({
   return (
     <div className="space-y-6 p-6 bg-white dark:bg-gray-950 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
       <div className="flex items-center gap-2 border-b pb-4 mb-4">
-        <BookOpen className="h-5 w-5 text-emerald-600" />
+        <BookOpen className="h-5 w-5 text-primary-600" />
         <h3 className="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
           Objetivos de Aprendizaje
           <span title="Agrega los objetivos que los estudiantes lograrán al finalizar el curso.">
-            <Info className="w-4 h-4 text-emerald-500" />
+            <Info className="w-4 h-4 text-primary-500" />
           </span>
         </h3>
         {objectives.length > 0 ? (
-          <Badge className="bg-emerald-100 text-emerald-700 text-base px-3 py-1 ml-2 animate-pulse">
+          <Badge className="bg-primary-100 text-primary-700 text-base px-3 py-1 ml-2 animate-pulse">
             Completado
           </Badge>
         ) : (
@@ -110,13 +110,13 @@ export function LearningObjectivesForm({
           onChange={(e) => setNewObjective(e.target.value)}
           onKeyDown={handleKeyDown}
           aria-label="Nuevo objetivo de aprendizaje"
-          className="shadow-sm focus-visible:ring-emerald-500"
+          className="shadow-sm focus-visible:ring-primary-500"
         />
         <Button
           type="button"
           onClick={() => handleAddObjective()}
           disabled={!newObjective.trim()}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="bg-primary-600 hover:bg-primary-700 text-white"
         >
           <PlusCircle className="h-4 w-4 mr-2" />
           Añadir
@@ -124,7 +124,7 @@ export function LearningObjectivesForm({
       </div>
 
       {/* Sugerencias rápidas con mejor diseño */}
-      <div className="space-y-3 bg-emerald-50 dark:bg-gray-900 p-4 rounded-lg">
+      <div className="space-y-3 bg-primary-50 dark:bg-gray-900 p-4 rounded-lg">
         <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Sugerencias rápidas:
         </p>
@@ -134,7 +134,7 @@ export function LearningObjectivesForm({
               key={index}
               type="button"
               onClick={() => handleAddObjective(option)}
-              className="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-sm px-3 py-1.5 rounded-full transition flex items-center"
+              className="bg-primary-100 hover:bg-primary-200 text-primary-800 text-sm px-3 py-1.5 rounded-full transition flex items-center"
             >
               <PlusCircle className="h-3 w-3 mr-1" />
               {option}
@@ -148,7 +148,7 @@ export function LearningObjectivesForm({
         <div className="flex items-center justify-between">
           <h4 className="text-md font-semibold text-gray-700 dark:text-white flex items-center">
             Lista de objetivos
-            <span className="ml-2 bg-emerald-100 text-emerald-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-emerald-900 dark:text-emerald-300">
+            <span className="ml-2 bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-primary-900 dark:text-primary-300">
               {objectives.length}
             </span>
           </h4>
@@ -162,7 +162,7 @@ export function LearningObjectivesForm({
                 className="flex justify-between items-center bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-3 rounded-md transition"
               >
                 <span className="text-black dark:text-gray-200 flex items-center">
-                  <span className="bg-emerald-600 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs mr-3">
+                  <span className="bg-primary-600 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs mr-3">
                     {index + 1}
                   </span>
                   {obj}
@@ -193,7 +193,7 @@ export function LearningObjectivesForm({
         <Button
           onClick={handleSave}
           disabled={isSaving || objectives.length === 0}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center"
+          className="bg-primary-600 hover:bg-primary-700 text-white flex items-center"
         >
           {isSaving ? (
             <>Guardando...</>

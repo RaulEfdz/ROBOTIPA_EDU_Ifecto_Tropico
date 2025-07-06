@@ -246,7 +246,7 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
           <button
             onClick={handleGeneratePreview}
             disabled={isGenerating}
-            className={buttonClass("bg-emerald-600 hover:bg-emerald-700")}
+            className={buttonClass("bg-primary-600 hover:bg-primary-700")}
             title="Generar vista previa"
           >
             <span>👁️</span>

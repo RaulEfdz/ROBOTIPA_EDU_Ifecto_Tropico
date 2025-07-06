@@ -16,7 +16,7 @@ export default function EmptyState({ resetFilters }: EmptyStateProps) {
         Intenta ajustar tu búsqueda o filtros, o explora todas nuestras{" "}
         <button
           onClick={resetFilters}
-          className="text-emerald-600 hover:underline dark:text-emerald-400"
+          className="text-primary-600 hover:underline dark:text-primary-400"
         >
           categorías
         </button>

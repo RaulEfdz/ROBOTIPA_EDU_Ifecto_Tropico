@@ -60,7 +60,7 @@ export function VerifiedDataCard({ data, onProceed }: VerifiedDataCardProps) {
       </CardContent>
       <CardFooter className="pt-3">
         <Button
-          className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
+          className="w-full bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600"
           onClick={onProceed}
         >
           Proceder con el Registro <ArrowRight className="ml-2 h-4 w-4" />

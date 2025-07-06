@@ -188,7 +188,7 @@ export default function ChapterIdPage() {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-pulse flex flex-col items-center">
-          <div className="h-12 w-12 border-4 border-t-emerald-500 border-b-emerald-500 border-l-transparent border-r-transparent rounded-full animate-spin"></div>
+          <div className="h-12 w-12 border-4 border-t-primary-500 border-b-primary-500 border-l-transparent border-r-transparent rounded-full animate-spin"></div>
           <p className="mt-4 text-gray-600">Cargando capítulo...</p>
         </div>
       </div>
@@ -245,7 +245,7 @@ export default function ChapterIdPage() {
               className={`${
                 chapter.isPublished
                   ? "bg-amber-600 hover:bg-amber-700"
-                  : "bg-green-600 hover:bg-green-700"
+                  : "bg-primary-600 hover:bg-primary-700"
               } text-TextCustom`}
               size="sm"
             >
@@ -288,7 +288,7 @@ export default function ChapterIdPage() {
                 <div
                   className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${
                     chapter.isFree
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                      ? "bg-primary-100 text-green-800 dark:bg-primary-900/30 dark:text-green-400"
                       : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
                   }`}
                 >
@@ -308,7 +308,7 @@ export default function ChapterIdPage() {
                 <div
                   className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${
                     chapter.isPublished
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                      ? "bg-primary-100 text-green-800 dark:bg-primary-900/30 dark:text-green-400"
                       : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
                   }`}
                 >
@@ -346,7 +346,7 @@ export default function ChapterIdPage() {
                   <div
                     className={`w-3 h-3 rounded-full ${
                       chapter.title
-                        ? "bg-green-500"
+                        ? "bg-primary-500"
                         : "bg-gray-300 dark:bg-gray-600"
                     }`}
                   ></div>
@@ -356,7 +356,7 @@ export default function ChapterIdPage() {
                   <div
                     className={`w-3 h-3 rounded-full ${
                       chapter.description
-                        ? "bg-green-500"
+                        ? "bg-primary-500"
                         : "bg-gray-300 dark:bg-gray-600"
                     }`}
                   ></div>
@@ -366,7 +366,7 @@ export default function ChapterIdPage() {
                   <div
                     className={`w-3 h-3 rounded-full ${
                       chapter.video
-                        ? "bg-green-500"
+                        ? "bg-primary-500"
                         : "bg-gray-300 dark:bg-gray-600"
                     }`}
                   ></div>
@@ -376,7 +376,7 @@ export default function ChapterIdPage() {
                   <div
                     className={`w-3 h-3 rounded-full ${
                       chapter.isPublished
-                        ? "bg-green-500"
+                        ? "bg-primary-500"
                         : "bg-gray-300 dark:bg-gray-600"
                     }`}
                   ></div>
@@ -444,7 +444,7 @@ export default function ChapterIdPage() {
         <div className="flex mt-6 sm:mt-8">
           <Link
             href={`/teacher/courses/${params.courseId}/chapters/${params.chapterId}`}
-            className="w-full sm:w-auto ml-auto flex items-center justify-center text-sm bg-green-600 hover:bg-green-700 text-TextCustom px-6 py-3 rounded-md transition-colors"
+            className="w-full sm:w-auto ml-auto flex items-center justify-center text-sm bg-primary-600 hover:bg-primary-700 text-TextCustom px-6 py-3 rounded-md transition-colors"
           >
             <Save className="h-4 w-4 mr-2" />
             {texts[language].saveAndExit}

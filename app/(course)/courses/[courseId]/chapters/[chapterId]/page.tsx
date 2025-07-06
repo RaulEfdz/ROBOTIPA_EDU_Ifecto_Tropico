@@ -267,7 +267,7 @@ const ChapterIdPage: React.FC = () => {
       <div
         className={`min-h-screen pb-16 ${
           isCompleted
-            ? "bg-emerald-50/50 dark:bg-emerald-900/10"
+            ? "bg-primary-50/50 dark:bg-primary-900/10"
             : "bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800"
         }`}
       >

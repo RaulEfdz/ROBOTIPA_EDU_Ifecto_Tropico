@@ -60,7 +60,7 @@ const ResourceSidebar: React.FC<ResourceSidebarProps> = ({
       <Sheet>
         <SheetTrigger>
           <Button
-            className="bg-[#386329] flex items-center gap-2 text-TextCustom px-4 py-2 rounded-md hover:bg-emerald-600 focus:ring focus:ring-emerald-300 shadow-md transition duration-200"
+            className="bg-[#386329] flex items-center gap-2 text-TextCustom px-4 py-2 rounded-md hover:bg-primary-600 focus:ring focus:ring-primary-300 shadow-md transition duration-200"
             aria-label={texts[lang].openResources}
           >
             <FileBox className="w-5 h-5" />

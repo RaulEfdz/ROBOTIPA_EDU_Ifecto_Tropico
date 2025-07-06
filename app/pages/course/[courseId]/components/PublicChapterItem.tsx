@@ -33,7 +33,7 @@ export default function PublicChapterItem({
         <div
           className={`flex items-center justify-center h-8 w-8 rounded-full text-sm font-semibold shrink-0 ${
             isPreviewAvailable
-              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-700/30 dark:text-emerald-300"
+              ? "bg-primary-100 text-primary-700 dark:bg-primary-700/30 dark:text-primary-300"
               : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400"
           }`}
         >
@@ -48,7 +48,7 @@ export default function PublicChapterItem({
           <button
             type="button"
             onClick={() => onPreviewClick && onPreviewClick(chapter)}
-            className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium hover:underline"
+            className="flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 font-medium hover:underline"
           >
             <PlayCircle size={16} />
             <span>Vista Previa</span>

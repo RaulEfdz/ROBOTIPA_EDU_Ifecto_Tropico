@@ -299,7 +299,7 @@ const TrackingTab: React.FC = () => {
                 </ResponsiveContainer>
 
                 <button
-                  className="mt-6 px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
+                  className="mt-6 px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700"
                   onClick={() => setShowModal(false)}
                 >
                   Cerrar

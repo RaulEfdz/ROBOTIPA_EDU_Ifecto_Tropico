@@ -122,13 +122,13 @@ function UserDetailModal({
       <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full p-8 relative border border-slate-200 dark:border-slate-700 overflow-y-auto max-h-[95vh]">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-emerald-600 text-2xl font-bold"
+          className="absolute top-4 right-4 text-gray-500 hover:text-primary-600 text-2xl font-bold"
           aria-label="Cerrar"
         >
           ×
         </button>
-        <h2 className="text-2xl font-bold mb-6 text-emerald-700 flex items-center gap-2">
-          <UserIcon className="w-7 h-7 text-emerald-500" /> {user.fullName}
+        <h2 className="text-2xl font-bold mb-6 text-primary-700 flex items-center gap-2">
+          <UserIcon className="w-7 h-7 text-primary-500" /> {user.fullName}
         </h2>
         <div className="space-y-4">
           {/* Datos generales */}
@@ -203,11 +203,11 @@ function UserDetailModal({
               </div>
             </div>
           </div>
-          <hr className="my-2 border-emerald-200 dark:border-slate-700" />
+          <hr className="my-2 border-primary-200 dark:border-slate-700" />
           {/* Info relacional */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h3 className="font-semibold text-emerald-700 mb-1">
+              <h3 className="font-semibold text-primary-700 mb-1">
                 Cursos comprados
               </h3>
               {user.purchases.length === 0 ? (
@@ -745,8 +745,8 @@ const UsersAllPage: React.FC = () => {
   if (loading)
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-emerald-600"></div>
-        <span className="ml-3 text-emerald-700 font-semibold">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-primary-600"></div>
+        <span className="ml-3 text-primary-700 font-semibold">
           Cargando usuarios...
         </span>
       </div>
@@ -755,8 +755,8 @@ const UsersAllPage: React.FC = () => {
 
   return (
     <div className="p-6 h-[calc(100vh-4rem)] flex flex-col bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 overflow-auto">
-      <h1 className="text-3xl font-extrabold mb-6 flex items-center gap-2 text-emerald-700">
-        <UserIcon className="w-8 h-8 text-emerald-500" /> Todos los Usuarios
+      <h1 className="text-3xl font-extrabold mb-6 flex items-center gap-2 text-primary-700">
+        <UserIcon className="w-8 h-8 text-primary-500" /> Todos los Usuarios
       </h1>
 
       {/* Dashboard de estadísticas globales */}
@@ -766,7 +766,7 @@ const UsersAllPage: React.FC = () => {
             <div className="text-sm text-gray-500 dark:text-gray-400">
               Total Usuarios
             </div>
-            <div className="text-2xl font-bold text-emerald-600">
+            <div className="text-2xl font-bold text-primary-600">
               {globalStats.totalUsers}
             </div>
             <div className="text-xs text-gray-400">
@@ -841,7 +841,7 @@ const UsersAllPage: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Nombre, email o username"
-              className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-gray-800 dark:text-gray-100 pr-10 shadow-sm"
+              className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-primary-400 text-gray-800 dark:text-gray-100 pr-10 shadow-sm"
             />
             <Search className="absolute right-2 top-2.5 w-4 h-4 text-gray-400" />
           </div>
@@ -854,7 +854,7 @@ const UsersAllPage: React.FC = () => {
             title="Filtrar por rol"
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 text-gray-800 dark:text-gray-100 shadow-sm"
+            className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 text-gray-800 dark:text-gray-100 shadow-sm"
           >
             {roleOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -871,7 +871,7 @@ const UsersAllPage: React.FC = () => {
             title="Filtrar por estado"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 text-gray-800 dark:text-gray-100 shadow-sm"
+            className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 text-gray-800 dark:text-gray-100 shadow-sm"
           >
             {statusOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -887,7 +887,7 @@ const UsersAllPage: React.FC = () => {
               type="checkbox"
               checked={onlyWithCourses}
               onChange={() => setOnlyWithCourses((v) => !v)}
-              className="accent-emerald-600 w-4 h-4 mr-2"
+              className="accent-primary-600 w-4 h-4 mr-2"
             />
             <label
               htmlFor="onlyWithCourses"
@@ -902,7 +902,7 @@ const UsersAllPage: React.FC = () => {
               type="checkbox"
               checked={onlyActiveToday}
               onChange={() => setOnlyActiveToday((v) => !v)}
-              className="accent-emerald-600 w-4 h-4 mr-2"
+              className="accent-primary-600 w-4 h-4 mr-2"
             />
             <label
               htmlFor="onlyActiveToday"
@@ -917,7 +917,7 @@ const UsersAllPage: React.FC = () => {
               type="checkbox"
               checked={onlyWithSubscription}
               onChange={() => setOnlyWithSubscription((v) => !v)}
-              className="accent-emerald-600 w-4 h-4 mr-2"
+              className="accent-primary-600 w-4 h-4 mr-2"
             />
             <label
               htmlFor="onlyWithSubscription"
@@ -929,14 +929,14 @@ const UsersAllPage: React.FC = () => {
         </div>
         <Button
           onClick={downloadCSV}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-md rounded-lg px-6 py-2"
+          className="bg-primary-600 hover:bg-primary-700 text-white font-semibold shadow-md rounded-lg px-6 py-2"
         >
           Descargar CSV
         </Button>
       </div>
       <div className="flex-grow w-full overflow-x-auto min-h-[60vh]  border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg bg-white/90 dark:bg-slate-900/70 ">
         <table className="min-w-[1200px]  divide-y divide-gray-200 dark:divide-slate-700 text-sm">
-          <thead className="bg-emerald-50 dark:bg-slate-800 sticky top-0 z-10">
+          <thead className="bg-primary-50 dark:bg-slate-800 sticky top-0 z-10">
             <tr>
               {[
                 { key: "id", label: "ID" },
@@ -954,7 +954,7 @@ const UsersAllPage: React.FC = () => {
               ].map((col) => (
                 <th
                   key={col.key}
-                  className="px-4 py-3 text-left font-bold text-emerald-900 dark:text-emerald-200 cursor-pointer select-none whitespace-nowrap"
+                  className="px-4 py-3 text-left font-bold text-primary-900 dark:text-primary-200 cursor-pointer select-none whitespace-nowrap"
                   onClick={() => {
                     if (sortBy === col.key) {
                       setSortDir(sortDir === "asc" ? "desc" : "asc");
@@ -985,7 +985,7 @@ const UsersAllPage: React.FC = () => {
                   idx % 2 === 0
                     ? "bg-white dark:bg-slate-900/60"
                     : "bg-slate-50 dark:bg-slate-800/60"
-                } hover:bg-emerald-50 dark:hover:bg-slate-800`}
+                } hover:bg-primary-50 dark:hover:bg-slate-800`}
                 onClick={() => setModalUser(user)}
               >
                 <td className="px-4 py-3 font-mono text-xs text-gray-500">
@@ -1005,7 +1005,7 @@ const UsersAllPage: React.FC = () => {
 
                         return `inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold ${
                           isAdmin
-                            ? "bg-emerald-100 text-emerald-700"
+                            ? "bg-primary-100 text-primary-700"
                             : isTeacher
                               ? "bg-blue-100 text-blue-700"
                               : isStudent
@@ -1019,7 +1019,7 @@ const UsersAllPage: React.FC = () => {
                         ).toLowerCase();
                         return `inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold ${
                           roleLabel.includes("admin")
-                            ? "bg-emerald-100 text-emerald-700"
+                            ? "bg-primary-100 text-primary-700"
                             : roleLabel.includes("profesor") ||
                                 roleLabel.includes("teacher")
                               ? "bg-blue-100 text-blue-700"
@@ -1154,7 +1154,7 @@ const UsersAllPage: React.FC = () => {
                 </td>
                 <td className="px-4 py-3">
                   {user.isActive ? (
-                    <CheckCircle className="w-5 h-5 text-emerald-500" />
+                    <CheckCircle className="w-5 h-5 text-primary-500" />
                   ) : (
                     <XCircle className="w-5 h-5 text-gray-400" />
                   )}
@@ -1210,7 +1210,7 @@ const UsersAllPage: React.FC = () => {
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Country Distribution Chart */}
         <div className="bg-white dark:bg-slate-900 rounded-xl p-6 shadow">
-          <h3 className="text-lg font-semibold mb-4 text-emerald-700">
+          <h3 className="text-lg font-semibold mb-4 text-primary-700">
             Distribución de Usuarios por País
           </h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -1259,7 +1259,7 @@ const UsersAllPage: React.FC = () => {
         </div>
         {/* Engagement Chart */}
         <div className="bg-white dark:bg-slate-900 rounded-xl p-6 shadow">
-          <h3 className="text-lg font-semibold mb-4 text-emerald-700">
+          <h3 className="text-lg font-semibold mb-4 text-primary-700">
             Engagement de Usuarios por País
           </h3>
           <ResponsiveContainer width="100%" height={300}>

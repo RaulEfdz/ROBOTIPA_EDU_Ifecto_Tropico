@@ -227,11 +227,11 @@ export default function DynamicCertificateCreatePage() {
     formData.courseName;
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-emerald-50 to-blue-50 py-8">
+    <div className="min-h-screen w-full bg-gradient-to-br from-primary-50 to-blue-50 py-8">
       <div className=" mx-auto px-4 md:px-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-emerald-900 mb-2">
+          <h1 className="text-4xl font-bold text-primary-900 mb-2">
             Generador de Certificados Dinámico
           </h1>
           <p className="text-gray-600 text-lg">
@@ -241,7 +241,7 @@ export default function DynamicCertificateCreatePage() {
 
         {/* Alert de éxito */}
         {downloadSuccess && (
-          <Alert className="mb-6 bg-green-50 border-green-200">
+          <Alert className="mb-6 bg-primary-50 border-green-200">
             <AlertDescription className="text-green-800">
               ✅ ¡Certificado generado y descargado exitosamente!
             </AlertDescription>

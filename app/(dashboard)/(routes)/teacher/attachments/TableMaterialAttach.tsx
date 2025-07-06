@@ -163,7 +163,7 @@ export function TableMaterialAttach() {
         header: "Nombre",
         cell: ({ row }) => (
           <div className="font-medium flex items-center">
-            <FileText className="h-4 w-4 text-emerald-500 mr-2" />
+            <FileText className="h-4 w-4 text-primary-500 mr-2" />
             {row.getValue("nombre")}
           </div>
         ),
@@ -189,7 +189,7 @@ export function TableMaterialAttach() {
               variant={status === "Activo" ? "default" : "secondary"}
               className={`capitalize font-medium ${
                 status === "Activo"
-                  ? "bg-green-100 text-green-800"
+                  ? "bg-primary-100 text-green-800"
                   : "bg-gray-100 text-gray-800"
               }`}
             >
@@ -227,7 +227,7 @@ export function TableMaterialAttach() {
                 <Trash2 className="h-4 w-4 text-red-500" />
               </Button>
               <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="h-4 w-4 text-emerald-600" />
+                <ExternalLink className="h-4 w-4 text-primary-600" />
               </a>
             </div>
           );

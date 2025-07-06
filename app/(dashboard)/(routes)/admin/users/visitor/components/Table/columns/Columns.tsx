@@ -71,7 +71,7 @@ export const columns: ColumnDef<VisitorWithStats>[] = [
           <div className="flex items-center gap-2">
             <Progress 
               value={score} 
-              className={`h-2 ${score > 70 ? 'bg-green-100' : score > 30 ? 'bg-yellow-100' : 'bg-gray-100'}`} 
+              className={`h-2 ${score > 70 ? 'bg-primary-100' : score > 30 ? 'bg-yellow-100' : 'bg-gray-100'}`} 
             />
             <span className="text-sm font-medium">{score}%</span>
           </div>

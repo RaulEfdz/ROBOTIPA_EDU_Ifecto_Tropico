@@ -344,7 +344,7 @@ export default function AttemptDetailModal({
                       }
                       className={`border-l-4 ${
                         isTextQ
-                          ? "border-emerald-500"
+                          ? "border-primary-500"
                           : isAnsCorrect
                             ? "border-green-500"
                             : "border-red-500"
@@ -367,7 +367,7 @@ export default function AttemptDetailModal({
                               isTextQ
                                 ? ""
                                 : isAnsCorrect
-                                  ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-700/20 dark:text-green-300 dark:border-green-600"
+                                  ? "bg-primary-100 text-green-700 border-green-300 dark:bg-primary-700/20 dark:text-green-300 dark:border-green-600"
                                   : ""
                             } `}
                           >

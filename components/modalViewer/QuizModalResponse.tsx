@@ -153,7 +153,7 @@
 
 //   if (loading) {
 //     return (
-//       <div className="flex items-center justify-center h-[85vh] bg-emerald-300">
+//       <div className="flex items-center justify-center h-[85vh] bg-primary-300">
 //         <SkeletonCard />
 //       </div>
 //     );
@@ -245,7 +245,7 @@
 //                                   <div
 //                                     className={`absolute inset-0 rounded-lg transition-all duration-200 ${
 //                                       field.value
-//                                         ? "bg-green-50 border-2 border-green-500"
+//                                         ? "bg-primary-50 border-2 border-green-500"
 //                                         : "hover:bg-gray-50"
 //                                     }`}
 //                                   />

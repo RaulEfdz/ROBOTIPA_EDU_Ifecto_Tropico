@@ -112,7 +112,7 @@ export const EmailConfirmationPending: React.FC<EmailConfirmationPendingProps> =
           </div>
 
           {resendStatus === "success" && (
-            <Alert className="bg-green-50 border-green-200">
+            <Alert className="bg-primary-50 border-green-200">
               <CheckCircle2 className="h-4 w-4 text-green-500" />
               <AlertDescription className="text-green-700">
                 Nuevo correo de verificación enviado exitosamente.

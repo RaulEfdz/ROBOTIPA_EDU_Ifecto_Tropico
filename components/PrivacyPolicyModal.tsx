@@ -23,7 +23,7 @@ export default function PrivacyPolicyModal({
   const defaultTrigger = (
     <Button 
       variant="ghost" 
-      className={`text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 ${triggerClassName}`}
+      className={`text-primary-600 hover:text-primary-700 hover:bg-primary-50 ${triggerClassName}`}
     >
       {showIcon && <ShieldCheck className="w-4 h-4 mr-2" />}
       {triggerText}
@@ -138,8 +138,8 @@ export default function PrivacyPolicyModal({
             </p>
           </section>
 
-          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mt-6">
-            <p className="text-sm text-emerald-800">
+          <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 mt-6">
+            <p className="text-sm text-primary-800">
               <strong>Última actualización:</strong> {new Date().toLocaleDateString('es-ES', { 
                 year: 'numeric', 
                 month: 'long', 
@@ -152,7 +152,7 @@ export default function PrivacyPolicyModal({
         <div className="flex justify-end pt-6 border-t">
           <Button
             onClick={() => setIsOpen(false)}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6"
+            className="bg-primary-600 hover:bg-primary-700 text-white px-6"
           >
             Entendido
           </Button>

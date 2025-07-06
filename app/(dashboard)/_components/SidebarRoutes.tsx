@@ -151,11 +151,11 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
       {!isCollapsed && (
         <>
           <div className="flex items-center justify-between mb-4">
-            <Label className="uppercase text-emerald-200 text-xs tracking-wider font-semibold">
+            <Label className="uppercase text-primary text-xs tracking-wider font-semibold">
               Navegación
             </Label>
           </div>
-          <Separator className="mb-4 border-emerald-700/40" />
+          <Separator className="mb-4 border-primary/40" />
         </>
       )}
 
@@ -201,8 +201,8 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
                   <div
                     className={`flex items-center px-3 py-3 text-sm rounded-xl cursor-pointer transition-all duration-200 group ${
                       active
-                        ? "bg-emerald-700/60 text-emerald-100 shadow-lg backdrop-blur-sm"
-                        : "text-emerald-200 hover:bg-emerald-700/30 hover:text-emerald-100"
+                        ? "bg-primary/60 text-white shadow-lg backdrop-blur-sm"
+                        : "text-primary/80 hover:bg-primary/30 hover:text-white"
                     }`}
                     onClick={() => toggleMenu(route.label)}
                   >
@@ -210,10 +210,10 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <route.icon className={`h-5 w-5 flex-shrink-0 transition-colors ${
-                            active ? "text-emerald-100" : "text-emerald-300 group-hover:text-emerald-100"
+                            active ? "text-primary-100" : "text-primary-300 group-hover:text-primary-100"
                           }`} />
                         </TooltipTrigger>
-                        <TooltipContent side="right" className="bg-emerald-800 text-emerald-100 border-emerald-700">
+                        <TooltipContent side="right" className="bg-primary-800 text-primary-100 border-primary-700">
                           {route.label}
                         </TooltipContent>
                       </Tooltip>
@@ -226,11 +226,11 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
                         </span>
                         {expanded ? (
                           <ChevronDown className={`h-4 w-4 flex-shrink-0 ml-2 transition-colors ${
-                            active ? "text-emerald-100" : "text-emerald-300 group-hover:text-emerald-100"
+                            active ? "text-primary-100" : "text-primary-300 group-hover:text-primary-100"
                           }`} />
                         ) : (
                           <ChevronRight className={`h-4 w-4 flex-shrink-0 ml-2 transition-colors ${
-                            active ? "text-emerald-100" : "text-emerald-300 group-hover:text-emerald-100"
+                            active ? "text-primary-100" : "text-primary-300 group-hover:text-primary-100"
                           }`} />
                         )}
                       </div>
@@ -239,7 +239,7 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
 
                   {expanded && !isCollapsed && (
                     <motion.div
-                      className="pl-8 mt-2 space-y-1 border-l-2 border-emerald-700/30 ml-6"
+                      className="pl-8 mt-2 space-y-1 border-l-2 border-primary/30 ml-6"
                       initial="hidden"
                       animate="visible"
                       exit="hidden"
@@ -260,7 +260,7 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
                                 {showBadges &&
                                   sub.badge?.viewLabel &&
                                   isNewFeature(sub.badge.until) && (
-                                    <Badge className="ml-2 bg-emerald-600 text-emerald-100 text-xs px-2 py-0.5">
+                                    <Badge className="ml-2 bg-primary text-white text-xs px-2 py-0.5">
                                       {sub.badge.textLabel}
                                     </Badge>
                                   )}
@@ -297,7 +297,7 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
                       {showBadges &&
                         route.badge?.viewLabel &&
                         isNewFeature(route.badge.until) && (
-                          <Badge className="ml-2 bg-emerald-600 text-emerald-100 text-xs px-2 py-0.5 flex-shrink-0">
+                          <Badge className="ml-2 bg-primary text-white text-xs px-2 py-0.5 flex-shrink-0">
                             {route.badge.textLabel}
                           </Badge>
                         )}

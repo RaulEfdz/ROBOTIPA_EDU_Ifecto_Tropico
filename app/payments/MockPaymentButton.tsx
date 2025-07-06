@@ -38,7 +38,7 @@ export default function MockPaymentButton({ amount, description }: Props) {
           {loading ? "Procesando..." : `Comprar por $${amount.toFixed(2)}`}
         </Button>
       ) : (
-        <div className="w-full text-center border border-green-400 rounded-lg p-2 text-sm text-green-700 bg-green-100 flex items-center justify-center">
+        <div className="w-full text-center border border-green-400 rounded-lg p-2 text-sm text-green-700 bg-primary-100 flex items-center justify-center">
           <CheckCircle className="inline-block mr-1 w-5 h-5" />
           Pago simulado exitoso
         </div>

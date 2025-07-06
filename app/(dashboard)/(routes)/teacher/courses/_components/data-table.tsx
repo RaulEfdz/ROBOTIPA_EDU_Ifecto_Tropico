@@ -72,7 +72,7 @@ export function TeacherTable<TData, TValue>({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
-              <Edit2 className="h-4 w-4 text-emerald-600" />
+              <Edit2 className="h-4 w-4 text-primary-600" />
               <span>Editar</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
@@ -80,7 +80,7 @@ export function TeacherTable<TData, TValue>({
               <span>Gestionar estudiantes</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-emerald-600" />
+              <Calendar className="h-4 w-4 text-primary-600" />
               <span>Programar clases</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -133,12 +133,12 @@ export function TeacherTable<TData, TValue>({
               onChange={(e) =>
                 table.getColumn("title")?.setFilterValue(e.target.value)
               }
-              className="pl-9 border-slate-200 rounded-lg focus-visible:ring-emerald-500"
+              className="pl-9 border-slate-200 rounded-lg focus-visible:ring-primary-500"
             />
           </div>
 
           <Link href="/teacher/create">
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2">
+            <Button className="bg-primary-600 hover:bg-primary-700 text-white flex items-center gap-2">
               <PlusCircle className="h-4 w-4" />
               <span>Nuevo curso</span>
             </Button>
@@ -165,7 +165,7 @@ export function TeacherTable<TData, TValue>({
                         {header.isPlaceholder ? null : (
                           <div className="flex items-center gap-2">
                             {header.column.id === "title" && (
-                              <BookOpen className="h-4 w-4 text-emerald-600" />
+                              <BookOpen className="h-4 w-4 text-primary-600" />
                             )}
                             {flexRender(
                               header.column.columnDef.header,
@@ -182,7 +182,7 @@ export function TeacherTable<TData, TValue>({
                                   )
                                 }
                               >
-                                <ArrowUpDown className="h-3 w-3 text-emerald-500" />
+                                <ArrowUpDown className="h-3 w-3 text-primary-500" />
                               </Button>
                             )}
                           </div>
@@ -210,7 +210,7 @@ export function TeacherTable<TData, TValue>({
                             <Badge
                               className={`${
                                 (cell.getValue() as string) === "Publicado"
-                                  ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                                  ? "bg-primary-100 text-primary-800 hover:bg-primary-200"
                                   : "bg-amber-100 text-amber-800 hover:bg-amber-200"
                               } rounded-full px-3 py-1.5 font-medium`}
                             >
@@ -300,7 +300,7 @@ export function TeacherTable<TData, TValue>({
                         onClick={() => table.setPageIndex(pageIndex)}
                         className={`h-8 w-8 p-0 ${
                           isActive
-                            ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                            ? "bg-primary-600 text-white hover:bg-primary-700"
                             : "text-slate-600"
                         }`}
                       >

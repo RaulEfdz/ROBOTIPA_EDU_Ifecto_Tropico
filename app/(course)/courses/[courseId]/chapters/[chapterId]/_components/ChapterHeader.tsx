@@ -52,7 +52,7 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            className="p-0 h-auto hover:bg-transparent text-slate-600 hover:text-emerald-700 transition-colors flex items-center gap-1"
+            className="p-0 h-auto hover:bg-transparent text-slate-600 hover:text-primary-700 transition-colors flex items-center gap-1"
             onClick={() => beforChapter()}
           >
             <ArrowLeft className="h-4 w-4" /> {courseTitle}
@@ -70,14 +70,14 @@ const ChapterHeader: React.FC<ChapterHeaderProps> = ({
             variant="outline"
             className={
               isFree
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+                ? "bg-primary-50 text-primary-700 border-primary-200 hover:bg-primary-100"
                 : "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
             }
           ></Badge>
           {isCompleted && (
             <Badge
               variant="outline"
-              className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+              className="bg-primary-50 text-primary-700 border-primary-200 hover:bg-primary-100"
             >
               <CheckCircle className="h-3 w-3 mr-1" /> Completado
             </Badge>

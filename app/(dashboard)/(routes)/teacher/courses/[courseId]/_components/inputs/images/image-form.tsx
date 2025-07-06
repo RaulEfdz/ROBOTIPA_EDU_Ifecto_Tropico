@@ -113,11 +113,11 @@ export const ImageForm = ({
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <span>{t.title}</span>
             <span title={t.imageInfo}>
-              <Info className="w-4 h-4 text-emerald-500" />
+              <Info className="w-4 h-4 text-primary-500" />
             </span>
           </h3>
           {imageUrl ? (
-            <Badge className="bg-emerald-100 text-emerald-700 text-base px-3 py-1 ml-2 animate-pulse">
+            <Badge className="bg-primary-100 text-primary-700 text-base px-3 py-1 ml-2 animate-pulse">
               Completado
             </Badge>
           ) : (
@@ -131,7 +131,7 @@ export const ImageForm = ({
             onClick={toggleEdit}
             variant="ghost"
             size="sm"
-            className="text-gray-500 hover:text-emerald-600"
+            className="text-gray-500 hover:text-primary-600"
           >
             {imageUrl ? (
               <Pencil className="h-4 w-4" />
@@ -236,7 +236,7 @@ export const ImageForm = ({
         <div className="mt-4 pt-4 border-t text-sm text-gray-500">
           <div className="flex items-center">
             <div className="flex items-center mr-4">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 mr-2"></div>
+              <div className="w-2 h-2 rounded-full bg-primary-400 mr-2"></div>
               <span>16:9</span>
             </div>
             <div className="flex items-center">

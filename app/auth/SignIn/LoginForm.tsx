@@ -193,7 +193,7 @@ export default function LoginForm({
 
       <Button
         type="submit"
-        className="w-full h-10 font-semibold bg-emerald-900 hover:bg-emerald-950 text-white dark:bg-emerald-500 dark:hover:bg-emerald-600"
+        className="w-full h-10 font-semibold bg-primary-900 hover:bg-primary-950 text-white dark:bg-primary-500 dark:hover:bg-primary-600"
         disabled={isLoading}
       >
         {isLoading ? (
@@ -209,7 +209,7 @@ export default function LoginForm({
       <div className="text-center text-sm pt-2">
         <a
           href="/auth/ResetPass"
-          className="font-medium text-primaryCustom hover:underline dark:text-emerald-400"
+          className="font-medium text-primaryCustom hover:underline dark:text-primary-400"
         >
           ¿Olvidaste tu contraseña?
         </a>

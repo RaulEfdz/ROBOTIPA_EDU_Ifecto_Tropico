@@ -87,7 +87,7 @@ export default function CatalogHeader() {
             <div className="ml-4 pl-4 border-l border-slate-200 dark:border-slate-700 hidden md:block">
               <Link
                 href="/courses/catalog"
-                className="text-base font-medium text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400"
+                className="text-base font-medium text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400"
               >
                 Catálogo de Cursos
               </Link>
@@ -100,7 +100,7 @@ export default function CatalogHeader() {
             {user && (
               <Link
                 href={user.customRole === 'teacher' ? '/teacher' : '/students'}
-                className="text-sm font-medium text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400 flex items-center gap-1"
+                className="text-sm font-medium text-slate-600 hover:text-primary-600 dark:text-slate-300 dark:hover:text-primary-400 flex items-center gap-1"
                 title="Ir al tablero"
               >
                 <HomeIcon className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -183,13 +183,13 @@ export default function CatalogHeader() {
               </DropdownMenu>
             ) : (
               <div className="flex items-center space-x-2">
-                <Button variant="ghost" asChild size="sm">
+                <Button variant="ghost" asChild size="sm" className="hover:text-bold hover:bg-primary-600">
                   <Link href="/auth">Iniciar Sesión</Link>
                 </Button>
                 <Button
                   asChild
                   size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white"
+                  className="bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white"
                 >
                   <Link href="/auth?action=sign_up">Registrarse</Link>
                 </Button>

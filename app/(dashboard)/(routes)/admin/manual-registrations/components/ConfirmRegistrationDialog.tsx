@@ -75,7 +75,7 @@ export function ConfirmRegistrationDialog({
           <Button
             disabled={loading}
             onClick={onConfirm}
-            className="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600"
+            className="bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600"
           >
             {loading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

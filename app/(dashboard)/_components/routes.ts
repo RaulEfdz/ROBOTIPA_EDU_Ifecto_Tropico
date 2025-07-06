@@ -84,7 +84,7 @@ export const teacherRoutes: Route[] = [
     //   viewLabel: true,
     //   until: new Date("2025-10-01"),
     //   // textLabel: "Nuevo",
-    //   color: "text-emerald-400",
+    //   color: "text-primary-400",
     // },
   },
   {
@@ -163,7 +163,7 @@ export const teacherRoutes: Route[] = [
       viewLabel: true,
       until: new Date("2025-12-31"),
       textLabel: "Nuevo",
-      color: "text-emerald-400",
+      color: "text-primary-400",
     },
   },
   // {
@@ -174,7 +174,7 @@ export const teacherRoutes: Route[] = [
   //     viewLabel: true,
   //     until: new Date("2025-12-31"),
   //     textLabel: "Manual",
-  //     color: "text-emerald-400",
+  //     color: "text-primary-400",
   //   },
   // },
 ];

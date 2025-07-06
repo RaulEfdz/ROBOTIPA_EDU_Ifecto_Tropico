@@ -41,7 +41,7 @@ export const Logo = () => {
       return {
         label: "Profesor",
         icon: GraduationCap,
-        color: "bg-emerald-500/20 text-emerald-200",
+        color: "bg-primary/20 text-primary",
       };
     }
     if (userRole === getAdminId()) {
@@ -90,8 +90,8 @@ export const Logo = () => {
 
       {/* Título y Badge de Rol */}
       <div className="flex flex-col items-start gap-1 w-full">
-        <h1 className="text-emerald-100 font-bold text-sm leading-tight">
-          INFECTOTRÓPICO
+        <h1 className="text-primary font-bold text-sm leading-tight">
+          Robotipa Academy
         </h1>
         <Badge
           className={`${roleInfo.color} border-0 text-xs font-medium flex items-center gap-1 px-2 py-0.5`}

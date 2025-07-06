@@ -324,7 +324,7 @@ export default function YappySimpleLinkButton({
                 <div className="text-xs text-gray-400 text-center max-w-xs space-y-1">
                   <p><strong>📱 En móvil:</strong> El link abrirá directamente la app de Yappy en tu móvil</p>
                   <p><strong>💻 En computadora:</strong> El link te llevará a la página web de Yappy para completar el pago</p>
-                  <p className="text-emerald-600 font-medium">Después del pago, regresa a esta página</p>
+                  <p className="text-primary-600 font-medium">Después del pago, regresa a esta página</p>
                 </div>
               </>
             )}

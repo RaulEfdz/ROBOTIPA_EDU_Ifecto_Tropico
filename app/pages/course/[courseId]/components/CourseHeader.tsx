@@ -17,7 +17,7 @@ interface CourseHeaderProps {
 
 export const CourseHeader: React.FC<CourseHeaderProps> = ({ course }) => {
   return (
-    <div className="bg-gradient-to-b from-emerald-50 to-white py-12">
+    <div className="bg-gradient-to-b from-primary-50 to-white py-12">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Left: Course Image */}
@@ -41,7 +41,7 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({ course }) => {
           {/* Right: Course Info */}
           <div className="md:w-1/2 space-y-6">
             {course.category && (
-              <Badge className="bg-emerald-100 text-emerald-700">
+              <Badge className="bg-primary-100 text-primary-700">
                 {course.category.name}
               </Badge>
             )}
@@ -57,7 +57,7 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({ course }) => {
             </div>
 
             <div className="pt-4 space-y-4">
-              <div className="text-3xl font-bold text-emerald-600">
+              <div className="text-3xl font-bold text-primary-600">
                 {course.price ? formatCurrency(course.price) : "Gratis"}
               </div>
               <p className="text-sm text-gray-600">

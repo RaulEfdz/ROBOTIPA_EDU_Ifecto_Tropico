@@ -60,7 +60,7 @@ export const Administrative = () => {
     >
       <Select onValueChange={handleChange}>
         <SelectTrigger
-          className="bg-gradient-to-r from-emerald-800 to-emerald-700 text-white hover:from-emerald-700 hover:to-emerald-600 border border-emerald-600 shadow-lg transition-all duration-300 w-full px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg text-xs sm:text-sm font-medium group [&>svg]:hidden"
+          className="bg-gradient-to-r from-primary-800 to-primary-700 text-white hover:from-primary-700 hover:to-primary-600 border border-primary-600 shadow-lg transition-all duration-300 w-full px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg text-xs sm:text-sm font-medium group [&>svg]:hidden"
           aria-label="Abrir menú administrativo"
         >
           <div className="flex items-center justify-between w-full">
@@ -74,16 +74,16 @@ export const Administrative = () => {
           </div>
         </SelectTrigger>
 
-        <SelectContent className="bg-gradient-to-b from-emerald-800 to-emerald-700 border border-emerald-600 rounded-lg shadow-2xl backdrop-blur-sm min-w-[200px] sm:min-w-[220px] max-w-[280px]">
+        <SelectContent className="bg-gradient-to-b from-primary-800 to-primary-700 border border-primary-600 rounded-lg shadow-2xl backdrop-blur-sm min-w-[200px] sm:min-w-[220px] max-w-[280px]">
           {isTeacherUser && !isTeacherPage && (
             <SelectItem 
               value="areaTeachers" 
               aria-label="Ir a Profesores"
-              className="hover:bg-emerald-600/40 focus:bg-emerald-600/40 transition-colors duration-200 rounded-md mx-1 my-0.5 text-white text-left justify-start pl-2"
+              className="hover:bg-primary-600/40 focus:bg-primary-600/40 transition-colors duration-200 rounded-md mx-1 my-0.5 text-white text-left justify-start pl-2"
             >
               <div className="flex items-center gap-2 sm:gap-3 py-1">
-                <div className="p-1 sm:p-1.5 rounded-md bg-emerald-500/20">
-                  <Book size={14} className="sm:size-4 text-emerald-200" aria-hidden="true" />
+                <div className="p-1 sm:p-1.5 rounded-md bg-primary-500/20">
+                  <Book size={14} className="sm:size-4 text-primary-200" aria-hidden="true" />
                 </div>
                 <span className="text-white font-medium text-sm sm:text-base truncate">Área Profesores</span>
               </div>
@@ -93,7 +93,7 @@ export const Administrative = () => {
             <SelectItem 
               value="areaStudents" 
               aria-label="Ir a Estudiantes"
-              className="hover:bg-emerald-600/40 focus:bg-emerald-600/40 transition-colors duration-200 rounded-md mx-1 my-0.5 text-white text-left justify-start pl-2"
+              className="hover:bg-primary-600/40 focus:bg-primary-600/40 transition-colors duration-200 rounded-md mx-1 my-0.5 text-white text-left justify-start pl-2"
             >
               <div className="flex items-center gap-2 sm:gap-3 py-1">
                 <div className="p-1 sm:p-1.5 rounded-md bg-blue-500/20">
@@ -107,7 +107,7 @@ export const Administrative = () => {
             <SelectItem 
               value="areaProfile" 
               aria-label="Ir a Mis Datos"
-              className="hover:bg-emerald-600/40 focus:bg-emerald-600/40 transition-colors duration-200 rounded-md mx-1 my-0.5 text-white text-left justify-start pl-2"
+              className="hover:bg-primary-600/40 focus:bg-primary-600/40 transition-colors duration-200 rounded-md mx-1 my-0.5 text-white text-left justify-start pl-2"
             >
               <div className="flex items-center gap-2 sm:gap-3 py-1">
                 <div className="p-1 sm:p-1.5 rounded-md bg-purple-500/20">
@@ -117,7 +117,7 @@ export const Administrative = () => {
               </div>
             </SelectItem>
           )}
-          <div className="border-t border-emerald-500/30 my-1"></div>
+          <div className="border-t border-primary-500/30 my-1"></div>
           <SelectItem 
             value="logout" 
             aria-label="Cerrar sesión"

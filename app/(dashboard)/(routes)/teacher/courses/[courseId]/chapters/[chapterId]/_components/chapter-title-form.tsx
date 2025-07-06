@@ -137,7 +137,7 @@ export const ChapterTitleForm = ({
             onClick={toggleEdit}
             variant="ghost"
             size="sm"
-            className="text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg h-8"
+            className="text-gray-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg h-8"
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -159,7 +159,7 @@ export const ChapterTitleForm = ({
                         autoFocus
                         disabled={isSubmitting}
                         placeholder={t.placeholder}
-                        className="h-10 text-lg font-medium border-gray-200 dark:border-gray-700 focus-visible:ring-emerald-500 rounded-lg"
+                        className="h-10 text-lg font-medium border-gray-200 dark:border-gray-700 focus-visible:ring-primary-500 rounded-lg"
                         {...field}
                       />
                     </FormControl>
@@ -179,7 +179,7 @@ export const ChapterTitleForm = ({
                         disabled={!isValid || isSubmitting || !isDirty}
                         type="submit"
                         size="icon"
-                        className="h-10 w-10 rounded-lg bg-emerald-600 hover:bg-emerald-700"
+                        className="h-10 w-10 rounded-lg bg-primary-600 hover:bg-primary-700"
                       >
                         {isSaving ? (
                           <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin"></div>
@@ -204,7 +204,7 @@ export const ChapterTitleForm = ({
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
             {title || <span className="text-gray-400 italic">Sin título</span>}
           </h2>
-          <div className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 text-xs px-2 py-1 rounded-full">
+          <div className="bg-primary-50 dark:bg-primary-900/20 text-primary-600 text-xs px-2 py-1 rounded-full">
             Activo
           </div>
         </div>
@@ -214,7 +214,7 @@ export const ChapterTitleForm = ({
         <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
           <div className="flex items-center text-sm text-gray-500">
             <div className="flex items-center mr-4">
-              <div className="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
+              <div className="w-2 h-2 rounded-full bg-primary-400 mr-2"></div>
               <span>
                 Última actualización:{" "}
                 {initialData.updatedAt

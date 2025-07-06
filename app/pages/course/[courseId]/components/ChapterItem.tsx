@@ -21,7 +21,7 @@
 //         className="flex justify-between items-center p-4 bg-gray-50 cursor-pointer"
 //       >
 //         <div className="flex items-center gap-3 font-medium">
-//           <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-sm">
+//           <span className="bg-primary-100 text-primary-800 px-2 py-1 rounded text-sm">
 //             Capítulo {index + 1}
 //           </span>
 //           <span>{chapter.title}</span>

@@ -68,7 +68,7 @@ export default function CatalogSearch({
             id="sort-by"
             value={sortBy}
             onChange={(e) => onSortByChange(e.target.value as SortByType)}
-            className="w-full p-2 border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+            className="w-full p-2 border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-slate-700 dark:text-white"
           >
             <option value="recent">Más Recientes</option>
             <option value="title_asc">Título (A-Z)</option>

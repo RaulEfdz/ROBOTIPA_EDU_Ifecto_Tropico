@@ -104,7 +104,7 @@ export const CourseCard = ({
     return (
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 dark:bg-gray-700">
         <div
-          className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-500 ease-out"
+          className="h-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -157,12 +157,12 @@ export const CourseCard = ({
     "shadow-lg hover:shadow-2xl",
     "transform transition-all duration-300 ease-out",
     "hover:-translate-y-2 hover:scale-[1.02]",
-    "focus:outline-none focus:ring-4 focus:ring-emerald-500/20",
+    "focus:outline-none focus:ring-4 focus:ring-primary-500/20",
     "h-full flex flex-col",
     {
       "max-w-sm": variant === "compact",
       "max-w-md": variant === "default",
-      "max-w-lg border-2 border-gradient-to-r from-emerald-500 to-purple-600":
+      "max-w-lg border-2 border-gradient-to-r from-primary-500 to-purple-600":
         variant === "featured",
     },
     className
@@ -199,7 +199,7 @@ export const CourseCard = ({
         {/* Indicador de curso gratuito/premium */}
         {price === 0 && (
           <div className="absolute top-3 left-3 z-20">
-            <Badge className="bg-green-500 hover:bg-green-600 text-white border-0 font-semibold">
+            <Badge className="bg-primary-500 hover:bg-primary-600 text-white border-0 font-semibold">
               GRATIS
             </Badge>
           </div>
@@ -211,7 +211,7 @@ export const CourseCard = ({
         {/* Título del curso */}
         <div className="space-y-2">
           <h3
-            className="font-bold text-xl text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 line-clamp-2 leading-tight"
+            className="font-bold text-xl text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-300 line-clamp-2 leading-tight"
             title={title}
           >
             {title}
@@ -249,7 +249,7 @@ export const CourseCard = ({
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Progreso del curso
                 </span>
-                <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="text-sm font-bold text-primary-600 dark:text-primary-400">
                   {Math.round(progress)}%
                 </span>
               </div>
@@ -273,8 +273,8 @@ export const CourseCard = ({
                 className={cn(
                   "text-lg font-bold px-4 py-2 rounded-lg",
                   price === 0
-                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                    : "bg-gradient-to-r from-emerald-600 to-purple-600 text-white hover:from-emerald-700 hover:to-purple-700"
+                    ? "bg-primary-100 text-green-700 dark:bg-primary-900/30 dark:text-green-400"
+                    : "bg-gradient-to-r from-primary-600 to-purple-600 text-white hover:from-primary-700 hover:to-purple-700"
                 )}
               >
                 {priceDisplay}

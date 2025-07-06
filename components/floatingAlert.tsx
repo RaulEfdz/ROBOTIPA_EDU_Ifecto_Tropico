@@ -13,7 +13,7 @@ const FloatingAlert = ({ message, setShowAlert, color }:any) => {
   const colorClasses:any = {
     blue: 'bg-[#386329]',
     red: 'bg-red-500',
-    green: 'bg-green-500',
+    green: 'bg-primary-500',
     // ...otros colores según sea necesario
   };
 

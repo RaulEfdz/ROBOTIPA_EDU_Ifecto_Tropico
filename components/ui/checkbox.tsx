@@ -16,11 +16,11 @@ const Checkbox = React.forwardRef<
       // Tamaño mayor, borde más visible, sombra y transición
       "peer h-5 w-5 shrink-0 rounded-md border-2 border-gray-300 bg-white dark:bg-gray-900 shadow-sm transition-all duration-200",
       // Estado checked
-      "data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 data-[state=checked]:text-white",
+      "data-[state=checked]:bg-primary-600 data-[state=checked]:border-primary-600 data-[state=checked]:text-white",
       // Estado hover
-      "hover:border-emerald-400 hover:shadow-md",
+      "hover:border-primary-400 hover:shadow-md",
       // Estado focus
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2",
       // Estado disabled
       "disabled:cursor-not-allowed disabled:opacity-50",
       className

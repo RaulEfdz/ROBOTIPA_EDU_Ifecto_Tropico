@@ -165,7 +165,7 @@ const AnalyticsDashboard = () => {
                 ? "text-red-500"
                 : "text-gray-500"
             : "text-gray-500",
-        bgColor: "bg-emerald-50",
+        bgColor: "bg-primary-50",
       },
       {
         title: t("revenue"),
@@ -183,7 +183,7 @@ const AnalyticsDashboard = () => {
                 ? "text-red-500"
                 : "text-gray-500"
             : "text-gray-500",
-        bgColor: "bg-green-50",
+        bgColor: "bg-primary-50",
       },
       {
         title: t("courses"),
@@ -237,7 +237,7 @@ const AnalyticsDashboard = () => {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-t-emerald-500 border-b-emerald-500 border-l-transparent border-r-transparent rounded-full animate-spin" />
+          <div className="w-16 h-16 border-4 border-t-primary-500 border-b-primary-500 border-l-transparent border-r-transparent rounded-full animate-spin" />
           <p className="mt-4 text-gray-600 dark:text-gray-300">
             {t("loadingMessage")}
           </p>
@@ -268,7 +268,7 @@ const AnalyticsDashboard = () => {
                   onClick={() => setTimeRange(range)}
                   className={`rounded-md px-4 py-2 ${
                     timeRange === range
-                      ? "bg-emerald-500 text-white"
+                      ? "bg-primary-500 text-white"
                       : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
                   }`}
                 >
@@ -286,7 +286,7 @@ const AnalyticsDashboard = () => {
                 onClick={() => setActiveTab(tab)}
                 className={`pb-4 px-1 ${
                   activeTab === tab
-                    ? "border-b-2 border-emerald-500 text-emerald-500 font-medium"
+                    ? "border-b-2 border-primary-500 text-primary-500 font-medium"
                     : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                 }`}
               >
@@ -552,7 +552,7 @@ const AnalyticsDashboard = () => {
               {t("revenueAnalytics")}
             </h2>
             <div className="mb-6 grid gap-6 md:grid-cols-2">
-              <div className="rounded-lg bg-green-50 p-6 dark:bg-gray-700">
+              <div className="rounded-lg bg-primary-50 p-6 dark:bg-gray-700">
                 <h3 className="mb-2 text-lg font-medium">
                   {t("totalRevenue")}
                 </h3>
@@ -563,7 +563,7 @@ const AnalyticsDashboard = () => {
                   +8.5% {t("vsLastPeriod")}
                 </p>
               </div>
-              <div className="rounded-lg bg-emerald-50 p-6 dark:bg-gray-700">
+              <div className="rounded-lg bg-primary-50 p-6 dark:bg-gray-700">
                 <h3 className="mb-2 text-lg font-medium">
                   {t("invoicesIssued")}
                 </h3>
@@ -624,7 +624,7 @@ const AnalyticsDashboard = () => {
                   {t("availableToStudents")}
                 </p>
               </div>
-              <div className="rounded-lg bg-emerald-50 p-6 dark:bg-gray-700">
+              <div className="rounded-lg bg-primary-50 p-6 dark:bg-gray-700">
                 <h3 className="mb-2 text-lg font-medium">
                   {t("totalAttempts")}
                 </h3>

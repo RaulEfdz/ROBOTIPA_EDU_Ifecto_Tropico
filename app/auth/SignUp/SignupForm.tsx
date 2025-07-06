@@ -182,7 +182,6 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
         { duration: 8000 }
       );
 
-      // Send notification email to info@infectotropico.com
       try {
         await fetch("/api/sendRegistrationEmail", {
           method: "POST",

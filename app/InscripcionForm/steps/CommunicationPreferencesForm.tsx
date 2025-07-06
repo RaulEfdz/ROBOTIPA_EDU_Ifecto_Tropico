@@ -78,7 +78,7 @@ const CommunicationPreferencesForm = ({ form }: any) => {
                   href="/terminos-y-condiciones"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-emerald-500 underline hover:text-emerald-700"
+                  className="text-primary-500 underline hover:text-primary-700"
                 >
                   términos y condiciones
                 </a>

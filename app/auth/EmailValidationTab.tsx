@@ -163,7 +163,7 @@ export default function EmailValidationTab() {
         aria-busy={status === "sending"}
         aria-disabled={status === "sending" || status === "cooldown"}
         aria-live="polite"
-        className="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+        className="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
       >
         {status === "sending"
           ? "Enviando..."

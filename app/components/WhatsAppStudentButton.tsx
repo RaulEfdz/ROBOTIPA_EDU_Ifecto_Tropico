@@ -26,7 +26,7 @@ export default function WhatsAppStudentButton({
   const [isLoading, setIsLoading] = useState(false);
   
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_SUPPORT_NUMBER;
-  const appName = process.env.NEXT_PUBLIC_NAME_APP || "INFECTOTRÓPICO";
+  const appName = process.env.NEXT_PUBLIC_NAME_APP || "Robotipa Academy";
 
   const handleWhatsAppClick = () => {
     if (!whatsappNumber) {
@@ -65,7 +65,7 @@ Mi consulta es: `;
       <Button
         onClick={handleWhatsAppClick}
         disabled={isLoading}
-        className={`fixed bottom-20 right-6 z-40 h-12 w-12 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 ${className}`}
+        className={`fixed bottom-20 right-6 z-40 h-12 w-12 rounded-full bg-primary-600 hover:bg-primary-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 ${className}`}
         size="default"
       >
         <FaWhatsapp className="h-5 w-5" />
@@ -80,7 +80,7 @@ Mi consulta es: `;
       disabled={isLoading}
       variant={variant}
       size={size}
-      className={`flex items-center gap-2 border-green-600 text-green-600 hover:bg-green-50 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-900/20 transition-colors ${className}`}
+      className={`flex items-center gap-2 border-green-600 text-green-600 hover:bg-primary-50 dark:border-green-500 dark:text-green-500 dark:hover:bg-primary-900/20 transition-colors ${className}`}
     >
       {isLoading ? (
         <MessageSquare className="h-4 w-4 animate-pulse" />

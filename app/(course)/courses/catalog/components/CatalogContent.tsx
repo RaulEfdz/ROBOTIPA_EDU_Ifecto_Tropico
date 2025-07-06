@@ -157,9 +157,14 @@ export default function CatalogContent() {
       <main className="bg-slate-50 dark:bg-slate-950 min-h-[calc(100vh-4rem)]">
         <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
           <Toaster position="top-center" richColors />
-          <section className="text-center py-8 mb-8 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg shadow-lg">
+          <section
+  className="text-center py-8 mb-8 rounded-lg shadow-lg"
+  style={{
+    background: 'linear-gradient(to right, var(--primary), color-mix(in srgb, var(--primary), black 20%))'
+  }}
+>
             <h1 className="text-4xl md:text-5xl font-bold text-white">
-              {process.env.NEXT_PUBLIC_NAME_APP || 'Infectotrópico Academy'}
+              {process.env.NEXT_PUBLIC_NAME_APP || 'Robotipa Academy'}
             </h1>
           </section>
 

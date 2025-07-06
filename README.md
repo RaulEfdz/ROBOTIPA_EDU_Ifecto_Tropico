@@ -1,8 +1,8 @@
-# 🎓 INFECTOTRÓPICO - Plataforma de Educación Médica en Línea
+# 🎓 Robotipa Academy - Plataforma de Educación Médica en Línea
 
 ## 📋 Descripción
 
-**INFECTOTRÓPICO** es una plataforma educativa especializada en medicina tropical e infectología, diseñada para médicos, estudiantes de medicina y profesionales de la salud que buscan actualizar y ampliar sus conocimientos en enfermedades infecciosas y medicina tropical.
+**Robotipa Academy** es una plataforma educativa especializada en medicina tropical e infectología, diseñada para médicos, estudiantes de medicina y profesionales de la salud que buscan actualizar y ampliar sus conocimientos en enfermedades infecciosas y medicina tropical.
 
 Nuestra plataforma ofrece cursos especializados, certificaciones oficiales y una experiencia de aprendizaje integral con las últimas tecnologías educativas.
 
@@ -249,6 +249,6 @@ Nuestra plataforma ofrece cursos especializados, certificaciones oficiales y una
 
 ---
 
-*INFECTOTRÓPICO - Educación médica especializada para profesionales de la salud en el siglo XXI.*
+*Robotipa Academy - Educación médica especializada para profesionales de la salud en el siglo XXI.*
 
-**© 2024 INFECTOTRÓPICO. Todos los derechos reservados.**
+**© 2024 Robotipa Academy. Todos los derechos reservados.**

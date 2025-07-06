@@ -260,7 +260,7 @@ export default function CoursePage() {
           <Button
             onClick={() => router.push("/courses/catalog")} // Enlace al catálogo
             variant="default" // O 'outline' si prefieres
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="bg-primary-600 hover:bg-primary-700 text-white"
           >
             Explorar Catálogo de Cursos
           </Button>
@@ -345,7 +345,7 @@ export default function CoursePage() {
       )}
 
       {/* --- Hero Section --- */}
-      <header className="bg-gradient-to-r from-emerald-700 via-emerald-700 to-emerald-700 text-white py-12 md:py-16">
+      <header className="bg-gradient-to-r from-primary-700 via-primary-700 to-primary-700 text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-8 md:gap-12">
           {/* Columna Izquierda: Texto */}
           <div className="flex-1 space-y-3 md:space-y-4">
@@ -363,12 +363,12 @@ export default function CoursePage() {
               {title}
             </h1>
             {/* {description && (
-              <p className="text-base md:text-lg text-emerald-100 line-clamp-3">
+              <p className="text-base md:text-lg text-primary-100 line-clamp-3">
                 {description.substring(0, 150)}
                 {description.length > 150 && "..."}
               </p>
             )} */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-emerald-50">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-primary-50">
               {/* <div className="flex items-center gap-1">
                 <Star size={16} className="text-yellow-400 fill-yellow-400" />{" "}
                 {rating.toFixed(1)} Rating
@@ -386,7 +386,7 @@ export default function CoursePage() {
                 </div>
               )}
             </div>
-            <p className="text-xs text-emerald-200">
+            <p className="text-xs text-primary-200">
               Última actualización: {updatedDate}
             </p>
           </div>
@@ -426,7 +426,7 @@ export default function CoursePage() {
           {chaptersPreview.length > 0 && (
             <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
               <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                <FileText size={24} className="text-emerald-500" /> Contenido
+                <FileText size={24} className="text-primary-500" /> Contenido
                 del curso (Vista Previa)
               </h2>
               <div className="space-y-3">
@@ -452,7 +452,7 @@ export default function CoursePage() {
                       variant="link"
                       size="sm"
                       onClick={handleMainAction}
-                      className="text-emerald-600 dark:text-emerald-400"
+                      className="text-primary-600 dark:text-primary-400"
                     >
                       {user && !hasPurchased && !isFree
                         ? `Comprar para ver los ${course.chapters.length} capítulos`
@@ -469,7 +469,7 @@ export default function CoursePage() {
           {learningObjectives.length > 0 && (
             <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
               <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                <Award size={24} className="text-emerald-500" /> Lo que
+                <Award size={24} className="text-primary-500" /> Lo que
                 aprenderás
               </h2>
               <ul className="space-y-2 columns-1 sm:columns-2">
@@ -480,7 +480,7 @@ export default function CoursePage() {
                   >
                     <CheckCircle
                       size={18}
-                      className="text-emerald-500 mt-0.5 shrink-0"
+                      className="text-primary-500 mt-0.5 shrink-0"
                     />
                     <span>{obj}</span>
                   </li>
@@ -511,7 +511,7 @@ export default function CoursePage() {
           {/* Sticky sidebar */}
           <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-slate-700">
             <div className="mb-6 text-center">
-              <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="text-4xl font-bold text-primary-600 dark:text-primary-400">
                 {priceDisplay}
               </div>
             </div>
@@ -592,7 +592,7 @@ export default function CoursePage() {
                         />
                       </div>
                       <div>
-                        <h4 className="text-sm font-medium text-slate-700 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 line-clamp-1">
+                        <h4 className="text-sm font-medium text-slate-700 dark:text-slate-200 group-hover:text-primary-600 dark:group-hover:text-primary-400 line-clamp-1">
                           {relCourse.title}
                         </h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400">

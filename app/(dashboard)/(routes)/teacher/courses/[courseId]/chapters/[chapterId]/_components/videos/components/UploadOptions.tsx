@@ -41,7 +41,7 @@ export const UploadOptions = ({
   return (
     <div className="p-6 bg-TextCustom dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="flex items-center mb-4">
-        <Video className="w-5 h-5 mr-2 text-emerald-500" />
+        <Video className="w-5 h-5 mr-2 text-primary-500" />
         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
           {chooseText}
         </h3>
@@ -53,21 +53,21 @@ export const UploadOptions = ({
           onClick={handleSelectYouTube}
           className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all ${
             selectedOption === "youtube"
-              ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30"
-              : "border-gray-200 dark:border-gray-700 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+              ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
+              : "border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
           }`}
         >
           <div
             className={`p-3 rounded-full mb-3 ${
               selectedOption === "youtube"
-                ? "bg-emerald-100 dark:bg-emerald-800"
+                ? "bg-primary-100 dark:bg-primary-800"
                 : "bg-gray-100 dark:bg-gray-700"
             }`}
           >
             <Link
               className={`w-6 h-6 ${
                 selectedOption === "youtube"
-                  ? "text-emerald-600 dark:text-emerald-400"
+                  ? "text-primary-600 dark:text-primary-400"
                   : "text-gray-500 dark:text-gray-400"
               }`}
             />
@@ -75,7 +75,7 @@ export const UploadOptions = ({
           <span
             className={`text-sm font-medium ${
               selectedOption === "youtube"
-                ? "text-emerald-600 dark:text-emerald-400"
+                ? "text-primary-600 dark:text-primary-400"
                 : "text-gray-700 dark:text-gray-300"
             }`}
           >
@@ -91,21 +91,21 @@ export const UploadOptions = ({
           onClick={handleSelectFile}
           className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all ${
             selectedOption === "file"
-              ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30"
-              : "border-gray-200 dark:border-gray-700 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+              ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
+              : "border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
           }`}
         >
           <div
             className={`p-3 rounded-full mb-3 ${
               selectedOption === "file"
-                ? "bg-emerald-100 dark:bg-emerald-800"
+                ? "bg-primary-100 dark:bg-primary-800"
                 : "bg-gray-100 dark:bg-gray-700"
             }`}
           >
             <Upload
               className={`w-6 h-6 ${
                 selectedOption === "file"
-                  ? "text-emerald-600 dark:text-emerald-400"
+                  ? "text-primary-600 dark:text-primary-400"
                   : "text-gray-500 dark:text-gray-400"
               }`}
             />
@@ -113,7 +113,7 @@ export const UploadOptions = ({
           <span
             className={`text-sm font-medium ${
               selectedOption === "file"
-                ? "text-emerald-600 dark:text-emerald-400"
+                ? "text-primary-600 dark:text-primary-400"
                 : "text-gray-700 dark:text-gray-300"
             }`}
           >
@@ -129,21 +129,21 @@ export const UploadOptions = ({
           onClick={handleSelectVimeo}
           className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all ${
             selectedOption === "vimeo"
-              ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30"
-              : "border-gray-200 dark:border-gray-700 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+              ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
+              : "border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
           }`}
         >
           <div
             className={`p-3 rounded-full mb-3 ${
               selectedOption === "vimeo"
-                ? "bg-emerald-100 dark:bg-emerald-800"
+                ? "bg-primary-100 dark:bg-primary-800"
                 : "bg-gray-100 dark:bg-gray-700"
             }`}
           >
             <VideoIcon
               className={`w-6 h-6 ${
                 selectedOption === "vimeo"
-                  ? "text-emerald-600 dark:text-emerald-400"
+                  ? "text-primary-600 dark:text-primary-400"
                   : "text-gray-500 dark:text-gray-400"
               }`}
             />
@@ -151,7 +151,7 @@ export const UploadOptions = ({
           <span
             className={`text-sm font-medium ${
               selectedOption === "vimeo"
-                ? "text-emerald-600 dark:text-emerald-400"
+                ? "text-primary-600 dark:text-primary-400"
                 : "text-gray-700 dark:text-gray-300"
             }`}
           >
@@ -172,7 +172,7 @@ export const UploadOptions = ({
           >
             Cancelar
           </Button>
-          <Button className="bg-emerald-600 hover:bg-emerald-700 text-TextCustom">
+          <Button className="bg-primary-600 hover:bg-primary-700 text-TextCustom">
             Continuar
           </Button>
         </div>

@@ -85,11 +85,11 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <span>Precio del curso</span>
             <span title="El precio será visible para los estudiantes en la página pública del curso.">
-              <Info className="w-4 h-4 text-emerald-500" />
+              <Info className="w-4 h-4 text-primary-500" />
             </span>
           </h3>
           {currentPrice > 0 ? (
-            <Badge className="bg-emerald-100 text-emerald-700 text-base px-3 py-1 ml-2 animate-pulse">
+            <Badge className="bg-primary-100 text-primary-700 text-base px-3 py-1 ml-2 animate-pulse">
               {formatPrice(currentPrice)}
             </Badge>
           ) : (
@@ -124,14 +124,14 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
           >
             <div className="flex items-center gap-2 mt-4">
               {currentPrice > 0 ? (
-                <span className="text-2xl font-bold text-emerald-700 flex items-center gap-1">
+                <span className="text-2xl font-bold text-primary-700 flex items-center gap-1">
                   <svg
                     width="20"
                     height="20"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    className="inline-block text-emerald-500"
+                    className="inline-block text-primary-500"
                   >
                     <path
                       strokeLinecap="round"
@@ -190,7 +190,7 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
                           disabled={isSubmitting}
                           placeholder="0.00"
                           {...field}
-                          className="w-32 border-2 border-emerald-400 focus:ring-2 focus:ring-emerald-500 text-lg"
+                          className="w-32 border-2 border-primary-400 focus:ring-2 focus:ring-primary-500 text-lg"
                         />
                       </FormControl>
                       <FormMessage />
@@ -202,7 +202,7 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
                     type="submit"
                     disabled={!isValid || isSubmitting}
                     size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    className="bg-primary-600 hover:bg-primary-700 text-white"
                   >
                     Guardar
                   </Button>

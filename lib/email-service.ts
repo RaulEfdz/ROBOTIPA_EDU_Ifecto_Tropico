@@ -114,7 +114,6 @@ export async function sendEnrollmentConfirmationEmails({
   const currentUser = await getCurrentUser();
   const adminEmail = currentUser?.email;
 
-  // Enviar a info@infectotropico.com (mensaje detallado)
   try {
     // Buscar si ya tenía acceso
     let yaTeniaAcceso = false;
@@ -137,7 +136,7 @@ export async function sendEnrollmentConfirmationEmails({
     } catch {}
     await resend.emails.send({
       from: `Notificaciones ${appName} <${EMAIL_FROM}>`,
-      to: "info@infectotropico.com",
+      to: "",
       subject: `Nuevo inscrito: ${userName} en ${course.title}`,
       html: `<p>Hay un nuevo inscrito en el curso <b>${course.title}</b>.<br>
       <b>Nombre:</b> ${userName}<br>
@@ -148,7 +147,7 @@ export async function sendEnrollmentConfirmationEmails({
     });
   } catch (error) {
     console.error(
-      "Error al enviar correo detallado a info@infectotropico.com:",
+      "Error al enviar correo detallado a :",
       error
     );
   }
@@ -263,11 +262,11 @@ export async function sendCourseCompletionEmails({
     );
   }
 
-  // --- Email para el Administrador (info@infectotropico.com) ---
+  // --- Email para el Administrador () ---
   try {
     await resend.emails.send({
       from: `Notificaciones ${appName} <${EMAIL_FROM}>`,
-      to: "info@infectotropico.com",
+      to: "",
       subject: `Curso completado: ${userName} finalizó ${course.title}`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -289,11 +288,11 @@ export async function sendCourseCompletionEmails({
       `,
     });
     console.log(
-      `Notificación de finalización enviada a info@infectotropico.com para el curso ${course.title} completado por ${userName}`
+      `Notificación de finalización enviada a  para el curso ${course.title} completado por ${userName}`
     );
   } catch (error) {
     console.error(
-      "Error al enviar notificación de finalización a info@infectotropico.com:",
+      "Error al enviar notificación de finalización a :",
       error
     );
   }

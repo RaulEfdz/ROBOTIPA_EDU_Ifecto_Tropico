@@ -17,7 +17,7 @@ const CourseObjectivesModal = ({
   return (
     <div>
       <button
-        className="px-4 py-2 bg-green-500 text-TextCustom text-base font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-300"
+        className="px-4 py-2 bg-primary-500 text-TextCustom text-base font-medium rounded-md shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-green-300"
         onClick={toggleModal}
       >
         Mostrar Objetivos del Curso
@@ -47,7 +47,7 @@ const CourseObjectivesModal = ({
               </div>
               <div className="items-center px-4 py-3">
                 <button
-                  className="px-4 py-2 bg-[#386329] text-TextCustom text-base font-medium rounded-md w-full shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+                  className="px-4 py-2 bg-[#386329] text-TextCustom text-base font-medium rounded-md w-full shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   onClick={toggleModal}
                 >
                   Cerrar

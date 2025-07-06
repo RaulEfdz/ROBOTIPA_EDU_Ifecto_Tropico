@@ -44,7 +44,7 @@ function ResultadoClientContent() {
         title: "¡Pago completado con éxito!",
         description:
           "Gracias por tu compra. Se te ha concedido acceso al curso y serás redirigido en unos segundos.",
-        cardClass: "border-green-200 bg-green-50",
+        cardClass: "border-green-200 bg-primary-50",
       });
       const courseId = params.PARM_1?.split("|")[1];
       if (courseId) {
@@ -116,7 +116,7 @@ function ResultadoClientContent() {
         <div className="p-6 pt-0">
           <Button
             asChild
-            className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700"
+            className="w-full mt-4 bg-primary-600 hover:bg-primary-700"
           >
             <Link href="/courses/catalog">Ver otros cursos</Link>
           </Button>

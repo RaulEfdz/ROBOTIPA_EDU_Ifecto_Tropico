@@ -260,7 +260,7 @@ export const EnhancedChapterDescription: React.FC<
     if (isProcessing) {
       return (
         <span
-          className="flex items-center text-xs text-emerald-600 dark:text-emerald-400"
+          className="flex items-center text-xs text-primary-600 dark:text-primary-400"
           title={t.savingMessage}
         >
           <Loader2 className="h-3 w-3 mr-1 animate-spin" />
@@ -326,7 +326,7 @@ export const EnhancedChapterDescription: React.FC<
           <span
             className={`px-2 py-1 rounded text-xs font-medium ${
               autoSaveEnabled
-                ? "bg-green-500 text-TextCustom"
+                ? "bg-primary-500 text-TextCustom"
                 : "bg-red-500 text-TextCustom"
             }`}
           >

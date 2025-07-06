@@ -157,7 +157,7 @@ export default function ExamDetailsForm({
                 <SelectTrigger
                   className={
                     publishedState
-                      ? "border-green-500 bg-green-100 text-green-800"
+                      ? "border-green-500 bg-primary-100 text-green-800"
                       : "border-yellow-500 bg-yellow-100 text-yellow-800"
                   }
                 >

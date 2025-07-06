@@ -78,7 +78,7 @@ export function StorageDetails({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-emerald-500 hover:text-emerald-700"
+                  className="text-primary-500 hover:text-primary-700"
                   title="Corregir nombre"
                 >
                   <Wrench className="w-4 h-4" />
@@ -97,7 +97,7 @@ export function StorageDetails({
         <div className="w-full bg-gray-200 rounded h-4">
           <div
             style={{ width: `${percentage}%` }}
-            className={`h-4 rounded ${percentage > 90 ? "bg-red-500" : "bg-green-500"}`}
+            className={`h-4 rounded ${percentage > 90 ? "bg-red-500" : "bg-primary-500"}`}
           ></div>
         </div>
       </div>

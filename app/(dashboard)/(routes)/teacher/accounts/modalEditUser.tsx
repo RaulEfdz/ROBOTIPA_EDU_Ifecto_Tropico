@@ -303,7 +303,7 @@ const EditUserForm = ({
         <Badge
           className={
             field.value === "Activo"
-              ? "bg-green-100 text-green-800"
+              ? "bg-primary-100 text-green-800"
               : "bg-red-100 text-red-800"
           }
         >
@@ -452,7 +452,7 @@ const EditUserForm = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(metadata).map(([key, value], idx) => (
                 <div key={idx} className="flex items-start group">
-                  <div className="min-w-[6px] h-6 bg-emerald-400 rounded-full mr-2 mt-0.5"></div>
+                  <div className="min-w-[6px] h-6 bg-primary-400 rounded-full mr-2 mt-0.5"></div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-semibold text-gray-600">
@@ -490,7 +490,7 @@ const EditUserForm = ({
                         <Badge
                           className={
                             value
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-primary-100 text-green-800"
                               : "bg-red-100 text-red-800"
                           }
                         >
@@ -588,7 +588,7 @@ const EditUserForm = ({
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="bg-primary-600 hover:bg-primary-700 text-white"
                 >
                   {isLoading ? "Guardando..." : "Guardar Cambios"}
                 </Button>

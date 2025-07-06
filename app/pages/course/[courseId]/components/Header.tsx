@@ -46,7 +46,7 @@ export default function Header({ user, courseTitle }: HeaderProps) {
           <div className="flex items-center space-x-3 md:space-x-4">
             <Link
               href="/"
-              className="text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400 transition-colors"
+              className="text-slate-600 hover:text-primary-600 dark:text-slate-300 dark:hover:text-primary-400 transition-colors"
             >
               <Button
                 variant="ghost"
@@ -59,7 +59,7 @@ export default function Header({ user, courseTitle }: HeaderProps) {
             </Link>
             <Link
               href="/courses/catalog"
-              className="text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400 transition-colors"
+              className="text-slate-600 hover:text-primary-600 dark:text-slate-300 dark:hover:text-primary-400 transition-colors"
             >
               <Button
                 variant="ghost"
@@ -72,7 +72,7 @@ export default function Header({ user, courseTitle }: HeaderProps) {
             </Link>
             <Link
               href="/search"
-              className="text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400 transition-colors"
+              className="text-slate-600 hover:text-primary-600 dark:text-slate-300 dark:hover:text-primary-400 transition-colors"
             >
               <Button
                 variant="ghost"
@@ -86,9 +86,9 @@ export default function Header({ user, courseTitle }: HeaderProps) {
 
             {user ? (
               <Link href="/profile">
-                <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-offset-2 dark:ring-offset-slate-800 ring-transparent hover:ring-emerald-500 transition-all">
+                <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-offset-2 dark:ring-offset-slate-800 ring-transparent hover:ring-primary-500 transition-all">
                   <AvatarImage src={user.metadata?.avatar || undefined} />
-                  <AvatarFallback className="bg-emerald-500 text-white text-xs">
+                  <AvatarFallback className="bg-primary-500 text-white text-xs">
                     {getInitials(user.fullName || user.username)}
                   </AvatarFallback>
                 </Avatar>
@@ -98,7 +98,7 @@ export default function Header({ user, courseTitle }: HeaderProps) {
                 <Button
                   variant="default"
                   size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700 flex items-center gap-1.5"
+                  className="bg-primary-600 hover:bg-primary-700 flex items-center gap-1.5"
                 >
                   <LogInIcon size={16} /> Iniciar Sesión
                 </Button>

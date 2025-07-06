@@ -126,7 +126,7 @@ export default function PaymentButton({
     <>
       {!alreadyPurchased ? null : (
         <div className="w-full text-center border border-gray-200 rounded-lg p-2 text-sm text-gray-600 bg-gray-50">
-          <ShieldCheck className="inline-block mr-1 text-emerald-500 w-4 h-4" />
+          <ShieldCheck className="inline-block mr-1 text-primary-500 w-4 h-4" />
           Ya estás inscrito en este curso
           {enrolledAt && (
             <div className="mt-1 text-xs text-gray-500">

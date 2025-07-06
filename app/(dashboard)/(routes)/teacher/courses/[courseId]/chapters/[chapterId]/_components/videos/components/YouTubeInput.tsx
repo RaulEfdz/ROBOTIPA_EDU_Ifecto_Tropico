@@ -121,7 +121,7 @@ export const YouTubeInput = ({
       return "border-green-500 focus:ring-green-500 focus:border-green-500";
     }
     if (isFocused) {
-      return "border-emerald-500 focus:ring-emerald-500 focus:border-emerald-500";
+      return "border-primary-500 focus:ring-primary-500 focus:border-primary-500";
     }
     return "border-gray-300 dark:border-gray-700";
   };
@@ -176,7 +176,7 @@ export const YouTubeInput = ({
                 href={videoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-emerald-600 dark:text-emerald-400 transition-colors"
+                className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-primary-600 dark:text-primary-400 transition-colors"
                 title="Abrir en YouTube"
               >
                 <ExternalLink className="h-4 w-4" />
@@ -297,7 +297,7 @@ export const YouTubeInput = ({
           onClick={handleSubmit}
           disabled={!videoUrl.trim() || isValid !== true || isSaving}
           size="sm"
-          className="h-10 bg-emerald-600 hover:bg-emerald-700 text-TextCustom disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          className="h-10 bg-primary-600 hover:bg-primary-700 text-TextCustom disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           {isSaving ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />

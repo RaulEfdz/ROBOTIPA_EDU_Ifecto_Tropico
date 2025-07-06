@@ -156,7 +156,7 @@ export default function AttemptsTab({ exam, attemptsData }: Props) {
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex items-center justify-between mt-4">
-                <span className="text-lg font-bold text-emerald-600">
+                <span className="text-lg font-bold text-primary-600">
                   {a.score != null
                     ? `${getLetterGrade(a.score)} (${a.score}%)`
                     : "F (0%)"}

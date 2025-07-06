@@ -34,11 +34,11 @@ A continuación se listan los issues reportados, clasificados según si requiere
 
 ## Prioridad Baja
 
-8. **Infectotrópico mal escrito en el catálogo. Quitar la palabra y dejar solo el logo redirigiendo a nuestro landing (infectotropico.com)**
+8. **Robotipa Academy mal escrito en el catálogo. Quitar la palabra y dejar solo el logo redirigiendo a nuestro landing (infectotropico.com)**
    - **DB:** No (frontend/catálogo)
    - **Notas:** Cambiar texto y enlace en el catálogo.
 
-9. **Cambiar número de WhatsApp de pagar por Yappi al número de Infectotrópico**
+9. **Cambiar número de WhatsApp de pagar por Yappi al número de Robotipa Academy**
    - **DB:** No (frontend/configuración de contacto)
    - **Notas:** Actualizar número en la sección de pagos.
 

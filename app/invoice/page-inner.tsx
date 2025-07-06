@@ -78,7 +78,7 @@ export default function InvoicePage() {
         <div className="mt-6 flex justify-center">
           <Button
             onClick={() => router.push(`/courses/${invoiceData.data.courseId}`)}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="bg-primary-600 hover:bg-primary-700 text-white"
           >
             Ir a mi curso
           </Button>

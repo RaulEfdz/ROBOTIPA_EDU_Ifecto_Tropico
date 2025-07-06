@@ -291,7 +291,7 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
             onClick={() => setModalOpen(true)}
             disabled={isLoadingUser}
             variant="outline"
-            className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50 font-semibold py-3"
+            className="w-full border-primary-600 text-primary-600 hover:bg-primary-50 font-semibold py-3"
           >
             <FaWhatsapp className="mr-2 h-5 w-5" />
             Pago Manual (WhatsApp)
@@ -342,7 +342,7 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
               </Button>
               <Button
                 onClick={handleOpenWhatsApp}
-                className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2 whitespace-nowrap"
+                className="bg-primary-600 text-white hover:bg-primary-700 flex items-center gap-2 whitespace-nowrap"
               >
                 <FaWhatsapp className="w-4 h-4" />
                 Contactar por WhatsApp

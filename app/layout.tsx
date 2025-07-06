@@ -9,7 +9,7 @@ import FloatingHelpButton from "@/components/FloatingHelpButton";
 import { printDebug, printInitDebug } from "@/utils/debug/log";
 
 export const metadata: Metadata = {
-  title: `Cursos de ${process.env.NEXT_PUBLIC_NAME_APP || 'Infectotrópico Academy'}`,
+  title: `Cursos de ${process.env.NEXT_PUBLIC_NAME_APP || 'Robotipa Academy'}`,
   description:
     "Grupo multidisciplinario comprometido con el avance científico, la generación de conocimiento y el bienestar de las comunidades afectadas por enfermedades infecciosas tropicales y desatendidas, a través de un enfoque integral ofreciendo soluciones que impacten positivamente en la salud global, siguiendo un enfoque de 0ne Health",
 };

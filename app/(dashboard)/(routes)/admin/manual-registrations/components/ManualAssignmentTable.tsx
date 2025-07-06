@@ -198,7 +198,7 @@ export function ManualAssignmentTable() {
               placeholder="Buscar por nombre o correo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:text-white"
             />
           </div>
 
@@ -211,7 +211,7 @@ export function ManualAssignmentTable() {
               id="course-filter"
               value={courseFilter}
               onChange={(e) => setCourseFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:text-white"
             >
               <option value="">Todos los usuarios</option>
               <option value="no-courses">Sin cursos asignados</option>
@@ -294,7 +294,7 @@ export function ManualAssignmentTable() {
                         className={`px-3 py-1 rounded text-white text-sm transition ${
                           allCoursesAssigned
                             ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-emerald-600 hover:bg-emerald-700"
+                            : "bg-primary-600 hover:bg-primary-700"
                         }`}
                       >
                         Dar Acceso
@@ -355,8 +355,8 @@ export function ManualAssignmentTable() {
           <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-6 max-w-lg w-full mx-4">
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
               </div>
@@ -365,7 +365,7 @@ export function ManualAssignmentTable() {
                   Asignar Acceso a Curso
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Usuario: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{selectedUser.fullName}</span>
+                  Usuario: <span className="font-semibold text-primary-600 dark:text-primary-400">{selectedUser.fullName}</span>
                 </p>
               </div>
             </div>
@@ -377,7 +377,7 @@ export function ManualAssignmentTable() {
               </label>
               <select
                 title="Selecciona un curso para asignar"
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:text-white transition-colors text-sm"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:text-white transition-colors text-sm"
                 value={selectedCourseId}
                 onChange={(e) => setSelectedCourseId(e.target.value)}
               >
@@ -396,7 +396,7 @@ export function ManualAssignmentTable() {
               
               {/* Show full course name if selected */}
               {selectedCourseId && (
-                <div className="mt-2 p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded border text-sm">
+                <div className="mt-2 p-2 bg-primary-50 dark:bg-primary-900/20 rounded border text-sm">
                   <span className="font-medium text-gray-700 dark:text-gray-300">Curso seleccionado:</span>
                   <p className="text-gray-600 dark:text-gray-400 break-words">
                     {courses.find(c => c.id === selectedCourseId)?.title}
@@ -436,7 +436,7 @@ export function ManualAssignmentTable() {
               <button
                 onClick={handleAssignAccess}
                 disabled={!selectedCourseId || assigning}
-                className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
+                className="px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
               >
                 {assigning ? (
                   <>

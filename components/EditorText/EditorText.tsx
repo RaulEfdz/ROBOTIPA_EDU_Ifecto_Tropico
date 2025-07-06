@@ -315,7 +315,7 @@ const EditorText: React.FC<EditorTextProps> = ({
         </span>
         <button
           onClick={() => setSaveAsHtml((prev) => !prev)}
-          className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline"
+          className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
         >
           Cambiar a {saveAsHtml ? "texto plano" : "HTML"}
         </button>

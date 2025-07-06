@@ -18,9 +18,9 @@
 
 ## ✅ COMPLETADAS
 
-☑️ Infectotrópico mal escrito en el catálogo. (Quitar la palabra y dejar solo el logo con enlace a infectotropico.com)
+☑️ Robotipa Academy mal escrito en el catálogo. (Quitar la palabra y dejar solo el logo con enlace a infectotropico.com)
 
-☑️ Cambiar número de WhatsApp de Yappi al de Infectotrópico
+☑️ Cambiar número de WhatsApp de Yappi al de Robotipa Academy
 
 ☑️ Proporcionar credenciales de base de datos a Luis
 

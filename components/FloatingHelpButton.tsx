@@ -67,7 +67,7 @@ const FloatingHelpButton: React.FC = () => {
           whileHover={{ scale: 1.1, rotate: 5 }}
           whileTap={{ scale: 0.95 }}
           aria-label="Botón de asistencia"
-          className="fixed bottom-6 right-6 z-50 flex items-center justify-center h-14 w-14 rounded-full bg-emerald-600 text-white shadow-xl hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300"
+          className="fixed bottom-6 right-6 z-50 flex items-center justify-center h-14 w-14 rounded-full bg-primary-600 text-white shadow-xl hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300"
           type="button"
           onClick={() => {
             trackClick("BotonAyuda_AbrirDialogo");
@@ -88,7 +88,7 @@ const FloatingHelpButton: React.FC = () => {
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Describe tu consulta..."
           disabled={isSending}
-          className="w-full h-32 resize-none border border-gray-300 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
+          className="w-full h-32 resize-none border border-gray-300 focus:border-primary-600 focus:ring-1 focus:ring-primary-600"
           aria-label="Mensaje de ayuda"
         />
 

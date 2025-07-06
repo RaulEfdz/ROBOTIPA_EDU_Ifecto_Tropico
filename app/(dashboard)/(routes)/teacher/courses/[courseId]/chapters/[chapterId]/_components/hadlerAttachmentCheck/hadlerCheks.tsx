@@ -67,7 +67,7 @@ const ListItem: React.FC<ListItemProps> = ({ index, name, lang }) => {
         </div>
       )}
       {showCopiedMessage && (
-        <div className="fixed bottom-10 right-10 z-20 p-2 text-sm text-TextCustom bg-green-500 rounded shadow-md">
+        <div className="fixed bottom-10 right-10 z-20 p-2 text-sm text-TextCustom bg-primary-500 rounded shadow-md">
           {texts[lang].copiedMessage}
         </div>
       )}

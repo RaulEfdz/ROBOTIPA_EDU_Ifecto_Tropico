@@ -94,7 +94,7 @@ const CreateCoursePage: React.FC = () => {
               size="icon"
               onClick={() => router.back()}
               aria-label={t('backButton')}
-              className="rounded-full hover:bg-green-50"
+              className="rounded-full hover:bg-primary-50"
             >
               <ArrowLeft className="h-5 w-5 text-green-700" />
             </Button>
@@ -105,7 +105,7 @@ const CreateCoursePage: React.FC = () => {
         </CardHeader>
 
         <CardContent className="pt-6">
-          <div className="flex items-center gap-3 mb-6 p-3 bg-green-50 rounded-lg">
+          <div className="flex items-center gap-3 mb-6 p-3 bg-primary-50 rounded-lg">
             <GraduationCap className="h-6 w-6 text-green-600" />
             <div>
               <h2 className="font-medium text-green-800">{t('pageDescription')}</h2>
@@ -153,7 +153,7 @@ const CreateCoursePage: React.FC = () => {
                 <Button
                   type="submit"
                   disabled={!form.formState.isValid || isSubmitting}
-                  className="bg-green-600 hover:bg-green-700 gap-2"
+                  className="bg-primary-600 hover:bg-primary-700 gap-2"
                 >
                   <FileText className="h-4 w-4" />
                   {isSubmitting

@@ -65,7 +65,7 @@ const ChapterVideoSection: React.FC<ChapterVideoSectionProps> = ({
           {!isLocked && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="bg-TextCustom/80 backdrop-blur-sm p-4 rounded-full shadow-lg">
-                <Play className="h-16 w-16 text-emerald-600" />
+                <Play className="h-16 w-16 text-primary-600" />
               </div>
             </div>
           )}

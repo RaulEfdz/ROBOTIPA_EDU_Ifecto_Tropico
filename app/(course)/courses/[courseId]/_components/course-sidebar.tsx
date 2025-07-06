@@ -69,8 +69,8 @@ export const CourseSidebar = async ({
         {/* Course Title */}
         <div className="mb-4">
           <div className="flex items-start gap-3 mb-3">
-            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-              <BookOpen className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
+              <BookOpen className="w-5 h-5 text-primary-600 dark:text-primary-400" />
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">
@@ -85,7 +85,7 @@ export const CourseSidebar = async ({
           {/* Navigation Link */}
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors group"
+            className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Volver al catálogo
@@ -110,7 +110,7 @@ export const CourseSidebar = async ({
             {/* Progress Stats */}
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="text-center p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
-                <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                <div className="text-lg font-bold text-slate-700 dark:text-slate-200">
                   {Math.round(progressCount)}%
                 </div>
                 <div className="text-xs text-slate-600 dark:text-slate-400">
@@ -129,7 +129,12 @@ export const CourseSidebar = async ({
 
             {/* Completion Badge */}
             {isCompleted && (
-              <div className="flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-lg shadow-md">
+              <div
+  className="flex items-center justify-center gap-2 p-3 text-white rounded-lg shadow-md"
+  style={{
+    background: 'linear-gradient(to right, var(--primary), green)'
+  }}
+>
                 <Trophy className="w-5 h-5" />
                 <span className="font-semibold text-sm">
                   ¡Curso Completado!

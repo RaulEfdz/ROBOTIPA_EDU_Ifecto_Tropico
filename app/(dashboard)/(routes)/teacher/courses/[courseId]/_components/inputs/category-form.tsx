@@ -245,11 +245,11 @@ export const CategoryForm = ({
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <span>{t.title}</span>
             <span title={t.hintMessage}>
-              <Info className="w-4 h-4 text-emerald-500" />
+              <Info className="w-4 h-4 text-primary-500" />
             </span>
           </h3>
           {selectedOption?.label ? (
-            <Badge className="bg-emerald-100 text-emerald-700 text-base px-3 py-1 ml-2 animate-pulse">
+            <Badge className="bg-primary-100 text-primary-700 text-base px-3 py-1 ml-2 animate-pulse">
               Completado
             </Badge>
           ) : (
@@ -263,7 +263,7 @@ export const CategoryForm = ({
             onClick={() => setIsEditing(true)}
             variant="ghost"
             size="sm"
-            className="text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg h-8"
+            className="text-gray-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg h-8"
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -301,7 +301,7 @@ export const CategoryForm = ({
                         <div
                           key={option.value}
                           onClick={() => handleSelect(option.value)}
-                          className="cursor-pointer px-4 py-2 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-sm"
+                          className="cursor-pointer px-4 py-2 hover:bg-primary-50 dark:hover:bg-primary-900/20 text-sm"
                         >
                           {option.label}
                         </div>
@@ -332,7 +332,7 @@ export const CategoryForm = ({
                       <Input
                         {...field}
                         placeholder={t.newCategoryPlaceholder}
-                        className="pl-10 h-10 text-sm border-emerald-300"
+                        className="pl-10 h-10 text-sm border-primary-300"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -355,7 +355,7 @@ export const CategoryForm = ({
                 type="submit"
                 disabled={isSaving || isSubmitting}
                 size="icon"
-                className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700"
+                className="h-10 w-10 bg-primary-600 hover:bg-primary-700"
               >
                 {isSaving ? (
                   <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin" />

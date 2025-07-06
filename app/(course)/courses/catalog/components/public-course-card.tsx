@@ -74,12 +74,22 @@ export const PublicCourseCard = ({
         </Badge>
       )}
       {isNew && (
-        <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 font-bold text-xs px-2.5 py-1 shadow-lg">
+        <Badge
+          className="text-white border-0 font-bold text-xs px-2.5 py-1 shadow-lg"
+          style={{
+            background: 'linear-gradient(to right, green, var(--primary))'
+          }}
+        >
           ✨ NUEVO
         </Badge>
       )}
       {isFree && (
-        <Badge className="bg-gradient-to-r from-emerald-500 to-purple-500 text-white border-0 font-bold text-xs px-2.5 py-1 shadow-lg">
+        <Badge
+          className="text-white border-0 font-bold text-xs px-2.5 py-1 shadow-lg"
+          style={{
+            background: 'linear-gradient(to right, var(--primary), purple)'
+          }}
+        >
           GRATIS
         </Badge>
       )}
@@ -108,7 +118,7 @@ export const PublicCourseCard = ({
       {/* Efecto de play button en hover */}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
         <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full p-3 shadow-2xl">
-          <Play className="w-6 h-6 text-emerald-600 dark:text-emerald-400 fill-current" />
+          <Play className="w-6 h-6 text-primary-600 dark:text-primary-400 fill-current" />
         </div>
       </div>
     </>
@@ -139,7 +149,7 @@ export const PublicCourseCard = ({
     {
       "max-w-sm": variant === "compact",
       "max-w-md": variant === "default",
-      "max-w-lg border-2 border-gradient-to-r from-emerald-500 to-emerald-500 shadow-xl":
+      "max-w-lg border-2 shadow-xl": // Gradiente eliminado, usar color sólido dinámico si es necesario
         variant === "featured",
     },
     className
@@ -148,9 +158,7 @@ export const PublicCourseCard = ({
   const buttonStyles = cn(
     "w-full font-semibold transition-all duration-300",
     "shadow-lg hover:shadow-xl transform hover:scale-[1.02]",
-    isEnrolled
-      ? "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white"
-      : "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white"
+    "text-white"
   );
 
   return (
@@ -159,7 +167,7 @@ export const PublicCourseCard = ({
         <Link
           href={resolvedCourseLink}
           aria-label={`Ver detalles del curso ${title}`}
-          className="block focus:outline-none focus:ring-4 focus:ring-emerald-500/20 rounded-t-xl"
+          className="block focus:outline-none focus:ring-4 focus:ring-primary-500/20 rounded-t-xl"
         >
           <div className="relative aspect-video w-full overflow-hidden rounded-t-xl">
             <Image
@@ -177,7 +185,7 @@ export const PublicCourseCard = ({
             {/* Indicador de inscripción */}
             {isEnrolled && (
               <div className="absolute bottom-3 left-3 z-20">
-                <Badge className="bg-emerald-600 text-white border-0 font-semibold text-xs px-2.5 py-1 shadow-lg flex items-center gap-1">
+                <Badge className="bg-primary-600 text-white border-0 font-semibold text-xs px-2.5 py-1 shadow-lg flex items-center gap-1">
                   <CheckCircle className="w-3 h-3" />
                   INSCRITO
                 </Badge>
@@ -190,10 +198,10 @@ export const PublicCourseCard = ({
       <CardContent className="flex flex-1 flex-col p-5 space-y-4">
         <Link
           href={resolvedCourseLink}
-          className="flex-1 space-y-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 rounded-lg"
+          className="flex-1 space-y-3 focus:outline-none focus:ring-2 focus:ring-primary-500/20 rounded-lg"
         >
           {/* Título del curso */}
-          <h3 className="line-clamp-2 text-xl font-bold leading-tight text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+          <h3 className="line-clamp-2 text-xl font-bold leading-tight text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-primary-600 dark:group-hover:text-primary-400">
             {title}
           </h3>
 
@@ -223,7 +231,7 @@ export const PublicCourseCard = ({
           {/* Capítulos */}
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full">
-              <BookOpen className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
+              <BookOpen className="h-4 w-4 text-primary-500 dark:text-primary-400" />
               <span className="font-medium">
                 {chaptersCount} {chaptersCount === 1 ? "Capítulo" : "Capítulos"}
               </span>

@@ -10,7 +10,7 @@ Programador A: por favor, ingresa a este archivo, lee tus tareas asignadas y, a 
    - Eliminar la frase "pago único, acceso de por vida" (o similar) de la sección donde se muestra el precio de los cursos.
 
 - [x] **Branding/Título Principal**:
-   - Asegurar que el título principal o encabezado sea "Cursos de Infectotrópico Academy".
+   - Asegurar que el título principal o encabezado sea "Cursos de Robotipa Academy".
    - Quitar cualquier otro texto o denominación adicional en esa sección principal.
 
 - [x] **Listado de Profesiones (Campo Mandatorio)**:
@@ -30,7 +30,7 @@ Programador A: por favor, ingresa a este archivo, lee tus tareas asignadas y, a 
 
 Programador B: por favor, ingresa a este archivo, lee tus tareas asignadas y, a medida que las completes, márcalas con '- [x]' para indicar su resolución itera siempre hasta terminar.
 
-- [x] **Término "Infectotrópico"**: Asegurar que la palabra "infectotrópico" siempre aparezca junta (sin espacios) y con tilde en la "ó".
+- [x] **Término "Robotipa Academy"**: Asegurar que la palabra "Robotipa Academy" siempre aparezca junta (sin espacios) y con tilde en la "ó".
 
 - [x] **Catálogo de Cursos - Botón de Compra Directa**:
    * En la vista de catálogo, cada curso debe tener un botón individual de "Comprar" (o similar) para permitir al usuario ir directamente a la página de pago de ese curso específico.

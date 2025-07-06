@@ -206,13 +206,13 @@ export default function UserProfileDashboard() {
 
   if (!userData) {
     return (
-      <div className="flex min-h-screen justify-center items-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+      <div className="flex min-h-screen justify-center items-center bg-gradient-to-br from-primary-50 via-teal-50 to-cyan-50">
         <div className="text-center flex flex-col justify-center items-center">
           <div className="relative">
-            <div className="w-20 h-20 rounded-full border-4 border-emerald-200 border-t-emerald-600 animate-spin"></div>
+            <div className="w-20 h-20 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin"></div>
             <div className="absolute inset-0 w-20 h-20 rounded-full border-4 border-teal-200 border-b-teal-600 animate-spin animate-reverse"></div>
           </div>
-          <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 mt-6">
+          <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-teal-600 mt-6">
             Cargando perfil...
           </span>
         </div>
@@ -293,11 +293,11 @@ export default function UserProfileDashboard() {
   ];
 
   return (
-    <div className="min-h-screen py-6 flex flex-col items-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+    <div className="min-h-screen py-6 flex flex-col items-center bg-gradient-to-br from-primary-50 via-teal-50 to-cyan-50">
       <div className="max-w-6xl w-full space-y-6 px-4">
         <Card className="shadow-2xl hover:shadow-3xl transition-all duration-500 rounded-xl backdrop-blur-sm bg-white/95 border-0">
-          <CardHeader className="rounded-t-xl pb-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/90 to-teal-600/90"></div>
+          <CardHeader className="rounded-t-xl pb-4 bg-gradient-to-r from-primary-600 to-teal-600 text-white relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-600/90 to-teal-600/90"></div>
             <div className="absolute top-0 left-0 w-full h-full">
               <div className="absolute top-4 left-4 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
               <div className="absolute bottom-4 right-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
@@ -310,11 +310,11 @@ export default function UserProfileDashboard() {
                       src={metadata.full_name || "/placeholder-user.png"}
                       alt={metadata.full_name || "User"}
                     />
-                    <AvatarFallback className="text-xl text-white bg-gradient-to-br from-emerald-500 to-teal-500">
+                    <AvatarFallback className="text-xl text-white bg-gradient-to-br from-primary-500 to-teal-500">
                       {metadata.full_name?.[0] || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-500 rounded-full border-2 border-white flex items-center justify-center">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
                   </div>
                 </div>
@@ -333,7 +333,7 @@ export default function UserProfileDashboard() {
                   onClick={() => setActiveSection("profile")}
                   className={`px-3 py-1.5 rounded-lg border-2 transition-all duration-300 font-medium text-sm ${
                     activeSection === "profile"
-                      ? "bg-white text-emerald-600 border-white shadow-lg transform scale-105"
+                      ? "bg-white text-primary-600 border-white shadow-lg transform scale-105"
                       : "bg-white/10 text-white border-white/30 hover:bg-white/20 hover:border-white/50"
                   }`}
                 >
@@ -343,7 +343,7 @@ export default function UserProfileDashboard() {
                   onClick={() => setActiveSection("settings")}
                   className={`px-3 py-1.5 rounded-lg border-2 transition-all duration-300 font-medium text-sm ${
                     activeSection === "settings"
-                      ? "bg-white text-emerald-600 border-white shadow-lg transform scale-105"
+                      ? "bg-white text-primary-600 border-white shadow-lg transform scale-105"
                       : "bg-white/10 text-white border-white/30 hover:bg-white/20 hover:border-white/50"
                   }`}
                 >
@@ -361,12 +361,12 @@ export default function UserProfileDashboard() {
                 {profileSections.map((section, index) => (
                   <div
                     key={index}
-                    className="group relative rounded-lg p-4 bg-white border border-gray-200 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-102"
+                    className="group relative rounded-lg p-4 bg-white border border-gray-200 hover:border-primary-300 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-102"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/40 to-teal-50/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary-50/40 to-teal-50/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                     <div className="relative z-10 flex items-start justify-between">
                       <div className="flex items-start space-x-3 flex-1">
-                        <div className="p-2 rounded-md bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200 transition-all duration-200">
+                        <div className="p-2 rounded-md bg-gradient-to-br from-primary-100 to-teal-100 group-hover:from-primary-200 group-hover:to-teal-200 transition-all duration-200">
                           {section.icon}
                         </div>
                         <div className="flex-1">
@@ -390,7 +390,7 @@ export default function UserProfileDashboard() {
                                 size="sm"
                                 onClick={() => handleSave(section.field)}
                                 disabled={isLoading}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                                className="bg-primary-600 hover:bg-primary-700 text-white"
                               >
                                 {isLoading ? (
                                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -419,7 +419,7 @@ export default function UserProfileDashboard() {
                           size="sm"
                           variant="ghost"
                           onClick={() => handleEdit(section.field)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50">
+                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-primary-600 hover:text-primary-700 hover:bg-primary-50">
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>
@@ -436,10 +436,10 @@ export default function UserProfileDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Dialog open={isChangePasswordOpen} onOpenChange={setIsChangePasswordOpen}>
                   <DialogTrigger asChild>
-                    <div className="group relative rounded-lg p-6 bg-gradient-to-br from-white to-emerald-50 border border-emerald-100 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-102 cursor-pointer">
-                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-emerald-100/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                    <div className="group relative rounded-lg p-6 bg-gradient-to-br from-white to-primary-50 border border-primary-100 hover:border-primary-300 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-102 cursor-pointer">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary-50/50 to-primary-100/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                       <div className="relative z-10">
-                        <div className="p-3 rounded-md bg-gradient-to-br from-emerald-500 to-emerald-600 w-fit mb-3 group-hover:from-emerald-600 group-hover:to-emerald-700 transition-all duration-200">
+                        <div className="p-3 rounded-md bg-gradient-to-br from-primary-500 to-primary-600 w-fit mb-3 group-hover:from-primary-600 group-hover:to-primary-700 transition-all duration-200">
                           <KeyRound className="w-6 h-6 text-white" />
                         </div>
                         <h3 className="font-bold text-base mb-2 text-gray-800">
@@ -546,7 +546,7 @@ export default function UserProfileDashboard() {
                         <Button
                           onClick={handlePasswordChange}
                           disabled={isChangingPassword}
-                          className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                          className="flex-1 bg-primary-600 hover:bg-primary-700 text-white"
                         >
                           {isChangingPassword ? (
                             <>

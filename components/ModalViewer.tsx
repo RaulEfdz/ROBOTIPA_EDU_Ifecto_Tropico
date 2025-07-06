@@ -18,7 +18,7 @@
 //       <DialogContent className="p-4 sm:p-6 md:p-8 w-full max-w-screen-lg h-[90vh] sm:h-[95vh]">
 //       {type === "quiz" && <DialogHeader>
 //           <DialogTitle>
-//             <Badge className="bg-emerald-300 text-TextCustom text-sm sm:text-base h-[5vh]">
+//             <Badge className="bg-primary-300 text-TextCustom text-sm sm:text-base h-[5vh]">
 //               {type === "quiz" ? "Quiz" : "Recurso"}
 //             </Badge>
 //           </DialogTitle>
