@@ -228,31 +228,37 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
 
                     const returnUrl = `${window.location.origin}/courses/${courseId}/chapters/${firstChapterId}?status=SUCCESS&course=${courseId}`;
 
-                    const payload = {
-                      amount: coursePrice,
-                      description: `Curso: ${courseTitle}`,
-                      customParam1: user.id,
-                      returnUrl,
-                      pfCf: {
-                        email: user.email,
-                        phone: user.phone || "",
-                        fullName: user.fullName,
-                        courseId,
-                      },
-                      metadata: {
-                        courseId,
-                      },
-                      cardTypes: ["VISA", "MASTERCARD", "NEQUI"],
-                    };
+                    if (!user || !user.id) {
+  toast.error("Usuario no autenticado o datos incompletos.");
+  return;
+}
+const payload = {
+  amount: coursePrice,
+  description: `Curso: ${courseTitle}`,
+  customParam1: user.id,
+  returnUrl,
+  pfCf: {
+    email: user.email,
+    phone: user.phone || "",
+    fullName: user.fullName,
+    courseId,
+  },
+  metadata: {
+    courseId,
+  },
+  cardTypes: ["VISA", "MASTERCARD", "NEQUI"],
+};
 
-                    const res = await fetch("/api/payments/paguelo-facil", {
+                    const res = await fetch("/api/payments/init", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify(payload),
                     });
 
                     const data = await res.json();
+                 
                     if (res.ok && data.url) {
+                   
                       window.open(data.url, '_blank');
                     } else {
                       toast.error(data.error || "No se pudo generar el enlace de pago.");
@@ -263,12 +269,12 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
                 }}
                 disabled={isLoadingUser || !currentUser}
                 variant="outline"
-                className="w-full border-slate-600 text-slate-600 hover:bg-slate-50 font-semibold py-3"
+                className="w-full bg-primary-600 border-primary-600 text-white font-semibold py-3 group"
               >
-                <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="mr-2 h-5 w-5 text-white group-hover:text-yellow-300 transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M2 7h20v2H2V7zm0 6h20v2H2v-2zm0-8h20c.6 0 1 .4 1 1v12c0 .6-.4 1-1 1H2c-.6 0-1-.4-1-1V6c0-.6.4-1 1-1zm2 11h16V8H4v6z"/>
                 </svg>
-                Pagar con Tarjeta ${coursePrice}
+                <span className="transition-colors duration-200 group-hover:text-yellow-300">Pagar con Tarjeta ${coursePrice}</span>
               </Button>
             </div>
           )}
@@ -291,7 +297,7 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
             onClick={() => setModalOpen(true)}
             disabled={isLoadingUser}
             variant="outline"
-            className="w-full border-primary-600 text-primary-600 hover:bg-primary-50 font-semibold py-3"
+            className="w-full border-primary-600 text-primary-600 font-semibold py-3 transition-all duration-300 ease-out hover:bg-green-600 hover:text-white hover:shadow-md"
           >
             <FaWhatsapp className="mr-2 h-5 w-5" />
             Pago Manual (WhatsApp)

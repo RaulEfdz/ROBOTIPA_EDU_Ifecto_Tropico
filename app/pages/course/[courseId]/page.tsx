@@ -348,18 +348,18 @@ export default function CoursePage() {
       <header className="bg-gradient-to-r from-primary-700 via-primary-700 to-primary-700 text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-8 md:gap-12">
           {/* Columna Izquierda: Texto */}
-          <div className="flex-1 space-y-3 md:space-y-4">
+          <div className="flex-1 space-y-3 md:space-y-4 text-gray-900 dark:text-gray-200">
             {category?.name && (
               <Link
                 href={`/courses/catalog?categoryId=${category.id}`}
                 className="inline-block"
               >
-                <span className="text-sm font-semibold bg-white/20 text-white px-3 py-1 rounded-full hover:bg-white/30 transition">
+                <span className="text-sm font-semibold text-primary-50 uppercase py-1 rounded-full hover:bg-white/30 transition">
                   {category.name}
                 </span>
               </Link>
             )}
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight  tracking-tight">
               {title}
             </h1>
             {/* {description && (
@@ -368,7 +368,7 @@ export default function CoursePage() {
                 {description.length > 150 && "..."}
               </p>
             )} */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-primary-50">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
               {/* <div className="flex items-center gap-1">
                 <Star size={16} className="text-yellow-400 fill-yellow-400" />{" "}
                 {rating.toFixed(1)} Rating
@@ -400,20 +400,7 @@ export default function CoursePage() {
               priority // Cargar rápido la imagen principal
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 384px" // Optimizar tamaños
             />
-            <div
-              className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-all flex items-center justify-center cursor-pointer"
-              // onClick={() =>
-              //   // toast.info(
-              //   //   "La previsualización de video no está disponible aún.",
-              //   //   { id: "preview-video" }
-              //   // )
-              // }
-            >
-              {/* <PlayCircle
-                size={64}
-                className="text-white/80 group-hover:text-white group-hover:scale-110 transition-transform"
-              /> */}
-            </div>
+
           </div>
         </div>
       </header>

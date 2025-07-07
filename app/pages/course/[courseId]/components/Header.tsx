@@ -33,54 +33,44 @@ export default function Header({ user, courseTitle }: HeaderProps) {
     <nav className="bg-white dark:bg-slate-800 shadow-sm sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
+          {/* Logo y título del curso */}
           <div className="flex items-center space-x-4">
-            <Link href="/" className="flex-shrink-0">
-              <Logo width={90} height={30} version="original" />
+            <Link href="/" className="overflow-hidden">
+             <Logo height={40} width={40} version="original" />
             </Link>
             {courseTitle && (
               <span className="text-sm text-slate-500 dark:text-slate-400 hidden md:block">
-                |   {courseTitle}
+                |  {courseTitle}
               </span>
             )}
           </div>
+
+          {/* Navegación y perfil */}
           <div className="flex items-center space-x-3 md:space-x-4">
             <Link
               href="/"
               className="text-slate-600 hover:text-primary-600 dark:text-slate-300 dark:hover:text-primary-400 transition-colors"
             >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center gap-1.5"
-              >
-                <Home size={16} />{" "}
-                <span className="hidden sm:inline">Inicio</span>
+              <Button variant="ghost" size="sm" className="flex items-center gap-1.5 hover:bg-primary">
+                <Home size={16} /> <span className="hidden sm:inline">Panel</span>
               </Button>
             </Link>
+
             <Link
               href="/courses/catalog"
               className="text-slate-600 hover:text-primary-600 dark:text-slate-300 dark:hover:text-primary-400 transition-colors"
             >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center gap-1.5"
-              >
-                <BookCopy size={16} />{" "}
-                <span className="hidden sm:inline">Catálogo</span>
+              <Button variant="ghost" size="sm" className="flex items-center gap-1.5 hover:bg-primary">
+                <BookCopy size={16} /> <span className="hidden sm:inline">Catálogo</span>
               </Button>
             </Link>
+
             <Link
               href="/search"
               className="text-slate-600 hover:text-primary-600 dark:text-slate-300 dark:hover:text-primary-400 transition-colors"
             >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center gap-1.5"
-              >
-                <Search size={16} />{" "}
-                <span className="hidden sm:inline">Buscar</span>
+              <Button variant="ghost" size="sm" className="flex items-center gap-1.5 hover:bg-primary">
+                <Search size={16} /> <span className="hidden sm:inline">Buscar</span>
               </Button>
             </Link>
 

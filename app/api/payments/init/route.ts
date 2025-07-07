@@ -2,6 +2,8 @@ import { UserDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 import { getUserDataServerAuth } from "@/app/auth/CurrentUser/userCurrentServerAuth";
 import { Course } from "@/prisma/types";
 import { NextRequest, NextResponse } from "next/server";
+
+
 import { db } from "@/lib/db";
 
 /**
@@ -168,10 +170,18 @@ interface PaymentInitPayload {
 
 export async function POST(req: NextRequest) {
   try {
-    const { amount, description, email, phone, course, returnUrl } =
-      await req.json();
+    // Extrae los datos según el payload real del frontend
+    const { amount, description, customParam1, returnUrl, pfCf, metadata, cardTypes } = await req.json();
 
-    console.log("[/api/payments/init] Received request:", returnUrl);
+    // Extrae los datos relevantes desde pfCf y metadata
+    const email = pfCf?.email;
+    const phone = pfCf?.phone;
+    const fullName = pfCf?.fullName;
+    const courseId = pfCf?.courseId || metadata?.courseId;
+    // Construye un objeto course mínimo si es necesario
+    const course = { id: courseId, title: description?.replace('Curso: ', '') };
+
+    
 
     // Authenticate user
     const session = await getUserDataServerAuth();
@@ -225,6 +235,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+
     // Build form payload
     const formParams = buildFormParams(
       config,
@@ -233,7 +244,7 @@ export async function POST(req: NextRequest) {
       course
     );
 
-    console.log("[/api/payments/init] config:", returnUrl);
+    
 
     // Call the external API
     const data = await callPaymentApi(
@@ -244,15 +255,15 @@ export async function POST(req: NextRequest) {
     );
 
     // Log and respond
-    console.log("Payment URL:", data.data.url);
-    if (data.data.code) console.log("Payment Code:", data.data.code);
+    
+    
 
     return NextResponse.json(
-      { paymentUrl: data.data.url, code: data.data.code },
+      { url: data.data.url, code: data.data.code },
       { status: 200 }
     );
   } catch (err: any) {
-    console.error("[/api/payments/init] Error:", err.message || err);
+    
     const status =
       typeof err.message === "string" && err.message.startsWith("HTTP")
         ? parseInt(err.message.split(" ")[1], 10)

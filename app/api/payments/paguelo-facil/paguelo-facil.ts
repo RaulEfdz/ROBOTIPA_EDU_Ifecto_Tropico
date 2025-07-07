@@ -27,6 +27,8 @@ function toHex(str: string): string {
 export async function createPagueloFacilLink(
   params: CreatePaymentLinkParams
 ): Promise<{ success: true; url: string } | { success: false; error: string }> {
+  // LOG para depuración
+  console.log('[PagueloFacil] params recibidos:', params);
   const cclw = process.env.PAGUELOFACIL_CCLW;
   const apiUrl = process.env.PAGUELOFACIL_API_URL;
   const defaultExpires = parseInt(

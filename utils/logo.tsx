@@ -25,5 +25,5 @@ export const Logo: React.FC<LogoProps> = ({
         ? process.env.NEXT_PUBLIC_LOGO_LIGHT || "/LOGO_LIGHT.png"
         : process.env.NEXT_PUBLIC_LOGO || "/LOGO.png";
 
-  return <Image width={width} height={height} alt="logo" src={logoUrl} />;
+  return <Image width={width} height={height} max-width={width} max-height={height} alt="logo" src={logoUrl} />;
 };
