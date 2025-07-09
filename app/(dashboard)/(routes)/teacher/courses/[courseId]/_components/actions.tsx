@@ -49,12 +49,14 @@ export const Actions = ({ disabled, courseId, isPublished }: ActionsProps) => {
     const path = `/api/courses/${courseId}/${
       published ? "unpublish" : "publish"
     }`;
+    // Determinar el método correcto según la acción
+    const method = published ? "PUT" : "POST";
 
     try {
       await fetchData({
         values: { courseId },
         path,
-        method: "POST",
+        method,
         callback: () => {
           toast.success(published ? "Curso ocultado" : "Curso publicado", {
             duration: 2000,

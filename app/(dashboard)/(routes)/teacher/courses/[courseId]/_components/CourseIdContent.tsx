@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { LayoutDashboard, ListChecks, ArrowLeft } from "lucide-react";
+import {
+  LayoutDashboard,
+  ListChecks,
+  ArrowLeft,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
 import { TitleForm } from "./inputs/title/title-form";
@@ -30,6 +36,12 @@ const texts = {
     courseChapters: "Capítulos del curso",
     back: "Volver a mis cursos",
     learningObjectives: "Objetivos de aprendizaje",
+    title: "Título del curso",
+    description: "Descripción del curso",
+    image: "Imagen del curso",
+    category: "Categoría del curso",
+    price: "Precio del curso",
+    exams: "Exámenes",
   },
   en: {
     notPublished:
@@ -40,22 +52,45 @@ const texts = {
     courseChapters: "Course Chapters",
     back: "Back to my courses",
     learningObjectives: "Learning objectives",
+    title: "Course title",
+    description: "Course description",
+    image: "Course image",
+    category: "Course category",
+    price: "Course price",
+    exams: "Exams",
   },
 };
 
 export default function CourseIdContent({ course, categories, lang }: Props) {
-  const requiredFields = [
-    course.title,
-    course.description,
-    course.imageUrl,
-    course.categoryId,
-    course.chapters?.some((chapter: any) => chapter.isPublished),
+  const requiredFieldsWithLabels = [
+    {
+      label: texts[lang].title,
+      isCompleted: !!course.title,
+    },
+    {
+      label: texts[lang].description,
+      isCompleted: !!course.description,
+    },
+    {
+      label: texts[lang].image,
+      isCompleted: !!course.imageUrl,
+    },
+    {
+      label: texts[lang].category,
+      isCompleted: !!course.categoryId,
+    },
+    {
+      label: texts[lang].price,
+      isCompleted: course.price !== null,
+    },
   ];
 
-  const totalFields = requiredFields.length;
-  const completedFields = requiredFields.filter(Boolean).length;
+  const totalFields = requiredFieldsWithLabels.length;
+  const completedFields = requiredFieldsWithLabels.filter(
+    (field) => field.isCompleted
+  ).length;
   const completionText = `${completedFields}/${totalFields}`;
-  const isComplete = requiredFields.every(Boolean);
+  const isComplete = completedFields === totalFields;
 
   // Improved background color contrast with a lighter background
   const bgColorClass = course.isPublished
@@ -178,6 +213,24 @@ export default function CourseIdContent({ course, categories, lang }: Props) {
               className="bg-primary-500 h-2 rounded-full"
               style={{ width: `${(completedFields / totalFields) * 100}%` }}
             ></div>
+          </div>
+
+          {/* Detailed status */}
+          <div className="mt-4 space-y-2">
+            {requiredFieldsWithLabels.map((field, index) => (
+              <div key={index} className="flex items-center">
+                {field.isCompleted ? (
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                ) : (
+                  <XCircle className="h-5 w-5 text-red-500 mr-2" />
+                )}
+                <span
+                  className={`text-sm ${field.isCompleted ? "text-gray-700 dark:text-gray-300" : "text-red-500"}`}
+                >
+                  {field.label}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
