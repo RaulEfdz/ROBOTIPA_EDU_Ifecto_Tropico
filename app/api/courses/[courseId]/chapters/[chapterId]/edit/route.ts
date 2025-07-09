@@ -9,7 +9,7 @@ export async function POST(
 ) {
   const { courseId, chapterId } = await params;
   try {
-    const { isPublished, ...values } = await req.json();
+    const { title, description, videoUrl, isPublished } = await req.json();
     const user = (await getUserDataServerAuth())?.user;
 
     if (!user?.id) return new NextResponse("Unauthorized", { status: 401 });
@@ -41,15 +41,18 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const dataToUpdate: any = {};
+    if (title) dataToUpdate.title = title;
+    if (description) dataToUpdate.description = description;
+    if (videoUrl) dataToUpdate.videoUrl = videoUrl;
+    if (isPublished !== undefined) dataToUpdate.isPublished = isPublished;
+
     const updated = await db.chapter.update({
       where: {
         id: chapterId,
         courseId: courseId,
       },
-      data: {
-        ...values,
-        isPublished,
-      },
+      data: dataToUpdate,
     });
 
     return NextResponse.json({ data: updated });

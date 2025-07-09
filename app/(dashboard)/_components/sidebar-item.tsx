@@ -26,7 +26,10 @@ export const SidebarItem = ({
   isCollapsed = false,
 }: SidebarItemProps) => {
   const pathname = usePathname() || "";
-  const isActive = pathname === href || pathname.startsWith(`${href}/`);
+  const isPanel = href === "/teacher";
+  const isActive = isPanel
+    ? pathname === href
+    : (pathname === href || (href !== "/" && new RegExp(`^${href.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}(?:/|$)`).test(pathname)));
 
   const linkContent = (
     <Link

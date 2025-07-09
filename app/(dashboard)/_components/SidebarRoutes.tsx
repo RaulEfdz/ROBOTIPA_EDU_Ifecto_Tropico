@@ -160,7 +160,9 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <route.icon
-                            className={`h-5 w-5 flex-shrink-0 transition-colors text-white bg-red-50`}
+                            className={
+                              "h-5 w-5 flex-shrink-0 transition-colors text-white"
+                            }
                           />
                         </TooltipTrigger>
                         <TooltipContent

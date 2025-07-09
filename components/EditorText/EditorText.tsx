@@ -6,7 +6,6 @@ import "quill/dist/quill.snow.css";
 import { toast } from "sonner";
 import { useUploadThing } from "@/utils/uploadthing";
 import { getQuillSafeFileBlockHtml } from "./htmlBlocks";
-import "quill-paste-smart";
 
 interface CloudinaryUploadResponse {
   success: boolean;
@@ -305,6 +304,13 @@ const EditorText: React.FC<EditorTextProps> = ({
     QuillInstance,
     saveAsHtml,
   ]);
+
+  // Importar quill-paste-smart solo en el cliente
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      import("quill-paste-smart");
+    }
+  }, []);
 
   return (
     <div className="bg-TextCustom dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm quill-editor-container">
