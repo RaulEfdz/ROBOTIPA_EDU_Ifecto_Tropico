@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
-import * as z from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { ArrowLeft, FileText, GraduationCap } from 'lucide-react';
+import React, { useState, useMemo, useRef } from "react";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { ArrowLeft, FileText, GraduationCap } from "lucide-react";
 import {
   Card,
   CardHeader,
   CardContent,
   CardFooter,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   Form,
   FormField,
@@ -21,21 +21,28 @@ import {
   FormControl,
   FormMessage,
   FormDescription,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { texts, defaultLanguage, Language, TFunction } from './locales/course-create';
-import { useConfettiStore } from '@/hooks/use-confetti-store';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  texts,
+  defaultLanguage,
+  Language,
+  TFunction,
+} from "./locales/course-create";
+import { useConfettiStore } from "@/hooks/use-confetti-store";
 
 const CreateCoursePage: React.FC = () => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [language] = useState<Language>(defaultLanguage);
   const confetti = useConfettiStore();
+  const inputRef = useRef<HTMLInputElement>(null); // Referencia para el input
 
   // Translation function
   const t: TFunction = useMemo(
-    () => (key) => texts[key]?.[language] ?? texts[key]?.[defaultLanguage] ?? key,
+    () => (key) =>
+      texts[key]?.[language] ?? texts[key]?.[defaultLanguage] ?? key,
     [language]
   );
 
@@ -44,40 +51,40 @@ const CreateCoursePage: React.FC = () => {
       z.object({
         title: z
           .string()
-          .min(3, { message: t('validationTitleRequired') })
-          .max(60, { message: t('validationTitleTooLong') }),
+          .min(3, { message: t("validationTitleRequired") })
+          .max(60, { message: t("validationTitleTooLong") }),
       }),
     [t]
   );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { title: '' },
-    mode: 'onChange',
+    defaultValues: { title: "" },
+    mode: "onChange",
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
-      const response = await fetch('/api/courses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/courses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || 'Error creating course');
+        throw new Error(errorText || "Error creating course");
       }
       const data = await response.json();
-      toast.success(t('successMessage'), {
-        description: t('successDescription'),
+      toast.success(t("successMessage"), {
+        description: t("successDescription"),
       });
       confetti.onOpen();
       router.push(`/teacher/courses/${data.id}`);
     } catch (error) {
-      console.error('Error creating course:', error);
-      toast.error(t('errorMessage'), {
-        description: t('errorDescription'),
+      console.error("Error creating course:", error);
+      toast.error(t("errorMessage"), {
+        description: t("errorDescription"),
       });
     } finally {
       setIsSubmitting(false);
@@ -93,13 +100,13 @@ const CreateCoursePage: React.FC = () => {
               variant="ghost"
               size="icon"
               onClick={() => router.back()}
-              aria-label={t('backButton')}
+              aria-label={t("backButton")}
               className="rounded-full hover:bg-primary-50"
             >
               <ArrowLeft className="h-5 w-5 text-green-700" />
             </Button>
             <h1 className="text-xl font-semibold text-gray-800">
-              {t('pageTitle')}
+              {t("pageTitle")}
             </h1>
           </div>
         </CardHeader>
@@ -108,10 +115,12 @@ const CreateCoursePage: React.FC = () => {
           <div className="flex items-center gap-3 mb-6 p-3 bg-primary-50 rounded-lg">
             <GraduationCap className="h-6 w-6 text-green-600" />
             <div>
-              <h2 className="font-medium text-green-800">{t('pageDescription')}</h2>
+              <h2 className="font-medium text-green-800">
+                {t("pageDescription")}
+              </h2>
               <p className="text-sm text-green-700/80 mt-1">
-                {t('pageSubDescription') ||
-                  'Get started by naming your course. You can change this later.'}
+                {t("pageSubDescription") ||
+                  "Get started by naming your course. You can change this later."}
               </p>
             </div>
           </div>
@@ -123,16 +132,17 @@ const CreateCoursePage: React.FC = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-base font-medium">
-                      {t('titleLabel')}
+                      {t("titleLabel")}
                     </FormLabel>
                     <FormDescription>
-                      {t('titleDescription') ||
-                        'Choose a clear, descriptive title for your course.'}
+                      {t("titleDescription") ||
+                        "Choose a clear, descriptive title for your course."}
                     </FormDescription>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t('titlePlaceholder')}
+                        ref={inputRef}
+                        placeholder={t("titlePlaceholder")}
                         className="h-12 text-base focus-visible:ring-green-600"
                       />
                     </FormControl>
@@ -145,10 +155,13 @@ const CreateCoursePage: React.FC = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => router.back()}
+                  onClick={() => {
+                    inputRef.current?.blur(); // Quita el foco
+                    router.back();
+                  }}
                   className="border-gray-300"
                 >
-                  {t('cancelButton')}
+                  {t("cancelButton")}
                 </Button>
                 <Button
                   type="submit"
@@ -157,8 +170,8 @@ const CreateCoursePage: React.FC = () => {
                 >
                   <FileText className="h-4 w-4" />
                   {isSubmitting
-                    ? t('submittingButton') || 'Creating...'
-                    : t('continueButton')}
+                    ? t("submittingButton") || "Creating..."
+                    : t("continueButton")}
                 </Button>
               </CardFooter>
             </form>

@@ -1,25 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import {
-  Layout,
-  Compass,
-  Bell,
-  HelpCircle,
-  List,
-  Folder,
-  Brain,
-  Users,
-  UserCheck,
-  UserPlus,
-  BarChart,
-  Settings,
-  Search,
-  ChevronDown,
-  ChevronRight,
-  ChevronLeft,
-  X,
-} from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { SidebarItem } from "./sidebar-item";
 import { Label } from "@/components/ui/label";
@@ -50,10 +32,8 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredRoutes, setFilteredRoutes] = useState<Route[]>(routes);
 
-  // Reset filtered routes on context switch
   useEffect(() => setFilteredRoutes(routes), [routes]);
 
-  // Auto-expand active submenu
   useEffect(() => {
     routes.forEach((route) => {
       if (route.subRoutes && route.isCollapsible) {
@@ -68,13 +48,11 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
     });
   }, [pathname, routes]);
 
-  // Hide badges after 10s
   useEffect(() => {
     const timer = setTimeout(() => setShowBadges(false), 10000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Stagger animations
   useEffect(() => {
     const timer = setTimeout(() => {
       routes.forEach((route, idx) => {
@@ -89,7 +67,6 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
     return () => clearTimeout(timer);
   }, [routes]);
 
-  // Filter on search
   useEffect(() => {
     if (!searchQuery.trim()) return setFilteredRoutes(routes);
 
@@ -132,7 +109,6 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
     [pathname]
   );
 
-
   const variants = {
     hidden: { opacity: 0, x: -20 },
     visible: { opacity: 1, x: 0 },
@@ -147,38 +123,17 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
   };
 
   return (
-    <div className={`${isCollapsed ? 'px-2' : 'px-4'} py-2`}>
+    <div className={`${isCollapsed ? "px-2" : "px-4"} py-2 text-white`}>
       {!isCollapsed && (
         <>
           <div className="flex items-center justify-between mb-4">
-            <Label className="uppercase text-primary text-xs tracking-wider font-semibold">
+            <Label className="uppercase text-white text-xs tracking-wider font-semibold">
               Navegación
             </Label>
           </div>
-          <Separator className="mb-4 border-primary/40" />
+          <Separator className="mb-4 border-white/40" />
         </>
       )}
-
-      {/* {!isCollapsed && (
-        <div className="relative mb-4">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-brand-primary/60" />
-          <input
-            type="text"
-            placeholder="Buscar..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full input-default pl-8 py-2 text-sm"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="absolute right-2 top-2.5 text-brand-primary/60 hover:text-brand-primary"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-      )} */}
 
       <nav className="space-y-2">
         <AnimatePresence>
@@ -187,7 +142,6 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
             const active = isActive(route);
             const expanded = expandedMenus.includes(route.label);
 
-            // Collapsible group
             if (route.isCollapsible && route.subRoutes) {
               return (
                 <motion.div
@@ -199,21 +153,20 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
                   transition={{ duration: 0.3 }}
                 >
                   <div
-                    className={`flex items-center px-3 py-3 text-sm rounded-xl cursor-pointer transition-all duration-200 group ${
-                      active
-                        ? "bg-primary/60 text-white shadow-lg backdrop-blur-sm"
-                        : "text-primary/80 hover:bg-primary/30 hover:text-white"
-                    }`}
+                    className={`flex items-center px-3 py-3 text-sm rounded-xl cursor-pointer transition-all duration-200 group `}
                     onClick={() => toggleMenu(route.label)}
                   >
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <route.icon className={`h-5 w-5 flex-shrink-0 transition-colors ${
-                            active ? "text-primary-100" : "text-primary-300 group-hover:text-primary-100"
-                          }`} />
+                          <route.icon
+                            className={`h-5 w-5 flex-shrink-0 transition-colors text-white bg-red-50`}
+                          />
                         </TooltipTrigger>
-                        <TooltipContent side="right" className="bg-primary-800 text-primary-100 border-primary-700">
+                        <TooltipContent
+                          side="right"
+                          className="bg-primary text-white"
+                        >
                           {route.label}
                         </TooltipContent>
                       </Tooltip>
@@ -221,17 +174,13 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
 
                     {!isCollapsed && (
                       <div className="flex-1 ml-3 flex items-center justify-between min-w-0">
-                        <span className="font-medium truncate text-sm leading-5">
+                        <span className="font-medium truncate text-sm leading-5 text-white">
                           {route.label}
                         </span>
                         {expanded ? (
-                          <ChevronDown className={`h-4 w-4 flex-shrink-0 ml-2 transition-colors ${
-                            active ? "text-primary-100" : "text-primary-300 group-hover:text-primary-100"
-                          }`} />
+                          <ChevronDown className="h-4 w-4 ml-2 text-white" />
                         ) : (
-                          <ChevronRight className={`h-4 w-4 flex-shrink-0 ml-2 transition-colors ${
-                            active ? "text-primary-100" : "text-primary-300 group-hover:text-primary-100"
-                          }`} />
+                          <ChevronRight className="h-4 w-4 ml-2 text-white" />
                         )}
                       </div>
                     )}
@@ -239,7 +188,7 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
 
                   {expanded && !isCollapsed && (
                     <motion.div
-                      className="pl-8 mt-2 space-y-1 border-l-2 border-primary/30 ml-6"
+                      className="pl-8 mt-2 space-y-1 border-l-2 border-white/30 ml-6"
                       initial="hidden"
                       animate="visible"
                       exit="hidden"
@@ -253,14 +202,14 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
                             isAnimated={animated}
                             isCollapsed={isCollapsed}
                             label={
-                              <div className="flex items-center w-full min-w-0">
-                                <span className="flex-1 text-xs font-medium truncate leading-4">
+                              <div className="flex items-center w-full min-w-0 text-white">
+                                <span className="flex-1 text-xs font-medium truncate leading-4 bg-red-50">
                                   {sub.label}
                                 </span>
                                 {showBadges &&
                                   sub.badge?.viewLabel &&
                                   isNewFeature(sub.badge.until) && (
-                                    <Badge className="ml-2 bg-primary text-white text-xs px-2 py-0.5">
+                                    <Badge className="ml-2 bg-white text-white text-xs px-2 py-0.5">
                                       {sub.badge.textLabel}
                                     </Badge>
                                   )}
@@ -275,7 +224,6 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
               );
             }
 
-            // Single link
             return (
               <motion.div
                 key={route.href || route.label}
@@ -290,14 +238,14 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
                   isAnimated={animated}
                   isCollapsed={isCollapsed}
                   label={
-                    <div className="flex items-center w-full min-w-0">
+                    <div className="flex items-center w-full min-w-0 text-white">
                       <span className="flex-1 text-sm font-medium truncate leading-5">
                         {route.label}
                       </span>
                       {showBadges &&
                         route.badge?.viewLabel &&
                         isNewFeature(route.badge.until) && (
-                          <Badge className="ml-2 bg-primary text-white text-xs px-2 py-0.5 flex-shrink-0">
+                          <Badge className="ml-2 bg-white text-primary text-xs px-2 py-0.5 flex-shrink-0">
                             {route.badge.textLabel}
                           </Badge>
                         )}

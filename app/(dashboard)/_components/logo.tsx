@@ -90,14 +90,14 @@ export const Logo = () => {
 
       {/* Título y Badge de Rol */}
       <div className="flex flex-col items-start gap-1 w-full">
-        <h1 className="text-primary font-bold text-sm leading-tight">
+        <h1 className=" font-bold text-sm leading-tight text-white">
           Robotipa Academy
         </h1>
         <Badge
           className={`${roleInfo.color} border-0 text-xs font-medium flex items-center gap-1 px-2 py-0.5`}
         >
-          <roleInfo.icon size={10} className="flex-shrink-0" />
-          <span>{roleInfo.label}</span>
+          <roleInfo.icon size={10} className="flex-shrink-0 text-white" />
+          <span className="text-white">{roleInfo.label}</span>
         </Badge>
       </div>
     </Link>

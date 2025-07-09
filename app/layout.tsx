@@ -7,9 +7,10 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import FloatingHelpButton from "@/components/FloatingHelpButton";
 import { printDebug, printInitDebug } from "@/utils/debug/log";
+import { getPrimaryColor } from "@/utils/primaryColor";
 
 export const metadata: Metadata = {
-  title: `Cursos de ${process.env.NEXT_PUBLIC_NAME_APP || 'Robotipa Academy'}`,
+  title: `Cursos de ${process.env.NEXT_PUBLIC_NAME_APP || "Robotipa Academy"}`,
   description:
     "Grupo multidisciplinario comprometido con el avance científico, la generación de conocimiento y el bienestar de las comunidades afectadas por enfermedades infecciosas tropicales y desatendidas, a través de un enfoque integral ofreciendo soluciones que impacten positivamente en la salud global, siguiendo un enfoque de 0ne Health",
 };
@@ -28,25 +29,18 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Obtener el color primario desde la función utilitaria
+  const primaryColor = getPrimaryColor();
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-          rel="stylesheet"
-        />
+        {/* Se movieron los links de fuentes a _document.tsx */}
         <script
           src="https://secure.paguelofacil.com/HostedFields/vendor/scripts/WALLET/PFScript.js"
           defer
         ></script>
       </head>
-      <body style={{ '--primary': (process.env.NEXT_PUBLIC_PRIMARY_COLOR === 'blue' ? '#3b82f6' : process.env.NEXT_PUBLIC_PRIMARY_COLOR === 'rose' ? '#f43f5e' : process.env.NEXT_PUBLIC_PRIMARY_COLOR === 'indigo' ? '#6366f1' : process.env.NEXT_PUBLIC_PRIMARY_COLOR === 'amber' ? '#f59e42' : '#10b981') } as React.CSSProperties}>
+      <body style={{ "--primary": primaryColor } as React.CSSProperties}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

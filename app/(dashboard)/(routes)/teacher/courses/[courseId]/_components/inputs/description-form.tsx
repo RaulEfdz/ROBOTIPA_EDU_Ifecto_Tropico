@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 
 import {
   Form,
@@ -19,7 +20,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import EditorText from "@/components/EditorText/EditorText";
+const EditorText = dynamic(() => import("@/components/EditorText/EditorText"), {
+  ssr: false,
+});
 import { fetchData } from "../../../custom/fetchData";
 
 const texts = {
