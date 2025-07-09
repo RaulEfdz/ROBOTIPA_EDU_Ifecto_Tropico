@@ -82,12 +82,13 @@ export const ExamSelector: React.FC<ExamSelectorProps> = React.memo(
                 <Checkbox
                   checked={selectedSet.has(exam.id)}
                   onCheckedChange={(checked) => {
-                    const isChecked = Boolean(checked);
-                    setSelected((prev) =>
-                      isChecked
-                        ? [...prev, exam.id]
-                        : prev.filter((id) => id !== exam.id)
-                    );
+                    if (checked === true) {
+                      setSelected((prev) => [...prev, exam.id]);
+                    } else if (checked === false) {
+                      setSelected((prev) =>
+                        prev.filter((id) => id !== exam.id)
+                      );
+                    }
                   }}
                 />
                 <span className="ml-2 text-gray-700 dark:text-gray-300">

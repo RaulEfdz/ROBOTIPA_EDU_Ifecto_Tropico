@@ -73,7 +73,7 @@ export function useExams(courseId: string, initialExamIds: string[] = []) {
     return () => {
       mounted = false;
     };
-  }, [courseId, initialExamIds]);
+  }, [courseId]); // Solo depende de courseId
 
   // 3) Guardado de la selección de exámenes
   const saveExams = useCallback(async () => {

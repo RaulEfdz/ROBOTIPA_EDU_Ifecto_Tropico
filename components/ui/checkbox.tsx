@@ -14,7 +14,7 @@ const Checkbox = React.forwardRef<
     ref={ref}
     className={cn(
       // Tamaño mayor, borde más visible, sombra y transición
-      "peer h-5 w-5 shrink-0 rounded-md border-2 border-gray-300 bg-white dark:bg-gray-900 shadow-sm transition-all duration-200",
+      "peer h-5 w-5 shrink-0 rounded-md border-2 border-gray-300 bg-primary dark:bg-gray-900 shadow-sm transition-all duration-200",
       // Estado checked
       "data-[state=checked]:bg-primary-600 data-[state=checked]:border-primary-600 data-[state=checked]:text-white",
       // Estado hover
