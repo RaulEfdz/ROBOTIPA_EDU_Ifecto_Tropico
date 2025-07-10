@@ -348,9 +348,7 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
           </div>
 
           <div className="text-center">
-            <p className="text-xs text-gray-500">
-              💳 Acepta VISA, MasterCard, American Express
-            </p>
+            <p className="text-xs text-gray-500">💳 Acepta VISA, MasterCard</p>
             <p className="text-xs text-gray-500">
               📱 Yappy con link directo (abre la app automáticamente)
             </p>
