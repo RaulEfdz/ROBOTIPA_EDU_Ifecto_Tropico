@@ -237,7 +237,7 @@ export const CertificateGenerator: React.FC<CertificateGeneratorProps> = ({
           ) : (
             <>
               <span>⬇️</span>
-              Descargar certificado
+              Descargar certificado (templateComponent)
             </>
           )}
         </button>
