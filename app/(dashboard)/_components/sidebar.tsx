@@ -102,7 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-white font-medium text-xs tracking-wide">
               ROBOTIPA_LMS
             </span>
-            <span className="text-white font-light text-xs">v25.7.2</span>
+            <span className="text-white font-light text-xs">v250709</span>
           </div>
           <div className="mt-8 text-center text-xs text-white/70">
             {process.env.NEXT_PUBLIC_NAME_APP || "Robotipa Academy"} v
