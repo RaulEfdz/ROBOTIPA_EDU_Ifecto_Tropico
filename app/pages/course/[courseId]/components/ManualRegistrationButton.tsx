@@ -191,7 +191,8 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
             Opciones de Pago
           </CardTitle>
           <CardDescription className="text-sm text-gray-600 dark:text-gray-300">
-            Selecciona tu método de pago preferido para completar tu inscripción al curso.
+            Selecciona tu método de pago preferido para completar tu inscripción
+            al curso.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -203,51 +204,61 @@ Por favor, indíquenme los pasos a seguir para completar el pago por otro medio 
                   try {
                     const user = await getCurrentUserFromDB();
                     if (!user || user.isDeleted || user.isBanned) {
-                      toast.error("No se pudo obtener información válida del usuario.");
+                      toast.error(
+                        "No se pudo obtener información válida del usuario."
+                      );
                       return;
                     }
 
                     // Fetch first chapter ID
-                    const courseRes = await fetch(`/api/courses/${courseId}/published-chapters`, {
-                      method: "GET",
-                      cache: "no-store",
-                    });
+                    const courseRes = await fetch(
+                      `/api/courses/${courseId}/published-chapters`,
+                      {
+                        method: "GET",
+                        cache: "no-store",
+                      }
+                    );
                     if (!courseRes.ok) {
                       toast.error("No se pudo obtener información del curso.");
                       return;
                     }
                     const courseData = await courseRes.json();
-                    const firstChapterId = courseData.chapters && courseData.chapters.length > 0
-                      ? courseData.chapters[0].id
-                      : null;
+                    const firstChapterId =
+                      courseData.chapters && courseData.chapters.length > 0
+                        ? courseData.chapters[0].id
+                        : null;
 
                     if (!firstChapterId) {
-                      toast.error("No se encontró el primer capítulo del curso.");
+                      toast.error(
+                        "No se encontró el primer capítulo del curso."
+                      );
                       return;
                     }
 
                     const returnUrl = `${window.location.origin}/courses/${courseId}/chapters/${firstChapterId}?status=SUCCESS&course=${courseId}`;
 
                     if (!user || !user.id) {
-  toast.error("Usuario no autenticado o datos incompletos.");
-  return;
-}
-const payload = {
-  amount: coursePrice,
-  description: `Curso: ${courseTitle}`,
-  customParam1: user.id,
-  returnUrl,
-  pfCf: {
-    email: user.email,
-    phone: user.phone || "",
-    fullName: user.fullName,
-    courseId,
-  },
-  metadata: {
-    courseId,
-  },
-  cardTypes: ["VISA", "MASTERCARD", "NEQUI"],
-};
+                      toast.error(
+                        "Usuario no autenticado o datos incompletos."
+                      );
+                      return;
+                    }
+                    const payload = {
+                      amount: coursePrice,
+                      description: `Curso: ${courseTitle}`,
+                      customParam1: user.id,
+                      returnUrl,
+                      pfCf: {
+                        email: user.email,
+                        phone: user.phone || "",
+                        fullName: user.fullName,
+                        courseId,
+                      },
+                      metadata: {
+                        courseId,
+                      },
+                      cardTypes: ["VISA", "MASTERCARD", "NEQUI"],
+                    };
 
                     const res = await fetch("/api/payments/init", {
                       method: "POST",
@@ -256,41 +267,52 @@ const payload = {
                     });
 
                     const data = await res.json();
-                 
+
                     if (res.ok && data.url) {
-                   
-                      window.open(data.url, '_blank');
+                      window.open(data.url, "_blank");
                     } else {
-                      toast.error(data.error || "No se pudo generar el enlace de pago.");
+                      toast.error(
+                        data.error || "No se pudo generar el enlace de pago."
+                      );
                     }
                   } catch (e) {
-                    toast.error("Error inesperado al conectar con el servidor.");
+                    toast.error(
+                      "Error inesperado al conectar con el servidor."
+                    );
                   }
                 }}
                 disabled={isLoadingUser || !currentUser}
                 variant="outline"
                 className="w-full bg-primary-600 border-primary-600 text-white font-semibold py-3 group"
               >
-                <svg className="mr-2 h-5 w-5 text-white group-hover:text-yellow-300 transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M2 7h20v2H2V7zm0 6h20v2H2v-2zm0-8h20c.6 0 1 .4 1 1v12c0 .6-.4 1-1 1H2c-.6 0-1-.4-1-1V6c0-.6.4-1 1-1zm2 11h16V8H4v6z"/>
+                <svg
+                  className="mr-2 h-5 w-5 text-white group-hover:text-yellow-300 transition-colors duration-200"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M2 7h20v2H2V7zm0 6h20v2H2v-2zm0-8h20c.6 0 1 .4 1 1v12c0 .6-.4 1-1 1H2c-.6 0-1-.4-1-1V6c0-.6.4-1 1-1zm2 11h16V8H4v6z" />
                 </svg>
-                <span className="transition-colors duration-200 group-hover:text-yellow-300">Pagar con Tarjeta ${coursePrice}</span>
+                <span className="transition-colors duration-200 group-hover:text-yellow-300">
+                  Pagar con Tarjeta ${coursePrice}
+                </span>
               </Button>
             </div>
           )}
 
           {/* Botón de Yappy si hay precio definido y está disponible */}
-          {coursePrice && coursePrice > 0 && process.env.NEXT_PUBLIC_YAPPY_AVAILABLE === 'true' && (
-            <YappyOfficialButton
-              courseId={courseId}
-              amount={coursePrice}
-              courseName={courseTitle}
-              disabled={isLoadingUser || !currentUser}
-              className="w-full"
-              theme="blue"
-              rounded={true}
-            />
-          )}
+          {coursePrice &&
+            coursePrice > 0 &&
+            process.env.NEXT_PUBLIC_YAPPY_AVAILABLE === "true" && (
+              <YappyOfficialButton
+                courseId={courseId}
+                amount={coursePrice}
+                courseName={courseTitle}
+                disabled={isLoadingUser || !currentUser}
+                className="w-full"
+                theme="blue"
+                rounded={true}
+              />
+            )}
 
           {/* Botón de Pago Manual (WhatsApp) */}
           <Button
@@ -302,7 +324,29 @@ const payload = {
             <FaWhatsapp className="mr-2 h-5 w-5" />
             Pago Manual (WhatsApp)
           </Button>
-          
+
+          {/* Botón especial para estudiantes */}
+          <div className="w-full border border-green-600 rounded-lg p-4 bg-green-50">
+            <Button
+              onClick={() => {
+                if (!currentUser || !salesWhatsAppNumber) return;
+                const message = `Soy estudiante y quiero comprar el curso ${courseTitle} para precio especial de estudiantes`;
+                const whatsappUrl = `https://wa.me/${salesWhatsAppNumber}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, "_blank");
+              }}
+              disabled={isLoadingUser}
+              variant="outline"
+              className="w-full border-green-600 text-green-700 font-semibold py-3 mt-2 flex items-center justify-center gap-2 hover:bg-green-600 hover:text-white hover:shadow-md"
+            >
+              <FaWhatsapp className="mr-2 h-5 w-5" />
+              ¿Eres estudiante?
+            </Button>
+            <span className="text-xs text-gray-500 mt-1">
+              Si eres estudiante, contáctanos por WhatsApp para obtener un
+              descuento especial.
+            </span>
+          </div>
+
           <div className="text-center">
             <p className="text-xs text-gray-500">
               💳 Acepta VISA, MasterCard, American Express
