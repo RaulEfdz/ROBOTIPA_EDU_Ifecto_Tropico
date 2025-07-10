@@ -73,7 +73,7 @@ const TeacherNavigation: React.FC = () => {
               className="group cursor-pointer"
               onClick={() => router.push(route.href || "/")}
             >
-              <Card className="relative w-72 overflow-hidden border bg-white shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
+              <Card className="relative w-72 overflow-hidden border bg-primary shadow-md hover:shadow-lg transition-all duration-300 rounded-xl">
                 <CardContent className="flex flex-col items-center justify-center p-4 gap-3 relative z-10 min-h-[150px]">
                   <motion.div
                     className="p-3 bg-stone-100 rounded-full group-hover:bg-stone-200 text-stone-600 transition-all"
@@ -82,7 +82,7 @@ const TeacherNavigation: React.FC = () => {
                     <IconComponent />
                   </motion.div>
 
-                  <h3 className="text-base font-semibold text-center text-slate-800">
+                  <h3 className="text-base font-semibold text-center text-white">
                     {route.label}
                   </h3>
 

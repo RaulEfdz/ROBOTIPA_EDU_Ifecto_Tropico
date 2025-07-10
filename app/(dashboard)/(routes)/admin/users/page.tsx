@@ -95,16 +95,16 @@ const StudentNavigation: React.FC = () => {
               className="group"
             >
               <Link href={sub.href} passHref>
-                <Card className="relative w-72 bg-white border shadow-md hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden">
+                <Card className="relative w-72 border shadow-md hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden">
                   <CardContent className="flex flex-col items-center justify-center p-6 gap-4 min-h-[150px]">
                     <motion.div
-                      className="p-3 text-primary-600 bg-primary-50 rounded-full group-hover:bg-primary-100 transition-all duration-300"
+                      className="p-3 rounded-full group-hover:bg-primary-100 transition-all duration-300"
                       whileHover={{ rotate: 3, scale: 1.05 }}
                     >
                       <IconComponent />
                     </motion.div>
 
-                    <h3 className="text-base font-semibold text-slate-800 text-center">
+                    <h3 className="text-primary-600 font-semibold text-center">
                       {sub.label}
                     </h3>
 

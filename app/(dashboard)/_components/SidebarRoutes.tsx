@@ -204,10 +204,10 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
                             isAnimated={animated}
                             isCollapsed={isCollapsed}
                             label={
-                              <div className="flex items-center w-full min-w-0 text-white">
-                                <span className="flex-1 text-xs font-medium truncate leading-4 bg-red-50">
-                                  {sub.label}
-                                </span>
+                              <div className="flex items-center w-full min-w-0">
+  <span className="flex-1 text-xs font-medium truncate leading-4 text-white">
+    {sub.label}
+  </span>
                                 {showBadges &&
                                   sub.badge?.viewLabel &&
                                   isNewFeature(sub.badge.until) && (
@@ -247,7 +247,7 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
                       {showBadges &&
                         route.badge?.viewLabel &&
                         isNewFeature(route.badge.until) && (
-                          <Badge className="ml-2 bg-white text-primary text-xs px-2 py-0.5 flex-shrink-0">
+                          <Badge className="ml-2  text-primary text-xs px-2 py-0.5 flex-shrink-0">
                             {route.badge.textLabel}
                           </Badge>
                         )}

@@ -150,22 +150,23 @@ export const teacherRoutes: Route[] = [
     // },
     superAdmin: true,
   },
-  {
-    icon: FileSignature,
-    label: "Gestionar Certificados",
-    href: "/admin/certificates/manage",
-  },
-  {
-    icon: FileSignature,
-    label: "Certificado Dinámico",
-    href: "/admin/certificates/dynamic-create",
-    badge: {
-      viewLabel: true,
-      until: new Date("2025-12-31"),
-      textLabel: "Nuevo",
-      color: "text-primary-400",
-    },
-  },
+
+   //    {
+   //      icon: FileSignature,
+   //      label: "Gestionar Certificados",
+   //      href: "/admin/certificates/manage",
+   //    },
+   //    {
+   //      icon: FileSignature,
+   //      label: "Certificado Dinámico",
+   //      href: "/admin/certificates/dynamic-create",
+   //      badge: {
+   //        viewLabel: true,
+   //        until: new Date("2025-12-31"),
+   //        textLabel: "Nuevo",
+   //        color: "text-primary-400",
+   //      },
+   //    },
   // {
   //   icon: FileSignature,
   //   label: "Crear Certificado Manual",
