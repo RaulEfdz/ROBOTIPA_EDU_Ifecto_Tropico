@@ -58,6 +58,8 @@ export interface SupabaseSession {
 }
 
 // Función principal
+import { parseSessionCookie } from "@/lib/parseSessionCookie";
+
 export async function getUserDataServerAuth(): Promise<SupabaseSession | null> {
   const supabase = await createServerClient();
 
@@ -71,6 +73,12 @@ export async function getUserDataServerAuth(): Promise<SupabaseSession | null> {
   const {
     data: { session },
   } = await supabase.auth.getSession();
+
+  // Si la sesión viene como string (por ejemplo, de una cookie base64), decodifica y parsea correctamente
+  if (typeof session === "string") {
+    const parsed = parseSessionCookie(session);
+    return parsed as SupabaseSession | null;
+  }
 
   return session as SupabaseSession | null;
 }

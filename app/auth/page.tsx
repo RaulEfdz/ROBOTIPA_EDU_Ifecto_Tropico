@@ -85,7 +85,7 @@ function AuthPageContent() {
           }}
         >
           <Image
-            src="/rbtpbasic.png"
+            src={process.env.NEXT_PUBLIC_LOGO || "/LOGO.png"}
             alt=""
             fill
             style={{ objectFit: "cover" }}
