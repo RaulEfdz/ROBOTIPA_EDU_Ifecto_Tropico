@@ -36,6 +36,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Ignorar archivos de variables de entorno en la carpeta env
+/env/.env*
+
 f.txt
 .txt
 .text

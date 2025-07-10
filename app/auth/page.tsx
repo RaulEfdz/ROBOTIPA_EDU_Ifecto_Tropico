@@ -97,8 +97,7 @@ function AuthPageContent() {
               {process.env.NEXT_PUBLIC_NAME_APP || "Robotipa Academy"}
             </h1>
             <p className="mt-4 text-xl text-primary-100">
-              Formación especializada en medicina tropical y enfermedades
-              infecciosas
+              {process.env.NEXT_PUBLIC_DESCRIPTION_APP || ""}
             </p>
             <div className="mt-8">
               <Link
