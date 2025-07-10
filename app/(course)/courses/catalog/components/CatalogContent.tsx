@@ -42,9 +42,9 @@ export default function CatalogContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const initialCategory = searchParams.get("categoryId");
-  const initialTitle = searchParams.get("title");
-  const initialSortBy = (searchParams.get("sortBy") as SortByType) || "recent";
+  const initialCategory = searchParams ? searchParams.get("categoryId") : null;
+  const initialTitle = searchParams ? searchParams.get("title") : null;
+  const initialSortBy = (searchParams ? searchParams.get("sortBy") : null) as SortByType || "recent";
 
   const [courses, setCourses] = useState<CatalogApiResponseCourse[]>([]);
   const [categories, setCategories] = useState<CategoryForFilter[]>([]);

@@ -419,7 +419,7 @@ export default function UserProfileDashboard() {
                           size="sm"
                           variant="ghost"
                           onClick={() => handleEdit(section.field)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-primary-600 hover:text-primary-700 hover:bg-primary-50">
+                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-primary-600 hover:text-primary-700 hover:bg-primary-50"
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>

@@ -17,7 +17,7 @@ export const SearchInput = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const currentCategoryId = searchParams.get("categoryId");
+  const currentCategoryId = searchParams ? searchParams.get("categoryId") : null;
 
   useEffect(() => {
     // Construir la nueva URL basada en los parámetros actuales y el valor de búsqueda

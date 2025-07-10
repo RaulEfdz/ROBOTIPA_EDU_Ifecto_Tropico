@@ -41,7 +41,8 @@ const supabase = createClient();
 
 export default function CoursePage() {
   const router = useRouter();
-  const { courseId } = useParams<{ courseId: string }>();
+  const params = useParams();
+  const courseId = params?.courseId as string;
   const pathname = usePathname();
 
   // Obtener datos del curso, capítulos, etc., desde el hook
@@ -400,7 +401,6 @@ export default function CoursePage() {
               priority // Cargar rápido la imagen principal
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 384px" // Optimizar tamaños
             />
-
           </div>
         </div>
       </header>

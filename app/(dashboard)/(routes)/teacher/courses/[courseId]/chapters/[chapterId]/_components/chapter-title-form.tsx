@@ -4,7 +4,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil, Check, X, ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -71,6 +71,50 @@ export const ChapterTitleForm = ({
 
   const { isSubmitting, isValid, isDirty } = form.formState;
 
+  const toggleEdit = useCallback(() => {
+    if (isEditing) {
+      form.reset({ title });
+    }
+    setIsEditing((prev) => !prev);
+  }, [isEditing, form, title]);
+
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof formSchema>) => {
+      if (values.title === title) return toggleEdit();
+
+      setIsSaving(true);
+      const path = `/api/courses/${courseId}/chapters/${chapterId}/edit`;
+
+      try {
+        await fetchData({
+          method: "POST",
+          values,
+          courseId,
+          path,
+          callback: (res: any) => {
+            if (res?.data?.title) {
+              setTitle(res.data.title);
+              form.reset({ title: res.data.title });
+            }
+
+            toast.success(t.successMessage, {
+              duration: 2000,
+              position: "bottom-right",
+            });
+
+            toggleEdit();
+            router.refresh();
+          },
+        });
+      } catch {
+        toast.error("Error al actualizar");
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [title, toggleEdit, courseId, chapterId, form, router, t.successMessage]
+  );
+
   useEffect(() => {
     if (!isEditing) return;
 
@@ -83,48 +127,7 @@ export const ChapterTitleForm = ({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isEditing, isValid, isDirty]);
-
-  const toggleEdit = () => {
-    if (isEditing) {
-      form.reset({ title });
-    }
-    setIsEditing((prev) => !prev);
-  };
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (values.title === title) return toggleEdit();
-
-    setIsSaving(true);
-    const path = `/api/courses/${courseId}/chapters/${chapterId}/edit`;
-
-    try {
-      await fetchData({
-        method: "POST",
-        values,
-        courseId,
-        path,
-        callback: (res: any) => {
-          if (res?.data?.title) {
-            setTitle(res.data.title);
-            form.reset({ title: res.data.title });
-          }
-
-          toast.success(t.successMessage, {
-            duration: 2000,
-            position: "bottom-right",
-          });
-
-          toggleEdit();
-          router.refresh();
-        },
-      });
-    } catch {
-      toast.error("Error al actualizar");
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  }, [isEditing, isValid, isDirty, form, onSubmit, toggleEdit]);
 
   return (
     <div className="mb-6 bg-TextCustom dark:bg-gray-850 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">

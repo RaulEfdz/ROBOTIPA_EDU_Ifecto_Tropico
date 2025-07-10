@@ -331,7 +331,7 @@ export default function YappyPaymentButton({
                     </Button>
 
                     <div className="text-xs text-gray-400 text-center max-w-xs">
-                      <p>1. Haz clic en "Abrir en Yappy"</p>
+                      <p>1. Haz clic en &quot;Abrir en Yappy&quot;</p>
                       <p>2. Confirma el pago en la app</p>
                       <p>3. Regresa a esta página</p>
                     </div>

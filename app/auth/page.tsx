@@ -39,26 +39,27 @@ export default function AuthPage() {
 
 function AuthPageContent() {
   const searchParams = useSearchParams();
-  const rawRedirectUrl = searchParams.get("redirectUrl");
+  const rawRedirectUrl = searchParams?.get("redirectUrl");
   const redirectUrl =
     rawRedirectUrl && rawRedirectUrl.startsWith("/courses/catalog")
       ? rawRedirectUrl
       : "/courses/catalog";
-  const initialAction = searchParams.get("action");
+  const initialAction = searchParams?.get("action");
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Mobile Header with Logo and Course Link */}
       <div
-  className="lg:hidden px-6 py-8 text-white"
-  style={{
-    background: 'linear-gradient(to right, var(--primary), color-mix(in srgb, var(--primary), black 20%))'
-  }}
->
+        className="lg:hidden px-6 py-8 text-white"
+        style={{
+          background:
+            "linear-gradient(to right, var(--primary), color-mix(in srgb, var(--primary), black 20%))",
+        }}
+      >
         <div className="flex flex-col items-center text-center space-y-4">
           <Logo version="light" width={140} height={70} />
           <h1 className="text-2xl font-bold tracking-tight">
-            {process.env.NEXT_PUBLIC_NAME_APP || 'Robotipa Academy'}
+            {process.env.NEXT_PUBLIC_NAME_APP || "Robotipa Academy"}
           </h1>
           <p className="text-primary-100 text-sm max-w-sm">
             Accede a cursos especializados en medicina tropical
@@ -77,11 +78,12 @@ function AuthPageContent() {
       <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
         {/* Desktop Left Panel */}
         <div
-  className="relative hidden lg:flex items-center justify-center p-12"
-  style={{
-    background: 'linear-gradient(to bottom right, var(--primary), color-mix(in srgb, var(--primary), black 20%))'
-  }}
->
+          className="relative hidden lg:flex items-center justify-center p-12"
+          style={{
+            background:
+              "linear-gradient(to bottom right, var(--primary), color-mix(in srgb, var(--primary), black 20%))",
+          }}
+        >
           <Image
             src="/rbtpbasic.png"
             alt=""
@@ -92,7 +94,7 @@ function AuthPageContent() {
           <div className="relative z-10 text-left text-white max-w-lg">
             <Logo version="light" width={180} height={90} />
             <h1 className="mt-6 text-5xl font-extrabold tracking-tight leading-tight">
-              {process.env.NEXT_PUBLIC_NAME_APP || 'Robotipa Academy'}
+              {process.env.NEXT_PUBLIC_NAME_APP || "Robotipa Academy"}
             </h1>
             <p className="mt-4 text-xl text-primary-100">
               Formación especializada en medicina tropical y enfermedades
@@ -124,10 +126,10 @@ function AuthPageContent() {
               <CardDescription className="mt-2 text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                 Accede o crea tu cuenta para continuar
               </CardDescription>
-              <PrivacyPolicyModal 
-              triggerText="Políticas de Privacidad"
-              triggerClassName="text-sm text-gray-500 hover:text-primary-600 underline"
-            />
+              <PrivacyPolicyModal
+                triggerText="Políticas de Privacidad"
+                triggerClassName="text-sm text-gray-500 hover:text-primary-600 underline"
+              />
             </CardHeader>
 
             <CardContent className="p-6 sm:p-8 pt-0">
@@ -159,12 +161,9 @@ function AuthPageContent() {
                 <TabsContent value="emailValidation" className="mt-0">
                   <EmailValidationTab />
                 </TabsContent>
-
               </Tabs>
             </CardContent>
           </Card>
-          
-          
         </div>
       </div>
     </div>

@@ -131,7 +131,7 @@ export default function RecoverPage() {
     }
 
     getSessionFromUrl();
-  }, []);
+  }, [supabase.auth]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

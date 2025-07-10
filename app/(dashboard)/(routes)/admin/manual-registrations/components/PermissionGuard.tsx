@@ -32,7 +32,7 @@ export function PermissionGuard({ children }: PermissionGuardProps) {
         const user = await getCurrentUserFromDB();
         if (!user) {
           toast.error("Debes iniciar sesión para acceder a esta página.");
-          router.push("/auth?redirectUrl=" + encodeURIComponent(pathname));
+          router.push("/auth?redirectUrl=" + encodeURIComponent(pathname || ""));
           setStatus("denied");
           return;
         }

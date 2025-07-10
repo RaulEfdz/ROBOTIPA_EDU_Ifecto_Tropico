@@ -133,7 +133,7 @@ export default function ForgotPasswordPage() {
     }
 
     getSessionFromUrl();
-  }, []);
+  }, [supabase.auth]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 
 interface ChapterVideoSectionProps {
   videoUrl?: string;
@@ -46,10 +47,12 @@ const ChapterVideoSection: React.FC<ChapterVideoSectionProps> = ({
 
   if (courseImageUrl) {
     return (
-      <img
+      <Image
         src={courseImageUrl}
         alt="Course fallback"
         className="w-full max-h-96 object-contain rounded-md"
+        width={800}
+        height={400}
       />
     );
   }

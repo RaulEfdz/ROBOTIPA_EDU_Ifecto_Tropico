@@ -239,7 +239,7 @@ export default function ThankYouPage() {
     };
 
     processPayment();
-  }, [statusVisual, courseId, validationMessage, invoiceData]);
+  }, [statusVisual, courseId, validationMessage, invoiceData, courseName]);
 
   // Polling para consultar el estado del pago usando el ID de operación (Oper)
   useEffect(() => {
@@ -258,15 +258,13 @@ export default function ThankYouPage() {
         if (data.found && data.invoice?.status === "APROBADA") {
           setInvoiceData(data.invoice);
           setStatusVisual("success");
-          setValidationMessage("¡Pago aprobado! Aquí está tu comprobante.");
         }
-      } catch (e) {
+      } catch (err) {
         // Ignorar errores de polling
       }
-    }, 30000);
-
+    }, 5000);
     return () => clearInterval(interval);
-  }, [paymentDetails, statusVisual]);
+  }, [paymentDetails, statusVisual, courseName]);
 
   // Componente para mostrar los detalles de la URL
   const PaymentDetailsSection = () => {

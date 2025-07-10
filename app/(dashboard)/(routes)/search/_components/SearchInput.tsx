@@ -13,7 +13,7 @@ export const SearchInput = ({ className = "" }: SearchInputProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const currentTitle = searchParams.get("title") || "";
+  const currentTitle = searchParams?.get("title") || "";
   const [inputValue, setInputValue] = useState(currentTitle);
 
   useEffect(() => {
@@ -22,7 +22,9 @@ export const SearchInput = ({ className = "" }: SearchInputProps) => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    const params = new URLSearchParams(
+      Array.from(searchParams?.entries() ?? [])
+    );
     if (inputValue.trim()) {
       params.set("title", inputValue.trim());
     } else {
@@ -32,7 +34,9 @@ export const SearchInput = ({ className = "" }: SearchInputProps) => {
   };
 
   const handleClear = () => {
-    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    const params = new URLSearchParams(
+      Array.from(searchParams?.entries() ?? [])
+    );
     params.delete("title");
     router.push(`/search?${params.toString()}`);
     setInputValue("");

@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       cors_origin: origin,
       ...customParams,
     });
-    
+
     return NextResponse.json({
       uploadUrl: upload.url,
       uploadId: upload.id,
@@ -44,7 +44,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: "Failed to generate upload URL",
-        details: process.env.NODE_ENV === "development" ? error.message : undefined,
+        details:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
       },
       { status: 500 }
     );
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const uploadId = searchParams.get("uploadId");
+    const uploadId = searchParams?.get("uploadId");
 
     if (!uploadId) {
       return NextResponse.json(
@@ -80,7 +81,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: "Failed to check upload status",
-        details: process.env.NODE_ENV === "development" ? error.message : undefined,
+        details:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
       },
       { status: 500 }
     );

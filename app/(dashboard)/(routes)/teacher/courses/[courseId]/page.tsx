@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
-import CourseIdContent from './_components/CourseIdContent';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import CourseIdContent from "./_components/CourseIdContent";
 
 interface CourseResponse {
   course: any;
@@ -11,7 +11,8 @@ interface CourseResponse {
 }
 
 export default function ClientCourseWrapper() {
-  const { courseId } = useParams<{ courseId: string }>();
+  const params = useParams<{ courseId: string }>();
+  const courseId = params?.courseId;
   const router = useRouter();
 
   const [data, setData] = useState<CourseResponse | null>(null);
@@ -22,30 +23,30 @@ export default function ClientCourseWrapper() {
 
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/courses/getCourses', {
-          method: 'POST',
+        const res = await fetch("/api/courses/getCourses", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ courseId }),
         });
 
         if (!res.ok) {
-          router.push('/');
+          router.push("/");
           return;
         }
 
         const json = await res.json();
 
         if (!json.course) {
-          router.push('/');
+          router.push("/");
           return;
         }
 
         setData(json);
       } catch (error) {
         console.error("Error fetching course data", error);
-        router.push('/');
+        router.push("/");
       } finally {
         setLoading(false);
       }

@@ -92,7 +92,7 @@ export function TeacherTable<TData, TValue>({
   const enhancedColumns = React.useMemo(() => {
     const hasActions = columns.some((col) => col.id === "actions");
     return hasActions ? columns : [...columns, actionColumn];
-  }, [columns]);
+  }, [columns, actionColumn]);
 
   const table = useReactTable({
     data,

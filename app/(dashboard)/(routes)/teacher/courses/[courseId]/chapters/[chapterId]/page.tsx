@@ -115,7 +115,7 @@ export default function ChapterIdPage() {
 
   useEffect(() => {
     const fetchChapterData = async () => {
-      if (!params.courseId || !params.chapterId) return;
+      if (!params || !params.courseId || !params.chapterId) return;
 
       try {
         const res = await fetch(
@@ -153,10 +153,10 @@ export default function ChapterIdPage() {
     };
 
     fetchChapterData();
-  }, [params.courseId, params.chapterId, router]);
+  }, [params, router]);
 
   const togglePublishStatus = async () => {
-    if (!chapter) return;
+    if (!chapter || !params || !params.courseId || !params.chapterId) return;
 
     setPublishingStatus(true);
     try {
@@ -217,7 +217,11 @@ export default function ChapterIdPage() {
         {/* Cabecera con botón de regreso y acciones */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
           <Link
-            href={`/teacher/courses/${params.courseId}`}
+            href={
+              params && params.courseId
+                ? `/teacher/courses/${params.courseId}`
+                : "/teacher/courses"
+            }
             className="flex items-center text-sm hover:opacity-75 transition bg-TextCustom dark:bg-gray-800 px-3 py-2 rounded-md shadow-sm mb-4 sm:mb-0"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -230,6 +234,9 @@ export default function ChapterIdPage() {
               size="sm"
               className="hidden sm:flex"
               onClick={() =>
+                params &&
+                params.courseId &&
+                params.chapterId &&
                 router.push(
                   `/courses/${params.courseId}/chapters/${params.chapterId}`
                 )
@@ -267,8 +274,8 @@ export default function ChapterIdPage() {
         <div className="mb-6">
           <ChapterAccessForm
             initialData={chapter}
-            courseId={params.courseId}
-            chapterId={params.chapterId}
+            courseId={params ? params.courseId : ""}
+            chapterId={params ? params.chapterId : ""}
           />
         </div>
 
@@ -398,8 +405,8 @@ export default function ChapterIdPage() {
             </div>
             <ChapterTitleForm
               initialData={chapter}
-              courseId={params.courseId}
-              chapterId={params.chapterId}
+              courseId={params ? params.courseId : ""}
+              chapterId={params ? params.chapterId : ""}
             />
             {/* Se puede incluir aquí más contenido relacionado con la configuración de acceso,
                 en este ejemplo solo se muestra el título y se deja el formulario en ChapterAccessForm */}
@@ -417,8 +424,8 @@ export default function ChapterIdPage() {
             </div>
             <ChapterVideoForm
               initialData={chapter}
-              chapterId={params.chapterId}
-              courseId={params.courseId}
+              chapterId={params ? params.chapterId : ""}
+              courseId={params ? params.courseId : ""}
             />
           </div>
         </section>
@@ -427,23 +434,27 @@ export default function ChapterIdPage() {
         <section className="mb-6 space-y-6">
           <EnhancedChapterDescription
             initialData={chapter}
-            courseId={params.courseId}
-            chapterId={params.chapterId}
+            courseId={params ? params.courseId : ""}
+            chapterId={params ? params.chapterId : ""}
             lang="es"
           />
         </section>
 
         <section className="mb-6 space-y-6">
           <ChapterExamSelector
-            courseId={params.courseId}
-            chapterId={params.chapterId}
+            courseId={params ? params.courseId : ""}
+            chapterId={params ? params.chapterId : ""}
           />
         </section>
 
         {/* Botón Guardar y Salir */}
         <div className="flex mt-6 sm:mt-8">
           <Link
-            href={`/teacher/courses/${params.courseId}/chapters/${params.chapterId}`}
+            href={
+              params && params.courseId && params.chapterId
+                ? `/teacher/courses/${params.courseId}/chapters/${params.chapterId}`
+                : "/teacher/courses"
+            }
             className="w-full sm:w-auto ml-auto flex items-center justify-center text-sm bg-primary-600 hover:bg-primary-700 text-TextCustom px-6 py-3 rounded-md transition-colors"
           >
             <Save className="h-4 w-4 mr-2" />

@@ -20,10 +20,11 @@ function InvoicePage() {
   const [courseTitle, setCourseTitle] = React.useState<string>("");
 
   React.useEffect(() => {
-    const invoiceId = searchParams.get("invoiceId");
-    const userFullName = searchParams.get("userFullName") || "";
-    const userEmail = searchParams.get("userEmail") || "";
-    const courseId = searchParams.get("courseId");
+    if (!searchParams) return;
+    const invoiceId = searchParams?.get("invoiceId");
+    const userFullName = searchParams?.get("userFullName") || "";
+    const userEmail = searchParams?.get("userEmail") || "";
+    const courseId = searchParams?.get("courseId");
 
     if (!invoiceId || !courseId) {
       // Handle missing params, maybe redirect or show error

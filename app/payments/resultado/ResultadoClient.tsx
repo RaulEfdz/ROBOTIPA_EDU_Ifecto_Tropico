@@ -30,9 +30,11 @@ function ResultadoClientContent() {
 
   useEffect(() => {
     const params: Record<string, string> = {};
-    searchParams.forEach((value, key) => {
-      params[key] = value;
-    });
+    if (searchParams) {
+      searchParams.forEach((value, key) => {
+        params[key] = value;
+      });
+    }
     setDetails(params);
 
     const estado = params.Estado;

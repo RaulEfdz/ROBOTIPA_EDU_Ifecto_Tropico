@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import React, { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface YappyOfficialButtonProps {
   courseId: string;
@@ -11,7 +11,7 @@ interface YappyOfficialButtonProps {
   courseName: string;
   disabled?: boolean;
   className?: string;
-  theme?: 'blue' | 'darkBlue' | 'orange' | 'dark' | 'sky' | 'light';
+  theme?: "blue" | "darkBlue" | "orange" | "dark" | "sky" | "light";
   rounded?: boolean;
 }
 
@@ -27,7 +27,7 @@ export default function YappyOfficialButton({
   courseName,
   disabled = false,
   className,
-  theme = 'blue',
+  theme = "blue",
   rounded = true,
 }: YappyOfficialButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -39,22 +39,24 @@ export default function YappyOfficialButton({
     // Cargar el CDN de Yappy
     const loadYappyScript = () => {
       // Usar configuración de ambiente Yappy específica
-      const yappyEnvironment = process.env.NEXT_PUBLIC_YAPPY_ENVIRONMENT || 'test';
-      const cdnUrl = yappyEnvironment === 'prod'
-        ? 'https://bt-cdn.yappy.cloud/v1/cdn/web-component-btn-yappy.js'
-        : 'https://bt-cdn-uat.yappycloud.com/v1/cdn/web-component-btn-yappy.js';
+      const yappyEnvironment =
+        process.env.NEXT_PUBLIC_YAPPY_ENVIRONMENT || "test";
+      const cdnUrl =
+        yappyEnvironment === "prod"
+          ? "https://bt-cdn.yappy.cloud/v1/cdn/web-component-btn-yappy.js"
+          : "https://bt-cdn-uat.yappycloud.com/v1/cdn/web-component-btn-yappy.js";
 
-      const script = document.createElement('script');
-      script.type = 'module';
+      const script = document.createElement("script");
+      script.type = "module";
       script.src = cdnUrl;
       script.onload = () => {
-        console.log('Yappy script loaded successfully');
+        console.log("Yappy script loaded successfully");
         setIsYappyLoaded(true);
         setupYappyButton();
       };
       script.onerror = () => {
-        console.error('Error loading Yappy script');
-        toast.error('Error cargando el botón de Yappy');
+        console.error("Error loading Yappy script");
+        toast.error("Error cargando el botón de Yappy");
       };
 
       document.head.appendChild(script);
@@ -68,44 +70,44 @@ export default function YappyOfficialButton({
       if (!buttonRef.current) return;
 
       // Crear el elemento btn-yappy
-      const yappyElement = document.createElement('btn-yappy');
-      yappyElement.setAttribute('theme', theme);
+      const yappyElement = document.createElement("btn-yappy");
+      yappyElement.setAttribute("theme", theme);
       if (rounded) {
-        yappyElement.setAttribute('rounded', 'true');
+        yappyElement.setAttribute("rounded", "true");
       }
 
       // Limpiar contenedor y agregar botón
-      buttonRef.current.innerHTML = '';
+      buttonRef.current.innerHTML = "";
       buttonRef.current.appendChild(yappyElement);
 
       // Configurar event listeners
       const setupEventListeners = () => {
-        yappyElement.addEventListener('eventSuccess', (event: any) => {
-          console.log('Transacción ejecutada:', event.detail);
-          toast.success('¡Pago completado exitosamente!');
+        yappyElement.addEventListener("eventSuccess", (event: any) => {
+          console.log("Transacción ejecutada:", event.detail);
+          toast.success("¡Pago completado exitosamente!");
           setIsLoading(false);
-          
+
           // Redirigir al curso después de 2 segundos
           setTimeout(() => {
             window.location.href = `/courses/${courseId}`;
           }, 2000);
         });
 
-        yappyElement.addEventListener('eventError', (event: any) => {
-          console.log('Transacción fallida:', event.detail);
-          toast.error('Error en el pago. Por favor, intenta nuevamente.');
+        yappyElement.addEventListener("eventError", (event: any) => {
+          console.log("Transacción fallida:", event.detail);
+          toast.error("Error en el pago. Por favor, intenta nuevamente.");
           setIsLoading(false);
         });
 
-        yappyElement.addEventListener('eventClick', async () => {
-          console.log('Yappy button clicked');
+        yappyElement.addEventListener("eventClick", async () => {
+          console.log("Yappy button clicked");
           setIsLoading(true);
-          
+
           try {
-            const response = await fetch('/api/payments/yappy/create-order', {
-              method: 'POST',
+            const response = await fetch("/api/payments/yappy/create-order", {
+              method: "POST",
               headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json",
               },
               body: JSON.stringify({
                 courseId,
@@ -115,11 +117,11 @@ export default function YappyOfficialButton({
             });
 
             const result = await response.json();
-            
-            console.log('Create order response:', { 
-              status: response.status, 
-              ok: response.ok, 
-              result 
+
+            console.log("Create order response:", {
+              status: response.status,
+              ok: response.ok,
+              result,
             });
 
             if (response.ok && result.success && result.body) {
@@ -128,28 +130,39 @@ export default function YappyOfficialButton({
                 documentName: result.body.documentName,
                 token: result.body.token,
               };
-              
-              console.log('Calling eventPayment with params:', params);
-              yappyElement.eventPayment(params);
+
+              console.log("Calling eventPayment with params:", params);
+              (yappyElement as any).eventPayment(params);
             } else {
-              const errorMsg = result.error || `Error HTTP ${response.status}: Error creando la orden`;
-              console.error('Order creation failed:', { response: response.status, result });
+              const errorMsg =
+                result.error ||
+                `Error HTTP ${response.status}: Error creando la orden`;
+              console.error("Order creation failed:", {
+                response: response.status,
+                result,
+              });
               throw new Error(errorMsg);
             }
           } catch (error) {
-            console.error('Error:', error);
-            toast.error(error instanceof Error ? error.message : 'Error procesando el pago');
+            console.error("Error:", error);
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : "Error procesando el pago"
+            );
             setIsLoading(false);
           }
         });
 
-        yappyElement.addEventListener('isYappyOnline', (event: any) => {
+        yappyElement.addEventListener("isYappyOnline", (event: any) => {
           const isOnline = event.detail === true;
           setIsYappyOnline(isOnline);
-          console.log('Yappy online status:', isOnline);
-          
+          console.log("Yappy online status:", isOnline);
+
           if (!isOnline) {
-            toast.warning('El servicio de Yappy no está disponible en este momento');
+            toast.warning(
+              "El servicio de Yappy no está disponible en este momento"
+            );
           }
         });
       };
@@ -179,7 +192,7 @@ export default function YappyOfficialButton({
             Cargando Yappy...
           </>
         ) : (
-          'Yappy no disponible'
+          "Yappy no disponible"
         )}
       </Button>
     );

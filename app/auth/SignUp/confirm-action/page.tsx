@@ -17,7 +17,7 @@ function ConfirmActionContent() {
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    const nextUrl = searchParams.get("next");
+    const nextUrl = searchParams?.get("next");
 
     const handleAuthConfirmation = async () => {
       // El SDK de Supabase maneja el token de la URL automáticamente al cargar.
@@ -77,7 +77,7 @@ function ConfirmActionContent() {
     };
 
     // Comprobar si hay un error explícito en los parámetros de la URL (Supabase a veces lo añade)
-    const errorDescription = searchParams.get("error_description");
+    const errorDescription = searchParams?.get("error_description");
     if (errorDescription) {
       setMessage(decodeURIComponent(errorDescription));
       setIsError(true);

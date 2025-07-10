@@ -12,7 +12,13 @@ interface CertificateData {
 }
 
 export default function CertificateViewPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id =
+    params && typeof params["code"] === "string"
+      ? params["code"]
+      : Array.isArray(params?.["code"])
+        ? params?.["code"][0]
+        : undefined;
   const [certificate, setCertificate] = useState<CertificateData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

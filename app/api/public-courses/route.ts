@@ -7,8 +7,8 @@ export async function GET(req: Request) {
   try {
     // Opcional: Leer parámetros de búsqueda/filtro de la URL si los implementas
     const { searchParams } = new URL(req.url);
-    const categoryId = searchParams.get("categoryId");
-    const title = searchParams.get("title"); // Para búsqueda
+    const categoryId = searchParams?.get("categoryId");
+    const title = searchParams?.get("title"); // Para búsqueda
 
     // Construir el filtro de Prisma
     const whereClause: any = {

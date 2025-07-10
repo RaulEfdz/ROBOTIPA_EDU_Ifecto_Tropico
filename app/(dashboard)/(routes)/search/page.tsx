@@ -14,8 +14,8 @@ const SearchContent: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const title = searchParams.get("title")?.trim() || "";
-  const categoryId = searchParams.get("categoryId")?.trim() || "";
+  const title = searchParams?.get("title")?.trim() || "";
+  const categoryId = searchParams?.get("categoryId")?.trim() || "";
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -118,8 +118,8 @@ const SearchContent: React.FC = () => {
               {selectedCategory
                 ? `Mostrando cursos en la categoría “${selectedCategory}”`
                 : title
-                ? `Resultados para “${title}”`
-                : "Descubre todos nuestros cursos disponibles"}
+                  ? `Resultados para “${title}”`
+                  : "Descubre todos nuestros cursos disponibles"}
             </p>
           </div>
 

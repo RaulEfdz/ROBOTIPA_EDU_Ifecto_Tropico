@@ -19,10 +19,10 @@ export default function InvoicePage() {
   const [courseTitle, setCourseTitle] = useState<string>("");
 
   useEffect(() => {
-    const invoiceId = searchParams.get("invoiceId");
-    const userFullName = searchParams.get("userFullName") || "";
-    const userEmail = searchParams.get("userEmail") || "";
-    const courseId = searchParams.get("courseId");
+    const invoiceId = searchParams?.get("invoiceId");
+    const userFullName = searchParams?.get("userFullName") || "";
+    const userEmail = searchParams?.get("userEmail") || "";
+    const courseId = searchParams?.get("courseId");
 
     if (!invoiceId || !courseId) {
       // Handle missing params, maybe redirect or show error

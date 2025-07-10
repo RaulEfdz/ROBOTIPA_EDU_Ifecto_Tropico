@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const attemptId = searchParams.get("attemptId");
+  const attemptId = searchParams?.get("attemptId");
   if (!attemptId) {
     return NextResponse.json(
       { message: "attemptId requerido" },
