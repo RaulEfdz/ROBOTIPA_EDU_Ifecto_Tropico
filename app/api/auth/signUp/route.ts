@@ -1,16 +1,17 @@
 import { db } from "@/lib/db";
 import { getVisitorId } from "@/utils/roles/translate";
 import { NextResponse } from "next/server";
+import { log, LogLevel } from "@/utils/debug/log";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { emailAddress, emailVerified, id, deviceType } = body;
 
-    console.debug("[DEBUG] Datos recibidos en el body:", body);
+    log(LogLevel.DEBUG, "Datos recibidos en el body", { body });
 
     if (!id || !emailAddress || emailVerified === undefined || !deviceType) {
-      console.warn("[DEBUG] Campos faltantes o inválidos:", {
+      log(LogLevel.WARN, "Campos faltantes o inválidos", {
         id,
         emailAddress,
         emailVerified,
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
     }
 
     const visitorRoleId = getVisitorId();
-    console.debug("[DEBUG] visitorRoleId obtenido:", visitorRoleId);
+    log(LogLevel.DEBUG, "visitorRoleId obtenido", { visitorRoleId });
 
     const userPayload = {
       id,
@@ -43,15 +44,18 @@ export async function POST(req: Request) {
       },
     };
 
-    console.debug("[DEBUG] Payload de creación de usuario:", userPayload);
+    log(LogLevel.DEBUG, "Payload de creación de usuario", { userPayload });
 
     const createdUser = await db.user.create({ data: userPayload });
 
-    console.info("[INFO] Usuario creado exitosamente:", createdUser);
+    log(LogLevel.INFO, "Usuario creado exitosamente", { user: createdUser });
 
     return NextResponse.json({ success: true, user: createdUser });
-  } catch (error) {
-    console.error("[ERROR EN REGISTRO DE USUARIO]", error);
+  } catch (error: any) {
+    log(LogLevel.ERROR, "Error en registro de usuario", {
+      error: error.message,
+      stack: error.stack,
+    });
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
