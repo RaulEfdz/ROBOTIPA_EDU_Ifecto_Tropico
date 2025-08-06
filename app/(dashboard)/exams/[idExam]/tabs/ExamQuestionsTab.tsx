@@ -48,7 +48,7 @@ export default function ExamQuestionsTab({
           <div className="text-center py-8 text-gray-500">
             <FileQuestion className="w-12 h-12 mx-auto mb-2 opacity-30" />
             <p>No hay preguntas en este examen.</p>
-            <Button variant="outline" className="mt-4" onClick={onOpenAddModal}>
+            <Button variant="outline" className="mt-4 bg-primary text-white" onClick={onOpenAddModal}>
               <Plus className="w-4 h-4 mr-1" />
               Añadir primera pregunta
             </Button>
