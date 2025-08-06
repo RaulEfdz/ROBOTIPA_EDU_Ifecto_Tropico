@@ -24,7 +24,7 @@ export async function GET(_req: NextRequest) {
 
     // Consulta a la base de datos: Profesores con información de cursos
     const teachers = await db.user.findMany({
-      where: { customRole: TEACHER_ID },
+      where: { customRole: "teacher" },
       orderBy: { fullName: "asc" },
       include: {
         courses: {
@@ -35,8 +35,18 @@ export async function GET(_req: NextRequest) {
             },
             purchases: {
               select: { id: true, userId: true }
+            },
+            category: {
+              select: { id: true, name: true }
             }
           }
+        },
+        teacherAvailability: {
+          where: { isActive: true },
+          orderBy: [
+            { dayOfWeek: "asc" },
+            { startTime: "asc" }
+          ]
         }
       }
     });

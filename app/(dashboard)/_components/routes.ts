@@ -19,6 +19,10 @@ import {
   FileSignature,
   Files, // Añadido para Registros Manuales y Certificados
   CreditCard, // Añadido para Pagos
+  FileText, // Añadido para Protocolos
+  Calendar, // Añadido para Disponibilidad
+  Clock, // Añadido para Horarios
+  Video, // Añadido para Sesiones
 } from "lucide-react";
 
 export interface Badge {
@@ -48,10 +52,59 @@ export interface Route {
 
 export const guestRoutes: Route[] = [
   { icon: Compass, label: "Catálogo", href: "/courses/catalog" },
-
   { icon: Layout, label: "Panel", href: "/" },
   // { icon: Bell, label: "Notificaciones", href: "/notifications" },
   // { icon: HelpCircle, label: "Ayuda", href: "/help" },
+  {
+    icon: FileSignature,
+    label: "Mis Certificados",
+    href: "/students/my-certificates",
+  },
+];
+
+export const studentRoutes: Route[] = [
+  { icon: Compass, label: "Catálogo", href: "/courses/catalog" },
+  { icon: Layout, label: "Panel", href: "/" },
+  {
+    icon: Calendar,
+    label: "Sesiones Personalizadas",
+    isCollapsible: true,
+    subRoutes: [
+      {
+        icon: Search,
+        label: "Buscar Profesores",
+        href: "/students/find-teachers",
+        badge: {
+          viewLabel: true,
+          until: new Date("2025-12-31"),
+          textLabel: "Nuevo",
+          color: "text-blue-400",
+        },
+      },
+      {
+        icon: CreditCard,
+        label: "Mis Créditos",
+        href: "/students/credits",
+        badge: {
+          viewLabel: true,
+          until: new Date("2025-12-31"),
+          textLabel: "Nuevo",
+          color: "text-green-400",
+        },
+      },
+      {
+        icon: Video,
+        label: "Mis Sesiones",
+        href: "/students/sessions",
+        badge: {
+          viewLabel: true,
+          until: new Date("2025-12-31"),
+          textLabel: "Nuevo",
+          color: "text-purple-400",
+        },
+      }
+    ]
+  },
   {
     icon: FileSignature,
     label: "Mis Certificados",
@@ -86,6 +139,46 @@ export const teacherRoutes: Route[] = [
     //   // textLabel: "Nuevo",
     //   color: "text-primary-400",
     // },
+  },
+  {
+    icon: FileText,
+    label: "Protocolos",
+    href: "/teacher/protocols",
+    badge: {
+      viewLabel: true,
+      until: new Date("2025-12-31"),
+      textLabel: "Nuevo",
+      color: "text-green-400",
+    },
+  },
+  {
+    icon: Calendar,
+    label: "Sesiones Personalizadas",
+    isCollapsible: true,
+    subRoutes: [
+      {
+        icon: Clock,
+        label: "Mi Disponibilidad",
+        href: "/teacher/availability",
+        badge: {
+          viewLabel: true,
+          until: new Date("2025-12-31"),
+          textLabel: "Nuevo",
+          color: "text-blue-400",
+        },
+      },
+      {
+        icon: Video,
+        label: "Mis Sesiones",
+        href: "/teacher/sessions",
+        badge: {
+          viewLabel: true,
+          until: new Date("2025-12-31"),
+          textLabel: "Nuevo",
+          color: "text-purple-400",
+        },
+      }
+    ]
   },
   {
     icon: Users,

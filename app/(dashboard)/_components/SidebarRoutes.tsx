@@ -14,7 +14,8 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "framer-motion";
-import { guestRoutes, Route, SubRoute, teacherRoutes } from "./routes";
+import { guestRoutes, studentRoutes, Route, SubRoute, teacherRoutes } from "./routes";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface SidebarRoutesProps {
   isCollapsed?: boolean;
@@ -22,9 +23,20 @@ interface SidebarRoutesProps {
 
 export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
   const pathname = usePathname() || "/";
+  const { user } = useCurrentUser();
+  
   const isTeacherPage =
     pathname.startsWith("/teacher") || pathname.startsWith("/admin");
-  const routes = isTeacherPage ? teacherRoutes : guestRoutes;
+  const isStudentPage = pathname.startsWith("/students");
+  
+  // Determinar qué rutas mostrar según el rol del usuario y la página actual
+  let routes = guestRoutes; // Por defecto
+  
+  if (isTeacherPage || user?.customRole === "teacher" || user?.customRole === "admin") {
+    routes = teacherRoutes;
+  } else if (isStudentPage || user?.customRole === "student") {
+    routes = studentRoutes;
+  }
 
   const [animatedItems, setAnimatedItems] = useState<string[]>([]);
   const [showBadges, setShowBadges] = useState(true);
