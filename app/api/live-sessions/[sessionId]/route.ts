@@ -5,7 +5,7 @@ import { SessionStatus } from "@prisma/client"
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const user = await getCurrentUserFromDBServer()
@@ -13,7 +13,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { sessionId } = params
+    const { sessionId } = await params
 
     const session = await db.liveSession.findUnique({
       where: { id: sessionId },
@@ -71,7 +71,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const user = await getCurrentUserFromDBServer()
@@ -79,7 +79,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { sessionId } = params
+    const { sessionId } = await params
     const body = await req.json()
 
     const existingSession = await db.liveSession.findUnique({
@@ -190,7 +190,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const user = await getCurrentUserFromDBServer()
@@ -198,7 +198,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { sessionId } = params
+    const { sessionId } = await params
 
     const existingSession = await db.liveSession.findUnique({
       where: { id: sessionId }
