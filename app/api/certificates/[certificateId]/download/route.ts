@@ -55,7 +55,7 @@ export async function GET(request: Request, context: any) {
     const pdfBytes = await pdfDoc.save();
 
     // 4. Responder el PDF generado
-    return new Response(pdfBytes, {
+    return new Response(Buffer.from(pdfBytes), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",

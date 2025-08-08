@@ -31,7 +31,7 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ file }) => {
       console.log('Course image upload completed:', file.url);
-      return { fileUrl: file.url };
+      // No devolver nada, onUploadComplete debe retornar void
     }),
 
   // Subida de archivos adjuntos para cursos
@@ -54,7 +54,7 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ file }) => {
       console.log('Course attachment upload completed:', file.url);
-      return { fileUrl: file.url };
+      // No devolver nada, onUploadComplete debe retornar void
     }),
 
   // Subida de archivos desde el editor
@@ -71,7 +71,7 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ file }) => {
       console.log('Editor file upload completed:', file.url);
-      return { fileUrl: file.url };
+      // No devolver nada, onUploadComplete debe retornar void
     }),
 
   // Subida de un único video por capítulo
@@ -87,7 +87,7 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ file }) => {
       console.log('Chapter video upload completed:', file.url);
-      return { fileUrl: file.url };
+      // No devolver nada, onUploadComplete debe retornar void
     }),
 
   // Subida de múltiples videos por capítulo (opcional)
@@ -103,7 +103,7 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ file }) => {
       console.log('Chapter video upload completed (multiple):', file.url);
-      return { fileUrl: file.url };
+      // No devolver nada, onUploadComplete debe retornar void
     }),
 } satisfies FileRouter;
 

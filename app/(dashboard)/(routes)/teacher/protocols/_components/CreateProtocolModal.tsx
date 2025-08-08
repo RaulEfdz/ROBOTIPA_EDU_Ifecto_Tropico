@@ -360,7 +360,7 @@ export function CreateProtocolModal({
                   <FormControl>
                     <div className="min-h-[300px]">
                       <EditorText
-                        value={field.value}
+                        initialText={field.value}
                         onChange={field.onChange}
                         placeholder="Escribe el contenido del protocolo aquí..."
                       />
