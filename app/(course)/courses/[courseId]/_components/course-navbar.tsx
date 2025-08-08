@@ -11,17 +11,23 @@ interface CourseNavbarProps {
     })[];
   };
   progressCount: number;
+  purchase: any;
+  user: any;
 };
 
 export const CourseNavbar = ({
   course,
   progressCount,
+  purchase,
+  user,
 }: CourseNavbarProps) => {
   return (
     <div className="p-4 border-b h-full flex items-center bg-[#FFFCF8] shadow-sm">
       <CourseMobileSidebar
         course={course}
         progressCount={progressCount}
+        purchase={purchase}
+        user={user}
       />
       <Logo version="original"/>
       {/* <NavbarRoutes onToggleSidebar={function (): void {
