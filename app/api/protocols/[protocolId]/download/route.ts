@@ -4,7 +4,7 @@ import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUse
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { protocolId: string } }
+  { params }: { params: Promise<{ protocolId: string }> }
 ) {
   try {
     const user = await getCurrentUserFromDBServer()
@@ -12,7 +12,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { protocolId } = params
+    const { protocolId } = await params
 
     const protocol = await db.protocol.findUnique({
       where: { id: protocolId },

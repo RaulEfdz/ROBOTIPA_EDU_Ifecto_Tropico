@@ -5,11 +5,11 @@ import { ProtocolType, ProtocolStatus } from "@prisma/client"
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { protocolId: string } }
+  { params }: { params: Promise<{ protocolId: string }> }
 ) {
   try {
     const user = await getCurrentUserFromDBServer()
-    const { protocolId } = params
+    const { protocolId } = await params
 
     const protocol = await db.protocol.findUnique({
       where: {
@@ -92,7 +92,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { protocolId: string } }
+  { params }: { params: Promise<{ protocolId: string }> }
 ) {
   try {
     const user = await getCurrentUserFromDBServer()
@@ -100,7 +100,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { protocolId } = params
+    const { protocolId } = await params
     const body = await req.json()
 
     const existingProtocol = await db.protocol.findUnique({
@@ -205,7 +205,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { protocolId: string } }
+  { params }: { params: Promise<{ protocolId: string }> }
 ) {
   try {
     const user = await getCurrentUserFromDBServer()
@@ -213,7 +213,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { protocolId } = params
+    const { protocolId } = await params
 
     const existingProtocol = await db.protocol.findUnique({
       where: { id: protocolId }
