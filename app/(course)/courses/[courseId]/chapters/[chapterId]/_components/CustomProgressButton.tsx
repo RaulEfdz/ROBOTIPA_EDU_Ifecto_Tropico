@@ -16,13 +16,14 @@ import {
 } from "@/components/ui/dialog";
 import { usePrimaryColorStyle, isHexColor, getPrimaryColor } from "@/lib/colors";
 
-// Función para obtener estilos dinámicos del botón
-const getButtonStyles = () => {
+// Hook personalizado para obtener estilos dinámicos del botón
+const useButtonStyles = () => {
   const primaryColor = getPrimaryColor();
   
+  const bgStyle = usePrimaryColorStyle('600');
+  const hoverStyle = usePrimaryColorStyle('700');
+  
   if (isHexColor(primaryColor)) {
-    const bgStyle = usePrimaryColorStyle('600');
-    const hoverStyle = usePrimaryColorStyle('700');
     return {
       style: bgStyle,
       hoverStyle: hoverStyle,
@@ -38,13 +39,14 @@ const getButtonStyles = () => {
   };
 };
 
-// Función para obtener estilos del botón WhatsApp
-const getWhatsAppButtonStyles = () => {
+// Hook personalizado para obtener estilos del botón WhatsApp
+const useWhatsAppButtonStyles = () => {
   const primaryColor = getPrimaryColor();
   
+  const bgStyle = usePrimaryColorStyle('600');
+  const hoverStyle = usePrimaryColorStyle('700');
+  
   if (isHexColor(primaryColor)) {
-    const bgStyle = usePrimaryColorStyle('600');
-    const hoverStyle = usePrimaryColorStyle('700');
     return {
       style: bgStyle,
       hoverStyle: hoverStyle,
@@ -107,9 +109,9 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
   // Mensaje para WhatsApp
   const mensajeWhatsapp = `Hola, he completado el curso con ID: ${courseId}.\nFecha: ${fecha}\nNombre: ${nombre}\nCorreo: ${correo}`;
 
-  // Obtener estilos dinámicos
-  const buttonStyles = getButtonStyles();
-  const whatsAppStyles = getWhatsAppButtonStyles();
+  // Obtener estilos dinámicos usando hooks
+  const buttonStyles = useButtonStyles();
+  const whatsAppStyles = useWhatsAppButtonStyles();
 
   const handleClick = async () => {
     setIsLoading(true);
