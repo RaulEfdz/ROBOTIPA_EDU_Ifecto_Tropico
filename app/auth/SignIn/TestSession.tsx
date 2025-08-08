@@ -32,7 +32,6 @@ export default function TestSession() {
 
       // Log cookies after login for debugging
       const cookies = document.cookie;
-      console.log("Cookies después de login:", cookies);
       setMessage((msg) => msg + "\nCookies después de login: " + cookies);
     } else {
       setSessionActive(false);
@@ -40,17 +39,23 @@ export default function TestSession() {
     }
   };
 
-  const checkSession = () => {
-    const session = supabase.auth.getSession();
-    session.then(({ data }) => {
-      if (data.session) {
-        setSessionActive(true);
-        setMessage("Sesión actualmente activa.");
-      } else {
-        setSessionActive(false);
-        setMessage("No hay sesión activa.");
-      }
-    });
+  const checkSession = async () => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      setSessionActive(false);
+      setMessage("No hay sesión activa.");
+      return;
+    }
+
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      setSessionActive(true);
+      setMessage("Sesión actualmente activa.");
+    } else {
+      setSessionActive(false);
+      setMessage("No hay sesión activa.");
+    }
   };
 
   return (

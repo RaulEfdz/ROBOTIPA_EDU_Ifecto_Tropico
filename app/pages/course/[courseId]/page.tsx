@@ -90,7 +90,14 @@ export default function CoursePage() {
       setIsPurchaseCheckLoading(true);
 
       try {
-        // 1. Verificar Sesión de Supabase
+        // 1. Verificar Usuario de Supabase
+        const {
+          data: { user },
+          error: userError
+        } = await supabase.auth.getUser();
+
+        if (userError || !user) return;
+
         const {
           data: { session },
         } = await supabase.auth.getSession();
@@ -153,7 +160,17 @@ export default function CoursePage() {
     if (!course) return; // No hacer nada si no hay datos del curso
     setIsActionLoading(true);
 
-    // Volver a verificar la sesión por seguridad
+    // Volver a verificar el usuario por seguridad
+    const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      setIsActionLoading(false);
+      return;
+    }
+
     const {
       data: { session },
     } = await supabase.auth.getSession();

@@ -244,9 +244,7 @@ export const CategoryForm = ({
   // Agrega logs para depuración
   useEffect(() => {
     if (options.length === 0) {
-      console.log("[Categorías] No se encontraron categorías existentes");
     } else {
-      console.log("[Categorías] Opciones cargadas:", options);
     }
   }, [options]);
 

@@ -39,6 +39,8 @@ model Course {
   chapters    Chapter[]
   attachments Attachment[]
   purchases   Purchase[]
+  protocols   Protocol[]
+  liveSessions LiveSession[]
 
   data Json? // ✅ agregado
 
@@ -58,6 +60,7 @@ model Category {
   id      String   @id @default(uuid())
   name    String   @unique
   courses Course[]
+  protocols Protocol[]
 
   data Json? // ✅ agregado
 }
@@ -190,6 +193,15 @@ model User {
   LegalDocument LegalDocument[]
   Certificate   Certificate[]
   Subscription  Subscription?
+  protocols     Protocol[]
+  protocolAccess ProtocolAccess[]
+  protocolViews  ProtocolView[]
+  
+  // Sesiones en vivo
+  teacherSessions    LiveSession[] @relation("TeacherSessions")
+  studentSessions    LiveSession[] @relation("StudentSessions")
+  teacherAvailability TeacherAvailability[]
+  studentCredits     StudentCredits?
 }
 
 model Invoice {
@@ -479,4 +491,274 @@ model LegalDocument {
 
   @@index([slug])
   @@index([status])
+}
+
+enum ProtocolType {
+  document
+  procedure
+  guideline
+  policy
+}
+
+enum ProtocolStatus {
+  draft
+  review
+  approved
+  published
+  archived
+}
+
+model Protocol {
+  id          String         @id @default(uuid())
+  title       String
+  description String?
+  content     String
+  type        ProtocolType
+  status      ProtocolStatus @default(draft)
+  version     String         @default("1.0")
+  fileUrl     String?
+  fileName    String?
+  fileSize    Int?
+  
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  tags      String[]
+  isPublic  Boolean @default(false)
+  downloads Int     @default(0)
+  views     Int     @default(0)
+  
+  protocolAccess ProtocolAccess[]
+  protocolViews  ProtocolView[]
+  
+  metadata Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([courseId])
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([status])
+}
+
+model ProtocolAccess {
+  id         String   @id @default(uuid())
+  userId     String
+  protocolId String
+  
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  protocol Protocol @relation(fields: [protocolId], references: [id], onDelete: Cascade)
+  
+  accessType String   @default("view") // "view", "download", "edit"
+  grantedAt  DateTime @default(now())
+  grantedBy  String?
+  expiresAt  DateTime?
+  
+  metadata Json?
+  
+  @@unique([userId, protocolId])
+  @@index([userId])
+  @@index([protocolId])
+}
+
+model ProtocolView {
+  id         String   @id @default(uuid())
+  userId     String?
+  protocolId String
+  
+  user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  protocol Protocol @relation(fields: [protocolId], references: [id], onDelete: Cascade)
+  
+  viewedAt DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+  duration  Int?     // seconds
+  
+  metadata Json?
+  
+  @@index([protocolId])
+  @@index([userId])
+}
+
+enum SessionStatus {
+  scheduled
+  confirmed
+  in_progress
+  completed
+  cancelled
+  no_show
+}
+
+enum SessionType {
+  consultation
+  tutoring
+  mentoring
+  support
+  interview
+}
+
+model LiveSession {
+  id          String        @id @default(uuid())
+  title       String
+  description String?
+  type        SessionType   @default(consultation)
+  status      SessionStatus @default(scheduled)
+  
+  // Participantes
+  teacherId String
+  studentId String
+  teacher   User   @relation("TeacherSessions", fields: [teacherId], references: [id], onDelete: Cascade)
+  student   User   @relation("StudentSessions", fields: [studentId], references: [id], onDelete: Cascade)
+  
+  // Horario
+  scheduledAt DateTime
+  duration    Int          // minutos
+  timeZone    String       @default("America/Panama")
+  
+  // Video llamada
+  meetingUrl    String?
+  meetingId     String?
+  meetingPasscode String?
+  recordingUrl  String?
+  
+  // Créditos y pago
+  creditsRequired Int     @default(1)
+  creditsCost     Float?
+  isPaid          Boolean @default(false)
+  paymentId       String?
+  
+  // Curso relacionado (opcional)
+  courseId String?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  
+  // Notas y seguimiento
+  teacherNotes  String?
+  studentNotes  String?
+  privateNotes  String? // Solo para el profesor
+  rating        Int?    // 1-5 estrellas del estudiante
+  feedback      String?
+  
+  // Recordatorios
+  reminderSent     Boolean   @default(false)
+  lastReminderAt   DateTime?
+  
+  // Relación con transacciones de créditos
+  creditTransactions StudentCreditTransaction[]
+  
+  metadata Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([teacherId])
+  @@index([studentId])
+  @@index([courseId])
+  @@index([scheduledAt])
+  @@index([status])
+}
+
+model TeacherAvailability {
+  id        String @id @default(uuid())
+  teacherId String
+  teacher   User   @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  
+  // Día de la semana (0 = domingo, 6 = sábado)
+  dayOfWeek Int
+  
+  // Horarios (formato 24h: "09:00", "17:30")
+  startTime String
+  endTime   String
+  
+  // Duración por sesión (minutos)
+  sessionDuration Int @default(60)
+  
+  // Configuración
+  isActive          Boolean @default(true)
+  isRecurring       Boolean @default(true) // Se repite cada semana
+  maxSessionsPerDay Int?    @default(8)
+  
+  // Fechas específicas de excepción
+  blackoutDates Json? // Array de fechas no disponibles ["2025-01-15", "2025-02-20"]
+  
+  // Pricing
+  creditsPerSession Int   @default(1)
+  pricePerCredit    Float @default(10.0)
+  
+  metadata Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([teacherId, dayOfWeek, startTime])
+  @@index([teacherId])
+  @@index([isActive])
+}
+
+model StudentCredits {
+  id       String @id @default(uuid())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Créditos
+  totalCredits     Int @default(0)
+  usedCredits      Int @default(0)
+  remainingCredits Int @default(0)
+  
+  // Historial de transacciones
+  transactions StudentCreditTransaction[]
+  
+  // Configuración
+  autoRecharge       Boolean @default(false)
+  rechargeThreshold  Int     @default(5)
+  rechargeAmount     Int     @default(10)
+  
+  metadata Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId])
+  @@index([userId])
+}
+
+enum CreditTransactionType {
+  purchase
+  usage
+  refund
+  bonus
+  expiration
+}
+
+model StudentCreditTransaction {
+  id        String                @id @default(uuid())
+  creditsId String
+  credits   StudentCredits        @relation(fields: [creditsId], references: [id], onDelete: Cascade)
+  
+  type        CreditTransactionType
+  amount      Int                   // Positivo para compra/bonus, negativo para uso
+  description String?
+  
+  // Referencia a la sesión (si es por uso)
+  sessionId String?
+  session   LiveSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  
+  // Referencia al pago (si es por compra)
+  paymentId String?
+  
+  balanceAfter Int // Balance de créditos después de esta transacción
+  
+  metadata Json?
+  
+  createdAt DateTime @default(now())
+  
+  @@index([creditsId])
+  @@index([sessionId])
+  @@index([type])
 }

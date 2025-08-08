@@ -108,7 +108,6 @@ export const registerOrSyncUser = async (
     }
   } catch (error) {
     printDebug(`${route} > ❌ Error: ${(error as Error).message}`);
-    console.error("❌ Error registrando/sincronizando usuario:", error);
     return "error";
   }
 };

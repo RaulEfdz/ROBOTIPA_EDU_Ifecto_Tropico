@@ -23,7 +23,8 @@ function percentEncodeUTF8(str: string): string {
 function getConfig() {
   const apiUrlRaw =
     process.env.PAGUELOFACIL_API_URL ||
-    "https://secure.paguelofacil.com/LinkDeamon.cfm";
+    // https://secure.paguelofacil.com/LinkDeamon.cfm
+    "";
   const apiUrl = apiUrlRaw.endsWith("/LinkDeamon.cfm")
     ? apiUrlRaw
     : apiUrlRaw.replace(/\/+$/, "") + "/LinkDeamon.cfm";
@@ -32,7 +33,8 @@ function getConfig() {
   const apiKey = process.env.PAGUELOFACIL_API_KEY;
   const returnUrlRaw =
     process.env.NEXT_PUBLIC_RETURN_URL ||
-    "https://academy.infectotropico.com/return";
+    process.env.NEXT_PUBLIC_BASE_URL + "/return" ||
+    "";
   // const cardTypes = process.env.PAGUELOFACIL_CARD_TYPES || "0";
   const expiresIn = process.env.PAGUELOFACIL_EXPIRES_IN || "3600";
 
@@ -126,11 +128,7 @@ async function callPaymentApi(
   accessToken: string,
   formParams: URLSearchParams
 ) {
-  // Print the decoded RETURN_URL value for inspection
-  const returnUrlEncoded = formParams.get("RETURN_URL") || "";
-  const returnUrlDecoded = decodeURIComponent(returnUrlEncoded);
-  console.log("Calling PagueloFacil API with params:", formParams.toString());
-  console.log("Decoded RETURN_URL:", returnUrlDecoded.replace(/%/g, "\\x"));
+  // Calling PagueloFacil API
 
   const response = await fetch(apiUrl, {
     method: "POST",

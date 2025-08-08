@@ -1,5 +1,6 @@
 import { Menu } from "lucide-react";
 import { Chapter, Course, UserProgress } from "@prisma/client";
+import { useState } from "react";
 
 import {
   Sheet,
@@ -8,6 +9,7 @@ import {
 } from "@/components/ui/sheet";
 
 import { CourseSidebar } from "./course-sidebar";
+import { CourseLayoutWrapper } from "./course-layout-wrapper";
 
 interface CourseMobileSidebarProps {
   course: Course & {
@@ -16,11 +18,15 @@ interface CourseMobileSidebarProps {
     })[];
   };
   progressCount: number;
+  purchase: any;
+  user: any;
 };
 
 export const CourseMobileSidebar = ({ 
   course,
   progressCount,
+  purchase,
+  user,
 }: CourseMobileSidebarProps) => {
   return (
     <Sheet>
@@ -31,6 +37,8 @@ export const CourseMobileSidebar = ({
         <CourseSidebar
           course={course}
           progressCount={progressCount}
+          purchase={purchase}
+          user={user}
         />
       </SheetContent>
     </Sheet>

@@ -14,7 +14,8 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "framer-motion";
-import { guestRoutes, Route, SubRoute, teacherRoutes } from "./routes";
+import { guestRoutes, studentRoutes, Route, SubRoute, teacherRoutes } from "./routes";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface SidebarRoutesProps {
   isCollapsed?: boolean;
@@ -22,9 +23,29 @@ interface SidebarRoutesProps {
 
 export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
   const pathname = usePathname() || "/";
+  const { user } = useCurrentUser();
+  
   const isTeacherPage =
-    pathname.startsWith("/teacher") || pathname.startsWith("/admin");
-  const routes = isTeacherPage ? teacherRoutes : guestRoutes;
+    pathname.startsWith("/teacher") || 
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/exams");
+  const isStudentPage = pathname.startsWith("/students");
+  
+  // Determinar qué rutas mostrar según el rol del usuario y la página actual
+  let routes = guestRoutes; // Por defecto
+  
+  // Priorizar el rol del usuario sobre la URL
+  if (user?.customRole === "teacher" || user?.customRole === "admin") {
+    routes = teacherRoutes;
+  } else if (user?.customRole === "student") {
+    routes = studentRoutes;
+  } else if (isTeacherPage) {
+    // Si no hay usuario identificado pero está en ruta de teacher
+    routes = teacherRoutes;
+  } else if (isStudentPage) {
+    // Si no hay usuario identificado pero está en ruta de student
+    routes = studentRoutes;
+  }
 
   const [animatedItems, setAnimatedItems] = useState<string[]>([]);
   const [showBadges, setShowBadges] = useState(true);

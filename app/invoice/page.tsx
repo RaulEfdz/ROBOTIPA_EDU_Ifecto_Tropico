@@ -41,10 +41,10 @@ function InvoicePage() {
           const data = await res.json();
           setInvoiceData(data.invoice);
         } else {
-          // Handle error
+          console.error('Failed to fetch invoice data:', res.status);
         }
       } catch (error) {
-        // Handle error
+        console.error('Error fetching invoice:', error);
       }
     };
 
@@ -57,7 +57,7 @@ function InvoicePage() {
           setCourseTitle(data.title || "Curso desconocido");
         }
       } catch (error) {
-        // Handle error
+        console.error('Error fetching course data:', error);
       }
     };
 

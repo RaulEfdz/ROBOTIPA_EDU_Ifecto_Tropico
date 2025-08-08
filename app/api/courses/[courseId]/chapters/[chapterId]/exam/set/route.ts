@@ -44,9 +44,10 @@ export async function POST(
   }
 
   const { examId } = body;
-  if (!examId || typeof examId !== "string") {
+  // Allow null examId for unassigning exams, but validate if provided
+  if (examId !== null && examId !== undefined && typeof examId !== "string") {
     return NextResponse.json(
-      { message: "Bad Request: examId is required and must be a string" },
+      { message: "Bad Request: examId must be a string or null" },
       { status: 400 }
     );
   }
@@ -82,17 +83,39 @@ export async function POST(
       typeof chapter.data === "object" && chapter.data !== null
         ? chapter.data
         : {};
-    const updatedData = { ...existingData, examId };
+    
+    let updatedData;
+    let message;
+    
+    if (examId === null || examId === undefined) {
+      // Remove examId from data to unassign
+      const { examId: _, ...dataWithoutExamId } = existingData as any;
+      updatedData = dataWithoutExamId;
+      message = "Examen desasignado correctamente del capítulo";
+    } else {
+      // Verify exam exists before assigning
+      const examExists = await db.exam.findUnique({
+        where: { id: examId },
+        select: { id: true }
+      });
+      
+      if (!examExists) {
+        return NextResponse.json(
+          { message: "Bad Request: exam not found" },
+          { status: 400 }
+        );
+      }
+      
+      updatedData = { ...existingData, examId };
+      message = "Examen asignado correctamente al capítulo";
+    }
 
     await db.chapter.update({
       where: { id: chapterId },
       data: { data: updatedData },
     });
 
-    return NextResponse.json(
-      { message: "Examen asignado correctamente al capítulo" },
-      { status: 200 }
-    );
+    return NextResponse.json({ message }, { status: 200 });
   } catch (err: any) {
     console.error("[ASSIGN_CHAPTER_EXAM] Error interno:", err);
     return NextResponse.json(

@@ -167,7 +167,6 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
       try {
         await fetch("/api/auth/insertUser", { method: "POST" });
       } catch (syncError) {
-        console.error("Error sincronizando usuario con DB local:", syncError);
         toast.warning("No se pudo sincronizar completamente la sesión.", {
           duration: 5000,
         });
@@ -198,7 +197,7 @@ export default function SignupForm({ redirectUrl }: SignupFormProps) {
           }),
         });
       } catch (error) {
-        console.error("Error sending registration notification email:", error);
+        // Silent failure - email notification is not critical
       }
 
       // Redirigir a la página de espera de confirmación de correo

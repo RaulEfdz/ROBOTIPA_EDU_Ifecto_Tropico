@@ -18,7 +18,6 @@ interface UserToFix {
 }
 
 async function findUsersWithPurchasesAndWrongRole(): Promise<UserToFix[]> {
-  console.log("🔍 Finding users with purchases but incorrect roles...");
   
   // Find users who have purchases but don't have the student role
   const usersWithPurchases = await db.user.findMany({
@@ -49,12 +48,8 @@ async function findUsersWithPurchasesAndWrongRole(): Promise<UserToFix[]> {
     purchaseCount: user.purchases.length
   }));
 
-  console.log(`📊 Found ${usersToFix.length} users with purchases but incorrect roles:`);
   usersToFix.forEach(user => {
-    console.log(`  - ${user.fullName} (${user.email})`);
-    console.log(`    Current role: ${user.customRole}`);
-    console.log(`    Purchases: ${user.purchaseCount}`);
-    console.log("    ---");
+    console.log(`🔍 User found with purchases but wrong role: ${user.fullName} (${user.email}) - Role: ${user.customRole} - Purchases: ${user.purchaseCount}`);
   });
 
   return usersToFix;
@@ -67,7 +62,6 @@ async function fixUserRole(userId: string, userEmail: string): Promise<boolean> 
       data: { customRole: STUDENT_ID }
     });
 
-    console.log(`✅ Fixed role for user ${userEmail} (${userId})`);
     return true;
   } catch (error) {
     console.error(`❌ Failed to fix role for user ${userEmail} (${userId}):`, error);
@@ -76,9 +70,6 @@ async function fixUserRole(userId: string, userEmail: string): Promise<boolean> 
 }
 
 async function main() {
-  console.log("🚀 Starting user role fix script...");
-  console.log(`📝 Student Role ID: ${STUDENT_ID}`);
-  console.log(`📝 Visitor Role ID: ${VISITOR_ID}`);
   
   if (!STUDENT_ID) {
     console.error("❌ FATAL ERROR: STUDENT_ID not defined in environment variables.");
@@ -90,24 +81,20 @@ async function main() {
     const usersToFix = await findUsersWithPurchasesAndWrongRole();
     
     if (usersToFix.length === 0) {
-      console.log("🎉 No users found that need role fixing!");
+      console.log("✅ No users found that need role fixing. All users with purchases already have the correct student role.");
       return;
     }
 
     // Ask for confirmation in production
     if (process.env.NODE_ENV === 'production') {
-      console.log("\n⚠️  WARNING: This will modify user roles in production!");
-      console.log("Please make sure you have a database backup before proceeding.");
-      console.log("To proceed, set the environment variable CONFIRM_ROLE_FIX=true");
-      
+      console.log("⚠️ Running in production mode. Checking for confirmation...");
       if (process.env.CONFIRM_ROLE_FIX !== 'true') {
-        console.log("❌ Script cancelled. Set CONFIRM_ROLE_FIX=true to proceed.");
+        console.log("❌ CONFIRM_ROLE_FIX is not set to 'true'. Exiting without making changes.");
         return;
       }
     }
 
-    console.log(`\n🔧 Starting to fix ${usersToFix.length} users...`);
-    
+    console.log(`🚀 Starting role fix process for ${usersToFix.length} users...`);
     let successCount = 0;
     let failureCount = 0;
 
@@ -121,13 +108,13 @@ async function main() {
       }
     }
 
-    console.log("\n📊 SUMMARY:");
-    console.log(`✅ Successfully fixed: ${successCount} users`);
-    console.log(`❌ Failed to fix: ${failureCount} users`);
+    console.log(`\n📊 Fix completed! Results:`);
+    console.log(`  ✅ Successfully fixed: ${successCount} users`);
+    console.log(`  ❌ Failed to fix: ${failureCount} users`);
+    console.log(`  📈 Total processed: ${successCount + failureCount} users`);
     
     if (successCount > 0) {
-      console.log("\n✨ User roles have been updated successfully!");
-      console.log("Users with purchases now have the correct student role.");
+      console.log(`🎉 Role fixing completed successfully for ${successCount} user(s)!`);
     }
 
   } catch (error) {
@@ -135,7 +122,6 @@ async function main() {
     process.exit(1);
   } finally {
     await db.$disconnect();
-    console.log("🔌 Database connection closed.");
   }
 }
 

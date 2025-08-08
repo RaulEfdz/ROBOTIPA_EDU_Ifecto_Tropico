@@ -27,5 +27,15 @@ export async function getCourseLayoutData(courseId: string) {
 
   const progressCount = await getProgress(user.id, course.id);
 
-  return { course, progressCount };
+  // Fetch purchase data
+  const purchase = await db.purchase.findUnique({
+    where: {
+      userId_courseId: {
+        userId: user.id,
+        courseId: courseId,
+      },
+    },
+  });
+
+  return { course, progressCount, purchase, user };
 }

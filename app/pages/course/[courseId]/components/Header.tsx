@@ -29,6 +29,20 @@ export default function Header({ user, courseTitle }: HeaderProps) {
       .toUpperCase();
   };
 
+  const getDashboardUrl = () => {
+    if (!user) return "/courses/catalog";
+    switch (user.customRole) {
+      case 'teacher':
+        return '/teacher';
+      case 'admin':
+        return '/admin';
+      case 'student':
+        return '/students';
+      default:
+        return '/courses/catalog';
+    }
+  };
+
   return (
     <nav className="bg-white dark:bg-slate-800 shadow-sm sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4">
@@ -48,7 +62,7 @@ export default function Header({ user, courseTitle }: HeaderProps) {
           {/* Navegación y perfil */}
           <div className="flex items-center space-x-3 md:space-x-4">
             <Link
-              href="/"
+              href={getDashboardUrl()}
               className="text-slate-600 hover:text-primary-600 dark:text-slate-300 dark:hover:text-primary-400 transition-colors"
             >
               <Button variant="ghost" size="sm" className="flex items-center gap-1.5 hover:bg-primary">

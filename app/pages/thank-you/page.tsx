@@ -78,7 +78,6 @@ export default function ThankYouPage() {
     const fullUrl = window.location.href;
     const detalles = obtenerParametrosDeUrl(fullUrl);
 
-    console.log("Detalles de pago extraídos:", detalles);
 
     // Guardamos todos los parámetros para poder listarlos en la UI
     setPaymentDetails(detalles);

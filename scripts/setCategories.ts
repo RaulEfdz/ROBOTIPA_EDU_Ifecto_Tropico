@@ -18,6 +18,7 @@
 // 		});
 
 // 	} catch (error) {
+// 		console.error("Error seeding the database categories", error);
 // 	} finally {
 // 		await database.$disconnect();
 // 	}

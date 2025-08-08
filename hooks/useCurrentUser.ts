@@ -6,7 +6,7 @@ export function useCurrentUser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/auth/session", { cache: "no-store" })
+    fetch("/api/auth/getUser", { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => setUser(data?.user || null))
       .catch(() => setUser(null))

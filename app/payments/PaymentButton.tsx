@@ -43,7 +43,7 @@ export default function PaymentButton({
           setEnrolledAt(data.enrolledAt || null);
         }
       } catch (err) {
-        console.error("Error verificando inscripción:", err);
+        // Silent failure - enrollment check is not critical for UI
       }
     };
 
