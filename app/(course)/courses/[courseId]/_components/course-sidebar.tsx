@@ -200,23 +200,9 @@ export const CourseSidebar = ({
           {/* Progress Section */}
           {purchase ? (
             <div className="space-y-4">
-              {/* Progress Header */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Tu progreso
-                  </span>
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                  {completedChapters}/{totalChapters} completado
-                </div>
-              </div>
+           
 
-              {/* Progress Bar */}
-              <div className="space-y-2">
-                <CourseProgress value={progressCount} />
-              </div>
+           
 
               {/* Progress Cards */}
               <div className="grid grid-cols-2 gap-3">

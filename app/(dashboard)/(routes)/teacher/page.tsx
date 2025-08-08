@@ -56,7 +56,7 @@ const TeacherNavigation: React.FC = () => {
         animate="show"
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl justify-items-center"
       >
-        {teacherRoutes.map((route) => {
+        {teacherRoutes.map((route, index) => {
           const IconComponent = route.icon;
           const badge = route.badge;
           // Solo mostramos badge si está definido, es visible y no ha expirado
@@ -67,7 +67,7 @@ const TeacherNavigation: React.FC = () => {
 
           return (
             <motion.div
-              key={route.href}
+              key={route.href || `route-${index}`}
               variants={item}
               whileHover={hoverEffect}
               className="group cursor-pointer"
