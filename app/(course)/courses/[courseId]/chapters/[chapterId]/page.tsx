@@ -264,13 +264,7 @@ const ChapterIdPage: React.FC = () => {
     <>
       <ChapterHeaderBar />
       <Toaster position="top-right" richColors />
-      <div
-        className={`min-h-screen pb-16 ${
-          isCompleted
-            ? "bg-primary-50/50 dark:bg-primary-900/10"
-            : "bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800"
-        }`}
-      >
+      <div className="min-h-screen pb-16 bg-white dark:bg-slate-900">
         {isCompleted &&
           !isLockedForPayment && ( // No mostrar si está bloqueado por pago, incluso si se completó antes
             <Banner

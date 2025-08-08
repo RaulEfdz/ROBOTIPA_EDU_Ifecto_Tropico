@@ -252,8 +252,8 @@ export default function ChapterIdPage() {
 
   // Color de fondo según el estado de publicación
   const bgColorClass = chapter.isPublished
-    ? "bg-gradient-to-b from-green-50 to-TextCustom dark:from-green-900/20 dark:to-gray-900"
-    : "bg-gradient-to-b from-amber-50 to-TextCustom dark:from-amber-900/20 dark:to-gray-900";
+    ? "bg-white to-TextCustom dark:bg-white"
+    : "bg-white to-TextCustom dark:bg-white";
 
   return (
     <div
@@ -267,94 +267,127 @@ export default function ChapterIdPage() {
       )}
 
       <div className="px-4 py-4 sm:p-6 max-w-7xl mx-auto">
-        {/* Cabecera con botón de regreso y acciones */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
-          <Link
-            href={
-              params && params.courseId
-                ? `/teacher/courses/${params.courseId}`
-                : "/teacher/courses"
-            }
-            className="flex items-center text-sm hover:opacity-75 transition bg-TextCustom dark:bg-gray-800 px-3 py-2 rounded-md shadow-sm mb-4 sm:mb-0"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            {texts[language].backToCourseConfig}
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              className="hidden sm:flex"
-              onClick={() =>
-                params &&
-                params.courseId &&
-                params.chapterId &&
-                router.push(
-                  `/courses/${params.courseId}/chapters/${params.chapterId}`
-                )
+        {/* Cabecera mejorada con botones de acción */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            {/* Botón de regreso */}
+            <Link
+              href={
+                params && params.courseId
+                  ? `/teacher/courses/${params.courseId}`
+                  : "/teacher/courses"
               }
+              className="flex items-center text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-shadow"
             >
-              <Eye className="h-4 w-4 mr-2" />
-              {texts[language].viewPreview}
-            </Button>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              {texts[language].backToCourseConfig}
+            </Link>
 
-            <Button
-              onClick={togglePublishStatus}
-              disabled={publishingStatus || completionProgress < 75}
-              className={`${
-                chapter.isPublished
-                  ? "bg-amber-600 hover:bg-amber-700"
-                  : "bg-primary-600 hover:bg-primary-700"
-              } text-TextCustom`}
-              size="sm"
-            >
-              {publishingStatus ? (
-                <div className="h-4 w-4 border-2 border-TextCustom border-t-transparent rounded-full animate-spin mr-2" />
-              ) : chapter.isPublished ? (
-                <Lock className="h-4 w-4 mr-2" />
-              ) : (
-                <Globe className="h-4 w-4 mr-2" />
-              )}
-              {chapter.isPublished
-                ? texts[language].unpublish
-                : texts[language].publish}
-            </Button>
+            {/* Botones de acción */}
+            <div className="flex items-center gap-2 w-full lg:w-auto">
+              {/* Vista previa */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 sm:flex-none border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20"
+                onClick={() =>
+                  params &&
+                  params.courseId &&
+                  params.chapterId &&
+                  router.push(
+                    `/courses/${params.courseId}/chapters/${params.chapterId}`
+                  )
+                }
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">{texts[language].viewPreview}</span>
+                <span className="sm:hidden">Vista previa</span>
+              </Button>
 
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  disabled={deletingStatus}
-                >
-                  {deletingStatus ? (
-                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  ) : (
-                    <Trash2 className="h-4 w-4 mr-2" />
-                  )}
-                  {texts[language].deleteChapter}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>{texts[language].deleteConfirmTitle}</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {texts[language].deleteConfirmDescription}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>{texts[language].cancel}</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={deleteChapter}
-                    className="bg-red-600 hover:bg-red-700"
+              {/* Publicar/Despublicar */}
+              <Button
+                onClick={togglePublishStatus}
+                disabled={publishingStatus || completionProgress < 75}
+                className={`flex-1 sm:flex-none transition-all duration-200 ${
+                  chapter.isPublished
+                    ? "bg-amber-600 hover:bg-amber-700 border-amber-600 text-white shadow-lg hover:shadow-xl"
+                    : "bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white shadow-lg hover:shadow-xl"
+                } ${publishingStatus ? "animate-pulse" : ""}`}
+                size="sm"
+              >
+                {publishingStatus ? (
+                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                ) : chapter.isPublished ? (
+                  <Lock className="h-4 w-4 mr-2" />
+                ) : (
+                  <Globe className="h-4 w-4 mr-2" />
+                )}
+                <span className="hidden sm:inline">
+                  {chapter.isPublished
+                    ? texts[language].unpublish
+                    : texts[language].publish}
+                </span>
+                <span className="sm:hidden">
+                  {chapter.isPublished ? "Despublicar" : "Publicar"}
+                </span>
+              </Button>
+
+              {/* Eliminar capítulo */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={deletingStatus}
+                    className="flex-1 sm:flex-none border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 transition-all duration-200"
                   >
-                    {texts[language].deleteConfirm}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                    {deletingStatus ? (
+                      <div className="h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin mr-2" />
+                    ) : (
+                      <Trash2 className="h-4 w-4 mr-2" />
+                    )}
+                    <span className="hidden sm:inline">{texts[language].deleteChapter}</span>
+                    <span className="sm:hidden">Eliminar</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="max-w-md">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+                      <AlertTriangle className="h-5 w-5" />
+                      {texts[language].deleteConfirmTitle}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-gray-600 dark:text-gray-300">
+                      {texts[language].deleteConfirmDescription}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                      {texts[language].cancel}
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={deleteChapter}
+                      className="bg-red-600 hover:bg-red-700 text-white shadow-lg"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {texts[language].deleteConfirm}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </div>
+
+          {/* Información adicional del capítulo */}
+          {completionProgress < 75 && (
+            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                <span className="text-sm text-amber-700 dark:text-amber-300 font-medium">
+                  Completa al menos el 75% del capítulo para poder publicarlo
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Panel de acceso */}

@@ -63,7 +63,12 @@ export async function GET(
       console.error(
         `[GET_CURRENT_CHAPTER_EXAM] examen referenciado no encontrado: ${examId}`
       );
-      return NextResponse.json({ exam: null }, { status: 404 });
+      // Return information about the deleted exam
+      return NextResponse.json({ 
+        exam: null, 
+        deletedExamId: examId,
+        message: "El examen asignado ya no existe y debe ser reasignado"
+      }, { status: 200 });
     }
 
     return NextResponse.json({ exam }, { status: 200 });

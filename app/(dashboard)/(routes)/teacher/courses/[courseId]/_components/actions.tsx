@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Trash, Globe, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,7 @@ export const Actions = ({ disabled, courseId, isPublished }: ActionsProps) => {
         path,
         method,
         callback: () => {
-          toast.success(published ? "Curso ocultado" : "Curso publicado", {
+          toast.success(published ? "Curso despublicado" : "Curso publicado", {
             duration: 2000,
             position: "bottom-right",
           });
@@ -103,33 +103,56 @@ export const Actions = ({ disabled, courseId, isPublished }: ActionsProps) => {
       <Button
         onClick={handleTogglePublish}
         // disabled={disabled || isLoading || published === null}
-        variant={published ? "default" : "outline"}
+        variant={published ? "secondary" : "default"}
         size="sm"
-        className="rounded-lg"
+        className={`rounded-lg transition-all duration-200 ${
+          published 
+            ? "bg-amber-600 hover:bg-amber-700 text-white border-amber-600" 
+            : "bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600"
+        }`}
       >
         {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <>
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            {published ? "Despublicando..." : "Publicando..."}
+          </>
         ) : published ? (
           <>
-            <EyeOff className="h-4 w-4 mr-1" />
-            Ocultar
+            <Lock className="h-4 w-4 mr-2" />
+            Despublicar
           </>
         ) : (
           <>
-            <Eye className="h-4 w-4 mr-1" />
-            Publicar?
+            <Globe className="h-4 w-4 mr-2" />
+            Publicar
           </>
         )}
       </Button>
 
-      <ConfirmModal onConfirm={handleDelete}>
+      <ConfirmModal 
+        onConfirm={handleDelete}
+        title="¿Estás seguro de eliminar este curso?"
+        description="Esta acción no se puede deshacer. Se eliminará permanentemente el curso y todo su contenido, incluyendo capítulos, videos y progreso de estudiantes."
+        confirmText="Sí, eliminar curso"
+        cancelText="Cancelar"
+      >
         <Button
           size="sm"
           variant="destructive"
           disabled={isLoading}
-          className="rounded-lg"
+          className="rounded-lg hover:bg-red-700 transition-all duration-200"
         >
-          <Trash className="h-4 w-4" />
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              Eliminando...
+            </>
+          ) : (
+            <>
+              <Trash className="h-4 w-4 mr-2" />
+              Eliminar
+            </>
+          )}
         </Button>
       </ConfirmModal>
     </div>
