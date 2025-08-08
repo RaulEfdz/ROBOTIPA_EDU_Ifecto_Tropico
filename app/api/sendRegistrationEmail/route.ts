@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { resend } from "@/lib/resend";
 
 const EMAIL_FROM_ADDRESS =
-  process.env.EMAIL_FROM_ADDRESS || "no-reply@infectotropico.com";
-const NOTIFY_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || "info@infectotropico.com";
+  process.env.EMAIL_FROM_ADDRESS || "";
+const NOTIFY_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || "";
 const APP_NAME = process.env.NEXT_PUBLIC_NAME_APP || "Robotipa Academy";
 
 export async function POST(req: NextRequest) {

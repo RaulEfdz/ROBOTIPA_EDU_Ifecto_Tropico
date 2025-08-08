@@ -26,15 +26,24 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
   const { user } = useCurrentUser();
   
   const isTeacherPage =
-    pathname.startsWith("/teacher") || pathname.startsWith("/admin");
+    pathname.startsWith("/teacher") || 
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/exams");
   const isStudentPage = pathname.startsWith("/students");
   
   // Determinar qué rutas mostrar según el rol del usuario y la página actual
   let routes = guestRoutes; // Por defecto
   
-  if (isTeacherPage || user?.customRole === "teacher" || user?.customRole === "admin") {
+  // Priorizar el rol del usuario sobre la URL
+  if (user?.customRole === "teacher" || user?.customRole === "admin") {
     routes = teacherRoutes;
-  } else if (isStudentPage || user?.customRole === "student") {
+  } else if (user?.customRole === "student") {
+    routes = studentRoutes;
+  } else if (isTeacherPage) {
+    // Si no hay usuario identificado pero está en ruta de teacher
+    routes = teacherRoutes;
+  } else if (isStudentPage) {
+    // Si no hay usuario identificado pero está en ruta de student
     routes = studentRoutes;
   }
 

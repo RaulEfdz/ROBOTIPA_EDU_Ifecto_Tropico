@@ -80,7 +80,7 @@ export default function CatalogHeader() {
         <div className="flex items-center justify-between h-16">
           {/* Sección Izquierda: Logo y Título del Catálogo */}
           <div className="flex items-center">
-            <Link href="https://www.infectotropico.com/" className="flex-shrink-0">
+            <Link href={process.env.NEXT_PUBLIC_MAIN_SITE_URL || "https://www.infectotropico.com/"} className="flex-shrink-0">
               <Logo version="original" width={60} height={60} />{" "}
             </Link>
             {/* Título "Catálogo de Cursos" */}

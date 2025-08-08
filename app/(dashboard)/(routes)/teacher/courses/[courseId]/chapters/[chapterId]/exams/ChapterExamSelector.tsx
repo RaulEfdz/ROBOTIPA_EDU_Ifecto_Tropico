@@ -50,17 +50,23 @@ export const ChapterExamSelector: React.FC<ChapterExamSelectorProps> =
 
           if (!listRes.ok)
             throw new Error(`Error fetching exams list: ${listRes.statusText}`);
-          if (!currentRes.ok)
+
+          const listData = await listRes.json();
+          setExams(listData.exams || []);
+
+          // Manejo especial para currentRes: 404 es normal (no hay examen asignado)
+          if (currentRes.ok) {
+            const currentData = await currentRes.json();
+            setSelectedExamId(currentData.exam?.id || null);
+          } else if (currentRes.status === 404) {
+            // 404 significa que no hay examen asignado al capítulo, es normal
+            setSelectedExamId(null);
+          } else {
+            // Solo otros errores son problemáticos
             throw new Error(
               `Error fetching current exam: ${currentRes.statusText}`
             );
-
-          const listData = await listRes.json();
-          const currentData = await currentRes.json();
-
-          setExams(listData.exams || []);
-          // currentData.exam puede ser null o objeto
-          setSelectedExamId(currentData.exam?.id || null);
+          }
         } catch (err: any) {
           setError(err.message || "Error fetching data");
         } finally {
@@ -82,11 +88,6 @@ export const ChapterExamSelector: React.FC<ChapterExamSelectorProps> =
 
     // Guardar examen en el capítulo
     const handleSave = async () => {
-      if (!selectedExamId) {
-        toast.error("Selecciona un examen antes de guardar");
-        return;
-      }
-
       setIsSaving(true);
       try {
         const res = await fetch(
@@ -99,7 +100,11 @@ export const ChapterExamSelector: React.FC<ChapterExamSelectorProps> =
         );
         if (!res.ok) throw new Error(await res.text());
 
-        toast.success("Examen asignado al capítulo");
+        if (selectedExamId) {
+          toast.success("Examen asignado al capítulo");
+        } else {
+          toast.success("Examen desasignado del capítulo");
+        }
         router.refresh();
       } catch (err: any) {
         toast.error(err.message || "Error guardando el examen");
@@ -133,24 +138,44 @@ export const ChapterExamSelector: React.FC<ChapterExamSelectorProps> =
             <p className="text-gray-500 italic">Cargando exámenes...</p>
           ) : error ? (
             <p className="text-red-500 italic">{error}</p>
-          ) : filteredExams.length === 0 ? (
-            <p className="text-gray-500 italic">No hay exámenes.</p>
           ) : (
-            filteredExams.map((exam) => (
-              <label key={exam.id} className="flex items-center">
+            <>
+              {/* Opción para no asignar examen */}
+              <label className="flex items-center">
                 <input
                   type="radio"
                   name={`chapter-exam-${chapterId}`}
-                  value={exam.id}
-                  checked={selectedExamId === exam.id}
-                  onChange={() => setSelectedExamId(exam.id)}
+                  value=""
+                  checked={selectedExamId === null}
+                  onChange={() => setSelectedExamId(null)}
                   className="mr-2"
                 />
-                <span className="text-gray-700 dark:text-gray-300">
-                  {exam.title}
+                <span className="text-gray-500 dark:text-gray-400 italic">
+                  Sin examen asignado
                 </span>
               </label>
-            ))
+              
+              {/* Lista de exámenes disponibles */}
+              {filteredExams.length === 0 ? (
+                <p className="text-gray-500 italic ml-6">No hay exámenes creados para este curso.</p>
+              ) : (
+                filteredExams.map((exam) => (
+                  <label key={exam.id} className="flex items-center">
+                    <input
+                      type="radio"
+                      name={`chapter-exam-${chapterId}`}
+                      value={exam.id}
+                      checked={selectedExamId === exam.id}
+                      onChange={() => setSelectedExamId(exam.id)}
+                      className="mr-2"
+                    />
+                    <span className="text-gray-700 dark:text-gray-300">
+                      {exam.title}
+                    </span>
+                  </label>
+                ))
+              )}
+            </>
           )}
         </div>
 
@@ -159,7 +184,7 @@ export const ChapterExamSelector: React.FC<ChapterExamSelectorProps> =
             onClick={handleSave}
             disabled={isSaving || isLoading || Boolean(error)}
           >
-            {isSaving ? "Guardando..." : "Guardar Examen"}
+            {isSaving ? "Guardando..." : selectedExamId ? "Asignar Examen" : "Desasignar Examen"}
           </Button>
         </div>
       </div>

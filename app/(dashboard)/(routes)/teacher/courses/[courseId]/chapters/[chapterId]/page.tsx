@@ -15,6 +15,7 @@ import {
   ChevronRight,
   RotateCcw,
   VideoIcon,
+  Trash2,
 } from "lucide-react";
 
 import { IconBadge } from "@/components/icon-badge";
@@ -27,6 +28,18 @@ import { Chapter as PrismaChapter } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Video } from "@/prisma/types";
 import { ChapterExamSelector } from "./exams/ChapterExamSelector";
 
@@ -74,6 +87,11 @@ const texts = {
     freeAccess: "Acceso gratuito",
     premiumAccess: "Acceso De Pago",
     editChapter: "Editando capítulo",
+    deleteChapter: "Eliminar capítulo",
+    deleteConfirmTitle: "¿Estás seguro?",
+    deleteConfirmDescription: "Esta acción no se puede deshacer. Se eliminará permanentemente el capítulo y todo su contenido, incluyendo videos y progreso de estudiantes.",
+    deleteConfirm: "Sí, eliminar",
+    cancel: "Cancelar",
   },
   en: {
     unpublishedWarning:
@@ -98,6 +116,11 @@ const texts = {
     freeAccess: "Free access",
     premiumAccess: "De Pago access",
     editChapter: "Editing chapter",
+    deleteChapter: "Delete chapter",
+    deleteConfirmTitle: "Are you sure?",
+    deleteConfirmDescription: "This action cannot be undone. This will permanently delete the chapter and all its content, including videos and student progress.",
+    deleteConfirm: "Yes, delete",
+    cancel: "Cancel",
   },
 };
 
@@ -111,6 +134,7 @@ export default function ChapterIdPage() {
   const [attachments, setAttachments] = useState<HandlerChecksItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [publishingStatus, setPublishingStatus] = useState<boolean>(false);
+  const [deletingStatus, setDeletingStatus] = useState<boolean>(false);
   const [completionProgress, setCompletionProgress] = useState<number>(0);
 
   useEffect(() => {
@@ -181,6 +205,35 @@ export default function ChapterIdPage() {
       console.error("Error al cambiar estado de publicación:", error);
     } finally {
       setPublishingStatus(false);
+    }
+  };
+
+  const deleteChapter = async () => {
+    if (!chapter || !params || !params.courseId || !params.chapterId) return;
+
+    setDeletingStatus(true);
+    
+    try {
+      const response = await fetch(
+        `/api/courses/${params.courseId}/chapters/${params.chapterId}/delete`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        toast.success("Capítulo eliminado exitosamente");
+        // Redirigir de vuelta a la configuración del curso
+        router.push(`/teacher/courses/${params.courseId}`);
+      } else {
+        const error = await response.text();
+        toast.error("Error al eliminar el capítulo: " + error);
+      }
+    } catch (error) {
+      console.error("Error al eliminar capítulo:", error);
+      toast.error("Error inesperado al eliminar el capítulo");
+    } finally {
+      setDeletingStatus(false);
     }
   };
 
@@ -267,6 +320,40 @@ export default function ChapterIdPage() {
                 ? texts[language].unpublish
                 : texts[language].publish}
             </Button>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  disabled={deletingStatus}
+                >
+                  {deletingStatus ? (
+                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  ) : (
+                    <Trash2 className="h-4 w-4 mr-2" />
+                  )}
+                  {texts[language].deleteChapter}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{texts[language].deleteConfirmTitle}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {texts[language].deleteConfirmDescription}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{texts[language].cancel}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={deleteChapter}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    {texts[language].deleteConfirm}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
 

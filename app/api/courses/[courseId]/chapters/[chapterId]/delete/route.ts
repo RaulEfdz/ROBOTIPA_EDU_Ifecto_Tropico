@@ -48,19 +48,31 @@ export async function DELETE(
 
     // ✅ Si el capítulo tiene video con asset en Mux, eliminarlo
     if (chapter.video?.assetId) {
-      await Video.Assets.del(chapter.video.assetId);
+      try {
+        await Video.Assets.del(chapter.video.assetId);
+      } catch (muxError) {
+        console.warn("[CHAPTER_DELETE] Error deleting Mux asset:", muxError);
+      }
     }
 
-    // ✅ Eliminar el registro de Video en la base de datos (si existe)
-    if (chapter.video) {
-      await db.video.delete({
+    // ✅ Eliminar todos los datos relacionados con el capítulo de manera explícita
+    await db.$transaction(async (tx) => {
+      // Eliminar progreso de usuarios en este capítulo
+      await tx.userProgress.deleteMany({
         where: { chapterId: chapter.id },
       });
-    }
 
-    // ✅ Eliminar el capítulo
-    const deleted = await db.chapter.delete({
-      where: { id: chapterId },
+      // Eliminar video asociado (si existe)
+      if (chapter.video) {
+        await tx.video.delete({
+          where: { chapterId: chapter.id },
+        });
+      }
+
+      // Eliminar el capítulo
+      await tx.chapter.delete({
+        where: { id: chapterId },
+      });
     });
 
     // ✅ Si no quedan capítulos publicados, despublicar el curso
@@ -75,7 +87,7 @@ export async function DELETE(
       });
     }
 
-    return NextResponse.json(deleted);
+    return NextResponse.json({ message: "Chapter deleted successfully", chapterId });
   } catch (error) {
     console.error("[CHAPTER_DELETE]", error);
     return new NextResponse("Error interno", { status: 500 });
