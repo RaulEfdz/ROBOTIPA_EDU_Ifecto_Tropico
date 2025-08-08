@@ -98,14 +98,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="px-4 py-4 border-t border-white/20">
             <Administrative />
           </div>
-          <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 bg-white/5 backdrop-blur-sm">
-            <span className="text-white font-semibold text-xs tracking-wide">
-              ROBOTIPA_LMS
-            </span>
-            <span className="text-white/80 font-medium text-xs bg-white/10 px-2 py-1 rounded-full">
-              v250709
-            </span>
-          </div>
           <div className="px-4 py-3 text-center text-sm font-medium text-white bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm border-t border-white/10">
             ROBOTIPA EDU v2.0.1
           </div>
