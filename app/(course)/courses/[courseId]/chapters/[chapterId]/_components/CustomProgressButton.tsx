@@ -14,15 +14,49 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { usePrimaryColorStyle, isHexColor, getPrimaryColor } from "@/lib/colors";
 
-// Colores específicos para el botón de progreso
-const courseColors = {
-  completed: {
-    button: "bg-primary-600 hover:bg-primary-700",
-  },
-  progress: {
-    button: "bg-primary-600 hover:bg-primary-700",
-  },
+// Función para obtener estilos dinámicos del botón
+const getButtonStyles = () => {
+  const primaryColor = getPrimaryColor();
+  
+  if (isHexColor(primaryColor)) {
+    const bgStyle = usePrimaryColorStyle('600');
+    const hoverStyle = usePrimaryColorStyle('700');
+    return {
+      style: bgStyle,
+      hoverStyle: hoverStyle,
+      isCustom: true,
+    };
+  }
+  
+  // Para colores Tailwind
+  const colorName = primaryColor.toLowerCase();
+  return {
+    className: `bg-${colorName}-600 hover:bg-${colorName}-700`,
+    isCustom: false,
+  };
+};
+
+// Función para obtener estilos del botón WhatsApp
+const getWhatsAppButtonStyles = () => {
+  const primaryColor = getPrimaryColor();
+  
+  if (isHexColor(primaryColor)) {
+    const bgStyle = usePrimaryColorStyle('600');
+    const hoverStyle = usePrimaryColorStyle('700');
+    return {
+      style: bgStyle,
+      hoverStyle: hoverStyle,
+      isCustom: true,
+    };
+  }
+  
+  const colorName = primaryColor.toLowerCase();
+  return {
+    className: `bg-${colorName}-600 hover:bg-${colorName}-700`,
+    isCustom: false,
+  };
 };
 
 export interface CustomProgressButtonProps {
@@ -73,6 +107,10 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
   // Mensaje para WhatsApp
   const mensajeWhatsapp = `Hola, he completado el curso con ID: ${courseId}.\nFecha: ${fecha}\nNombre: ${nombre}\nCorreo: ${correo}`;
 
+  // Obtener estilos dinámicos
+  const buttonStyles = getButtonStyles();
+  const whatsAppStyles = getWhatsAppButtonStyles();
+
   const handleClick = async () => {
     setIsLoading(true);
     try {
@@ -121,11 +159,18 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
         onClick={handleClick}
         disabled={isLoading}
         size="sm"
-        className={`shadow-sm hover:shadow ${
-          isCompleted
-            ? courseColors.completed.button
-            : courseColors.progress.button
-        }`}
+        className={buttonStyles.isCustom ? "shadow-sm hover:shadow" : `shadow-sm hover:shadow ${buttonStyles.className}`}
+        style={buttonStyles.isCustom ? buttonStyles.style : undefined}
+        onMouseEnter={(e) => {
+          if (buttonStyles.isCustom && buttonStyles.hoverStyle) {
+            Object.assign(e.currentTarget.style, buttonStyles.hoverStyle);
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (buttonStyles.isCustom && buttonStyles.style) {
+            Object.assign(e.currentTarget.style, buttonStyles.style);
+          }
+        }}
       >
         {isLoading
           ? "Cargando..."
@@ -149,8 +194,19 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
           <DialogFooter>
             <Button
               asChild
-              className="bg-green-600 hover:bg-green-700"
+              className={whatsAppStyles.isCustom ? "" : whatsAppStyles.className}
+              style={whatsAppStyles.isCustom ? whatsAppStyles.style : undefined}
               disabled={userLoading}
+              onMouseEnter={(e) => {
+                if (whatsAppStyles.isCustom && whatsAppStyles.hoverStyle) {
+                  Object.assign(e.currentTarget.style, whatsAppStyles.hoverStyle);
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (whatsAppStyles.isCustom && whatsAppStyles.style) {
+                  Object.assign(e.currentTarget.style, whatsAppStyles.style);
+                }
+              }}
             >
               <a
                 href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent(

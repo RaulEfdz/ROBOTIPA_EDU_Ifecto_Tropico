@@ -2,19 +2,20 @@
 import { CourseSidebar } from "./_components/course-sidebar";
 import { getCourseLayoutData } from "./getCourseLayoutData";
 import WhatsAppStudentButton from "@/app/components/WhatsAppStudentButton";
-import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer";
+import { CourseLayoutWrapper } from "./_components/course-layout-wrapper";
 
 const CourseLayout = async ({ children, params }: any) => {
   // Desestructuramos los datos cargados
-  const { course, progressCount } = await getCourseLayoutData(params.courseId);
-  const user = await getCurrentUserFromDBServer();
+  const { course, progressCount, purchase, user } = await getCourseLayoutData(params.courseId);
 
   return (
-    <div className="h-full">
-      <div className="hidden md:flex h-full w-80 flex-col fixed inset-y-0 z-50">
-        <CourseSidebar course={course} progressCount={progressCount} />
-      </div>
-      <main className="md:pl-80 h-full">{children}</main>
+    <CourseLayoutWrapper 
+      course={course} 
+      progressCount={progressCount}
+      purchase={purchase}
+      user={user}
+    >
+      {children}
       
       {/* WhatsApp Floating Button for Mobile */}
       <div className="md:hidden">
@@ -25,7 +26,7 @@ const CourseLayout = async ({ children, params }: any) => {
           variant="floating"
         />
       </div>
-    </div>
+    </CourseLayoutWrapper>
   );
 };
 
