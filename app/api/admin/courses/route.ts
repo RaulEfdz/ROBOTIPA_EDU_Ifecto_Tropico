@@ -25,6 +25,11 @@ export async function GET() {
   // }
 
   const courses = await db.course.findMany({
+    where: {
+      delete: {
+        not: true // Excluir cursos marcados como eliminados
+      }
+    },
     select: {
       id: true,
       title: true,
