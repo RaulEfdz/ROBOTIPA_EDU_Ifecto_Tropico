@@ -35,9 +35,9 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
   let routes = guestRoutes; // Por defecto
   
   // Priorizar el rol del usuario sobre la URL
-  if (user?.customRole === "teacher" || user?.customRole === "admin") {
+  if ((user as any)?.customRole === "teacher" || (user as any)?.customRole === "admin") {
     routes = teacherRoutes;
-  } else if (user?.customRole === "student") {
+  } else if ((user as any)?.customRole === "student") {
     routes = studentRoutes;
   } else if (isTeacherPage) {
     // Si no hay usuario identificado pero está en ruta de teacher

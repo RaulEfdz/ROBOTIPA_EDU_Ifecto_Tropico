@@ -38,7 +38,7 @@ export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const response = NextResponse.next();
 
-  const supabase = createServerClient(request, response);
+  const supabase = await createServerClient(request, response);
 
   const {
     data: { session },

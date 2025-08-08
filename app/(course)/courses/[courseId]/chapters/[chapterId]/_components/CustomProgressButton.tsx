@@ -25,8 +25,8 @@ const useButtonStyles = () => {
   
   if (isHexColor(primaryColor)) {
     return {
-      style: bgStyle,
-      hoverStyle: hoverStyle,
+      style: typeof bgStyle === 'object' ? bgStyle : undefined,
+      hoverStyle: typeof hoverStyle === 'object' ? hoverStyle : undefined,
       isCustom: true,
     };
   }
@@ -48,8 +48,8 @@ const useWhatsAppButtonStyles = () => {
   
   if (isHexColor(primaryColor)) {
     return {
-      style: bgStyle,
-      hoverStyle: hoverStyle,
+      style: typeof bgStyle === 'object' ? bgStyle : undefined,
+      hoverStyle: typeof hoverStyle === 'object' ? hoverStyle : undefined,
       isCustom: true,
     };
   }

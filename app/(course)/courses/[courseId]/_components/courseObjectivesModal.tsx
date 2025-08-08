@@ -48,12 +48,12 @@ const CourseObjectivesModal = ({
           backgroundColor: buttonStyles.background,
         } : undefined}
         onMouseEnter={(e) => {
-          if (buttonStyles.isCustom) {
+          if (buttonStyles.isCustom && buttonStyles.hoverBackground) {
             e.currentTarget.style.backgroundColor = buttonStyles.hoverBackground;
           }
         }}
         onMouseLeave={(e) => {
-          if (buttonStyles.isCustom) {
+          if (buttonStyles.isCustom && buttonStyles.background) {
             e.currentTarget.style.backgroundColor = buttonStyles.background;
           }
         }}
@@ -93,12 +93,12 @@ const CourseObjectivesModal = ({
                     backgroundColor: buttonStyles.background,
                   } : undefined}
                   onMouseEnter={(e) => {
-                    if (buttonStyles.isCustom) {
+                    if (buttonStyles.isCustom && buttonStyles.hoverBackground) {
                       e.currentTarget.style.backgroundColor = buttonStyles.hoverBackground;
                     }
                   }}
                   onMouseLeave={(e) => {
-                    if (buttonStyles.isCustom) {
+                    if (buttonStyles.isCustom && buttonStyles.background) {
                       e.currentTarget.style.backgroundColor = buttonStyles.background;
                     }
                   }}

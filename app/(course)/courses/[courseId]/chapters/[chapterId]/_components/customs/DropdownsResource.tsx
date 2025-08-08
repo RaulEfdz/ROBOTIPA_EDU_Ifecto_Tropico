@@ -50,7 +50,7 @@ export const DropdownsResource: React.FC<listResources> = ({ listOptions }) => {
           {isOpen &&
             <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-[#FFFCF8] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
               <div className="py-1" role="none">
-                {elementosSinJson.map((item: { title: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.PromiseLikeOfReactNode | null | undefined; url: string | number | boolean; }, index: React.Key | null | undefined) => {
+                {elementosSinJson.map((item: { title: React.ReactNode; url: string; }, index: React.Key | null | undefined) => {
 
                   return (
                     <a
