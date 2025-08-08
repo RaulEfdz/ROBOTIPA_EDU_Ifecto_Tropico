@@ -4,7 +4,7 @@ import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUse
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { protocolId: string } }
+  { params }: { params: Promise<{ protocolId: string }> }
 ) {
   try {
     const user = await getCurrentUserFromDBServer()
@@ -12,7 +12,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { protocolId } = params
+    const { protocolId } = await params
     const body = await req.json()
     const { userId, accessType = "view", expiresAt } = body
 
@@ -89,7 +89,7 @@ export async function POST(
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { protocolId: string } }
+  { params }: { params: Promise<{ protocolId: string }> }
 ) {
   try {
     const user = await getCurrentUserFromDBServer()
@@ -97,7 +97,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { protocolId } = params
+    const { protocolId } = await params
 
     // Verificar que el protocolo existe y el usuario tiene permisos para ver los accesos
     const protocol = await db.protocol.findUnique({
@@ -143,7 +143,7 @@ export async function GET(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { protocolId: string } }
+  { params }: { params: Promise<{ protocolId: string }> }
 ) {
   try {
     const user = await getCurrentUserFromDBServer()
@@ -151,7 +151,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { protocolId } = params
+    const { protocolId } = await params
     const { searchParams } = new URL(req.url)
     const userId = searchParams.get("userId")
 
