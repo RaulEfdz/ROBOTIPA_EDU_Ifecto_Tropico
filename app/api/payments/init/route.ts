@@ -128,11 +128,7 @@ async function callPaymentApi(
   accessToken: string,
   formParams: URLSearchParams
 ) {
-  // Print the decoded RETURN_URL value for inspection
-  const returnUrlEncoded = formParams.get("RETURN_URL") || "";
-  const returnUrlDecoded = decodeURIComponent(returnUrlEncoded);
-  console.log("Calling PagueloFacil API with params:", formParams.toString());
-  console.log("Decoded RETURN_URL:", returnUrlDecoded.replace(/%/g, "\\x"));
+  // Calling PagueloFacil API
 
   const response = await fetch(apiUrl, {
     method: "POST",

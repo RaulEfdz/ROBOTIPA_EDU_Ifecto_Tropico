@@ -209,8 +209,6 @@ export const columns: ColumnDef<UserWithProgress>[] = [
             size="sm"
             onClick={() => {
               // Aquí se podría abrir un modal con más detalles
-              console.log('Detalles del estudiante:', student);
-              console.log('Progreso en cursos:', coursesProgress);
             }}
           >
             Ver Detalles

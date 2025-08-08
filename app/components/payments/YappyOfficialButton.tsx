@@ -50,12 +50,10 @@ export default function YappyOfficialButton({
       script.type = "module";
       script.src = cdnUrl;
       script.onload = () => {
-        console.log("Yappy script loaded successfully");
         setIsYappyLoaded(true);
         setupYappyButton();
       };
       script.onerror = () => {
-        console.error("Error loading Yappy script");
         toast.error("Error cargando el botón de Yappy");
       };
 
@@ -83,7 +81,6 @@ export default function YappyOfficialButton({
       // Configurar event listeners
       const setupEventListeners = () => {
         yappyElement.addEventListener("eventSuccess", (event: any) => {
-          console.log("Transacción ejecutada:", event.detail);
           toast.success("¡Pago completado exitosamente!");
           setIsLoading(false);
 
@@ -94,13 +91,11 @@ export default function YappyOfficialButton({
         });
 
         yappyElement.addEventListener("eventError", (event: any) => {
-          console.log("Transacción fallida:", event.detail);
           toast.error("Error en el pago. Por favor, intenta nuevamente.");
           setIsLoading(false);
         });
 
         yappyElement.addEventListener("eventClick", async () => {
-          console.log("Yappy button clicked");
           setIsLoading(true);
 
           try {
@@ -118,11 +113,6 @@ export default function YappyOfficialButton({
 
             const result = await response.json();
 
-            console.log("Create order response:", {
-              status: response.status,
-              ok: response.ok,
-              result,
-            });
 
             if (response.ok && result.success && result.body) {
               const params = {
@@ -131,20 +121,14 @@ export default function YappyOfficialButton({
                 token: result.body.token,
               };
 
-              console.log("Calling eventPayment with params:", params);
               (yappyElement as any).eventPayment(params);
             } else {
               const errorMsg =
                 result.error ||
                 `Error HTTP ${response.status}: Error creando la orden`;
-              console.error("Order creation failed:", {
-                response: response.status,
-                result,
-              });
               throw new Error(errorMsg);
             }
           } catch (error) {
-            console.error("Error:", error);
             toast.error(
               error instanceof Error
                 ? error.message
@@ -157,7 +141,6 @@ export default function YappyOfficialButton({
         yappyElement.addEventListener("isYappyOnline", (event: any) => {
           const isOnline = event.detail === true;
           setIsYappyOnline(isOnline);
-          console.log("Yappy online status:", isOnline);
 
           if (!isOnline) {
             toast.warning(

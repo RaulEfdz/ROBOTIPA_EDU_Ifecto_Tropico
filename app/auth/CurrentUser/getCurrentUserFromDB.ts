@@ -43,20 +43,12 @@ export async function getCurrentUserFromDB(): Promise<UserDB | null> {
     });
 
     if (!response.ok) {
-      // Solo loggear errores que no sean 401 (unauthorized) ya que es esperado para visitantes
-      if (response.status !== 401) {
-        console.error(
-          "❌ Error al obtener el usuario desde la API:",
-          response.status
-        );
-      }
       return null;
     }
 
     const user: UserDB = await response.json();
     return user;
   } catch (error) {
-    console.error("❌ Error inesperado al obtener usuario:", error);
     return null;
   }
 }

@@ -8,7 +8,6 @@ export async function GET(
   { params }: { params: Promise<{ courseId: string }> }
 ) {
   const { courseId } = await params;
-  console.log(
     `[API_COURSE_PUBLISHED_CHAPTERS_GET] Iniciando para courseId: ${courseId}`
   );
   try {
@@ -19,11 +18,9 @@ export async function GET(
       return new NextResponse("Course ID missing", { status: 400 });
     }
 
-    console.log(
       `[API_COURSE_PUBLISHED_CHAPTERS_GET] Llamando a getCourseWithPublishedChapters con courseId: ${courseId}`
     );
     const course = await getCourseWithPublishedChapters(courseId);
-    console.log(
       "[API_COURSE_PUBLISHED_CHAPTERS_GET] Resultado de getCourseWithPublishedChapters:",
       JSON.stringify(course, null, 2)
     );
@@ -41,7 +38,6 @@ export async function GET(
       );
     }
 
-    console.log(
       `[API_COURSE_PUBLISHED_CHAPTERS_GET] Devolviendo curso para courseId: ${courseId}`
     );
     return NextResponse.json(course);

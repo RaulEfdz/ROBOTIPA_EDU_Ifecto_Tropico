@@ -32,7 +32,6 @@ export default function TestSession() {
 
       // Log cookies after login for debugging
       const cookies = document.cookie;
-      console.log("Cookies después de login:", cookies);
       setMessage((msg) => msg + "\nCookies después de login: " + cookies);
     } else {
       setSessionActive(false);

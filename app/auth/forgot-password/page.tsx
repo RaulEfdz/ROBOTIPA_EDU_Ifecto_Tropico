@@ -24,37 +24,30 @@ export default function ForgotPasswordPage() {
         const errorCode = queryParams.get("error_code");
         const errorDescription = queryParams.get("error_description");
 
-        console.log(
           "%c[ForgotPasswordPage] URL Search Params:",
           "color: blue; font-weight: bold;",
           window.location.search
         );
-        console.log(
           "%c[ForgotPasswordPage] Token param:",
           "color: green; font-weight: bold;",
           token_hash
         );
-        console.log(
           "%c[ForgotPasswordPage] Type param:",
           "color: purple; font-weight: bold;",
           type
         );
-        console.log(
           "%c[ForgotPasswordPage] Redirect_to param:",
           "color: orange; font-weight: bold;",
           redirectTo
         );
-        console.log(
           "%c[ForgotPasswordPage] Error param:",
           "color: red; font-weight: bold;",
           errorParam
         );
-        console.log(
           "%c[ForgotPasswordPage] Error code param:",
           "color: red; font-weight: bold;",
           errorCode ?? "null"
         );
-        console.log(
           "%c[ForgotPasswordPage] Error description param:",
           "color: red; font-weight: bold;",
           errorDescription

@@ -7,11 +7,7 @@ import { headers } from "next/headers";
 
 export async function POST(req: Request) {
   const body = await req.text();
-  // Loguear cada petición del webhook es crucial para el debugging
-  console.log("--- PágeloFácil Webhook Received ---");
-  console.log("Raw Body:", body);
-  console.log("Headers:", await headers()); // Corregido para evitar error de 'entries'
-  console.log("---------------------------------");
+  // Process webhook data
 
   const params = new URLSearchParams(body);
   const data = {
@@ -23,7 +19,6 @@ export async function POST(req: Request) {
   };
 
   if (!data.paymentId || !data.customParam1) {
-    console.error("Webhook Error: Faltan 'Oper' o 'PARM_1'.", data);
     return new NextResponse("Webhook Error: Faltan parámetros requeridos.", {
       status: 400,
     });
@@ -42,8 +37,7 @@ export async function POST(req: Request) {
       });
 
       if (existingPayment) {
-        console.log("Webhook para pago ya procesado:", data.paymentId);
-        return; // Salir de la transacción, ya fue procesado.
+        return; // Payment already processed
       }
 
       // 2. Registrar el intento de pago en nuestra base de datos, sin importar el resultado.
@@ -100,22 +94,13 @@ export async function POST(req: Request) {
               purchaseId: data.paymentId!,
               transactionDetails: `Transacción aprobada vía webhook`,
             });
-          } else {
-            console.error(
-              `Webhook: Usuario (ID: ${userId}) o Curso (ID: ${courseId}) no encontrado para enviar email. Pago ID: ${data.paymentId}`
-            );
           }
         }
-      } else {
-        console.warn(
-          `Pago ${data.paymentId} NO APROBADO. Estado: ${data.status}, Razón: ${data.razon}`
-        );
       }
     });
 
     return NextResponse.json({ message: "Webhook procesado exitosamente" });
   } catch (error: any) {
-    console.error("[PAGUELOFACIL_WEBHOOK_ERROR]", error);
     return new NextResponse(`Webhook Error: ${error.message}`, { status: 500 });
   }
 }

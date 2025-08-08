@@ -74,7 +74,6 @@ export default function LoginForm({
       try {
         await fetch("/api/auth/insertUser", { method: "POST" });
       } catch (syncErr) {
-        console.error("Sync error:", syncErr);
         toast.warning("No se pudo sincronizar la sesión completamente.", {
           duration: 5000,
         });

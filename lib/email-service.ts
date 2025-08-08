@@ -98,7 +98,6 @@ export async function sendEnrollmentConfirmationEmails({
         subject: userEmailSubject,
         html: userEmailHtmlBody,
       });
-      console.log(
         `Correo de confirmación de acceso enviado a: ${user.email} para el curso ${course.title}`
       );
     } catch (error) {
@@ -252,7 +251,6 @@ export async function sendCourseCompletionEmails({
       subject: userEmailSubject,
       html: userEmailHtmlBody,
     });
-    console.log(
       `Correo de finalización de curso enviado a: ${user.email} para el curso ${course.title}`
     );
   } catch (error) {
@@ -287,7 +285,6 @@ export async function sendCourseCompletionEmails({
         </div>
       `,
     });
-    console.log(
       `Notificación de finalización enviada a  para el curso ${course.title} completado por ${userName}`
     );
   } catch (error) {

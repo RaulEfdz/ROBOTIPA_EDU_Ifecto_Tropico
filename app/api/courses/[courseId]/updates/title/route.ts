@@ -38,7 +38,6 @@ export async function POST(
 
     // Permitir solo si es admin (por ID) o dueño del curso
     const isAdmin = translateRole(user.role) === "admin";
-    console.log("isAdmin", isAdmin);
     const isOwner = course.userId === user.id;
     if (!isAdmin && !isOwner) {
       return new NextResponse("Unauthorized", { status: 401 });

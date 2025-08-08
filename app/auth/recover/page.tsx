@@ -24,37 +24,30 @@ export default function RecoverPage() {
         const errorCode = queryParams.get("error_code");
         const errorDescription = queryParams.get("error_description");
 
-        console.log(
           "%c[RecoverPage] URL Search Params:",
           "color: blue; font-weight: bold;",
           window.location.search
         );
-        console.log(
           "%c[RecoverPage] Token param:",
           "color: green; font-weight: bold;",
           token
         );
-        console.log(
           "%c[RecoverPage] Type param:",
           "color: purple; font-weight: bold;",
           type
         );
-        console.log(
           "%c[RecoverPage] Redirect_to param:",
           "color: orange; font-weight: bold;",
           redirectTo
         );
-        console.log(
           "%c[RecoverPage] Error param:",
           "color: red; font-weight: bold;",
           errorParam
         );
-        console.log(
           "%c[RecoverPage] Error code param:",
           "color: red; font-weight: bold;",
           errorCode
         );
-        console.log(
           "%c[RecoverPage] Error description param:",
           "color: red; font-weight: bold;",
           errorDescription

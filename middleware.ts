@@ -35,9 +35,6 @@ const publicRoutes = [
 ];
 
 export async function middleware(request: NextRequest) {
-  console.log("--- Middleware Start ---");
-  console.log("Request URL:", request.nextUrl.pathname);
-  console.log("All Cookies:", request.cookies.getAll());
   const { pathname, search } = request.nextUrl;
   const response = NextResponse.next();
 
@@ -46,8 +43,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-
-  console.log("Supabase session in middleware:", session);
 
   const isPublicRoute = publicRoutes.some((route) => {
     if (route.includes("[") && route.includes("]")) {
