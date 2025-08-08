@@ -60,9 +60,11 @@ export async function PUT(
           if (cert) {
             certificateGenerated = true;
             certificateId = cert.id;
+            console.log(
               `CERT_GEN: Certificado generado/obtenido para usuario ${user.id} en curso ${courseId} con código ${cert.code}`
             );
           } else {
+            console.log(
               `CERT_GEN: No se pudo generar/obtener certificado para usuario ${user.id} en curso ${courseId}.`
             );
           }
@@ -91,6 +93,7 @@ export async function PUT(
                 course,
                 certificateId: certificateId || undefined,
               });
+              console.log(
                 `EMAIL_NOTIFICATION: Notificación de finalización enviada para usuario ${user.id} en curso ${courseId}`
               );
             }

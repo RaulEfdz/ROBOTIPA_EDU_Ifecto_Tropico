@@ -26,6 +26,23 @@ function ConfirmActionContent() {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const {
+        data: { user },
+        error: userError
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        console.error(
+          "Error al obtener usuario post-confirmación:",
+          userError
+        );
+        setMessage(
+          "Hubo un problema al verificar tu cuenta. Por favor, intenta iniciar sesión manualmente."
+        );
+        setIsError(true);
+        return;
+      }
+
+      const {
         data: { session },
         error: sessionError,
       } = await supabase.auth.getSession();

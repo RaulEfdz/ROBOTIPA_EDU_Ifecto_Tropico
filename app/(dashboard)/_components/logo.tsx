@@ -78,20 +78,22 @@ export const Logo = () => {
   return (
     <Link href="/" className="flex flex-col items-start gap-2 group w-full">
       {/* Logo */}
-      <div className="relative">
-        <Image
-          className="cursor-pointer transition-transform group-hover:scale-105"
-          height={100}
-          width={100}
-          alt="ROBOTIPA Logo"
-          src={process.env.NEXT_PUBLIC_LOGO_LIGHT || "/LOGO_LIGHT.png"}
-        />
+      <div className="relative mb-1">
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-white/20">
+          <Image
+            className="cursor-pointer transition-all duration-300 group-hover:scale-110 drop-shadow-lg"
+            height={80}
+            width={80}
+            alt="ROBOTIPA Logo"
+            src={process.env.NEXT_PUBLIC_LOGO_LIGHT || "/LOGO_LIGHT.png"}
+          />
+        </div>
       </div>
 
       {/* Título y Badge de Rol */}
       <div className="flex flex-col items-start gap-1 w-full">
-        <h1 className=" font-bold text-sm leading-tight text-white">
-          Robotipa Academy
+        <h1 className="font-bold text-lg leading-tight text-white tracking-wide">
+          ROBOTIPA Academy
         </h1>
         <Badge
           className={`${roleInfo.color} border-0 text-xs font-medium flex items-center gap-1 px-2 py-0.5`}

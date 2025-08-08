@@ -29,6 +29,8 @@ const nextConfig = {
         pathname: "/**",
       }
     ],
+    unoptimized: false,
+    formats: ['image/webp', 'image/avif'],
   },
 };
 

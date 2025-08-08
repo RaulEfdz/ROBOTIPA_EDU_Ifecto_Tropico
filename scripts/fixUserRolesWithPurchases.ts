@@ -49,6 +49,7 @@ async function findUsersWithPurchasesAndWrongRole(): Promise<UserToFix[]> {
   }));
 
   usersToFix.forEach(user => {
+    console.log(`🔍 User found with purchases but wrong role: ${user.fullName} (${user.email}) - Role: ${user.customRole} - Purchases: ${user.purchaseCount}`);
   });
 
   return usersToFix;
@@ -80,18 +81,20 @@ async function main() {
     const usersToFix = await findUsersWithPurchasesAndWrongRole();
     
     if (usersToFix.length === 0) {
+      console.log("✅ No users found that need role fixing. All users with purchases already have the correct student role.");
       return;
     }
 
     // Ask for confirmation in production
     if (process.env.NODE_ENV === 'production') {
-      
+      console.log("⚠️ Running in production mode. Checking for confirmation...");
       if (process.env.CONFIRM_ROLE_FIX !== 'true') {
+        console.log("❌ CONFIRM_ROLE_FIX is not set to 'true'. Exiting without making changes.");
         return;
       }
     }
 
-    
+    console.log(`🚀 Starting role fix process for ${usersToFix.length} users...`);
     let successCount = 0;
     let failureCount = 0;
 
@@ -105,8 +108,13 @@ async function main() {
       }
     }
 
+    console.log(`\n📊 Fix completed! Results:`);
+    console.log(`  ✅ Successfully fixed: ${successCount} users`);
+    console.log(`  ❌ Failed to fix: ${failureCount} users`);
+    console.log(`  📈 Total processed: ${successCount + failureCount} users`);
     
     if (successCount > 0) {
+      console.log(`🎉 Role fixing completed successfully for ${successCount} user(s)!`);
     }
 
   } catch (error) {

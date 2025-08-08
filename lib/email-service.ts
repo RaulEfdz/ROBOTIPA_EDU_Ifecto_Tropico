@@ -98,6 +98,7 @@ export async function sendEnrollmentConfirmationEmails({
         subject: userEmailSubject,
         html: userEmailHtmlBody,
       });
+      console.log(
         `Correo de confirmación de acceso enviado a: ${user.email} para el curso ${course.title}`
       );
     } catch (error) {
@@ -121,7 +122,9 @@ export async function sendEnrollmentConfirmationEmails({
         where: { userId: user.id, courseId: course.id },
       });
       yaTeniaAcceso = !!existing && existing.createdAt < new Date();
-    } catch {}
+    } catch (error) {
+      console.error('Error checking existing purchase:', error);
+    }
     // Buscar detalles de pago si existen
     let paymentDetails = "No disponible";
     try {
@@ -132,7 +135,9 @@ export async function sendEnrollmentConfirmationEmails({
       if (payment) {
         paymentDetails = `Monto: $${payment.amount} USD<br>Estado: ${payment.status}<br>ID Pago: ${payment.id}<br>Fecha: ${payment.createdAt.toLocaleString()}`;
       }
-    } catch {}
+    } catch (error) {
+      console.error('Error fetching payment details:', error);
+    }
     await resend.emails.send({
       from: `Notificaciones ${appName} <${EMAIL_FROM}>`,
       to: "",
@@ -251,6 +256,7 @@ export async function sendCourseCompletionEmails({
       subject: userEmailSubject,
       html: userEmailHtmlBody,
     });
+    console.log(
       `Correo de finalización de curso enviado a: ${user.email} para el curso ${course.title}`
     );
   } catch (error) {
@@ -285,6 +291,7 @@ export async function sendCourseCompletionEmails({
         </div>
       `,
     });
+    console.log(
       `Notificación de finalización enviada a  para el curso ${course.title} completado por ${userName}`
     );
   } catch (error) {

@@ -53,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     >
       {/* Header */}
       <div
-        className={`flex items-center ${isCollapsed ? "justify-center px-2" : "justify-between px-6"} py-5 border-b border-primary text-white`}
+        className={`flex items-center ${isCollapsed ? "justify-center px-2" : "justify-between px-6"} py-6 border-b border-white/20 bg-gradient-to-r from-primary to-primary-600 text-white`}
       >
         {!isCollapsed && <Logo />}
         <div
@@ -64,7 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={toggleCollapse}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="hidden md:flex p-2 rounded-lg bg-primary hover:bg-primary-300 transition-all duration-200"
+            className="hidden md:flex p-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-200 border border-white/10"
             aria-label={isCollapsed ? "Expandir menú" : "Contraer menú"}
           >
             <ChevronLeft
@@ -78,7 +78,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {!isCollapsed && (
             <button
               onClick={() => toggleSidebar(false)}
-              className="md:hidden p-2 rounded-lg bg-primary/40 hover:bg-primary/60 transition-all duration-200"
+              className="md:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-200 border border-white/10"
               aria-label="Cerrar menú"
             >
               <ChevronLeft size={18} className="text-white" />
@@ -94,19 +94,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Footer */}
       {!isCollapsed && (
-        <div className="mt-auto text-white">
+        <div className="mt-auto text-white bg-gradient-to-t from-primary-800 to-primary">
           <div className="px-4 py-4 border-t border-white/20">
             <Administrative />
           </div>
-          <div className="flex items-center justify-between px-4 py-3 border-t border-white/10">
-            <span className="text-white font-medium text-xs tracking-wide">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 bg-white/5 backdrop-blur-sm">
+            <span className="text-white font-semibold text-xs tracking-wide">
               ROBOTIPA_LMS
             </span>
-            <span className="text-white font-light text-xs">v250709</span>
+            <span className="text-white/80 font-medium text-xs bg-white/10 px-2 py-1 rounded-full">
+              v250709
+            </span>
           </div>
-          <div className="mt-8 text-center text-xs text-white/70">
-            {process.env.NEXT_PUBLIC_NAME_APP || "Robotipa Academy"} v
-            {process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0"}
+          <div className="px-4 py-3 text-center text-sm font-medium text-white bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm border-t border-white/10">
+            ROBOTIPA EDU v2.0.1
           </div>
         </div>
       )}
