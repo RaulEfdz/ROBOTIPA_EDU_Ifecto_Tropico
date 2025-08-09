@@ -13,17 +13,21 @@ export async function GET(req: NextRequest) {
     const teacherId = searchParams.get("teacherId")
     const date = searchParams.get("date") // YYYY-MM-DD format
 
-    if (!teacherId) {
+    // Si no se especifica teacherId, usar el usuario actual (para su propia vista)
+    const targetTeacherId = teacherId || user.id
+
+    // Verificar que el usuario pueda ver esta disponibilidad
+    if (!teacherId && !["teacher", "admin"].includes(user.customRole)) {
       return NextResponse.json(
-        { error: "Teacher ID is required" },
-        { status: 400 }
+        { error: "Only teachers and admins can view availability" },
+        { status: 403 }
       )
     }
 
     // Obtener disponibilidad general del profesor
     const availability = await db.teacherAvailability.findMany({
       where: {
-        teacherId,
+        teacherId: targetTeacherId,
         isActive: true
       },
       orderBy: [
@@ -79,7 +83,7 @@ export async function GET(req: NextRequest) {
           // Verificar si ya hay una sesión reservada en este horario
           const existingSession = await db.liveSession.findFirst({
             where: {
-              teacherId,
+              teacherId: targetTeacherId,
               scheduledAt: currentTime,
               status: {
                 in: ["scheduled", "confirmed", "in_progress"]
