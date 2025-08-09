@@ -534,6 +534,25 @@ model Protocol {
   downloads Int     @default(0)
   views     Int     @default(0)
   
+  // Campos para ordenamiento y gestión avanzada
+  order       Int     @default(0)        // Orden personalizado
+  priority    Int     @default(0)        // Prioridad (0=baja, 1=media, 2=alta)
+  isFeatured  Boolean @default(false)    // Protocolo destacado
+  isPinned    Boolean @default(false)    // Fijado en la parte superior
+  color       String?                   // Color personalizado para categorización visual
+  
+  // Campos de gestión avanzada
+  reviewedAt  DateTime?                 // Fecha de revisión
+  reviewedBy  String?                   // Usuario que revisó
+  publishedAt DateTime?                 // Fecha de publicación
+  archivedAt  DateTime?                 // Fecha de archivado
+  lastEditBy  String?                   // Último usuario que editó
+  
+  // Métricas avanzadas
+  rating      Float?                    // Calificación promedio (1-5)
+  ratingCount Int     @default(0)       // Número de calificaciones
+  shareCount  Int     @default(0)       // Veces compartido
+  
   protocolAccess ProtocolAccess[]
   protocolViews  ProtocolView[]
   
@@ -546,6 +565,11 @@ model Protocol {
   @@index([categoryId])
   @@index([authorId])
   @@index([status])
+  @@index([order])
+  @@index([priority])
+  @@index([isFeatured])
+  @@index([isPinned])
+  @@index([publishedAt])
 }
 
 model ProtocolAccess {

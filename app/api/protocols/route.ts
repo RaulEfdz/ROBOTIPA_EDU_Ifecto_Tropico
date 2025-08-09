@@ -17,6 +17,12 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get("status") as ProtocolStatus
     const isPublic = searchParams.get("isPublic")
     const authorId = searchParams.get("authorId")
+    const sortBy = searchParams.get("sortBy") || "order"
+    const sortOrder = searchParams.get("sortOrder") || "asc"
+    const page = parseInt(searchParams.get("page") || "1")
+    const limit = parseInt(searchParams.get("limit") || "10")
+    const featured = searchParams.get("featured")
+    const pinned = searchParams.get("pinned")
 
     const protocols = await db.protocol.findMany({
       where: {
@@ -27,6 +33,8 @@ export async function GET(req: NextRequest) {
           status ? { status } : {},
           isPublic !== null ? { isPublic: isPublic === "true" } : {},
           authorId ? { authorId } : {},
+          featured !== null ? { isFeatured: featured === "true" } : {},
+          pinned !== null ? { isPinned: pinned === "true" } : {},
           // Si no es admin, solo mostrar protocolos públicos o propios
           user.customRole !== "admin" 
             ? {
@@ -65,9 +73,23 @@ export async function GET(req: NextRequest) {
           }
         }
       },
-      orderBy: {
-        createdAt: "desc"
-      }
+      orderBy: [
+        // Pinned items first
+        { isPinned: "desc" },
+        // Then featured items  
+        { isFeatured: "desc" },
+        // Then by selected sort
+        ...(sortBy === "course" 
+          ? [{ course: { title: sortOrder as any } }] 
+          : sortBy === "category"
+          ? [{ category: { name: sortOrder as any } }]
+          : sortBy === "author"
+          ? [{ author: { fullName: sortOrder as any } }]
+          : [{ [sortBy]: sortOrder as any }]
+        )
+      ],
+      skip: (page - 1) * limit,
+      take: limit
     })
 
     return NextResponse.json(protocols)
