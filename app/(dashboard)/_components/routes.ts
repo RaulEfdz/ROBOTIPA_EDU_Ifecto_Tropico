@@ -23,6 +23,7 @@ import {
   Calendar, // Añadido para Disponibilidad
   Clock, // Añadido para Horarios
   Video, // Añadido para Sesiones
+  Shield, // Añadido para Validación de documentos
 } from "lucide-react";
 
 export interface Badge {
@@ -65,6 +66,17 @@ export const guestRoutes: Route[] = [
 export const studentRoutes: Route[] = [
   { icon: Compass, label: "Catálogo", href: "/courses/catalog" },
   { icon: Layout, label: "Panel", href: "/" },
+  {
+    icon: Shield,
+    label: "Validación Documentos",
+    href: "/validation",
+    badge: {
+      viewLabel: true,
+      until: new Date("2025-12-31"),
+      textLabel: "Requerido",
+      color: "text-orange-500",
+    },
+  },
   {
     icon: Calendar,
     label: "Sesiones Personalizadas",
@@ -230,6 +242,17 @@ export const teacherRoutes: Route[] = [
       // --- FIN NUEVA SUB-RUTA ---
     ],
     // superAdmin: true, // Quitar si Profesores también deben ver la sección
+  },
+  {
+    icon: Shield,
+    label: "Validaciones",
+    href: "/admin/validations",
+    badge: {
+      viewLabel: true,
+      until: new Date("2025-12-31"),
+      textLabel: "Nuevo",
+      color: "text-red-500",
+    },
   },
   {
     icon: BarChart,

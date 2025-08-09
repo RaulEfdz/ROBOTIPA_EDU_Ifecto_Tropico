@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import { Calendar, Clock, CreditCard, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -117,14 +118,16 @@ export function AvailabilityForm({
   }
 
   return (
-    <div className="max-h-[70vh] overflow-y-auto pr-2">
+    <div className="max-h-[75vh] overflow-y-auto">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Configuración básica */}
           <Card>
-            <CardHeader>
-              <CardTitle>Horario</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-primary" />
+                Horario
+              </CardTitle>
               <CardDescription>
                 Configura el día y las horas disponibles
               </CardDescription>
@@ -141,13 +144,17 @@ export function AvailabilityForm({
                       value={field.value?.toString()}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-background border-input">
                           <SelectValue placeholder="Seleccionar día" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="bg-background border shadow-lg z-[100] relative">
                         {DAYS_OF_WEEK.map(day => (
-                          <SelectItem key={day.value} value={day.value.toString()}>
+                          <SelectItem 
+                            key={day.value} 
+                            value={day.value.toString()}
+                            className="hover:bg-accent focus:bg-accent cursor-pointer"
+                          >
                             {day.label}
                           </SelectItem>
                         ))}
@@ -158,7 +165,7 @@ export function AvailabilityForm({
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="startTime"
@@ -167,13 +174,17 @@ export function AvailabilityForm({
                       <FormLabel>Hora de inicio</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-background border-input">
                             <SelectValue placeholder="Inicio" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="bg-background border shadow-lg z-[100] max-h-48 relative">
                           {TIME_SLOTS.map(time => (
-                            <SelectItem key={time} value={time}>
+                            <SelectItem 
+                              key={time} 
+                              value={time}
+                              className="hover:bg-accent focus:bg-accent cursor-pointer"
+                            >
                               {formatTime(time)}
                             </SelectItem>
                           ))}
@@ -192,13 +203,17 @@ export function AvailabilityForm({
                       <FormLabel>Hora de fin</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-background border-input">
                             <SelectValue placeholder="Fin" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="bg-background border shadow-lg z-[100] max-h-48 relative">
                           {TIME_SLOTS.map(time => (
-                            <SelectItem key={time} value={time}>
+                            <SelectItem 
+                              key={time} 
+                              value={time}
+                              className="hover:bg-accent focus:bg-accent cursor-pointer"
+                            >
                               {formatTime(time)}
                             </SelectItem>
                           ))}
@@ -214,13 +229,17 @@ export function AvailabilityForm({
 
           {/* Configuración de sesiones */}
           <Card>
-            <CardHeader>
-              <CardTitle>Configuración de Sesiones</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-primary" />
+                Configuración de Sesiones
+              </CardTitle>
               <CardDescription>
                 Define la duración y límites de sesiones
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="sessionDuration"
@@ -230,9 +249,12 @@ export function AvailabilityForm({
                     <FormControl>
                       <Input
                         type="number"
+                        min="15"
+                        max="480"
                         placeholder="60"
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || "")}
                       />
                     </FormControl>
                     <FormDescription>
@@ -252,8 +274,11 @@ export function AvailabilityForm({
                     <FormControl>
                       <Input
                         type="number"
+                        min="1"
+                        max="20"
                         placeholder="8"
                         {...field}
+                        value={field.value || ""}
                         onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
                       />
                     </FormControl>
@@ -264,19 +289,22 @@ export function AvailabilityForm({
                   </FormItem>
                 )}
               />
+              </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Precios */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Precios y Créditos</CardTitle>
-            <CardDescription>
-              Configura el costo de las sesiones en este horario
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+          {/* Precios */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5 text-primary" />
+                Precios y Créditos
+              </CardTitle>
+              <CardDescription>
+                Configura el costo de las sesiones en este horario
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -287,9 +315,12 @@ export function AvailabilityForm({
                     <FormControl>
                       <Input
                         type="number"
+                        min="1"
+                        max="10"
                         placeholder="1"
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || "")}
                       />
                     </FormControl>
                     <FormDescription>
@@ -310,9 +341,12 @@ export function AvailabilityForm({
                       <Input
                         type="number"
                         step="0.01"
+                        min="1"
+                        max="100"
                         placeholder="10.00"
                         {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || "")}
                       />
                     </FormControl>
                     <FormDescription>
@@ -339,8 +373,11 @@ export function AvailabilityForm({
 
         {/* Configuración adicional */}
         <Card>
-          <CardHeader>
-            <CardTitle>Configuración Adicional</CardTitle>
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5 text-primary" />
+              Configuración Adicional
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -387,17 +424,27 @@ export function AvailabilityForm({
           </CardContent>
         </Card>
 
-        <div className="flex justify-end space-x-2">
+        <div className="flex flex-col sm:flex-row gap-3 sm:justify-end pt-4 border-t">
           <Button
             type="button"
             variant="outline"
             onClick={onCancel}
             disabled={isSubmitting}
+            className="sm:w-auto w-full"
           >
             Cancelar
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Guardando..." : isEditing ? "Actualizar" : "Crear Horario"}
+          <Button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="sm:w-auto w-full"
+          >
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Guardando...
+              </>
+            ) : isEditing ? "Actualizar Horario" : "Crear Horario"}
           </Button>
         </div>
         </form>

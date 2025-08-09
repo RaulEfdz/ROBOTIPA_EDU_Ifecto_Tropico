@@ -202,6 +202,10 @@ model User {
   studentSessions    LiveSession[] @relation("StudentSessions")
   teacherAvailability TeacherAvailability[]
   studentCredits     StudentCredits?
+  
+  // Validación de documentos
+  documentValidation DocumentValidation?
+  reviewedDocuments  DocumentValidation[] @relation("DocumentReviewer")
 }
 
 model Invoice {
@@ -761,4 +765,42 @@ model StudentCreditTransaction {
   @@index([creditsId])
   @@index([sessionId])
   @@index([type])
+}
+
+enum DocumentValidationStatus {
+  NO_SUBMITTED
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model DocumentValidation {
+  id        String                   @id @default(uuid())
+  userId    String                   @unique
+  user      User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  status    DocumentValidationStatus @default(NO_SUBMITTED)
+  
+  // Archivo PDF
+  fileName     String?
+  fileUrl      String?
+  fileSize     Int?
+  uploadedAt   DateTime?
+  
+  // Proceso de revisión
+  reviewedBy   String?
+  reviewer     User? @relation("DocumentReviewer", fields: [reviewedBy], references: [id])
+  reviewedAt   DateTime?
+  rejectionReason String?
+  
+  // Historial de cambios de estado
+  history      Json[] @default([])
+  metadata     Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([status])
+  @@index([reviewedBy])
+  @@index([uploadedAt])
 }

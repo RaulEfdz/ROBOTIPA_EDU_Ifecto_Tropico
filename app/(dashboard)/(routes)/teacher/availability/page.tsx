@@ -81,9 +81,10 @@ export default function TeacherAvailabilityPage() {
       fetchAvailability()
     } catch (error: any) {
       console.error("Error creating availability:", error)
+      console.error("Error response:", error.response?.data)
       toast({
-        title: "Error",
-        description: error.response?.data?.error || "No se pudo crear la disponibilidad",
+        title: "Error al crear disponibilidad",
+        description: error.response?.data?.error || `Error ${error.response?.status}: ${error.message}`,
         variant: "destructive"
       })
     }
@@ -164,24 +165,24 @@ export default function TeacherAvailabilityPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Mi Disponibilidad</h1>
-          <p className="text-muted-foreground">
+    <div className="p-4 lg:p-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <div className="flex-1">
+          <h1 className="text-2xl lg:text-3xl font-bold">Mi Disponibilidad</h1>
+          <p className="text-muted-foreground mt-1">
             Configura tus horarios disponibles para sesiones personalizadas
           </p>
         </div>
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Agregar Horario
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Agregar Disponibilidad</DialogTitle>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden z-50">
+            <DialogHeader className="pb-4 border-b">
+              <DialogTitle className="text-xl">Agregar Nueva Disponibilidad</DialogTitle>
             </DialogHeader>
             <AvailabilityForm
               onSubmit={handleCreateAvailability}
@@ -191,37 +192,130 @@ export default function TeacherAvailabilityPage() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
+      {/* Vista móvil: Lista vertical */}
+      <div className="block lg:hidden">
+        <div className="space-y-4">
+          {DAYS_OF_WEEK.map((dayName, dayIndex) => (
+            <Card key={dayIndex}>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center justify-between">
+                  <span>{dayName}</span>
+                  {groupedAvailability[dayIndex] && (
+                    <Badge variant="outline">
+                      {groupedAvailability[dayIndex].filter(item => item.isActive).length} horarios
+                    </Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {groupedAvailability[dayIndex] ? (
+                  <div className="space-y-3">
+                    {groupedAvailability[dayIndex]
+                      .filter(item => item.isActive)
+                      .sort((a, b) => a.startTime.localeCompare(b.startTime))
+                      .map((item) => (
+                      <div
+                        key={item.id}
+                        className="p-4 border rounded-lg bg-background hover:bg-accent/50 transition-colors"
+                      >
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-medium">
+                              {formatTime(item.startTime)} - {formatTime(item.endTime)}
+                            </span>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => setEditingAvailability(item)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                              onClick={() => handleDeleteAvailability(item.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Duración:</span>
+                            <span>{item.sessionDuration} min</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Créditos:</span>
+                            <Badge variant="secondary" className="text-xs">
+                              {item.creditsPerSession}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Precio:</span>
+                            <span>${item.pricePerCredit}/crédito</span>
+                          </div>
+                          {item.maxSessionsPerDay && (
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Máx sesiones:</span>
+                              <span>{item.maxSessionsPerDay}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-6 text-center">
+                    <Calendar className="h-8 w-8 text-muted-foreground/50 mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                      Sin horarios configurados
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Vista desktop: Grid de 7 columnas */}
+      <div className="hidden lg:grid lg:grid-cols-7 gap-4">
         {DAYS_OF_WEEK.map((dayName, dayIndex) => (
-          <Card key={dayIndex} className="min-h-[200px]">
+          <Card key={dayIndex} className="min-h-[300px]">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg text-center">
+              <CardTitle className="text-base text-center">
                 {dayName}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3">
               {groupedAvailability[dayIndex] ? (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {groupedAvailability[dayIndex]
                     .filter(item => item.isActive)
                     .sort((a, b) => a.startTime.localeCompare(b.startTime))
                     .map((item) => (
                     <div
                       key={item.id}
-                      className="p-3 border rounded-lg bg-background hover:bg-accent/50 transition-colors"
+                      className="p-2 border rounded-md bg-background hover:bg-accent/50 transition-colors group"
                     >
-                      <div className="flex justify-between items-start mb-2">
+                      <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-sm font-medium">
-                            {formatTime(item.startTime)} - {formatTime(item.endTime)}
+                          <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                          <span className="text-xs font-medium leading-tight">
+                            {formatTime(item.startTime)}
                           </span>
                         </div>
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-6 w-6 p-0"
+                            className="h-5 w-5 p-0"
                             onClick={() => setEditingAvailability(item)}
                           >
                             <Edit className="h-3 w-3" />
@@ -229,7 +323,7 @@ export default function TeacherAvailabilityPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                            className="h-5 w-5 p-0 text-red-500 hover:text-red-700"
                             onClick={() => handleDeleteAvailability(item.id)}
                           >
                             <Trash2 className="h-3 w-3" />
@@ -237,35 +331,29 @@ export default function TeacherAvailabilityPage() {
                         </div>
                       </div>
                       
-                      <div className="space-y-1">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground">Duración:</span>
-                          <span className="text-xs">{item.sessionDuration} min</span>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Dur:</span>
+                          <span>{item.sessionDuration}min</span>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground">Créditos:</span>
-                          <Badge variant="secondary" className="text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Créditos:</span>
+                          <Badge variant="secondary" className="text-xs h-4 px-1">
                             {item.creditsPerSession}
                           </Badge>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground">Precio:</span>
-                          <span className="text-xs">${item.pricePerCredit}/crédito</span>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Precio:</span>
+                          <span>${item.pricePerCredit}</span>
                         </div>
-                        {item.maxSessionsPerDay && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-muted-foreground">Máx sesiones:</span>
-                            <span className="text-xs">{item.maxSessionsPerDay}</span>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <Calendar className="h-8 w-8 text-muted-foreground/50 mb-2" />
-                  <p className="text-sm text-muted-foreground">
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <Calendar className="h-6 w-6 text-muted-foreground/50 mb-2" />
+                  <p className="text-xs text-muted-foreground">
                     Sin horarios configurados
                   </p>
                 </div>
@@ -277,9 +365,9 @@ export default function TeacherAvailabilityPage() {
 
       {/* Modal de edición */}
       <Dialog open={!!editingAvailability} onOpenChange={() => setEditingAvailability(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Editar Disponibilidad</DialogTitle>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden z-50">
+          <DialogHeader className="pb-4 border-b">
+            <DialogTitle className="text-xl">Editar Disponibilidad</DialogTitle>
           </DialogHeader>
           {editingAvailability && (
             <AvailabilityForm
@@ -296,13 +384,13 @@ export default function TeacherAvailabilityPage() {
       {availability.length > 0 && (
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <Settings className="h-5 w-5" />
               Resumen de Disponibilidad
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">
                   {availability.filter(a => a.isActive).length}

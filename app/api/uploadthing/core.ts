@@ -5,7 +5,7 @@ import { isTeacher_server } from "@/app/(dashboard)/(routes)/admin/teacher_serve
 
 const f = createUploadthing();
 
-// Middleware de autenticación
+// Middleware de autenticación para profesores
 const handleAuth = async (req: Request) => {
   const user = await getCurrentUserFromDBServer();
 
@@ -19,6 +19,17 @@ const handleAuth = async (req: Request) => {
   }
 
   return { userId: user.id };
+};
+
+// Middleware de autenticación para cualquier usuario (validación documentos)
+const handleUserAuth = async (req: Request) => {
+  const user = await getCurrentUserFromDBServer();
+
+  if (!user?.id) {
+    throw new Error("Unauthorized: No user ID found");
+  }
+
+  return { userId: user.id, userEmail: user.email, userName: user.fullName };
 };
 
 // Rutas configuradas para archivos
@@ -104,6 +115,25 @@ export const ourFileRouter = {
     .onUploadComplete(async ({ file }) => {
       console.log('Chapter video upload completed (multiple):', file.url);
       // No devolver nada, onUploadComplete debe retornar void
+    }),
+
+  // Subida de documentos PDF para validación
+  documentValidation: f({
+    pdf: { maxFileSize: "8MB", maxFileCount: 1 }
+  })
+    .middleware(async ({ req }) => {
+      const { userId, userEmail, userName } = await handleUserAuth(req);
+      return { userId, userEmail, userName };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.log('Document validation upload completed:', {
+        userId: metadata.userId,
+        userEmail: metadata.userEmail,
+        fileName: file.name,
+        fileUrl: file.url,
+        fileSize: file.size
+      });
+      // El procesamiento del documento se hará en la API de validación
     }),
 } satisfies FileRouter;
 
