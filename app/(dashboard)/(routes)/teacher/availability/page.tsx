@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { AvailabilityForm } from "./_components/AvailabilityForm"
 import { useToast } from "@/hooks/use-toast"
+import SessionsHeader from "../_components/SessionsHeader"
 
 interface TeacherAvailability {
   id: string
@@ -165,14 +166,11 @@ export default function TeacherAvailabilityPage() {
   }
 
   return (
-    <div className="p-4 lg:p-6">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-        <div className="flex-1">
-          <h1 className="text-2xl lg:text-3xl font-bold">Mi Disponibilidad</h1>
-          <p className="text-muted-foreground mt-1">
-            Configura tus horarios disponibles para sesiones personalizadas
-          </p>
-        </div>
+    <>
+      <SessionsHeader
+        title="Mi Disponibilidad"
+        description="Configura tus horarios disponibles para sesiones personalizadas"
+      >
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
             <Button className="w-full sm:w-auto">
@@ -190,7 +188,9 @@ export default function TeacherAvailabilityPage() {
             />
           </DialogContent>
         </Dialog>
-      </div>
+      </SessionsHeader>
+    
+    <div className="px-4 lg:px-6 pb-6">
 
       {/* Vista móvil: Lista vertical */}
       <div className="block lg:hidden">
@@ -420,5 +420,6 @@ export default function TeacherAvailabilityPage() {
         </Card>
       )}
     </div>
+    </>
   )
 }

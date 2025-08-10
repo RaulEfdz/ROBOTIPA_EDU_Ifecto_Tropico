@@ -5,17 +5,26 @@ import { translateRole, getTeacherId, getAdminId } from "@/utils/roles/translate
 
 export async function GET(req: NextRequest) {
   try {
+    console.log("🔍 [AVAILABILITY_GET] Starting request")
     const user = await getCurrentUserFromDBServer()
+    
     if (!user) {
+      console.log("❌ [AVAILABILITY_GET] No user found - Unauthorized")
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+    
+    console.log("✅ [AVAILABILITY_GET] User authenticated:", user.email, user.customRole)
 
     const { searchParams } = new URL(req.url)
     const teacherId = searchParams.get("teacherId")
     const date = searchParams.get("date") // YYYY-MM-DD format
+    
+    console.log("📋 [AVAILABILITY_GET] Params:", { teacherId, date })
 
     // Si no se especifica teacherId, usar el usuario actual (para su propia vista)
     const targetTeacherId = teacherId || user.id
+    
+    console.log("🎯 [AVAILABILITY_GET] Target teacher ID:", targetTeacherId)
 
     // Verificar que el usuario pueda ver esta disponibilidad
     if (!teacherId) {
@@ -48,12 +57,18 @@ export async function GET(req: NextRequest) {
     }
 
     // Generar slots disponibles para una fecha específica
-    const targetDate = new Date(date)
+    // Fix: Usar formato explícito para evitar problemas de zona horaria
+    const targetDate = new Date(date + "T00:00:00")
     const dayOfWeek = targetDate.getDay()
 
     const dayAvailability = availability.filter(a => a.dayOfWeek === dayOfWeek)
+    
+    console.log("📅 [AVAILABILITY_GET] Target date dayOfWeek:", dayOfWeek)
+    console.log("📋 [AVAILABILITY_GET] All availability:", availability.map(a => ({ dayOfWeek: a.dayOfWeek, startTime: a.startTime, endTime: a.endTime, isActive: a.isActive })))
+    console.log("🎯 [AVAILABILITY_GET] Filtered for this day:", dayAvailability.length)
 
     if (dayAvailability.length === 0) {
+      console.log("❌ [AVAILABILITY_GET] No availability for this day")
       return NextResponse.json([])
     }
 
@@ -74,11 +89,13 @@ export async function GET(req: NextRequest) {
       const [startHour, startMinute] = startTime.split(":").map(Number)
       const [endHour, endMinute] = endTime.split(":").map(Number)
 
-      const startDateTime = new Date(targetDate)
-      startDateTime.setHours(startHour, startMinute, 0, 0)
+      // Fix: Crear fechas usando el constructor explícito para evitar problemas de zona horaria
+      const year = targetDate.getFullYear()
+      const month = targetDate.getMonth()
+      const day = targetDate.getDate()
 
-      const endDateTime = new Date(targetDate)
-      endDateTime.setHours(endHour, endMinute, 0, 0)
+      const startDateTime = new Date(year, month, day, startHour, startMinute, 0, 0)
+      const endDateTime = new Date(year, month, day, endHour, endMinute, 0, 0)
 
       let currentTime = new Date(startDateTime)
 
@@ -111,6 +128,9 @@ export async function GET(req: NextRequest) {
         currentTime = new Date(currentTime.getTime() + duration * 60000)
       }
     }
+    
+    console.log("✅ [AVAILABILITY_GET] Generated slots:", availableSlots.length)
+    console.log("📊 [AVAILABILITY_GET] Slots:", availableSlots.map(s => ({ startTime: s.startTime, endTime: s.endTime, credits: s.creditsRequired })))
 
     return NextResponse.json(availableSlots)
 

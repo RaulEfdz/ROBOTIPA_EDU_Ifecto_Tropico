@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Video, Calendar, Clock, User, Star, MessageCircle, CreditCard, Filter, Search } from "lucide-react"
+import { Video, Calendar, Clock, User, Star, MessageCircle, CreditCard, Filter, Search, ExternalLink, Link as LinkIcon } from "lucide-react"
 import axios from "axios"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
+import StudentsHeader from "../_components/StudentsHeader"
 
 interface LiveSession {
   id: string
@@ -34,6 +35,7 @@ interface LiveSession {
   scheduledAt: string
   duration: number
   meetingUrl?: string
+  meetingId?: string
   creditsRequired: number
   teacherNotes?: string
   studentNotes?: string
@@ -191,10 +193,15 @@ export default function StudentSessionsPage() {
   const joinMeeting = (session: LiveSession) => {
     if (session.meetingUrl) {
       window.open(session.meetingUrl, "_blank")
+      toast({
+        title: "Abriendo Google Meet",
+        description: "Se abrirá la reunión en una nueva pestaña"
+      })
     } else {
       toast({
         title: "Reunión no disponible",
-        description: "El profesor aún no ha configurado la URL de la videollamada"
+        description: "El profesor aún no ha configurado la URL de la videollamada",
+        variant: "destructive"
       })
     }
   }
@@ -233,15 +240,13 @@ export default function StudentSessionsPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Mis Sesiones</h1>
-          <p className="text-muted-foreground">
-            Gestiona tus sesiones personalizadas con profesores
-          </p>
-        </div>
-      </div>
+    <>
+      <StudentsHeader
+        title="Mis Sesiones"
+        description="Gestiona tus sesiones personalizadas con profesores"
+      />
+    
+    <div className="px-4 lg:px-6 pb-6">
 
       {/* Filtros */}
       <Card className="mb-6">
@@ -323,9 +328,16 @@ export default function StudentSessionsPage() {
                       {getTypeLabel(session.type)}
                     </p>
                   </div>
-                  <Badge className={getStatusColor(session.status)}>
-                    {getStatusLabel(session.status)}
-                  </Badge>
+                  <div className="flex gap-2 items-center">
+                    <Badge className={getStatusColor(session.status)}>
+                      {getStatusLabel(session.status)}
+                    </Badge>
+                    {session.status === "confirmed" && !session.meetingUrl && (
+                      <Badge className="bg-amber-100 text-amber-800 text-xs">
+                        ⚠️ Sin link
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -367,6 +379,33 @@ export default function StudentSessionsPage() {
                     </div>
                   )}
 
+                  {/* Google Meet Link - Solo mostrar si está confirmada */}
+                  {session.status === "confirmed" && session.meetingUrl && (
+                    <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Video className="h-4 w-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-800">Reunión Confirmada</span>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <LinkIcon className="h-3 w-3 text-green-600" />
+                          <span className="text-xs text-green-700">Link: {session.meetingUrl}</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => window.open(session.meetingUrl, '_blank')}
+                            className="h-6 w-6 p-0 text-green-600 hover:text-green-800"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        {session.meetingId && (
+                          <p className="text-xs text-green-700">ID: {session.meetingId}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Créditos */}
                   <div className="flex items-center gap-2">
                     <CreditCard className="h-4 w-4 text-muted-foreground" />
@@ -385,15 +424,21 @@ export default function StudentSessionsPage() {
                       Ver Detalles
                     </Button>
                     
-                    {session.status === "confirmed" && (
+                    {session.status === "confirmed" && session.meetingUrl && (
                       <Button
                         size="sm"
                         onClick={() => joinMeeting(session)}
                         className="bg-green-600 hover:bg-green-700"
                       >
                         <Video className="h-3 w-3 mr-1" />
-                        Unirse
+                        Unirse a Meet
                       </Button>
+                    )}
+                    
+                    {session.status === "confirmed" && !session.meetingUrl && (
+                      <div className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded border border-amber-200">
+                        ⚠️ Esperando link de reunión del profesor
+                      </div>
                     )}
 
                     {["scheduled", "confirmed"].includes(session.status) && (
@@ -440,6 +485,85 @@ export default function StudentSessionsPage() {
                   </Badge>
                 </div>
               </div>
+
+              {/* Información de Google Meet */}
+              {selectedSession.status === "confirmed" && !selectedSession.meetingUrl && (
+                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-amber-600 text-lg">⚠️</span>
+                    <h4 className="font-medium text-amber-800">Sesión Confirmada - Sin Link de Reunión</h4>
+                  </div>
+                  <p className="text-sm text-amber-700">
+                    El profesor ha confirmado la sesión pero aún no ha proporcionado el link de Google Meet. 
+                    Por favor espera a que el profesor agregue el enlace de la reunión.
+                  </p>
+                </div>
+              )}
+              
+              {selectedSession.status === "confirmed" && selectedSession.meetingUrl && (
+                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Video className="h-5 w-5 text-green-600" />
+                    <h4 className="font-medium text-green-800">Información de la Reunión</h4>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-green-800">Link de Google Meet:</span>
+                      <Button
+                        size="sm"
+                        onClick={() => window.open(selectedSession.meetingUrl, '_blank')}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        <Video className="h-3 w-3 mr-1" />
+                        Unirse Ahora
+                      </Button>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border border-green-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <LinkIcon className="h-4 w-4 text-green-600" />
+                        <span className="text-xs font-medium text-green-800">URL:</span>
+                      </div>
+                      <p className="text-xs text-green-700 font-mono break-all">
+                        {selectedSession.meetingUrl}
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            navigator.clipboard.writeText(selectedSession.meetingUrl!)
+                            toast({
+                              title: "Link copiado",
+                              description: "El link de Google Meet ha sido copiado al portapapeles"
+                            })
+                          }}
+                          className="text-green-700 border-green-300 hover:bg-green-100"
+                        >
+                          Copiar Link
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => window.open(selectedSession.meetingUrl, '_blank')}
+                          className="text-green-700 border-green-300 hover:bg-green-100"
+                        >
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          Abrir en Nueva Pestaña
+                        </Button>
+                      </div>
+                    </div>
+                    {selectedSession.meetingId && (
+                      <div className="bg-white p-2 rounded border border-green-200">
+                        <span className="text-xs font-medium text-green-800">Meeting ID:</span>
+                        <span className="text-xs text-green-700 ml-2 font-mono">{selectedSession.meetingId}</span>
+                      </div>
+                    )}
+                    <div className="text-xs text-green-700 bg-green-100 p-2 rounded">
+                      💡 <strong>Consejo:</strong> Haz clic en &quot;Unirse Ahora&quot; unos minutos antes de la hora programada
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {selectedSession.teacherNotes && (
                 <div>
@@ -500,5 +624,6 @@ export default function StudentSessionsPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   )
 }
