@@ -276,16 +276,16 @@ export default function StudentAvailabilityPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Horarios Disponibles</h1>
-          <p className="text-muted-foreground">
+    <div className="p-4 lg:p-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <div className="flex-1">
+          <h1 className="text-2xl lg:text-3xl font-bold">Horarios Disponibles</h1>
+          <p className="text-muted-foreground mt-1">
             Explora los horarios disponibles de todos los profesores
           </p>
         </div>
         {studentCredits && (
-          <div className="text-right">
+          <div className="text-center sm:text-right">
             <div className="text-2xl font-bold text-primary">
               {studentCredits.remainingCredits}
             </div>
@@ -311,68 +311,160 @@ export default function StudentAvailabilityPage() {
         </CardContent>
       </Card>
 
-      {/* Vista semanal de horarios */}
-      <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
+      {/* Vista móvil: Lista vertical */}
+      <div className="block lg:hidden">
+        <div className="space-y-4">
+          {DAYS_OF_WEEK.map((dayName, dayIndex) => (
+            <Card key={dayIndex}>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center justify-between">
+                  <span>{dayName}</span>
+                  {weeklyAvailability[dayIndex] && (
+                    <Badge variant="outline">
+                      {filteredAvailability(weeklyAvailability[dayIndex]).length} horarios
+                    </Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {weeklyAvailability[dayIndex] ? (
+                  <div className="space-y-3">
+                    {filteredAvailability(weeklyAvailability[dayIndex]).map((schedule, index) => (
+                      <div
+                        key={`${schedule.teacherId}-${index}`}
+                        className="p-4 border rounded-lg bg-background hover:bg-accent/50 transition-colors cursor-pointer"
+                        onClick={() => openBookingModal(schedule.teacherId, schedule.teacherName)}
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-medium">
+                              {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}
+                            </span>
+                          </div>
+                          <Badge variant="secondary" className="text-xs">
+                            {schedule.creditsRequired} crédito{schedule.creditsRequired !== 1 ? 's' : ''}
+                          </Badge>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <User className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-medium">{schedule.teacherName}</span>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Duración:</span>
+                              <span>{schedule.duration} min</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Precio:</span>
+                              <span>${schedule.pricePerCredit}/crédito</span>
+                            </div>
+                          </div>
+                          
+                          {schedule.courses.length > 0 && (
+                            <div className="mt-3">
+                              <div className="text-xs text-muted-foreground mb-2">Materias:</div>
+                              <div className="flex flex-wrap gap-1">
+                                {schedule.courses.slice(0, 3).map((course, courseIndex) => (
+                                  <Badge key={courseIndex} variant="outline" className="text-xs">
+                                    {course.length > 20 ? `${course.substring(0, 20)}...` : course}
+                                  </Badge>
+                                ))}
+                                {schedule.courses.length > 3 && (
+                                  <Badge variant="outline" className="text-xs">
+                                    +{schedule.courses.length - 3}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          
+                          <Button className="w-full mt-3" size="sm">
+                            <Calendar className="h-4 w-4 mr-2" />
+                            Reservar Sesión
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-6 text-center">
+                    <Calendar className="h-8 w-8 text-muted-foreground/50 mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                      Sin horarios disponibles
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Vista desktop: Grid de 7 columnas */}
+      <div className="hidden lg:grid lg:grid-cols-7 gap-4">
         {DAYS_OF_WEEK.map((dayName, dayIndex) => (
-          <Card key={dayIndex} className="min-h-[300px]">
+          <Card key={dayIndex} className="min-h-[350px]">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg text-center">
+              <CardTitle className="text-base text-center">
                 {dayName}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3">
               {weeklyAvailability[dayIndex] ? (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {filteredAvailability(weeklyAvailability[dayIndex]).map((schedule, index) => (
                     <div
                       key={`${schedule.teacherId}-${index}`}
-                      className="p-3 border rounded-lg bg-background hover:bg-accent/50 transition-colors cursor-pointer"
+                      className="p-2 border rounded-md bg-background hover:bg-accent/50 transition-colors cursor-pointer group"
                       onClick={() => openBookingModal(schedule.teacherId, schedule.teacherName)}
                     >
                       <div className="flex items-center gap-1 mb-2">
-                        <Clock className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-sm font-medium">
-                          {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}
+                        <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                        <span className="text-xs font-medium leading-tight">
+                          {formatTime(schedule.startTime)}
                         </span>
                       </div>
                       
-                      <div className="space-y-1">
+                      <div className="space-y-1 text-xs">
                         <div className="flex items-center gap-1">
-                          <User className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-xs font-medium truncate">
-                            {schedule.teacherName}
+                          <User className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                          <span className="font-medium truncate text-xs">
+                            {schedule.teacherName.split(' ')[0]}
                           </span>
                         </div>
                         
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground">Duración:</span>
-                          <span className="text-xs">{schedule.duration} min</span>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Dur:</span>
+                          <span>{schedule.duration}min</span>
                         </div>
                         
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground">Créditos:</span>
-                          <Badge variant="secondary" className="text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Cred:</span>
+                          <Badge variant="secondary" className="text-xs h-4 px-1">
                             {schedule.creditsRequired}
                           </Badge>
                         </div>
                         
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground">Precio:</span>
-                          <span className="text-xs">${schedule.pricePerCredit}/crédito</span>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">$:</span>
+                          <span>${schedule.pricePerCredit}</span>
                         </div>
                         
                         {schedule.courses.length > 0 && (
                           <div className="mt-2">
-                            <div className="text-xs text-muted-foreground mb-1">Materias:</div>
                             <div className="flex flex-wrap gap-1">
-                              {schedule.courses.slice(0, 2).map((course, courseIndex) => (
-                                <Badge key={courseIndex} variant="outline" className="text-xs">
-                                  {course.length > 15 ? `${course.substring(0, 15)}...` : course}
+                              {schedule.courses.slice(0, 1).map((course, courseIndex) => (
+                                <Badge key={courseIndex} variant="outline" className="text-xs h-4 px-1">
+                                  {course.length > 12 ? `${course.substring(0, 12)}...` : course}
                                 </Badge>
                               ))}
-                              {schedule.courses.length > 2 && (
-                                <Badge variant="outline" className="text-xs">
-                                  +{schedule.courses.length - 2}
+                              {schedule.courses.length > 1 && (
+                                <Badge variant="outline" className="text-xs h-4 px-1">
+                                  +{schedule.courses.length - 1}
                                 </Badge>
                               )}
                             </div>
@@ -380,19 +472,17 @@ export default function StudentAvailabilityPage() {
                         )}
                       </div>
                       
-                      <div className="mt-2">
-                        <Button size="sm" className="w-full">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          Reservar
-                        </Button>
-                      </div>
+                      <Button size="sm" className="w-full mt-2 h-7 text-xs">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        Reservar
+                      </Button>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <Calendar className="h-8 w-8 text-muted-foreground/50 mb-2" />
-                  <p className="text-sm text-muted-foreground">
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <Calendar className="h-6 w-6 text-muted-foreground/50 mb-2" />
+                  <p className="text-xs text-muted-foreground">
                     Sin horarios disponibles
                   </p>
                 </div>
@@ -405,13 +495,13 @@ export default function StudentAvailabilityPage() {
       {/* Resumen */}
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Clock className="h-5 w-5" />
             Resumen de Disponibilidad
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
                 {teachers.filter(t => t.hasAvailability).length}

@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { useToast } from "@/hooks/use-toast"
+import StudentsHeader from "../_components/StudentsHeader"
 
 interface Teacher {
   id: string
@@ -85,6 +86,7 @@ export default function FindTeachersPage() {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
   const [isBooking, setIsBooking] = useState(false)
   const [studentCredits, setStudentCredits] = useState<StudentCredits | null>(null)
+  const [availableDates, setAvailableDates] = useState<Date[]>([])
 
   const fetchTeachers = async () => {
     try {
@@ -118,29 +120,12 @@ export default function FindTeachersPage() {
 
   const fetchCategories = async () => {
     try {
-      // Usar endpoint correcto para categorías
-      const response = await axios.get("/api/courses/updates/category/get")
+      const response = await axios.get("/api/categories")
       if (response.data && Array.isArray(response.data)) {
         setCategories(response.data)
       }
     } catch (error) {
       console.error("Error fetching categories:", error)
-      // Intentar endpoint alternativo si el primero falla
-      try {
-        const altResponse = await axios.get("/api/courses")
-        // Extraer categorías únicas de los cursos si existe
-        if (altResponse.data && Array.isArray(altResponse.data)) {
-          const uniqueCategories = altResponse.data
-            .filter((course: any) => course.category)
-            .map((course: any) => course.category)
-            .filter((category: any, index: number, array: any[]) => 
-              array.findIndex(c => c.id === category.id) === index
-            )
-          setCategories(uniqueCategories)
-        }
-      } catch (altError) {
-        console.error("Alternative fetch also failed:", altError)
-      }
     }
   }
 
@@ -198,11 +183,38 @@ export default function FindTeachersPage() {
     }
   }
 
+  const calculateAvailableDates = (teacher: Teacher, daysAhead: number = 30): Date[] => {
+    const dates: Date[] = []
+    const today = new Date()
+    
+    for (let i = 1; i <= daysAhead; i++) {
+      const date = new Date()
+      date.setDate(today.getDate() + i)
+      
+      // Verificar si este día de la semana tiene disponibilidad
+      const dayOfWeek = date.getDay()
+      const hasAvailability = teacher.teacherAvailability.some(
+        availability => availability.dayOfWeek === dayOfWeek && availability.isActive
+      )
+      
+      if (hasAvailability) {
+        dates.push(date)
+      }
+    }
+    
+    return dates
+  }
+
   const openBookingModal = (teacher: Teacher) => {
     setSelectedTeacher(teacher)
     setSelectedDate(undefined)
     setAvailableSlots([])
     setSelectedSlot(null)
+    
+    // Calcular fechas disponibles
+    const dates = calculateAvailableDates(teacher)
+    setAvailableDates(dates)
+    
     setIsBookingModalOpen(true)
   }
 
@@ -231,7 +243,24 @@ export default function FindTeachersPage() {
         creditsRequired: selectedSlot.creditsRequired
       }
 
-      await axios.post("/api/live-sessions", sessionData)
+      console.log("🔍 [BOOKING] Sending session data:", sessionData)
+
+      const response = await fetch("/api/live-sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(sessionData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error("❌ [BOOKING] Server error:", response.status, errorData)
+        throw new Error(errorData.error || `Server error: ${response.status}`)
+      }
+
+      const result = await response.json()
+      console.log("✅ [BOOKING] Session created successfully:", result)
 
       toast({
         title: "¡Sesión reservada!",
@@ -247,10 +276,10 @@ export default function FindTeachersPage() {
       setSelectedSlot(null)
 
     } catch (error: any) {
-      console.error("Error booking session:", error)
+      console.error("❌ [BOOKING] Error booking session:", error)
       toast({
         title: "Error al reservar",
-        description: error.response?.data?.error || "No se pudo reservar la sesión",
+        description: error.message || "No se pudo reservar la sesión",
         variant: "destructive"
       })
     } finally {
@@ -282,24 +311,27 @@ export default function FindTeachersPage() {
 
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Buscando profesores disponibles...</p>
+      <>
+        <StudentsHeader
+          title="Buscar Profesores"
+          description="Encuentra profesores disponibles para sesiones personalizadas"
+        />
+        <div className="px-4 lg:px-6 pb-6">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Buscando profesores disponibles...</p>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Buscar Profesores</h1>
-          <p className="text-muted-foreground">
-            Encuentra profesores disponibles para sesiones personalizadas
-          </p>
-        </div>
+    <>
+      <StudentsHeader
+        title="Buscar Profesores"
+        description="Encuentra profesores disponibles para sesiones personalizadas"
+      >
         {studentCredits && (
           <div className="text-right">
             <div className="text-2xl font-bold text-primary">
@@ -310,7 +342,9 @@ export default function FindTeachersPage() {
             </div>
           </div>
         )}
-      </div>
+      </StudentsHeader>
+    
+    <div className="px-4 lg:px-6 pb-6">
 
       {/* Filtros */}
       <Card className="mb-6">
@@ -477,13 +511,97 @@ export default function FindTeachersPage() {
             {/* Selector de fecha */}
             <div>
               <h3 className="font-semibold mb-3">Selecciona una fecha</h3>
-              <CalendarComponent
-                mode="single"
-                selected={selectedDate}
-                onSelect={handleDateSelect}
-                disabled={(date) => date < new Date()}
-                className="rounded-md border"
-              />
+              
+              {selectedTeacher && (
+                <div className="mb-3 p-3 bg-muted rounded-lg text-sm">
+                  <h4 className="font-medium mb-2">Horarios típicos de {selectedTeacher.fullName}:</h4>
+                  <div className="space-y-1">
+                    {selectedTeacher.teacherAvailability
+                      .filter(a => a.isActive)
+                      .map((availability, index) => (
+                      <div key={index} className="flex justify-between text-xs">
+                        <span>{DAYS_OF_WEEK[availability.dayOfWeek]}</span>
+                        <span>{formatTime(availability.startTime)} - {formatTime(availability.endTime)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="mb-3 flex items-center gap-4 text-sm">
+                <span className="inline-flex items-center gap-2">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="text-muted-foreground">Disponible</span>
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                  <span className="text-muted-foreground">No disponible</span>
+                </span>
+              </div>
+              <div className="relative">
+                <CalendarComponent
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateSelect}
+                  disabled={(date) => {
+                    if (date < new Date()) return true
+                    // Deshabilitar días que no están en availableDates
+                    return !availableDates.some(availableDate => 
+                      availableDate.toDateString() === date.toDateString()
+                    )
+                  }}
+                  modifiers={{
+                    available: availableDates,
+                    unavailable: (date) => {
+                      if (date < new Date()) return false
+                      return !availableDates.some(availableDate => 
+                        availableDate.toDateString() === date.toDateString()
+                      )
+                    }
+                  }}
+                  modifiersClassNames={{
+                    available: "bg-green-500 text-white hover:bg-green-600 font-medium border-2 border-green-600",
+                    unavailable: "text-gray-300 cursor-not-allowed opacity-50"
+                  }}
+                  className="rounded-md border"
+                />
+                
+                {availableDates.length === 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-md">
+                    <div className="text-center p-4">
+                      <p className="text-muted-foreground">Este profesor no tiene horarios configurados para los próximos 30 días</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {availableDates.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  <div className="text-xs text-muted-foreground">
+                    {availableDates.length} días disponibles en los próximos 30 días
+                  </div>
+                  
+                  {/* Próximas fechas disponibles */}
+                  <div className="text-xs">
+                    <p className="text-muted-foreground mb-1">Próximas fechas disponibles:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {availableDates.slice(0, 6).map((date, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleDateSelect(date)}
+                          className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
+                        >
+                          {format(date, "dd/MM", { locale: es })}
+                        </button>
+                      ))}
+                      {availableDates.length > 6 && (
+                        <span className="px-2 py-1 text-xs text-muted-foreground">
+                          +{availableDates.length - 6} más
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Horarios disponibles */}
@@ -596,5 +714,6 @@ export default function FindTeachersPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   )
 }

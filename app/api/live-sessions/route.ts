@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer"
 import { SessionStatus, SessionType } from "@prisma/client"
+import { translateRole, getTeacherId, getStudentId } from "@/utils/roles/translate"
 
 export async function GET(req: NextRequest) {
   try {
@@ -36,13 +37,29 @@ export async function GET(req: NextRequest) {
       ]
     }
 
-    // Filtrar por rol de usuario
-    if (user.customRole === "teacher") {
-      where.AND.push({ teacherId: user.id })
-    } else if (user.customRole === "student") {
-      where.AND.push({ studentId: user.id })
+    // Filtrar por rol de usuario usando translateRole para mayor seguridad
+    let userRoleName = "unknown"
+    try {
+      userRoleName = translateRole(user.customRole)
+      console.log("🔍 [LIVE_SESSIONS_GET] User role:", userRoleName, "for user:", user.email)
+    } catch (error) {
+      console.log("⚠️ [LIVE_SESSIONS_GET] Could not translate role:", user.customRole)
     }
-    // Admin puede ver todas las sesiones
+    
+    if (userRoleName === "teacher") {
+      where.AND.push({ teacherId: user.id })
+      console.log("👨‍🏫 [LIVE_SESSIONS_GET] Filtering sessions for teacher:", user.id)
+    } else if (userRoleName === "student") {
+      where.AND.push({ studentId: user.id })
+      console.log("👨‍🎓 [LIVE_SESSIONS_GET] Filtering sessions for student:", user.id)
+    } else if (userRoleName === "admin") {
+      console.log("👤 [LIVE_SESSIONS_GET] Admin can see all sessions")
+      // Admin puede ver todas las sesiones
+    } else {
+      console.log("🚫 [LIVE_SESSIONS_GET] Unknown role, no sessions visible")
+      // Rol desconocido, no puede ver ninguna sesión
+      where.AND.push({ id: "never-exists" })
+    }
 
     const sessions = await db.liveSession.findMany({
       where,
@@ -86,12 +103,27 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("🔍 [LIVE_SESSIONS_POST] Starting session creation request")
     const user = await getCurrentUserFromDBServer()
     if (!user) {
+      console.log("❌ [LIVE_SESSIONS_POST] No user found - Unauthorized")
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+    
+    console.log("✅ [LIVE_SESSIONS_POST] User authenticated:", user.email, user.customRole)
+
+    // Traducir el rol del usuario
+    let userRoleName = "unknown"
+    try {
+      userRoleName = translateRole(user.customRole)
+      console.log("🔍 [LIVE_SESSIONS_POST] User role name:", userRoleName)
+    } catch (error) {
+      console.log("⚠️ [LIVE_SESSIONS_POST] Could not translate role:", user.customRole)
     }
 
     const body = await req.json()
+    console.log("📋 [LIVE_SESSIONS_POST] Request body:", body)
+    
     const {
       title,
       description,
@@ -105,6 +137,7 @@ export async function POST(req: NextRequest) {
     } = body
 
     if (!title || !teacherId || !scheduledAt || !duration) {
+      console.log("❌ [LIVE_SESSIONS_POST] Missing required fields:", { title: !!title, teacherId: !!teacherId, scheduledAt: !!scheduledAt, duration: !!duration })
       return NextResponse.json(
         { error: "Title, teacher, scheduled time and duration are required" },
         { status: 400 }
@@ -112,13 +145,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Verificar que el profesor existe y está activo
+    const teacherRoleId = getTeacherId()
     const teacher = await db.user.findFirst({
       where: {
         id: teacherId,
-        customRole: "teacher",
+        customRole: teacherRoleId,
         isActive: true
       }
     })
+    
+    console.log("🔍 [LIVE_SESSIONS_POST] Teacher lookup:", { teacherId, teacherRoleId, found: !!teacher })
 
     if (!teacher) {
       return NextResponse.json(
@@ -128,7 +164,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Si es estudiante, verificar créditos
-    if (user.customRole === "student") {
+    if (userRoleName === "student") {
+      console.log("💳 [LIVE_SESSIONS_POST] Checking student credits")
       const studentCredits = await db.studentCredits.findFirst({
         where: { userId: user.id }
       })
@@ -170,17 +207,38 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Determinar studentId correctamente usando translateRole
+    let finalStudentId = null
+    
+    if (userRoleName === "student") {
+      finalStudentId = user.id
+      console.log("✅ [LIVE_SESSIONS_POST] User is student, using user.id as studentId")
+    } else if (body.studentId) {
+      finalStudentId = body.studentId
+      console.log("✅ [LIVE_SESSIONS_POST] Using provided studentId:", body.studentId)
+    }
+    
+    if (!finalStudentId) {
+      console.log("❌ [LIVE_SESSIONS_POST] No student ID provided - user role:", userRoleName)
+      return NextResponse.json(
+        { error: "Student ID is required" },
+        { status: 400 }
+      )
+    }
+    
+    console.log("👤 [LIVE_SESSIONS_POST] Final student ID:", finalStudentId)
+
     const session = await db.liveSession.create({
       data: {
         title,
         description,
         type: type as SessionType || SessionType.consultation,
         teacherId,
-        studentId: user.customRole === "student" ? user.id : body.studentId,
+        studentId: finalStudentId,
         scheduledAt: scheduledDate,
         duration,
         timeZone: timeZone || "America/Panama",
-        courseId,
+        courseId: courseId || null,
         creditsRequired: creditsRequired || 1,
         status: SessionStatus.scheduled
       },
@@ -209,7 +267,8 @@ export async function POST(req: NextRequest) {
     })
 
     // Si es estudiante, descontar créditos
-    if (user.customRole === "student") {
+    if (userRoleName === "student") {
+      console.log("💰 [LIVE_SESSIONS_POST] Deducting student credits")
       await db.studentCredits.update({
         where: { userId: user.id },
         data: {
@@ -237,12 +296,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    console.log("✅ [LIVE_SESSIONS_POST] Session created successfully:", session.id)
     return NextResponse.json(session, { status: 201 })
 
   } catch (error) {
-    console.error("[LIVE_SESSIONS_POST]", error)
+    console.error("❌ [LIVE_SESSIONS_POST] Error creating session:", error)
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     )
   }

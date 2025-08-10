@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getCurrentUserFromDBServer } from "@/app/auth/CurrentUser/getCurrentUserFromDBServer"
 import { SessionStatus } from "@prisma/client"
+import { translateRole } from "@/utils/roles/translate"
 
 export async function GET(
   req: NextRequest,
@@ -48,11 +49,20 @@ export async function GET(
       )
     }
 
-    // Verificar permisos
+    // Verificar permisos usando translateRole para mayor seguridad
+    let userRole = "unknown"
+    try {
+      userRole = translateRole(user.customRole)
+    } catch (error) {
+      console.log("⚠️ [SESSION_GET] Invalid user role:", user.customRole)
+    }
+
     const hasAccess = 
       session.teacherId === user.id ||
       session.studentId === user.id ||
-      user.customRole === "admin"
+      userRole === "admin"
+
+    console.log(`🔒 [SESSION_ACCESS] ${user.email} (${userRole}) accessing session ${sessionId}: ${hasAccess ? 'ALLOWED' : 'DENIED'}`)
 
     if (!hasAccess) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 })

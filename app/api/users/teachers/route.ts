@@ -1,10 +1,8 @@
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { translateRole } from "@/utils/roles/translate";
 
-const TEACHER_ID = process.env.TEACHER_ID;
-const STUDENT_ID = process.env.STUDENT_ID;
-const ADMIN_ID = process.env.ADMIN_ID;
-const VISITOR_ID = process.env.VISITOR_ID;
+const TEACHER_ID = translateRole("teacher");
 
 // GET /api/teachers - Devuelve todos los profesores con estadísticas de cursos
 export async function GET(_req: NextRequest) {
@@ -12,7 +10,7 @@ export async function GET(_req: NextRequest) {
     // Validación: Asegúrate de que esté configurado el ID del rol de profesor
     if (!TEACHER_ID || typeof TEACHER_ID !== "string") {
       console.error(
-        "[API TEACHERS] Environment variable TEACHER_ID is missing or invalid."
+        "[API TEACHERS] Teacher Role ID is missing or invalid."
       );
       return NextResponse.json(
         {
@@ -24,7 +22,7 @@ export async function GET(_req: NextRequest) {
 
     // Consulta a la base de datos: Profesores con información de cursos
     const teachers = await db.user.findMany({
-      where: { customRole: "teacher" },
+      where: { customRole: TEACHER_ID },
       orderBy: { fullName: "asc" },
       include: {
         courses: {

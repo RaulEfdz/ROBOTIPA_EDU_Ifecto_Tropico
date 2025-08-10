@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
+import SessionConfirmModal from "./_components/SessionConfirmModal"
+import SessionsHeader from "../_components/SessionsHeader"
 
 interface LiveSession {
   id: string
@@ -81,6 +83,7 @@ export default function TeacherSessionsPage() {
   const [selectedType, setSelectedType] = useState("all")
   const [selectedSession, setSelectedSession] = useState<LiveSession | null>(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
   const [teacherNotes, setTeacherNotes] = useState("")
 
   const fetchSessions = async () => {
@@ -187,12 +190,33 @@ export default function TeacherSessionsPage() {
     if (session.meetingUrl) {
       window.open(session.meetingUrl, "_blank")
     } else {
-      // Aquí se podría integrar con Zoom, Google Meet, etc.
       toast({
         title: "URL de reunión no disponible",
         description: "Configura la URL de la videollamada para esta sesión"
       })
     }
+  }
+
+  const openConfirmModal = (session: LiveSession) => {
+    setSelectedSession(session)
+    setIsConfirmModalOpen(true)
+  }
+
+  const handleConfirmSession = async (sessionData: {
+    meetingUrl?: string
+    meetingId?: string
+    teacherNotes?: string
+  }) => {
+    if (!selectedSession) return
+    
+    await handleUpdateSession(selectedSession.id, {
+      status: "confirmed",
+      meetingUrl: sessionData.meetingUrl,
+      meetingId: sessionData.meetingId,
+      teacherNotes: sessionData.teacherNotes
+    })
+    
+    setIsConfirmModalOpen(false)
   }
 
   if (loading) {
@@ -207,15 +231,13 @@ export default function TeacherSessionsPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Mis Sesiones</h1>
-          <p className="text-muted-foreground">
-            Gestiona tus sesiones personalizadas programadas
-          </p>
-        </div>
-      </div>
+    <>
+      <SessionsHeader
+        title="Mis Sesiones"
+        description="Gestiona tus sesiones personalizadas programadas"
+      />
+    
+    <div className="px-4 lg:px-6 pb-6">
 
       {/* Filtros */}
       <Card className="mb-6">
@@ -294,9 +316,16 @@ export default function TeacherSessionsPage() {
                       {getTypeLabel(session.type)}
                     </p>
                   </div>
-                  <Badge className={getStatusColor(session.status)}>
-                    {getStatusLabel(session.status)}
-                  </Badge>
+                  <div className="flex gap-2 items-center">
+                    <Badge className={getStatusColor(session.status)}>
+                      {getStatusLabel(session.status)}
+                    </Badge>
+                    {session.status === "confirmed" && !session.meetingUrl && (
+                      <Badge className="bg-red-100 text-red-800 text-xs">
+                        ⚠️ Falta link
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -360,7 +389,7 @@ export default function TeacherSessionsPage() {
                       Ver Detalles
                     </Button>
                     
-                    {session.status === "confirmed" && (
+                    {session.status === "confirmed" && session.meetingUrl && (
                       <Button
                         size="sm"
                         onClick={() => startMeeting(session)}
@@ -370,12 +399,23 @@ export default function TeacherSessionsPage() {
                         Iniciar
                       </Button>
                     )}
+                    
+                    {session.status === "confirmed" && !session.meetingUrl && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openConfirmModal(session)}
+                        className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                      >
+                        ⚠️ Agregar Link
+                      </Button>
+                    )}
 
                     {session.status === "scheduled" && (
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleUpdateSession(session.id, { status: "confirmed" })}
+                        onClick={() => openConfirmModal(session)}
                       >
                         Confirmar
                       </Button>
@@ -462,6 +502,15 @@ export default function TeacherSessionsPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Modal de confirmación de sesión */}
+      <SessionConfirmModal
+        session={selectedSession}
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmSession}
+      />
     </div>
+    </>
   )
 }

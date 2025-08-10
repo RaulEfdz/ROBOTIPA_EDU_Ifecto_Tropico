@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
+import StudentsHeader from "../_components/StudentsHeader"
 
 interface StudentCredits {
   id: string
@@ -174,24 +175,27 @@ export default function StudentCreditsPage() {
 
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Cargando información de créditos...</p>
+      <>
+        <StudentsHeader
+          title="Mis Créditos"
+          description="Gestiona tus créditos para sesiones personalizadas"
+        />
+        <div className="px-4 lg:px-6 pb-6">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Cargando información de créditos...</p>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Mis Créditos</h1>
-          <p className="text-muted-foreground">
-            Gestiona tus créditos para sesiones personalizadas
-          </p>
-        </div>
+    <>
+      <StudentsHeader
+        title="Mis Créditos"
+        description="Gestiona tus créditos para sesiones personalizadas"
+      >
         <div className="flex gap-2">
           <Dialog open={isSettingsModalOpen} onOpenChange={setIsSettingsModalOpen}>
             <DialogTrigger asChild>
@@ -209,7 +213,9 @@ export default function StudentCreditsPage() {
             </DialogTrigger>
           </Dialog>
         </div>
-      </div>
+      </StudentsHeader>
+    
+    <div className="px-4 lg:px-6 pb-6">
 
       {/* Resumen de créditos */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
@@ -354,108 +360,50 @@ export default function StudentCreditsPage() {
           )}
         </CardContent>
       </Card>
-
       {/* Modal de compra de créditos */}
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Comprar Créditos</DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-4">
-          <p className="text-muted-foreground">
-            Selecciona un paquete de créditos para continuar con tus sesiones personalizadas.
-          </p>
+      <Dialog open={isPurchaseModalOpen} onOpenChange={setIsPurchaseModalOpen}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Comprar Créditos</DialogTitle>
+          </DialogHeader>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {CREDIT_PACKAGES.map((pkg, index) => (
-              <Card
-                key={index}
-                className={`cursor-pointer transition-all ${
-                  selectedPackage === pkg 
-                    ? "ring-2 ring-primary border-primary" 
-                    : "hover:shadow-md"
-                } ${pkg.popular ? "border-primary" : ""}`}
-                onClick={() => setSelectedPackage(pkg)}
-              >
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">
-                        {pkg.credits} Crédito{pkg.credits !== 1 ? 's' : ''}
-                      </CardTitle>
-                      <div className="text-2xl font-bold text-primary">
-                        ${pkg.price}
-                      </div>
-                    </div>
-                    {pkg.popular && (
-                      <Badge className="bg-primary text-primary-foreground">
-                        Popular
-                      </Badge>
-                    )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {CREDIT_PACKAGES.map((pkg) => (
+              <Card key={pkg.credits} className={`cursor-pointer transition-all hover:shadow-lg ${pkg.popular ? 'ring-2 ring-primary' : ''}`}>
+                <CardHeader className="text-center">
+                  {pkg.popular && (
+                    <Badge className="mb-2 w-fit mx-auto">Más Popular</Badge>
+                  )}
+                  <CardTitle className="text-2xl">{pkg.credits} Créditos</CardTitle>
+                  <div className="text-3xl font-bold text-primary">
+                    ${pkg.price}
                   </div>
+                  {pkg.discount && (
+                    <div className="text-sm text-green-600">
+                      {pkg.discount}% de descuento
+                    </div>
+                  )}
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="text-sm">
-                      ${(pkg.price / pkg.credits).toFixed(2)} por crédito
-                    </div>
-                    {pkg.discount && (
-                      <div className="text-sm text-green-600 font-medium">
-                        {pkg.discount}% de descuento
-                      </div>
-                    )}
-                    <div className="text-xs text-muted-foreground">
-                      Válido por 12 meses
-                    </div>
+                <CardContent className="text-center">
+                  <div className="text-sm text-muted-foreground mb-4">
+                    ${(pkg.price / pkg.credits).toFixed(1)} por crédito
                   </div>
+                  <Button 
+                    className="w-full"
+                    onClick={() => {
+                      setSelectedPackage(pkg)
+                      purchaseCredits(pkg)
+                    }}
+                    disabled={purchasing}
+                  >
+                    {purchasing ? "Procesando..." : "Comprar"}
+                  </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
-
-          {selectedPackage && (
-            <div className="p-4 bg-muted rounded-lg">
-              <h4 className="font-medium mb-2">Resumen de compra:</h4>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span>Créditos:</span>
-                  <span>{selectedPackage.credits}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Precio total:</span>
-                  <span>${selectedPackage.price}</span>
-                </div>
-                {selectedPackage.discount && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Descuento:</span>
-                    <span>-{selectedPackage.discount}%</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setIsPurchaseModalOpen(false)
-                setSelectedPackage(null)
-              }}
-              className="flex-1"
-            >
-              Cancelar
-            </Button>
-            <Button 
-              onClick={() => selectedPackage && purchaseCredits(selectedPackage)}
-              disabled={!selectedPackage || purchasing}
-              className="flex-1"
-            >
-              {purchasing ? "Procesando..." : "Comprar Créditos"}
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
+        </DialogContent>
+      </Dialog>
 
       {/* Modal de configuración */}
       <Dialog open={isSettingsModalOpen} onOpenChange={setIsSettingsModalOpen}>
@@ -477,54 +425,49 @@ export default function StudentCreditsPage() {
                 onCheckedChange={setAutoRecharge}
               />
             </div>
-
+            
             {autoRecharge && (
-              <>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">
-                    Recargar cuando tengas menos de:
-                  </label>
+                  <label className="text-sm font-medium">Umbral de recarga</label>
                   <Input
                     type="number"
                     value={rechargeThreshold}
                     onChange={(e) => setRechargeThreshold(parseInt(e.target.value))}
-                    min="1"
-                    max="10"
+                    min={1}
+                    max={10}
                     className="mt-1"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    Créditos mínimos antes de activar la recarga
+                    Recargar cuando queden menos créditos
                   </p>
                 </div>
-
                 <div>
-                  <label className="text-sm font-medium">
-                    Cantidad a recargar:
-                  </label>
+                  <label className="text-sm font-medium">Cantidad a recargar</label>
                   <Input
                     type="number"
                     value={rechargeAmount}
                     onChange={(e) => setRechargeAmount(parseInt(e.target.value))}
-                    min="1"
-                    max="50"
+                    min={1}
+                    max={50}
                     className="mt-1"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    Número de créditos a comprar automáticamente
+                    Créditos a comprar automáticamente
                   </p>
                 </div>
-              </>
+              </div>
             )}
-
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
+            
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
                 onClick={() => setIsSettingsModalOpen(false)}
                 className="flex-1"
               >
                 Cancelar
               </Button>
-              <Button 
+              <Button
                 onClick={updateSettings}
                 className="flex-1"
               >
@@ -535,5 +478,6 @@ export default function StudentCreditsPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   )
 }
