@@ -22,20 +22,12 @@ export async function GET(req: NextRequest) {
     const [totalTeachers, activeTeachers] = await Promise.all([
       db.user.count({
         where: {
-          customRole: {
-            in: await db.role.findMany({ 
-              where: { name: "teacher" } 
-            }).then(roles => roles.map(r => r.id))
-          }
+          customRole: "teacher"
         }
       }),
       db.user.count({
         where: {
-          customRole: {
-            in: await db.role.findMany({ 
-              where: { name: "teacher" } 
-            }).then(roles => roles.map(r => r.id))
-          },
+          customRole: "teacher",
           isActive: true,
           updatedAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Activo en últimos 30 días
@@ -47,20 +39,12 @@ export async function GET(req: NextRequest) {
     const [totalStudents, activeStudents] = await Promise.all([
       db.user.count({
         where: {
-          customRole: {
-            in: await db.role.findMany({ 
-              where: { name: "student" } 
-            }).then(roles => roles.map(r => r.id))
-          }
+          customRole: "student"
         }
       }),
       db.user.count({
         where: {
-          customRole: {
-            in: await db.role.findMany({ 
-              where: { name: "student" } 
-            }).then(roles => roles.map(r => r.id))
-          },
+          customRole: "student",
           isActive: true,
           updatedAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)

@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Course" ADD COLUMN "creditEnabled" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN "creditsPerHour" DOUBLE PRECISION,
+ADD COLUMN "totalCredits" DOUBLE PRECISION;

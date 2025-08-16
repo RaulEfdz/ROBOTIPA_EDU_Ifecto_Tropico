@@ -36,6 +36,11 @@ model Course {
   categoryId String?
   category   Category? @relation(fields: [categoryId], references: [id])
 
+  // Credits system
+  creditEnabled   Boolean @default(false)
+  creditsPerHour  Float?
+  totalCredits    Float?
+
   chapters    Chapter[]
   attachments Attachment[]
   purchases   Purchase[]

@@ -27,6 +27,57 @@ function ResultadoClientContent() {
   const [loading, setLoading] = useState(true);
   const [details, setDetails] = useState<Record<string, string>>({});
   const [statusInfo, setStatusInfo] = useState<StatusInfo | null>(null);
+  const [validationAttempted, setValidationAttempted] = useState(false);
+
+  // Función para realizar validación post-pago
+  const performPostPaymentValidation = async (params: Record<string, string>) => {
+    if (validationAttempted) return;
+    setValidationAttempted(true);
+
+    const paymentId = params.Oper;
+    const parm1 = params.PARM_1;
+    const estado = params.Estado;
+    const razon = params.Razon;
+    const amount = params.Total;
+
+    if (!paymentId || !parm1 || estado !== "APROBADA") {
+      console.log("[RESULTADO] Validación post-pago omitida - datos insuficientes o estado no exitoso");
+      return;
+    }
+
+    const [userId, courseId] = parm1.split("|");
+    if (!userId || !courseId) {
+      console.log("[RESULTADO] Validación post-pago omitida - PARM_1 inválido:", parm1);
+      return;
+    }
+
+    try {
+      console.log("[RESULTADO] Iniciando validación post-pago:", { paymentId, userId, courseId });
+      
+      const response = await fetch("/api/payments/post-payment-validation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentId,
+          userId,
+          courseId,
+          amount,
+          status: estado,
+          razon,
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        console.log("[RESULTADO] Validación post-pago exitosa:", result);
+      } else {
+        console.error("[RESULTADO] Error en validación post-pago:", result.error);
+      }
+    } catch (error) {
+      console.error("[RESULTADO] Error de red en validación post-pago:", error);
+    }
+  };
 
   useEffect(() => {
     const params: Record<string, string> = {};
@@ -48,9 +99,13 @@ function ResultadoClientContent() {
           "Gracias por tu compra. Se te ha concedido acceso al curso y serás redirigido en unos segundos.",
         cardClass: "border-green-200 bg-primary-50",
       });
+      
+      // Realizar validación post-pago como fallback
+      performPostPaymentValidation(params);
+      
       const courseId = params.PARM_1?.split("|")[1];
       if (courseId) {
-        setTimeout(() => router.push(`/courses/${courseId}`), 4000);
+        setTimeout(() => router.push(`/courses/${courseId}`), 6000); // Aumentado a 6 segundos para dar tiempo a la validación
       }
     } else if (razon === "AUTHORIZED" && estado !== "APROBADA") {
       setStatusInfo({
@@ -70,7 +125,7 @@ function ResultadoClientContent() {
     }
 
     setLoading(false);
-  }, [searchParams, router]);
+  }, [searchParams, router, validationAttempted]);
 
   if (loading || !statusInfo) {
     return (

@@ -55,7 +55,21 @@ module.exports = withUt({
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // NUEVA PALETA SEMÁNTICA
+        // SISTEMA DE TOKENS UNIFICADO BASADO EN SIDEBAR
+        "app": {
+          primary: "var(--app-primary)",
+          "primary-dark": "var(--app-primary-dark)",
+          "primary-light": "var(--app-primary-light)",
+          accent: "var(--app-accent)",
+          surface: "var(--app-surface)",
+          border: "var(--app-border)",
+          "text-primary": "var(--app-text-primary)",
+          "text-secondary": "var(--app-text-secondary)",
+          "text-muted": "var(--app-text-muted)",
+          hover: "var(--app-hover)",
+          active: "var(--app-active)",
+        },
+        // COMPATIBILIDAD CON PALETA ANTERIOR
         "brand-primary": "#1E3A2B",
         "brand-accent": "#8CC63F",
         "bg-base": "#FCFCF8",
@@ -66,13 +80,41 @@ module.exports = withUt({
         "border-default": "#DEE2E6",
       },
       borderRadius: {
-        sm: "2px",
-        md: "6px",
+        xs: "2px",
+        sm: "4px",
+        DEFAULT: "6px",
+        md: "8px",
         lg: "12px",
+        xl: "16px",
+        "2xl": "20px",
         full: "9999px",
       },
+      spacing: {
+        "1.5": "0.375rem", // 6px
+        "2.5": "0.625rem", // 10px
+        "3.5": "0.875rem", // 14px
+        "4.5": "1.125rem", // 18px
+        "5.5": "1.375rem", // 22px
+      },
+      fontSize: {
+        "2xs": ["0.625rem", { lineHeight: "0.75rem" }], // 10px
+        xs: ["0.75rem", { lineHeight: "1rem" }],        // 12px
+        sm: ["0.875rem", { lineHeight: "1.25rem" }],    // 14px
+        base: ["1rem", { lineHeight: "1.5rem" }],       // 16px
+        lg: ["1.125rem", { lineHeight: "1.75rem" }],    // 18px
+        xl: ["1.25rem", { lineHeight: "1.75rem" }],     // 20px
+        "2xl": ["1.5rem", { lineHeight: "2rem" }],      // 24px
+        "3xl": ["1.875rem", { lineHeight: "2.25rem" }], // 30px
+      },
       fontFamily: {
-        sans: ['Renogare Soft', 'ChaletBook', 'sans-serif'],
+        sans: ['Montserrat', 'Renogare Soft', 'ChaletBook', 'sans-serif'],
+        display: ['Renogare Soft', 'Montserrat', 'sans-serif'],
+      },
+      boxShadow: {
+        "app": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        "app-md": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+        "app-lg": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "app-xl": "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
       },
       keyframes: {
         "accordion-down": {

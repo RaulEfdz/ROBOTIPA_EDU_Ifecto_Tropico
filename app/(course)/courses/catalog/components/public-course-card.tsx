@@ -10,6 +10,8 @@ import {
   CheckCircle,
   Play,
   Eye,
+  Award,
+  Clock,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,6 +41,11 @@ export interface PublicCourseCardProps {
   studentsCount?: number;
   isBestseller?: boolean;
   isNew?: boolean;
+  // Credits system
+  creditEnabled?: boolean;
+  creditsPerHour?: number | null;
+  totalCredits?: number | null;
+  totalHours?: number; // For fallback when credits not available
 }
 
 export const PublicCourseCard = ({
@@ -57,6 +64,10 @@ export const PublicCourseCard = ({
   studentsCount,
   isBestseller = false,
   isNew = false,
+  creditEnabled = false,
+  creditsPerHour,
+  totalCredits,
+  totalHours = 0,
 }: PublicCourseCardProps) => {
   const courseLink = slug ? `/pages/course/${slug}` : `/pages/course/${id}`;
   const resolvedCourseLink = isEnrolled ? `/courses/${id}` : courseLink;
@@ -228,13 +239,38 @@ export const PublicCourseCard = ({
             </div>
           </div>
 
-          {/* Capítulos */}
+          {/* Capítulos y Créditos/Duración */}
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full">
               <BookOpen className="h-4 w-4 text-primary-500 dark:text-primary-400" />
               <span className="font-medium">
                 {chaptersCount} {chaptersCount === 1 ? "Capítulo" : "Capítulos"}
               </span>
+            </div>
+            
+            {/* Créditos o Duración */}
+            <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full">
+              {creditEnabled && (totalCredits || creditsPerHour) ? (
+                <>
+                  <Award className="h-4 w-4 text-amber-500 dark:text-amber-400" />
+                  <span className="font-medium">
+                    {totalCredits ? (
+                      `${totalCredits} créditos`
+                    ) : creditsPerHour ? (
+                      `${creditsPerHour} créd/h`
+                    ) : (
+                      `${totalHours.toFixed(1)}h`
+                    )}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Clock className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                  <span className="font-medium">
+                    {totalHours > 0 ? `${totalHours.toFixed(1)}h` : "Por definir"}
+                  </span>
+                </>
+              )}
             </div>
           </div>
 

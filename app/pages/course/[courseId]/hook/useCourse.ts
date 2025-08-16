@@ -14,6 +14,10 @@ export interface CoursePublicData {
   delete: boolean;
   category: { id: string; name: string } | null;
   categoryId?: string | null;
+  // Credits system
+  creditEnabled?: boolean;
+  creditsPerHour?: number | null;
+  totalCredits?: number | null;
   chapters: Array<{
     id: string;
     title: string;

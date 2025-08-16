@@ -89,7 +89,8 @@ function buildFormParams(
     returnUrl: string;
   },
   user: UserDB,
-  course: Partial<Course>
+  course: Partial<Course>,
+  courseId: string
 ): URLSearchParams {
   const { cclw, expiresIn } = config;
   const CCLW = cclw;
@@ -100,7 +101,7 @@ function buildFormParams(
   const RETURN_URL = body.returnUrl
     ? toHex(body.returnUrl)
     : toHex(config.returnUrlRaw);
-  const PARM_1 = "";
+  const PARM_1 = `${user.id}|${courseId}`;
   const CTAX = "";
   const PF_CF = toHex(JSON.stringify({ email: body.email, phone: body.phone }));
   // const CARD_TYPE = cardTypes;
@@ -171,6 +172,16 @@ export async function POST(req: NextRequest) {
     // Extrae los datos según el payload real del frontend
     const { amount, description, customParam1, returnUrl, pfCf, metadata, cardTypes } = await req.json();
 
+    console.log("[PAYMENT_INIT] Iniciando pago:", {
+      amount,
+      description,
+      customParam1,
+      returnUrl,
+      pfCf,
+      metadata,
+      cardTypes
+    });
+
     // Extrae los datos relevantes desde pfCf y metadata
     const email = pfCf?.email;
     const phone = pfCf?.phone;
@@ -179,16 +190,21 @@ export async function POST(req: NextRequest) {
     // Construye un objeto course mínimo si es necesario
     const course = { id: courseId, title: description?.replace('Curso: ', '') };
 
+    console.log("[PAYMENT_INIT] Datos extraídos:", { email, phone, fullName, courseId });
+
     
 
     // Authenticate user
     const session = await getUserDataServerAuth();
     if (!session?.user) {
+      console.error("[PAYMENT_INIT] Usuario no autenticado");
       return NextResponse.json(
         { error: "Usuario no autenticado." },
         { status: 401 }
       );
     }
+
+    console.log("[PAYMENT_INIT] Usuario autenticado:", session.user.id);
 
     // Fetch full user data from DB
     const userRaw = await db.user.findUnique({
@@ -239,10 +255,16 @@ export async function POST(req: NextRequest) {
       config,
       { amount, description, email, phone, returnUrl },
       user,
-      course
+      course,
+      courseId
     );
 
-    
+    console.log("[PAYMENT_INIT] Parámetros construidos:", {
+      PARM_1: formParams.get('PARM_1'),
+      amount: formParams.get('CMTN'),
+      userId: user.id,
+      courseId
+    });
 
     // Call the external API
     const data = await callPaymentApi(
@@ -252,16 +274,14 @@ export async function POST(req: NextRequest) {
       formParams
     );
 
-    // Log and respond
-    
-    
+    console.log("[PAYMENT_INIT] Respuesta de PagueLo Facil:", data);
 
     return NextResponse.json(
       { url: data.data.url, code: data.data.code },
       { status: 200 }
     );
   } catch (err: any) {
-    
+    console.error("[PAYMENT_INIT] Error:", err);
     const status =
       typeof err.message === "string" && err.message.startsWith("HTTP")
         ? parseInt(err.message.split(" ")[1], 10)

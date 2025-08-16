@@ -149,7 +149,7 @@ export const SidebarRoutes = ({ isCollapsed = false }: SidebarRoutesProps) => {
         <>
           <div className="flex items-center justify-between mb-4">
             <Label className="uppercase text-white text-xs tracking-wider font-semibold">
-              Navegación.
+              Navegación
             </Label>
           </div>
           <Separator className="mb-4 border-white/40" />

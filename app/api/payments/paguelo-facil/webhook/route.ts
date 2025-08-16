@@ -7,7 +7,8 @@ import { headers } from "next/headers";
 
 export async function POST(req: Request) {
   const body = await req.text();
-  // Process webhook data
+  
+  console.log("[WEBHOOK] Recibido webhook de PagueLo Facil:", body);
 
   const params = new URLSearchParams(body);
   const data = {
@@ -18,7 +19,13 @@ export async function POST(req: Request) {
     razon: params.get("Razon"),
   };
 
+  console.log("[WEBHOOK] Datos extraídos:", data);
+
   if (!data.paymentId || !data.customParam1) {
+    console.error("[WEBHOOK] Error: Faltan parámetros requeridos:", {
+      paymentId: data.paymentId,
+      customParam1: data.customParam1
+    });
     return new NextResponse("Webhook Error: Faltan parámetros requeridos.", {
       status: 400,
     });
@@ -27,8 +34,11 @@ export async function POST(req: Request) {
   try {
     const [userId, courseId] = data.customParam1.split("|");
     if (!userId || !courseId) {
+      console.error("[WEBHOOK] Error: Formato de PARM_1 inválido:", data.customParam1);
       throw new Error(`Formato de PARM_1 inválido: ${data.customParam1}`);
     }
+
+    console.log("[WEBHOOK] Procesando pago para:", { userId, courseId, paymentId: data.paymentId });
 
     // Usamos una transacción de Prisma para asegurar que todas las operaciones se completen o ninguna lo haga.
     await db.$transaction(async (prisma) => {
@@ -37,6 +47,7 @@ export async function POST(req: Request) {
       });
 
       if (existingPayment) {
+        console.log("[WEBHOOK] Pago ya procesado:", data.paymentId);
         return; // Payment already processed
       }
 
@@ -53,13 +64,18 @@ export async function POST(req: Request) {
         },
       });
 
+      console.log("[WEBHOOK] Pago registrado en DB:", data.paymentId);
+
       // 3. Si el pago fue exitoso ("APROBADA"), concedemos el acceso.
       if (data.status === "APROBADA" || data.status === "APPROVED") {
+        console.log("[WEBHOOK] Pago exitoso, procesando acceso al curso");
+        
         const purchase = await prisma.purchase.findUnique({
           where: { userId_courseId: { userId, courseId } },
         });
 
         if (!purchase) {
+          console.log("[WEBHOOK] Creando nuevo registro de compra");
           // Crear el registro de compra
           await prisma.purchase.create({
             data: { userId, courseId, paymentId: data.paymentId! },
@@ -71,6 +87,7 @@ export async function POST(req: Request) {
             user &&
             (user.customRole === getVisitorId() || !user.customRole)
           ) {
+            console.log("[WEBHOOK] Actualizando rol de usuario a estudiante");
             await prisma.user.update({
               where: { id: userId },
               data: { customRole: getStudentId() },
@@ -88,6 +105,7 @@ export async function POST(req: Request) {
             select: { id: true, title: true, price: true },
           });
           if (userObj && courseObj) {
+            console.log("[WEBHOOK] Enviando correos de confirmación");
             await sendEnrollmentConfirmationEmails({
               user: userObj,
               course: courseObj,
@@ -95,12 +113,18 @@ export async function POST(req: Request) {
               transactionDetails: `Transacción aprobada vía webhook`,
             });
           }
+        } else {
+          console.log("[WEBHOOK] Usuario ya tiene acceso al curso");
         }
+      } else {
+        console.log("[WEBHOOK] Pago no exitoso, estado:", data.status);
       }
     });
 
+    console.log("[WEBHOOK] Procesamiento completado exitosamente");
     return NextResponse.json({ message: "Webhook procesado exitosamente" });
   } catch (error: any) {
+    console.error("[WEBHOOK] Error procesando webhook:", error);
     return new NextResponse(`Webhook Error: ${error.message}`, { status: 500 });
   }
 }

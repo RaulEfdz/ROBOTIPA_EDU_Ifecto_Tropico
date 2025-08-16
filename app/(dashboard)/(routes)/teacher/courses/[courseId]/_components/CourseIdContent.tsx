@@ -15,6 +15,7 @@ import { DescriptionForm } from "./inputs/description-form";
 import { ImageForm } from "./inputs/images/image-form";
 import { CategoryForm } from "./inputs/category-form";
 import { PriceForm } from "./price-form";
+import { CreditsForm } from "./credits-form";
 import { ChaptersForm } from "./inputs/chapters-form";
 import { Actions } from "./actions";
 import { ExamSelector } from "./Exams/ExamSelector";
@@ -158,6 +159,11 @@ export default function CourseIdContent({ course, categories, lang }: Props) {
               {/* Price form */}
               <div className="p-4 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
                 <PriceForm initialData={course} courseId={course.id} />
+              </div>
+
+              {/* Credits form */}
+              <div className="p-4 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+                <CreditsForm initialData={course} courseId={course.id} />
               </div>
 
               {/* Learning objectives */}

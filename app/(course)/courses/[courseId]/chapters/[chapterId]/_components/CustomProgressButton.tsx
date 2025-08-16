@@ -112,6 +112,9 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
   // Obtener estilos dinámicos usando hooks
   const buttonStyles = useButtonStyles();
   const whatsAppStyles = useWhatsAppButtonStyles();
+  
+  // Control del sistema de certificados
+  const isMaintenanceMode = process.env.NEXT_PUBLIC_CERTIFICATE_SYSTEM_MAINTENANCE === 'true';
 
   const handleClick = async () => {
     setIsLoading(true);
@@ -128,9 +131,17 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
 
-        // Si el curso terminó y hay certificado disponible…
-        if (data.courseCompleted && (data.certificateGenerated || data.certificateId)) {
-          setShowCertModal(true);
+        // Si el curso terminó, determinar qué mostrar
+        if (data.courseCompleted) {
+          // En modo mantenimiento, siempre mostrar modal de WhatsApp
+          // En modo normal, mostrar modal solo si no hay certificado generado
+          if (isMaintenanceMode || (!data.certificateGenerated && !data.certificateId)) {
+            setShowCertModal(true);
+          } else {
+            // Certificado generado exitosamente
+            confetti.onOpen();
+            toast.success("🎉 ¡Curso completado! Tu certificado ha sido generado.");
+          }
         } else {
           // Si no hay más capítulos, confetti; sino toast normal
           if (!nextChapterId) confetti.onOpen();
@@ -185,12 +196,26 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
       <Dialog open={showCertModal} onOpenChange={setShowCertModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>¡Felicidades! Has completado el curso</DialogTitle>
+            <DialogTitle>🎉 ¡Felicidades! Has completado el curso</DialogTitle>
             <DialogDescription>
-              Nuestro sistema de certificados está en mantenimiento.
+              Has finalizado exitosamente el curso. 
               <br />
-              Para recibir tu certificado, toca el botón y envíanos un mensaje
-              por WhatsApp. Te lo enviaremos manualmente.
+              <br />
+              {isMaintenanceMode ? (
+                <>
+                  <strong>Nuestro sistema de certificados está en mantenimiento temporal.</strong>
+                  <br />
+                  Para obtener tu certificado, haz clic en el botón de abajo para contactarnos por WhatsApp. 
+                  Te enviaremos tu certificado personalizado por correo electrónico lo antes posible.
+                </>
+              ) : (
+                <>
+                  <strong>Para obtener tu certificado:</strong>
+                  <br />
+                  Haz clic en el botón de abajo para contactarnos por WhatsApp. 
+                  Te enviaremos tu certificado personalizado por correo electrónico en breve.
+                </>
+              )}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -217,7 +242,7 @@ const CustomProgressButton: React.FC<CustomProgressButtonProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Solicitar certificado por WhatsApp
+                📱 Solicitar mi certificado
               </a>
             </Button>
           </DialogFooter>

@@ -60,7 +60,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         } md:translate-x-0`
       }
     >
-      {/* Header administrativo minimalista */}
+      {/* Header minimalista */}
       <div
         className={`flex items-center ${
           isCollapsed ? "justify-center px-3" : "justify-between px-6"
@@ -71,40 +71,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         }}
       >
         {!isCollapsed && (
-          <div className="flex items-center space-x-3">
-            <div 
-              className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{
-                background: 'var(--role-accent)',
-              }}
-            >
-              <Shield size={16} style={{ color: 'var(--role-text)' }} />
-            </div>
-            <div className="flex flex-col">
-              <Logo />
-              <span 
-                className="text-xs font-medium mt-0.5"
-                style={{ color: 'var(--role-text-secondary)' }}
-              >
-                Panel Administrativo
-              </span>
-            </div>
+          <div className="flex items-center space-x-2">
+            <Shield size={18} style={{ color: 'var(--role-accent)' }} />
+            <Logo />
           </div>
         )}
 
-        {/* Indicador visual para collapsed admin */}
+        {/* Indicador visual para collapsed */}
         {isCollapsed && (
-          <div 
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{
-              background: 'var(--role-accent)',
-            }}
-          >
-            <Shield size={16} style={{ color: 'var(--role-text)' }} />
-          </div>
+          <Shield size={18} style={{ color: 'var(--role-accent)' }} />
         )}
         
-        {/* Botón collapse minimalista */}
+        {/* Botón collapse */}
         <button
           onClick={toggleCollapse}
           onMouseEnter={() => setIsHovered(true)}
@@ -147,7 +125,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         )}
       </div>
 
-      {/* Navigation para módulos administrativos */}
+      {/* Navigation */}
       <nav 
         className="flex-1 overflow-y-auto py-2 scrollbar-thin scrollbar-track-transparent"
         style={{
@@ -157,7 +135,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         <AdminSidebarRoutes isCollapsed={isCollapsed} user={user} />
       </nav>
 
-      {/* Footer administrativo minimalista */}
+      {/* Footer minimalista */}
       {!isCollapsed && (
         <div 
           className="mt-auto border-t"
@@ -170,15 +148,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             <Administrative />
           </div>
           <div 
-            className="px-4 py-2 text-center text-xs font-medium border-t flex items-center justify-center space-x-2"
+            className="px-4 py-2 text-center text-xs font-medium border-t"
             style={{
               color: 'var(--role-text-muted)',
               borderColor: 'var(--role-border)',
               background: 'var(--role-surface)',
             }}
           >
-            <Shield size={12} style={{ color: 'var(--role-accent)' }} />
-            <span>ADMIN PANEL v2.0.1</span>
+            ADMIN PANEL v2.0.1
           </div>
         </div>
       )}

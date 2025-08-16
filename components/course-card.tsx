@@ -3,7 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { BookOpen, Clock, Users, Star } from "lucide-react";
+import { BookOpen, Clock, Users, Star, Award } from "lucide-react";
 import { IconBadge } from "@/components/icon-badge";
 import { CourseProgress } from "@/components/course-progress";
 import type { Course, Category, Chapter } from "@prisma/client";
@@ -20,6 +20,10 @@ export interface CourseWithProgress extends Course {
   progress?: number | null;
   category?: Category | { id: string; name: string } | null;
   chapters?: Chapter[] | { id: string }[];
+  // Credits system
+  creditEnabled?: boolean;
+  creditsPerHour?: number | null;
+  totalCredits?: number | null;
 }
 
 interface CourseCardProps {
@@ -226,6 +230,29 @@ export const CourseCard = ({
               <span className="font-medium">
                 {chaptersCount} {chaptersCount === 1 ? "Capítulo" : "Capítulos"}
               </span>
+            </div>
+
+            {/* Créditos o Duración */}
+            <div className="flex items-center gap-1">
+              {course.creditEnabled && (course.totalCredits || course.creditsPerHour) ? (
+                <>
+                  <IconBadge size="sm" icon={Award} variant="default" />
+                  <span className="font-medium text-amber-600 dark:text-amber-400">
+                    {course.totalCredits ? (
+                      `${course.totalCredits} créditos`
+                    ) : (
+                      `${course.creditsPerHour} créd/h`
+                    )}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <IconBadge size="sm" icon={Clock} />
+                  <span className="font-medium">
+                    Duración
+                  </span>
+                </>
+              )}
             </div>
 
             {/* Indicador adicional para cursos con progreso */}

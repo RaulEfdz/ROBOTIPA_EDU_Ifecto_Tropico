@@ -395,7 +395,22 @@ export default function CoursePage() {
                 <BookOpen size={16} /> {chapterCount} Capítulos
               </div>
               <div className="flex items-center gap-1">
-                <Clock size={16} /> Aprox. {totalHours.toFixed(1)}h
+                {course.creditEnabled && (course.totalCredits || course.creditsPerHour) ? (
+                  <>
+                    <Award size={16} /> 
+                    {course.totalCredits ? (
+                      `${course.totalCredits} créditos`
+                    ) : course.creditsPerHour ? (
+                      `${course.creditsPerHour} créditos/h`
+                    ) : (
+                      `Aprox. ${totalHours.toFixed(1)}h`
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <Clock size={16} /> Aprox. {totalHours.toFixed(1)}h
+                  </>
+                )}
               </div>
               {/* Mostrar contador de estudiantes solo si es mayor que 0 */}
               {studentsDisplay > 0 && (
