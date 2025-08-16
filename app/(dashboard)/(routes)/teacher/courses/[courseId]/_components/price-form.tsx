@@ -20,9 +20,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/format";
+import { isModuleActiveForRole, activateModuleForRole, RoleType } from "@/config/module-activation";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { FaWhatsapp } from "react-icons/fa";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 
 interface PriceFormProps {
   initialData: Course;
@@ -37,12 +41,18 @@ const formSchema = z.object({
 
 export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
   const router = useRouter();
+  const { user } = useCurrentUser();
 
   // 1) Estado local para reflejar inmediatamente el precio en UI
   const [currentPrice, setCurrentPrice] = useState<number>(
     initialData.price ?? 0
   );
   const [isEditing, setIsEditing] = useState(false);
+  
+  // 2) Estado para el sistema de módulos WhatsApp
+  const [whatsappPriceEnabled, setWhatsappPriceEnabled] = useState<boolean>(
+    user?.customRole ? isModuleActiveForRole(user.customRole as RoleType, 'whatsapp_special_price') : false
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,6 +85,30 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
     } catch (error: any) {
       console.error("[PRICE_UPDATE]", error);
       toast.error(error.message || "No se pudo actualizar el precio");
+    }
+  };
+
+  // Función para activar/desactivar WhatsApp precio especial
+  const toggleWhatsAppPrice = async () => {
+    try {
+      if (!user?.customRole) {
+        toast.error("Usuario no identificado");
+        return;
+      }
+
+      if (whatsappPriceEnabled) {
+        // Desactivar - aquí podrías llamar a una API para persistir
+        setWhatsappPriceEnabled(false);
+        toast.success("Función de precio especial por WhatsApp desactivada");
+      } else {
+        // Activar el módulo
+        activateModuleForRole(user.customRole as RoleType, 'whatsapp_special_price');
+        setWhatsappPriceEnabled(true);
+        toast.success("¡Función de precio especial por WhatsApp activada!");
+      }
+    } catch (error) {
+      console.error("[WHATSAPP_TOGGLE]", error);
+      toast.error("Error al cambiar configuración de WhatsApp");
     }
   };
 
@@ -222,6 +256,79 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Separador */}
+      <Separator className="my-6" />
+
+      {/* Sección de WhatsApp Precio Especial */}
+      <div className="mt-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <FaWhatsapp className="h-5 w-5 text-green-500" />
+            <div>
+              <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">
+                Precio Especial por WhatsApp
+              </h4>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Permite que estudiantes contacten por WhatsApp para precio especial
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={whatsappPriceEnabled}
+              onCheckedChange={toggleWhatsAppPrice}
+              className="data-[state=checked]:bg-green-500"
+            />
+            <span className="text-sm font-medium">
+              {whatsappPriceEnabled ? "Activo" : "Inactivo"}
+            </span>
+          </div>
+        </div>
+
+        {whatsappPriceEnabled && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4"
+          >
+            <div className="flex items-start gap-3">
+              <FaWhatsapp className="h-4 w-4 text-green-600 mt-0.5" />
+              <div className="text-sm">
+                <p className="text-green-800 dark:text-green-200 font-medium">
+                  ✅ Función activada
+                </p>
+                <p className="text-green-700 dark:text-green-300 mt-1">
+                  Los estudiantes verán un botón para contactarte por WhatsApp y negociar un precio especial. 
+                  Esta función les permite obtener descuentos estudiantiles u ofertas personalizadas.
+                </p>
+                <div className="mt-2 text-xs text-green-600 dark:text-green-400">
+                  💡 <strong>Tip:</strong> Puedes desactivar esta función en cualquier momento usando el switch de arriba.
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {!whatsappPriceEnabled && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+          >
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              <p>
+                📱 <strong>Precio especial desactivado:</strong> Los estudiantes solo verán el precio regular del curso.
+              </p>
+              <p className="mt-1">
+                Activa esta función para permitir que contacten por WhatsApp y negocien precios especiales.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 };

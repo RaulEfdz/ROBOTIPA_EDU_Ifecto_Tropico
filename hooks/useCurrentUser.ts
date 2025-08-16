@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
+import { UserDB } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
 
 export function useCurrentUser() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<UserDB | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

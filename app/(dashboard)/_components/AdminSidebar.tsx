@@ -1,26 +1,26 @@
-// components/Sidebar.tsx
+// app/(dashboard)/_components/AdminSidebar.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { isTeacher } from "@/app/(dashboard)/(routes)/admin/teacher";
 import { Logo } from "./logo";
-import { SidebarRoutes } from "./SidebarRoutes";
+import { AdminSidebarRoutes } from "./AdminSidebarRoutes";
 import Administrative from "@/components/Administrative";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Shield } from "lucide-react";
 import {
   getCurrentUserFromDB,
   UserDB,
 } from "@/app/auth/CurrentUser/getCurrentUserFromDB";
-import { getRoleStyles, mapRoleUUIDToColorRole } from "@/lib/role-colors";
+import { getRoleStyles } from "@/lib/role-colors";
 
-export interface SidebarProps {
+export interface AdminSidebarProps {
   isOpen: boolean;
   toggleSidebar: (state?: boolean) => void;
   isCollapsed: boolean;
   toggleCollapse: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({
+export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   isOpen,
   toggleSidebar,
   isCollapsed,
@@ -29,34 +29,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [isUserTeacher, setIsUserTeacher] = useState(false);
   const [user, setUser] = useState<UserDB | null>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [roleColorScheme, setRoleColorScheme] = useState<'default' | 'admin' | 'teacher' | 'student' | 'visitor'>('default');
 
   useEffect(() => {
     async function fetchUserAndCheckRole() {
       const currentUser = await getCurrentUserFromDB();
       setUser(currentUser);
-      
       if (currentUser?.id) {
         const result = await isTeacher(currentUser.id);
         setIsUserTeacher(result);
-      }
-
-      // Determinar esquema de colores basado en el rol
-      if (currentUser?.customRole) {
-        const colorRole = mapRoleUUIDToColorRole(currentUser.customRole);
-        setRoleColorScheme(colorRole);
       }
     }
     fetchUserAndCheckRole();
   }, []);
 
-  // Obtener estilos del rol
-  const roleStyles = getRoleStyles(roleColorScheme);
+  // Usar esquema de colores específico para admin
+  const adminStyles = getRoleStyles('admin');
 
   return (
     <aside
       style={{
-        ...roleStyles,
+        ...adminStyles,
         background: 'var(--role-primary)',
         borderRight: '1px solid var(--role-border)',
       }}
@@ -68,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         } md:translate-x-0`
       }
     >
-      {/* Header minimalista */}
+      {/* Header administrativo minimalista */}
       <div
         className={`flex items-center ${
           isCollapsed ? "justify-center px-3" : "justify-between px-6"
@@ -79,19 +71,47 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }}
       >
         {!isCollapsed && (
-          <div className="flex items-center">
-            <Logo />
+          <div className="flex items-center space-x-3">
+            <div 
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{
+                background: 'var(--role-accent)',
+              }}
+            >
+              <Shield size={16} style={{ color: 'var(--role-text)' }} />
+            </div>
+            <div className="flex flex-col">
+              <Logo />
+              <span 
+                className="text-xs font-medium mt-0.5"
+                style={{ color: 'var(--role-text-secondary)' }}
+              >
+                Panel Administrativo
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Indicador visual para collapsed admin */}
+        {isCollapsed && (
+          <div 
+            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            style={{
+              background: 'var(--role-accent)',
+            }}
+          >
+            <Shield size={16} style={{ color: 'var(--role-text)' }} />
           </div>
         )}
         
-        {/* Botón collapse más minimalista */}
+        {/* Botón collapse minimalista */}
         <button
           onClick={toggleCollapse}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           className={`${
             isCollapsed ? "w-8 h-8" : "w-7 h-7"
-          } flex items-center justify-center rounded-md transition-all duration-200 group`}
+          } flex items-center justify-center rounded-md transition-all duration-200`}
           style={{
             background: isHovered ? 'var(--role-hover)' : 'transparent',
           }}
@@ -127,17 +147,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      {/* Navigation minimalista */}
+      {/* Navigation para módulos administrativos */}
       <nav 
         className="flex-1 overflow-y-auto py-2 scrollbar-thin scrollbar-track-transparent"
         style={{
           scrollbarColor: 'var(--role-border) transparent',
         }}
       >
-        <SidebarRoutes isCollapsed={isCollapsed} />
+        <AdminSidebarRoutes isCollapsed={isCollapsed} user={user} />
       </nav>
 
-      {/* Footer minimalista */}
+      {/* Footer administrativo minimalista */}
       {!isCollapsed && (
         <div 
           className="mt-auto border-t"
@@ -150,14 +170,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Administrative />
           </div>
           <div 
-            className="px-4 py-2 text-center text-xs font-medium border-t"
+            className="px-4 py-2 text-center text-xs font-medium border-t flex items-center justify-center space-x-2"
             style={{
               color: 'var(--role-text-muted)',
               borderColor: 'var(--role-border)',
               background: 'var(--role-surface)',
             }}
           >
-            ROBOTIPA EDU v2.0.1
+            <Shield size={12} style={{ color: 'var(--role-accent)' }} />
+            <span>ADMIN PANEL v2.0.1</span>
           </div>
         </div>
       )}

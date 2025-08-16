@@ -358,7 +358,7 @@ export default function TeacherEarningsPage() {
                 <div className="mt-4 p-3 bg-yellow-100 rounded-md">
                   <p className="text-sm font-medium">💡 Sugerencia:</p>
                   <p className="text-sm">
-                    No tienes ninguna sesión registrada. Ve a "Mi Disponibilidad" para configurar tus horarios 
+                    No tienes ninguna sesión registrada. Ve a &quot;Mi Disponibilidad&quot; para configurar tus horarios 
                     y permitir que los estudiantes reserven sesiones contigo.
                   </p>
                 </div>
